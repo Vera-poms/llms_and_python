@@ -1,0 +1,36 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+
+# Python
+__pycache__/
+*.pyc
+*.cpython-*.pyc
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Databases
+*.sqlite3
+*.db
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+*.log

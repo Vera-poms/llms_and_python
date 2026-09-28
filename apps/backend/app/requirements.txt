@@ -1,0 +1,14 @@
+fastapi[standard]
+python-dotenv
+PyJWT
+bcrypt
+sqlalchemy
+cryptography
+alembic
+psycopg[binary]
+email-validator
+jupyter_client
+ipykernel
+numpy
+matplotlib
+requests
