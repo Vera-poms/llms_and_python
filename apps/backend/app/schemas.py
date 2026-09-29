@@ -58,6 +58,18 @@ class CellCodeSave(BaseModel):
     source: str
 
 
+class CellJudgeRequest(BaseModel):
+    source: str
+    output: str
+    reference_source: str
+    reference_output: str | None = None
+
+
+class CellJudgeResponse(BaseModel):
+    correct: bool
+    feedback: str | None = None
+
+
 class NotebookCellOut(BaseModel):
     index: int
     cell_type: str

@@ -1,7 +1,8 @@
-import { Badge, Box, Button, HStack, Textarea, VStack } from "@chakra-ui/react";
+import { Badge, Box, Button, HStack, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
 import { api } from "../api/client";
+import { CodeEditor } from "./CodeEditor";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
 export function RunnableExample({ labId, code }: { labId: number; code: string }) {
@@ -28,15 +29,7 @@ export function RunnableExample({ labId, code }: { labId: number; code: string }
             Run
           </Button>
         </HStack>
-        <Textarea
-          fontFamily="mono"
-          fontSize="sm"
-          bg="white"
-          _dark={{ bg: "gray.800" }}
-          rows={Math.min(20, source.split("\n").length)}
-          value={source}
-          onChange={(e) => setSource(e.target.value)}
-        />
+        <CodeEditor value={source} onChange={setSource} minHeight="60px" />
         {result && <CellOutput result={result} />}
       </VStack>
     </Box>

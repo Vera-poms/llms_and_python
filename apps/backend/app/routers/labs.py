@@ -1,11 +1,77 @@
+import logging
+
+import requests
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from core.config import ANTHROPIC_API_KEY
 from db.models import CellCode, Lab, LabProgress, User
 from deps import get_current_user, get_db
-from schemas import CellCodeOut, CellCodeSave, LabOut, LabProgressOut, ProgressUpdate
+from schemas import (
+    CellCodeOut,
+    CellCodeSave,
+    CellJudgeRequest,
+    CellJudgeResponse,
+    LabOut,
+    LabProgressOut,
+    ProgressUpdate,
+)
 
 router = APIRouter(prefix="/labs", tags=["labs"])
+logger = logging.getLogger(__name__)
+
+ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_MODEL = "claude-sonnet-5"
+
+
+def _normalize(text: str) -> str:
+    return text.strip().replace("\r\n", "\n")
+
+
+def _exact_match_judge(payload: CellJudgeRequest) -> CellJudgeResponse:
+    if payload.reference_output is None:
+        return CellJudgeResponse(correct=False, feedback=None)
+    correct = _normalize(payload.output) == _normalize(payload.reference_output)
+    return CellJudgeResponse(correct=correct, feedback=None)
+
+
+def _llm_judge(payload: CellJudgeRequest) -> CellJudgeResponse:
+    reference_output = payload.reference_output or "(not fixed - judge from the reference code's own behavior)"
+    system_prompt = (
+        "You are grading a student's Python practice exercise. Compare the student's code and its "
+        "output against a reference solution and its expected output. Judge whether the student's "
+        "code is a CORRECT solution based on its logic and behavior, not on exact text formatting "
+        "(for example, `18.0` and `18` represent the same correct value). Reply with exactly two "
+        "lines: the first line must be either CORRECT or INCORRECT, and the second line a single "
+        "short sentence explaining why."
+    )
+    user_prompt = (
+        f"Reference solution:\n{payload.reference_source}\n\n"
+        f"Reference expected output:\n{reference_output}\n\n"
+        f"Student's code:\n{payload.source}\n\n"
+        f"Student's actual output:\n{payload.output}"
+    )
+    response = requests.post(
+        ANTHROPIC_MESSAGES_URL,
+        headers={
+            "x-api-key": ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json={
+            "model": ANTHROPIC_MODEL,
+            "max_tokens": 200,
+            "system": system_prompt,
+            "messages": [{"role": "user", "content": user_prompt}],
+        },
+        timeout=20,
+    )
+    response.raise_for_status()
+    text = response.json()["content"][0]["text"].strip()
+    lines = text.splitlines()
+    verdict = lines[0].strip().upper() if lines else ""
+    feedback = lines[1].strip() if len(lines) > 1 else None
+    return CellJudgeResponse(correct=verdict.startswith("CORRECT"), feedback=feedback)
 
 
 @router.get("", response_model=list[LabOut])
@@ -107,3 +173,25 @@ def save_cell_code(
     db.refresh(saved)
 
     return CellCodeOut(source=saved.source)
+
+
+@router.post("/{lab_id}/cells/{cell_id}/judge", response_model=CellJudgeResponse)
+def judge_cell_code(
+    lab_id: int,
+    cell_id: str,
+    payload: CellJudgeRequest,
+    current_user: User = Depends(get_current_user),
+) -> CellJudgeResponse:
+    if not ANTHROPIC_API_KEY:
+        return _exact_match_judge(payload)
+
+    try:
+        return _llm_judge(payload)
+    except Exception:
+        logger.warning(
+            "LLM judge call failed for lab_id=%s cell_id=%s, falling back to exact-match",
+            lab_id,
+            cell_id,
+            exc_info=True,
+        )
+        return _exact_match_judge(payload)

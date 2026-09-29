@@ -10,13 +10,13 @@ import {
   Input,
   Spinner,
   Text,
-  Textarea,
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { api } from "../api/client";
+import { CodeEditor } from "./CodeEditor";
 
 interface NotebookCell {
   index: number;
@@ -181,12 +181,9 @@ export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApi
                 Run
               </Button>
             </HStack>
-            <Textarea
-              fontFamily="mono"
-              fontSize="sm"
-              rows={Math.min(20, sources[cell.index]?.split("\n").length ?? 5)}
+            <CodeEditor
               value={sources[cell.index] ?? ""}
-              onChange={(e) => setSources((prev) => ({ ...prev, [cell.index]: e.target.value }))}
+              onChange={(value) => setSources((prev) => ({ ...prev, [cell.index]: value }))}
             />
             {result && <CellOutput result={result} />}
           </Box>
