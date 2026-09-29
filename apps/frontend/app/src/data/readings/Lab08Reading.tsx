@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab08Reading() {
   return (
@@ -35,30 +36,24 @@ export function Lab08Reading() {
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
       <Text>You could paste strings together:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`name = "Vera"
+      <RunnableExample labId={8} code={`name = "Vera"
 greeting = "Hello, " + name + "!"
-# "Hello, Vera!"`}
-      </Code>
+# "Hello, Vera!"`} />
       <Text>
         That works, but gets ugly fast once you have several blanks to fill. Python gives you two
         cleaner ways to do the same thing. An <b>f-string</b> (a string literal prefixed with{" "}
         <Code>f</Code>) lets you drop a variable straight into the text inside <Code>{"{}"}</Code>:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`name = "Vera"
+      <RunnableExample labId={8} code={`name = "Vera"
 greeting = f"Hello, {name}!"
-# "Hello, Vera!"`}
-      </Code>
+# "Hello, Vera!"`} />
       <Text>
         A close cousin is the <Code>.format()</Code> method, which does the same substitution but on
         a plain string template that isn't tied to variables at the moment it's written:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`template = "Hello, {name}!"
+      <RunnableExample labId={8} code={`template = "Hello, {name}!"
 template.format(name="Vera")
-# "Hello, Vera!"`}
-      </Code>
+# "Hello, Vera!"`} />
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell comparing an f-string to a{" "}
@@ -73,7 +68,7 @@ print(message)  # expected output: You ordered 3 notebook(s).
 order_template = "You ordered {qty} {item}(s)."
 print(order_template.format(qty=5, item="pen"))  # expected output: You ordered 5 pen(s).`}
       </Code>
-      <PracticeCell labId={8} code={`item = "notebook"
+      <PracticeCell labId={8} cellId="concept-1" code={`item = "notebook"
 qty = 3
 message = f"You ordered {qty} {item}(s)."
 print(message)  # expected output: You ordered 3 notebook(s).
@@ -102,15 +97,13 @@ You ordered 5 pen(s).`} />
       <Text>
         A function that takes a template and reuses it with different data, nothing LLM-related here:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`template = "Hello, {name}!"
+      <RunnableExample labId={8} code={`template = "Hello, {name}!"
 
 def render(template, **data):
     return template.format(**data)
 
 render(template, name="Vera")  # "Hello, Vera!"
-render(template, name="Sam")   # "Hello, Sam!"`}
-      </Code>
+render(template, name="Sam")   # "Hello, Sam!"`} />
       <Text>
         The template gets written once, and reused for as many different pieces of data as you like -
         it means you can write it once, test it once, and reuse it safely for a thousand different
@@ -129,7 +122,7 @@ invoice_template = "Invoice for {customer}: \${amount}"
 print(render(invoice_template, customer="Alex", amount=42))  # expected output: Invoice for Alex: $42
 print(render(invoice_template, customer="Sam", amount=17))  # expected output: Invoice for Sam: $17`}
       </Code>
-      <PracticeCell labId={8} code={`def render(template, **data):
+      <PracticeCell labId={8} cellId="concept-2" code={`def render(template, **data):
     return template.format(**data)
 
 invoice_template = "Invoice for {customer}: \${amount}"
@@ -155,8 +148,7 @@ Invoice for Sam: $17`} />
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
       <Text>Here's the idea with something totally unrelated to LLMs - a class that remembers a running total:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`class Counter:
+      <RunnableExample labId={8} code={`class Counter:
     def __init__(self, start=0):
         self.total = start  # state stored on the instance
 
@@ -166,8 +158,7 @@ Invoice for Sam: $17`} />
 
 c = Counter()
 c.add(5)   # 5
-c.add(3)   # 8 - remembers the previous call`}
-      </Code>
+c.add(3)   # 8 - remembers the previous call`} />
       <Text>
         <Code>__init__</Code> runs once, when the object is created, and sets up{" "}
         <Code>self.total</Code> - state that sticks around on that specific instance. <Code>add</Code>{" "}
@@ -191,7 +182,7 @@ t = Tally()
 t.bump(2)
 print(t.bump(3))  # expected output: 5`}
       </Code>
-      <PracticeCell labId={8} code={`class Tally:
+      <PracticeCell labId={8} cellId="concept-3" code={`class Tally:
     def __init__(self, start=0):
         self.count = start  # state stored on the instance
 

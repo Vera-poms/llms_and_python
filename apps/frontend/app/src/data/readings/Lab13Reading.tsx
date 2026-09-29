@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab13Reading() {
   return (
@@ -24,12 +25,10 @@ export function Lab13Reading() {
         Imagine a shopping list on your phone. You never erase it between items - you just keep
         appending:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`shopping_list = []
+      <RunnableExample labId={13} code={`shopping_list = []
 shopping_list.append("milk")
 shopping_list.append("eggs")
-print(shopping_list)  # ["milk", "eggs"]`}
-      </Code>
+print(shopping_list)  # ["milk", "eggs"]`} />
       <Text>
         By the time you're at the register, the list holds every item you added, in order - that's
         the entire idea of "state": a value that persists and accumulates across separate actions,
@@ -45,7 +44,7 @@ readings.append(68)
 readings.append(71)
 print(readings)  # expected output: [68, 71]`}
       </Code>
-      <PracticeCell labId={13} code={`readings = []
+      <PracticeCell labId={13} cellId="concept-1" code={`readings = []
 readings.append(68)
 readings.append(71)
 print(readings)  # expected output: [68, 71]`} expectedOutput={`[68, 71]`} />
@@ -68,12 +67,10 @@ print(readings)  # expected output: [68, 71]`} expectedOutput={`[68, 71]`} />
         A simple check-in desk logs each visitor and immediately updates its log before the next
         person walks up:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`log = []
+      <RunnableExample labId={13} code={`log = []
 for visitor in ["Alice", "Bob"]:
     log.append(f"{visitor} checked in")
-print(log)`}
-      </Code>
+print(log)`} />
       <Text>
         Each visitor gets appended to <Code>log</Code> one at a time, and by the end the log holds
         one entry per visitor, in the order they arrived - one action (a visitor arrives), one
@@ -89,7 +86,7 @@ for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
 print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`}
       </Code>
-      <PracticeCell labId={13} code={`deliveries = []
+      <PracticeCell labId={13} cellId="concept-2" code={`deliveries = []
 for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
 print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} expectedOutput={`['P100 delivered', 'P101 delivered']`} />
@@ -118,11 +115,9 @@ print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} exp
       <Text>
         A mail-merge letter template fills in blanks from a record:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`name = "Priya"
+      <RunnableExample labId={13} code={`name = "Priya"
 city = "Austin"
-letter = f"Dear {name}, welcome to {city}!"`}
-      </Code>
+letter = f"Dear {name}, welcome to {city}!"`} />
       <Text>
         <Code>name</Code> and <Code>city</Code> get dropped straight into the string wherever the
         curly braces are - that's the entire mechanism behind an f-string, no matter how long the
@@ -137,7 +132,7 @@ letter = f"Dear {name}, welcome to {city}!"`}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`}
       </Code>
-      <PracticeCell labId={13} code={`person = {"name": "Sam", "occasion": "graduation"}
+      <PracticeCell labId={13} cellId="concept-3" code={`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutput={`Congrats Sam on your graduation!`} />
 

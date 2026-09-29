@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.connection import Base
@@ -46,3 +46,15 @@ class LabProgress(Base):
 
     user: Mapped["User"] = relationship(back_populates="lab_progress")
     lab: Mapped["Lab"] = relationship(back_populates="progress_rows")
+
+
+class CellCode(Base):
+    __tablename__ = "cell_code"
+    __table_args__ = (UniqueConstraint("user_id", "lab_id", "cell_id", name="uq_cell_code_user_lab_cell"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"), nullable=False)
+    cell_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    source: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)

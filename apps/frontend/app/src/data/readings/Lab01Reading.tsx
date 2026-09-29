@@ -3,6 +3,7 @@ import { Code, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { OpenFileLink } from "../../components/OpenFileLink";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab01Reading() {
   return (
@@ -31,8 +32,7 @@ export function Lab01Reading() {
         own screw holes with a knife instead of borrowing a power drill: possible, but nobody does
         it once a good tool already exists.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import math
+      <RunnableExample labId={1} code={`import math
 
 # without the module, you'd have to write your own algorithm
 def my_sqrt(x: float, guess: float = 1.0) -> float:
@@ -41,8 +41,7 @@ def my_sqrt(x: float, guess: float = 1.0) -> float:
     return guess
 
 print(my_sqrt(2))    # 1.4142135623746899 - close, hand-rolled
-print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`}
-      </Code>
+print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
       <Text>
         <Code>import math</Code> gives the whole file access to Python's built-in math module,
         including a <Code>sqrt</Code> that's already correct, fast, and tested by millions of other
@@ -65,7 +64,7 @@ nums = [4, 8, 15, 16, 23, 42]
 print(my_mean(nums))              # 18.0 - hand-rolled
 print(statistics.mean(nums))      # 18 - same answer, from the standard library`}
       </Code>
-      <PracticeCell labId={1} code={`import statistics
+      <PracticeCell labId={1} cellId="concept-1" code={`import statistics
 
 def my_mean(values: list[float]) -> float:
     return sum(values) / len(values)
@@ -105,13 +104,11 @@ print(statistics.mean(nums))      # 18 - same answer, from the standard library`
         Forget language for a second. Say you have a messy string of prices scraped from a
         webpage and you just want the numbers:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import re
+      <RunnableExample labId={1} code={`import re
 
 text = "apples: $3, bananas: $1, a gift bag (free!)"
 numbers = re.findall(r"[0-9]+", text)
-print(numbers)  # ['3', '1']`}
-      </Code>
+print(numbers)  # ['3', '1']`} />
       <Text>
         <Code>re.findall(pattern, text)</Code> scans the string and returns every non-overlapping
         chunk that matches <Code>pattern</Code>. <Code>[0-9]+</Code> means "one or more digit
@@ -131,7 +128,7 @@ post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
 hashtags = re.findall(r"#[A-Za-z0-9]+", post)
 print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`}
       </Code>
-      <PracticeCell labId={1} code={`import re
+      <PracticeCell labId={1} cellId="concept-2" code={`import re
 
 post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
 hashtags = re.findall(r"#[A-Za-z0-9]+", post)
@@ -156,15 +153,13 @@ print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
       <Text>Imagine counting fruit in a basket:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`basket = ["apple", "pear", "apple", "apple", "pear", "fig"]
+      <RunnableExample labId={1} code={`basket = ["apple", "pear", "apple", "apple", "pear", "fig"]
 
 counts: dict[str, int] = {}
 for fruit in basket:
     counts[fruit] = counts.get(fruit, 0) + 1
 
-print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`}
-      </Code>
+print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
       <Text>
         <Code>counts.get(fruit, 0)</Code> reads "give me the current count for this fruit, or 0 if
         we've never seen it before" - that's what lets the loop work whether the key already
@@ -184,7 +179,7 @@ for letter in word:
 
 print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`}
       </Code>
-      <PracticeCell labId={1} code={`word = "mississippi"
+      <PracticeCell labId={1} cellId="concept-3" code={`word = "mississippi"
 
 letter_counts: dict[str, int] = {}
 for letter in word:
@@ -213,13 +208,11 @@ print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m'
         <Code>1/6 * 6 = 1</Code>. If you rolled a die 60 times and it came up "3" twenty times, you
         could estimate <Code>P(3) ≈ 20/60 ≈ 0.333</Code> - count divided by total rolls.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`roll_counts = {1: 8, 2: 11, 3: 20, 4: 9, 5: 7, 6: 5}
+      <RunnableExample labId={1} code={`roll_counts = {1: 8, 2: 11, 3: 20, 4: 9, 5: 7, 6: 5}
 total = sum(roll_counts.values())  # 60
 distribution = {face: c / total for face, c in roll_counts.items()}
 print(distribution[3])  # 0.333...
-print(sum(distribution.values()))  # 1.0`}
-      </Code>
+print(sum(distribution.values()))  # 1.0`} />
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell normalizing poll counts into a
@@ -232,7 +225,7 @@ distribution = {food: c / total for food, c in poll_counts.items()}
 print(distribution["tacos"])          # 0.45
 print(sum(distribution.values()))     # 1.0`}
       </Code>
-      <PracticeCell labId={1} code={`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
+      <PracticeCell labId={1} cellId="concept-4" code={`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
 total = sum(poll_counts.values())  # 40
 distribution = {food: c / total for food, c in poll_counts.items()}
 print(distribution["tacos"])          # 0.45
@@ -260,11 +253,9 @@ print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
         Python's <Code>sorted()</Code> takes a <Code>key</Code> function that tells it what to
         sort by, and <Code>reverse=True</Code> flips it to descending order:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`scores = {"alice": 91, "bob": 78, "cara": 95}
+      <RunnableExample labId={1} code={`scores = {"alice": 91, "bob": 78, "cara": 95}
 ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)
-print(ranked[:2])  # [('cara', 95), ('alice', 91)]`}
-      </Code>
+print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} />
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 5 practice" cell ranking game runtimes with the same{" "}
@@ -275,7 +266,7 @@ print(ranked[:2])  # [('cara', 95), ('alice', 91)]`}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`}
       </Code>
-      <PracticeCell labId={1} code={`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
+      <PracticeCell labId={1} cellId="concept-5" code={`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('level2', 30.5), ('level1', 42.1)]`} />
 
@@ -297,8 +288,7 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('lev
       <Text>
         Say you surveyed people's favorite color and want to see the results as a bar chart:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={1} code={`import matplotlib.pyplot as plt
 
 colors = ["red", "blue", "green"]
 votes = [8, 15, 5]
@@ -306,8 +296,8 @@ votes = [8, 15, 5]
 plt.bar(colors, votes, color=colors)
 plt.ylabel("votes")
 plt.title("Favorite color survey")
-plt.savefig("colors.png")`}
-      </Code>
+plt.savefig("colors.png")
+plt.show()`} />
       <Text>
         <Code>plt.bar(labels, heights)</Code> draws one bar per label, as tall as its
         corresponding number. <Code>ylabel</Code> and <Code>title</Code> label the axis and the
@@ -331,7 +321,7 @@ plt.title("Favorite practice topic")
 plt.show()
 print(topics[votes.index(max(votes))])  # dicts`}
       </Code>
-      <PracticeCell labId={1} code={`import matplotlib.pyplot as plt
+      <PracticeCell labId={1} cellId="concept-6" code={`import matplotlib.pyplot as plt
 
 topics = ["regex", "dicts", "sorting"]
 votes = [6, 9, 4]

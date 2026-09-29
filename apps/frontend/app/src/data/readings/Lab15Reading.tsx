@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab15Reading() {
   return (
@@ -19,8 +20,7 @@ export function Lab15Reading() {
       <Text>
         Picture a <Code>Car</Code> object that tracks its own mileage:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`class Car:
+      <RunnableExample labId={15} code={`class Car:
     def __init__(self):
         self.odometer = 0
 
@@ -30,8 +30,7 @@ export function Lab15Reading() {
 car = Car()
 car.drive(10)
 car.drive(5)
-print(car.odometer)  # 15`}
-      </Code>
+print(car.odometer)  # 15`} />
       <Text>
         Nobody outside the object has to remember to update a separate "total miles" variable - the
         car keeps track of itself.
@@ -53,7 +52,7 @@ account.deposit(50)
 account.deposit(25)
 print(account.balance)  # expected output: 75`}
       </Code>
-      <PracticeCell labId={15} code={`class BankAccount:
+      <PracticeCell labId={15} cellId="concept-1" code={`class BankAccount:
     def __init__(self):
         self.balance = 0
 
@@ -80,15 +79,13 @@ print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
         A minimal to-do list class hides its bookkeeping behind one method instead of making every
         caller repeat it:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`class TodoList:
+      <RunnableExample labId={15} code={`class TodoList:
     def __init__(self):
         self.items = []
 
     def add(self, item):
         self.items.append(item)
-        print(f"Added: {item} ({len(self.items)} items total)")`}
-      </Code>
+        print(f"Added: {item} ({len(self.items)} items total)")`} />
       <Text>
         <Code>add</Code> is the one place that appends to <Code>self.items</Code> and reports back -
         callers never touch <Code>self.items</Code> directly, they just call <Code>add(...)</Code>.
@@ -113,7 +110,7 @@ playlist.add("Song B")
 # Queued: Song A (1 songs total)
 # Queued: Song B (2 songs total)`}
       </Code>
-      <PracticeCell labId={15} code={`class Playlist:
+      <PracticeCell labId={15} cellId="concept-2" code={`class Playlist:
     def __init__(self):
         self.songs = []
 
@@ -168,7 +165,7 @@ class Notifier:
 notifier = Notifier(sender=fake_sender)
 print(notifier.notify("Build complete"))  # expected output: [fake] would send: Build complete`}
       </Code>
-      <PracticeCell labId={15} code={`def fake_sender(message):
+      <PracticeCell labId={15} cellId="concept-3" code={`def fake_sender(message):
     return f"[fake] would send: {message}"
 
 class Notifier:

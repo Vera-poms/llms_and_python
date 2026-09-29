@@ -1,5 +1,5 @@
 import { Alert, AlertIcon, Badge, Box, Button, HStack, Text, Textarea, VStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
 import { CellOutput, RunResult } from "./NotebookRunner";
@@ -17,22 +17,51 @@ function actualStdout(result: RunResult): string {
 
 export function PracticeCell({
   labId,
-  code,
+  cellId,
+  code: _code,
   expectedOutput,
 }: {
   labId: number;
+  cellId: string;
   code: string;
   expectedOutput?: string;
 }) {
-  const [source, setSource] = useState(code);
+  const [source, setSource] = useState("");
   const [result, setResult] = useState<RunResult | null>(null);
   const [running, setRunning] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get(`/labs/${labId}/cells/${cellId}/code`)
+      .then((response) => {
+        if (!cancelled) {
+          setSource(response.data.source);
+        }
+      })
+      .catch(() => {
+        // no saved code yet - leave the textarea blank
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [labId, cellId]);
 
   async function run() {
     setRunning(true);
     try {
       const response = await api.post(`/notebooks/${labId}/run`, { source });
       setResult(response.data);
+
+      const passed =
+        response.data.ok &&
+        expectedOutput !== undefined &&
+        normalize(actualStdout(response.data)) === normalize(expectedOutput);
+      if (passed) {
+        api.put(`/labs/${labId}/cells/${cellId}/code`, { source }).catch(() => {
+          // best-effort save
+        });
+      }
     } finally {
       setRunning(false);
     }
@@ -60,12 +89,13 @@ export function PracticeCell({
           rows={Math.min(20, source.split("\n").length)}
           value={source}
           onChange={(e) => setSource(e.target.value)}
+          placeholder="# write your code here"
         />
         {result && <CellOutput result={result} />}
         {checkStatus === "pass" && (
           <Alert status="success" borderRadius="md" py={2}>
             <AlertIcon />
-            Output matches what's expected.
+            Correct!
           </Alert>
         )}
         {checkStatus === "fail" && (

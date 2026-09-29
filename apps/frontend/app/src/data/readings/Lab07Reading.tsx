@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab07Reading() {
   return (
@@ -49,10 +50,8 @@ export function Lab07Reading() {
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
       <Text>Here's a small matrix that has nothing to do with language models yet - just a 2x2 grid of numbers:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`M = [[1.0, 0.0],
-     [0.0, 1.0]]`}
-      </Code>
+      <RunnableExample labId={7} code={`M = [[1.0, 0.0],
+     [0.0, 1.0]]`} />
       <Text>
         That's a 2-row, 2-column matrix - row 0 is the vector <Code>[1.0, 0.0]</Code>, row 1 is{" "}
         <Code>[0.0, 1.0]</Code>. In numpy this is exactly <Code>np.array([[1.0, 0.0], [0.0, 1.0]])</Code>.
@@ -68,7 +67,7 @@ export function Lab07Reading() {
 print(grid[0])  # expected output: [10, 20]
 print(grid[1][0])  # expected output: 30`}
       </Code>
-      <PracticeCell labId={7} code={`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
+      <PracticeCell labId={7} cellId="concept-1" code={`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
 print(grid[0])  # expected output: [10, 20]
 print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
 30`} />
@@ -92,12 +91,10 @@ print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
       <Text>
         A dot product multiplies two vectors element-by-element, then adds up the results:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`a = [1, 2, 3]
+      <RunnableExample labId={7} code={`a = [1, 2, 3]
 b = [4, 5, 6]
 dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
-# dot == 32`}
-      </Code>
+# dot == 32`} />
       <Text>
         It's a single number that measures how "aligned" two vectors are - two vectors pointing in a
         similar direction produce a large dot product; unrelated vectors produce something close to
@@ -120,7 +117,7 @@ quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
 print(total)  # expected output: 20`}
       </Code>
-      <PracticeCell labId={7} code={`prices = [2, 5, 1]
+      <PracticeCell labId={7} cellId="concept-2" code={`prices = [2, 5, 1]
 quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
 print(total)  # expected output: 20`} expectedOutput={`20`} />
@@ -146,13 +143,15 @@ print(total)  # expected output: 20`} expectedOutput={`20`} />
         this: exponentiate every value (so everything becomes positive, and bigger numbers grow
         disproportionately larger), then divide each by the total:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`exp(2.0) = 7.39
-exp(1.0) = 2.72
-exp(0.1) = 1.11
-total = 11.22
-softmax = [7.39/11.22, 2.72/11.22, 1.11/11.22] = [0.66, 0.24, 0.10]`}
-      </Code>
+      <RunnableExample labId={7} code={`import math
+
+scores = [2.0, 1.0, 0.1]
+exp_scores = [math.exp(s) for s in scores]  # [7.39, 2.72, 1.11]
+total = sum(exp_scores)                     # 11.22
+softmax = [e / total for e in exp_scores]   # [0.66, 0.24, 0.10]
+print([round(e, 2) for e in exp_scores])
+print(round(total, 2))
+print([round(s, 2) for s in softmax])`} />
       <Text>
         Those three outputs sum to 1.0 and are all positive - a genuine probability distribution.
       </Text>
@@ -169,7 +168,7 @@ exp_scores = np.exp(scores - scores.max())
 probs = exp_scores / exp_scores.sum()
 print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`}
       </Code>
-      <PracticeCell labId={7} code={`import numpy as np
+      <PracticeCell labId={7} cellId="concept-3" code={`import numpy as np
 
 scores = np.array([3.0, 1.0, 0.0])
 exp_scores = np.exp(scores - scores.max())
@@ -197,8 +196,7 @@ print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} expectedOutput=
       </Text>
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`a = [[1, 2], [3, 4]]
+      <RunnableExample labId={7} code={`a = [[1, 2], [3, 4]]
 b = [[5, 6], [7, 8]]
 
 # manual loop, element by element
@@ -209,8 +207,7 @@ for i in range(2):
 
 # numpy: no loop needed
 import numpy as np
-result = np.array(a) + np.array(b)`}
-      </Code>
+result = np.array(a) + np.array(b)`} />
       <Text>
         Numpy's <Code>np.array</Code> gives you two things plain lists of lists don't:{" "}
         <b>vectorized operations</b> (add, multiply, or matrix-multiply an entire array at once, in
@@ -236,7 +233,7 @@ manual = [a[i] + b[i] for i in range(len(a))]
 vectorized = np.array(a) + np.array(b)
 print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`}
       </Code>
-      <PracticeCell labId={7} code={`import numpy as np
+      <PracticeCell labId={7} cellId="concept-4" code={`import numpy as np
 
 a = [1, 2, 3]
 b = [10, 20, 30]
@@ -281,8 +278,7 @@ print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} 
         Here's a small, non-LLM example: a mock grid of exam scores, one row per student, one column
         per subject, turned into a heatmap with <Code>plt.imshow</Code>:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={7} code={`import matplotlib.pyplot as plt
 
 scores = [[92, 78, 85],
           [60, 88, 74],
@@ -292,8 +288,7 @@ plt.imshow(scores, cmap="viridis")
 plt.colorbar(label="score")
 plt.xticks(range(3), ["math", "history", "art"])
 plt.yticks(range(3), ["Ana", "Ben", "Cy"])
-plt.show()`}
-      </Code>
+plt.show()`} />
       <Text>
         <Code>plt.imshow</Code> takes any 2D grid of numbers and paints each cell a color based on its
         value - here, brighter colors for higher exam scores. <Code>plt.colorbar</Code> adds the
@@ -315,7 +310,7 @@ plt.title("Monthly rainfall")
 plt.show()
 print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall grid`}
       </Code>
-      <PracticeCell labId={7} code={`rainfall = [[5, 2, 8], [1, 9, 3]]
+      <PracticeCell labId={7} cellId="concept-5" code={`rainfall = [[5, 2, 8], [1, 9, 3]]
 plt.imshow(rainfall, cmap="Blues")
 plt.colorbar(label="mm")
 plt.xticks(range(3), ["Jan", "Feb", "Mar"])

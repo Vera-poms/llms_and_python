@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from db.models import Lab, LabProgress, User
+from db.models import CellCode, Lab, LabProgress, User
 from deps import get_current_user, get_db
-from schemas import LabOut, LabProgressOut, ProgressUpdate
+from schemas import CellCodeOut, CellCodeSave, LabOut, LabProgressOut, ProgressUpdate
 
 router = APIRouter(prefix="/labs", tags=["labs"])
 
@@ -64,3 +64,46 @@ def update_progress(
     db.refresh(progress)
 
     return LabProgressOut(done=progress.done, hint_count=progress.hint_count)
+
+
+@router.get("/{lab_id}/cells/{cell_id}/code", response_model=CellCodeOut)
+def get_cell_code(
+    lab_id: int,
+    cell_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> CellCodeOut:
+    saved = (
+        db.query(CellCode)
+        .filter(CellCode.user_id == current_user.id, CellCode.lab_id == lab_id, CellCode.cell_id == cell_id)
+        .first()
+    )
+    if saved is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No saved code for this cell")
+
+    return CellCodeOut(source=saved.source)
+
+
+@router.put("/{lab_id}/cells/{cell_id}/code", response_model=CellCodeOut)
+def save_cell_code(
+    lab_id: int,
+    cell_id: str,
+    payload: CellCodeSave,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> CellCodeOut:
+    saved = (
+        db.query(CellCode)
+        .filter(CellCode.user_id == current_user.id, CellCode.lab_id == lab_id, CellCode.cell_id == cell_id)
+        .first()
+    )
+    if saved is None:
+        saved = CellCode(user_id=current_user.id, lab_id=lab_id, cell_id=cell_id, source=payload.source)
+        db.add(saved)
+    else:
+        saved.source = payload.source
+
+    db.commit()
+    db.refresh(saved)
+
+    return CellCodeOut(source=saved.source)

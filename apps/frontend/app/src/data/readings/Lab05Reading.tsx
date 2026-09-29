@@ -3,6 +3,7 @@ import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@cha
 import { OpenFileLink } from "../../components/OpenFileLink";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab05Reading() {
   return (
@@ -40,14 +41,12 @@ export function Lab05Reading() {
         Before touching any machine learning, here's a loop that just counts how many times a coin
         flip comes up heads across several rounds:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`flips = ["H", "T", "H", "H", "T"]
+      <RunnableExample labId={5} code={`flips = ["H", "T", "H", "H", "T"]
 heads_count = 0
 for flip in flips:
     if flip == "H":
         heads_count += 1
-print(heads_count)  # 3`}
-      </Code>
+print(heads_count)  # 3`} />
       <Text>
         The loop visits each element of <Code>flips</Code> in order, binding it to{" "}
         <Code>flip</Code>, and <Code>heads_count</Code> keeps a running tally that survives across
@@ -67,7 +66,7 @@ for round_rolls in rounds:
             total_sixes += 1
 print(total_sixes)  # 2`}
       </Code>
-      <PracticeCell labId={5} code={`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
+      <PracticeCell labId={5} cellId="concept-1" code={`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
 total_sixes = 0
 for round_rolls in rounds:
     for roll in round_rolls:
@@ -100,15 +99,13 @@ print(total_sixes)  # 2`} expectedOutput={`2`} />
         too flat and you used a lot of butter, you cut the butter next time - the ingredient that
         was heavily present when things went wrong gets adjusted the most:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`butter_amount = 2.0     # cups used in the bad batch
+      <RunnableExample labId={5} code={`butter_amount = 2.0     # cups used in the bad batch
 went_too_flat = -1      # -1 means "too flat", +1 would mean "too puffy"
 learning_rate = 0.1
 
 adjustment = learning_rate * went_too_flat * butter_amount
 butter_amount += adjustment
-print(butter_amount)  # 1.8 - a little less butter next time`}
-      </Code>
+print(butter_amount)  # 1.8 - a little less butter next time`} />
       <Text>
         Break the update into its three pieces: <Code>went_too_flat</Code> is which direction
         things were wrong in, <Code>butter_amount</Code> is how present that ingredient was (an
@@ -130,7 +127,7 @@ adjustment = learning_rate * too_bitter * brew_minutes
 brew_minutes += adjustment
 print(brew_minutes)  # 4.0 - a little less brew time next time`}
       </Code>
-      <PracticeCell labId={5} code={`brew_minutes = 5.0  # minutes used in the too-bitter batch
+      <PracticeCell labId={5} cellId="concept-2" code={`brew_minutes = 5.0  # minutes used in the too-bitter batch
 too_bitter = -1     # -1 means "too bitter", +1 would mean "too weak"
 learning_rate = 0.2
 
@@ -165,12 +162,10 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
         scratch, is "mutating state" - exactly like a bank balance that keeps growing across many
         deposits rather than resetting to zero each time:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`balance = 100
+      <RunnableExample labId={5} code={`balance = 100
 balance += 50   # mutates balance in place
 balance += 20
-print(balance)  # 170 - remembers every deposit before it`}
-      </Code>
+print(balance)  # 170 - remembers every deposit before it`} />
       <Text>
         Each <Code>+=</Code> reads the current value, adds to it, and writes the result back into
         the same variable - the next line sees the updated number, not the original one.
@@ -186,7 +181,7 @@ score += 10  # mutates score in place
 score += 25
 print(score)  # 35 - remembers every point scored before it`}
       </Code>
-      <PracticeCell labId={5} code={`score = 0
+      <PracticeCell labId={5} cellId="concept-3" code={`score = 0
 score += 10  # mutates score in place
 score += 25
 print(score)  # 35 - remembers every point scored before it`} expectedOutput={`35`} />
@@ -217,8 +212,7 @@ print(score)  # 35 - remembers every point scored before it`} expectedOutput={`3
       <Text>
         Here's a figure with two small, unrelated charts placed next to each other:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={5} code={`import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
@@ -229,8 +223,8 @@ axes[1].bar(["cats", "dogs", "birds"], [12, 19, 7])
 axes[1].set_title("pet votes")
 
 plt.tight_layout()
-plt.savefig("two_charts.png")`}
-      </Code>
+plt.savefig("two_charts.png")
+plt.show()`} />
       <Text>
         <Code>plt.subplots(1, 2, ...)</Code> creates one figure with a 1-row-by-2-column grid of
         axes and hands them back as a list; each entry in <Code>axes</Code> is then a normal,
@@ -254,7 +248,7 @@ plt.tight_layout()
 plt.savefig("two_panels.png")
 print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side charts to two_panels.png`}
       </Code>
-      <PracticeCell labId={5} code={`import matplotlib.pyplot as plt
+      <PracticeCell labId={5} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
 axes[0].plot([1, 2, 3], [10, 20, 15])

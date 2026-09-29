@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab10Reading() {
   return (
@@ -25,15 +26,13 @@ export function Lab10Reading() {
         could describe the rule in words ("take the last word, put it first, add a comma, then the
         first letter of the first word followed by a period") - or you could just show them:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-{`examples = [
+      <RunnableExample labId={10} code={`examples = [
     ("Ada Lovelace", "Lovelace, A."),
     ("Grace Hopper", "Hopper, G."),
 ]
 # Show these two, then ask: "Alan Turing" -> ?
 # Most people (and most models) infer "Turing, A." from the pattern
-# faster and more reliably than from the worded rule above.`}
-      </Code>
+# faster and more reliably than from the worded rule above.`} />
       <Text>
         That's few-shot learning: instead of (or in addition to) instructions, you hand over a
         short list of worked examples and let the reader (or the model) infer the pattern. It's
@@ -56,7 +55,7 @@ def apply_pattern(word):
 query = "yes"
 print(apply_pattern(query))  # expected output: YES!`}
       </Code>
-      <PracticeCell labId={10} code={`examples = [
+      <PracticeCell labId={10} cellId="concept-1" code={`examples = [
     ("hello", "HELLO!"),
     ("bye", "BYE!"),
 ]
@@ -89,8 +88,7 @@ print(apply_pattern(query))  # expected output: YES!`} expectedOutput={`YES!`} /
         Say you have a text file of contacts, one JSON object per line, and you want to load them
         into a Python program:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-{`import json
+      <RunnableExample labId={10} code={`import json
 
 raw = '{"name": "Priya", "phone": "555-0100"}'
 
@@ -102,8 +100,7 @@ try:
 except json.JSONDecodeError:
     print("that wasn't valid JSON at all")
 except ValueError as e:
-    print(f"parsed fine, but the data is incomplete: {e}")`}
-      </Code>
+    print(f"parsed fine, but the data is incomplete: {e}")`} />
       <Text>
         <Code>json.loads</Code> turns a JSON-formatted string into real Python data (a dict, here)
         - but it only works if the string is <i>exactly</i> valid JSON, and even then the dict
@@ -131,7 +128,7 @@ except json.JSONDecodeError:
 except ValueError as e:
     print(f"parsed but incomplete: {e}")`}
       </Code>
-      <PracticeCell labId={10} code={`import json
+      <PracticeCell labId={10} cellId="concept-2" code={`import json
 
 raw = '{"item": "Mug", "price": 9.99}'
 

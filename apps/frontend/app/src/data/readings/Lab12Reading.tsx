@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab12Reading() {
   return (
@@ -24,16 +25,14 @@ export function Lab12Reading() {
         You can represent a chat log between two friends as a plain Python list, where each turn
         is a small dict with who spoke and what they said:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-{`chat_log = [
+      <RunnableExample labId={12} code={`chat_log = [
     {"speaker": "Sam", "text": "running late, sorry!"},
     {"speaker": "Robin", "text": "no worries, see you soon"},
     {"speaker": "Sam", "text": "be there in 5"},
 ]
 
 for turn in chat_log:
-    print(f"{turn['speaker']}: {turn['text']}")`}
-      </Code>
+    print(f"{turn['speaker']}: {turn['text']}")`} />
       <Text>
         Nothing fancy here - just a list, where each entry is a dict with a couple of fixed keys.
       </Text>
@@ -55,7 +54,7 @@ for turn in support_log:
 # User: My order is late.
 # Bot: Let me check that for you.`}
       </Code>
-      <PracticeCell labId={12} code={`support_log = [
+      <PracticeCell labId={12} cellId="concept-1" code={`support_log = [
     {"agent": "Bot", "message": "Hi, how can I help?"},
     {"agent": "User", "message": "My order is late."},
     {"agent": "Bot", "message": "Let me check that for you."},
@@ -118,7 +117,7 @@ Bot: Let me check that for you.`} />
 standing_rule = classroom_log[0]["text"]
 print(standing_rule)  # expected output: Keep answers under two sentences.`}
       </Code>
-      <PracticeCell labId={12} code={`classroom_log = [
+      <PracticeCell labId={12} cellId="concept-2" code={`classroom_log = [
     {"role": "teacher_note", "text": "Keep answers under two sentences."},
     {"role": "student", "text": "What's the capital of France?"},
     {"role": "helper", "text": "Paris."},
@@ -149,11 +148,9 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`} exp
         This is the same shape as a loop where one variable is built once outside the loop and
         stays fixed, while another variable is fresh on every iteration:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-{`greeting = "Welcome, please have a seat."   # built once
+      <RunnableExample labId={12} code={`greeting = "Welcome, please have a seat."   # built once
 for visitor in ["Sam", "Robin", "Priya"]:    # varies every iteration
-    print(f"{greeting} ({visitor})")`}
-      </Code>
+    print(f"{greeting} ({visitor})")`} />
       <Text>
         <Code>greeting</Code> is identical on every pass through the loop; only{" "}
         <Code>visitor</Code> changes. Whatever stays fixed shapes every output the same way, no
@@ -172,7 +169,7 @@ for cart_total in [25, 40, 100]:          # varies every iteration
 # Applying SAVE10 to $40
 # Applying SAVE10 to $100`}
       </Code>
-      <PracticeCell labId={12} code={`discount = "SAVE10"                      # built once
+      <PracticeCell labId={12} cellId="concept-3" code={`discount = "SAVE10"                      # built once
 for cart_total in [25, 40, 100]:          # varies every iteration
     print(f"Applying {discount} to \${cart_total}")
 # expected output:

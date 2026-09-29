@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab06Reading() {
   return (
@@ -32,11 +33,9 @@ export function Lab06Reading() {
         Before any LLM math, here's the same idea for a much smaller problem: how many tiles do
         you need to cover a rectangular floor?
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`rows = 12
+      <RunnableExample labId={6} code={`rows = 12
 cols = 8
-tiles_needed = rows * cols  # 96`}
-      </Code>
+tiles_needed = rows * cols  # 96`} />
       <Text>
         Nothing fancy - the floor is a grid, and a grid's total cell count is always{" "}
         <Code>rows * cols</Code>, whether the cells are floor tiles or numbers in a table.
@@ -52,7 +51,7 @@ seats_per_row = 15
 total_seats = rows * seats_per_row
 print(total_seats)  # 300`}
       </Code>
-      <PracticeCell labId={6} code={`rows = 20
+      <PracticeCell labId={6} cellId="concept-1" code={`rows = 20
 seats_per_row = 15
 total_seats = rows * seats_per_row
 print(total_seats)  # 300`} expectedOutput={`300`} />
@@ -81,8 +80,7 @@ print(total_seats)  # 300`} expectedOutput={`300`} />
         In plain Python
       </Heading>
       <Text>Compare it to describing a rectangle:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`from dataclasses import dataclass
+      <RunnableExample labId={6} code={`from dataclasses import dataclass
 
 @dataclass
 class Rectangle:
@@ -93,8 +91,7 @@ class Rectangle:
         return self.width * self.height
 
 r = Rectangle(width=4, height=3)
-print(r.area())  # 12.0`}
-      </Code>
+print(r.area())  # 12.0`} />
       <Text>
         Without <Code>@dataclass</Code> you'd have to hand-write an <Code>__init__</Code> that
         assigns each field to <Code>self</Code>, exactly like lab 4's <Code>Perceptron</Code>{" "}
@@ -120,7 +117,7 @@ class Car:
 c = Car(mpg=30.0, tank_gallons=12.0)
 print(c.range_miles())  # 360.0`}
       </Code>
-      <PracticeCell labId={6} code={`from dataclasses import dataclass
+      <PracticeCell labId={6} cellId="concept-2" code={`from dataclasses import dataclass
 
 @dataclass
 class Car:
@@ -154,15 +151,13 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         In plain Python
       </Heading>
       <Text>GPT-2 small's real configuration looks like this:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`gpt2_small_config = {
+      <RunnableExample labId={6} code={`gpt2_small_config = {
     "vocab_size": 50257,
     "d_model": 768,
     "n_layers": 12,
     "n_heads": 12,
     "d_ff": 3072,
-}`}
-      </Code>
+}`} />
       <Text>
         It's a plain dictionary - no classes, no code, just named numbers - which is exactly why
         it's easy to save as JSON, load in any language, and diff between model versions.
@@ -181,7 +176,7 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
 }
 print(server_config["workers"])  # 4`}
       </Code>
-      <PracticeCell labId={6} code={`server_config = {
+      <PracticeCell labId={6} cellId="concept-3" code={`server_config = {
     "host": "localhost",
     "port": 8080,
     "workers": 4,
@@ -214,8 +209,7 @@ print(server_config["workers"])  # 4`} expectedOutput={`4`} />
         Here's a grouped bar chart comparing predicted vs. actual votes for a couple of candidates,
         nothing to do with LLMs:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={6} code={`import matplotlib.pyplot as plt
 
 names = ["Alicia", "Ben"]
 predicted = [420, 380]
@@ -227,8 +221,8 @@ plt.bar([i + 0.2 for i in x], actual, width=0.4, label="actual")
 plt.xticks(list(x), names)
 plt.ylabel("votes")
 plt.legend()
-plt.savefig("votes.png")`}
-      </Code>
+plt.savefig("votes.png")
+plt.show()`} />
       <Text>
         Each candidate gets two bars, shifted left and right by <Code>0.2</Code> so they sit
         side-by-side instead of on top of each other; <Code>xticks</Code> labels each pair with the
@@ -255,7 +249,7 @@ plt.legend()
 plt.savefig("budget_vs_actual.png")
 print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar chart to budget_vs_actual.png`}
       </Code>
-      <PracticeCell labId={6} code={`import matplotlib.pyplot as plt
+      <PracticeCell labId={6} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 quarters = ["Q1", "Q2"]
 budget = [100, 120]

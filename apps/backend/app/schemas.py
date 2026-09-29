@@ -50,6 +50,14 @@ class ProgressUpdate(BaseModel):
     increment_hint: bool = False
 
 
+class CellCodeOut(BaseModel):
+    source: str
+
+
+class CellCodeSave(BaseModel):
+    source: str
+
+
 class NotebookCellOut(BaseModel):
     index: int
     cell_type: str

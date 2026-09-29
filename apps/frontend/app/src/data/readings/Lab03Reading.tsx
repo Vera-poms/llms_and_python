@@ -3,6 +3,7 @@ import { Code, Heading, Link, Text, VStack } from "@chakra-ui/react";
 import { OpenFileLink } from "../../components/OpenFileLink";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab03Reading() {
   return (
@@ -25,8 +26,7 @@ export function Lab03Reading() {
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
       <Text>Think of organizing a pantry by shelf, then by item on each shelf:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`pantry: dict[str, dict[str, int]] = {}
+      <RunnableExample labId={3} code={`pantry: dict[str, dict[str, int]] = {}
 
 items = [("top shelf", "pasta"), ("top shelf", "rice"),
          ("top shelf", "pasta"), ("bottom shelf", "cans")]
@@ -36,8 +36,7 @@ for shelf, item in items:
     shelf_counts[item] = shelf_counts.get(item, 0) + 1
 
 print(pantry)
-# {'top shelf': {'pasta': 2, 'rice': 1}, 'bottom shelf': {'cans': 1}}`}
-      </Code>
+# {'top shelf': {'pasta': 2, 'rice': 1}, 'bottom shelf': {'cans': 1}}`} />
       <Text>
         <Code>dict.setdefault(key, {})</Code> is the key trick: it returns the inner dict for{" "}
         <Code>key</Code> if one already exists, and otherwise creates an empty one, stores it, and
@@ -62,7 +61,7 @@ for category, animal in sightings:
 print(zoo)
 # {'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`}
       </Code>
-      <PracticeCell labId={3} code={`zoo: dict[str, dict[str, int]] = {}
+      <PracticeCell labId={3} cellId="concept-1" code={`zoo: dict[str, dict[str, int]] = {}
 
 sightings = [("mammals", "lion"), ("mammals", "zebra"),
              ("mammals", "lion"), ("birds", "owl")]
@@ -95,12 +94,10 @@ print(zoo)
       <Text>
         Suppose you tracked what people ordered after each drink at a cafe:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`after_coffee = {"croissant": 6, "muffin": 3, "nothing": 1}
+      <RunnableExample labId={3} code={`after_coffee = {"croissant": 6, "muffin": 3, "nothing": 1}
 total = sum(after_coffee.values())  # 10
 p_croissant_given_coffee = after_coffee["croissant"] / total
-print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`}
-      </Code>
+print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} />
       <Text>
         Dividing each count by the total for that condition (here, "given coffee") turns raw
         tallies into a proper distribution - one that sums to 1 across everything that could come
@@ -117,7 +114,7 @@ total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
 print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`}
       </Code>
-      <PracticeCell labId={3} code={`after_tea = {"biscuit": 4, "scone": 1}
+      <PracticeCell labId={3} cellId="concept-2" code={`after_tea = {"biscuit": 4, "scone": 1}
 total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
 print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0.8`} />
@@ -146,8 +143,7 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0
       <Text>
         Say you have a small grid of numbers you want to see as colors instead of digits:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={3} code={`import matplotlib.pyplot as plt
 import numpy as np
 
 grid = np.array([[0.1, 0.9], [0.7, 0.3]])
@@ -156,8 +152,8 @@ plt.imshow(grid, cmap="viridis")
 plt.colorbar(label="value")
 plt.xticks([0, 1], ["col A", "col B"])
 plt.yticks([0, 1], ["row A", "row B"])
-plt.savefig("heatmap.png")`}
-      </Code>
+plt.savefig("heatmap.png")
+plt.show()`} />
       <Text>
         <Code>plt.imshow(grid, cmap=...)</Code> paints each cell of a 2D array as a colored square
         - bigger numbers get one end of the color scale ("viridis" runs dark purple to bright
@@ -183,7 +179,7 @@ plt.yticks([0, 1], ["round 1", "round 2"])
 plt.show()
 print(grid.shape)  # (2, 2)`}
       </Code>
-      <PracticeCell labId={3} code={`import matplotlib.pyplot as plt
+      <PracticeCell labId={3} cellId="concept-3" code={`import matplotlib.pyplot as plt
 import numpy as np
 
 grid = np.array([[0.2, 0.8], [0.6, 0.4]])

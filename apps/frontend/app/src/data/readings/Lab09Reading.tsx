@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, OrderedList, Text, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab09Reading() {
   return (
@@ -53,13 +54,11 @@ export function Lab09Reading() {
         The <Code>requests</Code> library is the standard tool for doing this yourself, instead of
         through a browser:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import requests
+      <RunnableExample labId={9} code={`import requests
 
 response = requests.get("https://api.github.com/repos/python/cpython")
 data = response.json()
-print(data["stargazers_count"])`}
-      </Code>
+print(data["stargazers_count"])`} />
       <Text>
         That's a <Code>GET</Code> request - "give me some information." A <Code>POST</Code> request
         is used instead when you need to send data along with the request, not just ask for it.
@@ -76,7 +75,7 @@ response = requests.get("https://api.github.com/repos/psf/requests")
 data = response.json()
 print(data["language"])  # expected output: Python`}
       </Code>
-      <PracticeCell labId={9} code={`import requests
+      <PracticeCell labId={9} cellId="concept-1" code={`import requests
 
 response = requests.get("https://api.github.com/repos/psf/requests")
 data = response.json()
@@ -106,11 +105,9 @@ print(data["language"])  # expected output: Python`} expectedOutput={`Python`} /
         commit. The standard fix is to keep secrets <i>out</i> of the code entirely, and read them
         from the surrounding environment at run time instead:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import os
+      <RunnableExample labId={9} code={`import os
 
-api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed into the file`}
-      </Code>
+api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed into the file`} />
       <Text>
         The value itself lives somewhere outside the source file - an environment variable set in
         your shell, or a <Code>.env</Code> file that's excluded from git.
@@ -127,7 +124,7 @@ os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code,
 token = os.environ["MY_APP_TOKEN"]
 print(token)  # expected output: demo-token-123`}
       </Code>
-      <PracticeCell labId={9} code={`import os
+      <PracticeCell labId={9} cellId="concept-2" code={`import os
 
 os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code, not like this
 token = os.environ["MY_APP_TOKEN"]
@@ -155,11 +152,9 @@ print(token)  # expected output: demo-token-123`} expectedOutput={`demo-token-12
         dict with a nested list, and <Code>response.json()</Code> does that conversion for you
         automatically:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`data = {"name": "Vera", "scores": [1, 2, 3]}
+      <RunnableExample labId={9} code={`data = {"name": "Vera", "scores": [1, 2, 3]}
 data["name"]       # "Vera"
-data["scores"][0]  # 1`}
-      </Code>
+data["scores"][0]  # 1`} />
       <Text>Once you have a dict, getting a value out is just regular dict/list indexing, drilling down key by key.</Text>
 
       <Text fontSize="sm" color="gray.600">
@@ -171,7 +166,7 @@ data["scores"][0]  # 1`}
 print(data["user"])  # expected output: Vera
 print(data["orders"][-1])  # expected output: 103`}
       </Code>
-      <PracticeCell labId={9} code={`data = {"user": "Vera", "orders": [101, 102, 103]}
+      <PracticeCell labId={9} cellId="concept-3" code={`data = {"user": "Vera", "orders": [101, 102, 103]}
 print(data["user"])  # expected output: Vera
 print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
 103`} />

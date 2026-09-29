@@ -3,6 +3,7 @@ import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@cha
 import { OpenFileLink } from "../../components/OpenFileLink";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab04Reading() {
   return (
@@ -40,8 +41,7 @@ export function Lab04Reading() {
       <Text>
         Here's the smallest useful example, nothing to do with machine learning at all:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`class BankAccount:
+      <RunnableExample labId={4} code={`class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner      # instance attribute
         self.balance = balance  # instance attribute
@@ -51,8 +51,7 @@ export function Lab04Reading() {
 
 account = BankAccount("Vera", 100)
 account.deposit(50)
-print(account.balance)  # 150`}
-      </Code>
+print(account.balance)  # 150`} />
       <Text>
         <Code>__init__</Code> is the constructor: it runs once, when you write{" "}
         <Code>BankAccount("Vera", 100)</Code>, and its job is to set up the object's starting
@@ -79,7 +78,7 @@ mix = Playlist("Road Trip", ["Song A"])
 mix.add_song("Song B")
 print(mix.songs)  # ['Song A', 'Song B']`}
       </Code>
-      <PracticeCell labId={4} code={`class Playlist:
+      <PracticeCell labId={4} cellId="concept-1" code={`class Playlist:
     def __init__(self, name, songs):
         self.name = name    # instance attribute
         self.songs = songs  # instance attribute
@@ -116,12 +115,10 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
         Say you're at a grocery checkout: you bought 3 apples at $0.50 each and 2 loaves of bread
         at $2.00 each. Your total is a dot product of quantities and prices:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`quantities = [3, 2]
+      <RunnableExample labId={4} code={`quantities = [3, 2]
 prices = [0.50, 2.00]
 total = sum(q * p for q, p in zip(quantities, prices))
-# total = 3*0.50 + 2*2.00 = 5.50`}
-      </Code>
+# total = 3*0.50 + 2*2.00 = 5.50`} />
       <Text>
         <Code>zip</Code> pairs up the two lists position-by-position, <Code>q * p</Code> multiplies
         each pair, and <Code>sum</Code> adds all the products together - three apples' worth of
@@ -138,7 +135,7 @@ weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
 print(final_grade)  # 83.0`}
       </Code>
-      <PracticeCell labId={4} code={`scores = [90, 80, 70]
+      <PracticeCell labId={4} cellId="concept-2" code={`scores = [90, 80, 70]
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
 print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
@@ -169,13 +166,11 @@ print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
         "if your test score is 60 or above, you pass; otherwise, you fail," a hard cutoff with only
         two possible outcomes on either side:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`def step(z):
+      <RunnableExample labId={4} code={`def step(z):
     return 1 if z >= 0 else -1
 
 print(step(3))    # 1
-print(step(-2))   # -1`}
-      </Code>
+print(step(-2))   # -1`} />
       <Text>
         No matter how large or small <Code>z</Code> is, <Code>step</Code> only ever returns one of
         two values - it throws away the magnitude of the number and keeps only which side of zero
@@ -193,7 +188,7 @@ print(step(-2))   # -1`}
 print(freeze_alert(-5))  # 1
 print(freeze_alert(10))  # -1`}
       </Code>
-      <PracticeCell labId={4} code={`def freeze_alert(temp_c):
+      <PracticeCell labId={4} cellId="concept-3" code={`def freeze_alert(temp_c):
     return 1 if temp_c <= 0 else -1
 
 print(freeze_alert(-5))  # 1
@@ -223,16 +218,15 @@ print(freeze_alert(10))  # -1`} expectedOutput={`1
       <Text>
         Here's a scatter plot of a few (x, y) points, nothing to do with perceptrons:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={4} code={`import matplotlib.pyplot as plt
 
 hours_studied = [1, 2, 3, 4, 5]
 exam_score = [50, 55, 65, 70, 90]
 plt.scatter(hours_studied, exam_score)
 plt.xlabel("hours studied")
 plt.ylabel("exam score")
-plt.savefig("scores.png")`}
-      </Code>
+plt.savefig("scores.png")
+plt.show()`} />
       <Text>
         <Code>plt.scatter</Code> places one dot per (x, y) pair, <Code>xlabel</Code>/
         <Code>ylabel</Code> label the axes, and <Code>savefig</Code> writes the finished picture to
@@ -255,7 +249,7 @@ plt.ylabel("ice cream sales")
 plt.savefig("ice_cream.png")
 print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.png`}
       </Code>
-      <PracticeCell labId={4} code={`import matplotlib.pyplot as plt
+      <PracticeCell labId={4} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 city_temp = [30, 45, 60, 75, 90]
 ice_cream_sales = [10, 25, 40, 70, 95]

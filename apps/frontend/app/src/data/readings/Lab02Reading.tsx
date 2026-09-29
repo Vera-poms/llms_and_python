@@ -3,6 +3,7 @@ import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@cha
 import { OpenFileLink } from "../../components/OpenFileLink";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab02Reading() {
   return (
@@ -22,16 +23,14 @@ export function Lab02Reading() {
 
       <Heading size="xs" color="gray.600">In plain Python</Heading>
       <Text>Say you're guessing whether a coin is fair by looking at past flips:</Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`flips = ["heads", "tails", "heads", "heads", "tails", "heads"]
+      <RunnableExample labId={2} code={`flips = ["heads", "tails", "heads", "heads", "tails", "heads"]
 
 counts: dict[str, int] = {}
 for flip in flips:
     counts[flip] = counts.get(flip, 0) + 1
 
 best_guess = max(counts, key=lambda outcome: counts[outcome])
-print(best_guess)  # 'heads'`}
-      </Code>
+print(best_guess)  # 'heads'`} />
       <Text>
         <Code>max(iterable, key=...)</Code> walks every key in <Code>counts</Code> and returns the
         one for which <Code>key(item)</Code> is largest - here, the outcome with the highest tally.
@@ -51,7 +50,7 @@ for day in weather:
 best_guess = max(counts, key=lambda outcome: counts[outcome])
 print(best_guess)  # 'sunny'`}
       </Code>
-      <PracticeCell labId={2} code={`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
+      <PracticeCell labId={2} cellId="concept-1" code={`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
 
 counts: dict[str, int] = {}
 for day in weather:
@@ -78,8 +77,7 @@ print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
       <Text>
         Picture predicting a child's height from their age using a handful of measurements:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`ages =    [2, 4, 6, 8, 10]     # years
+      <RunnableExample labId={2} code={`ages =    [2, 4, 6, 8, 10]     # years
 heights = [86, 101, 114, 128, 139]  # cm
 
 n = len(ages)
@@ -91,8 +89,7 @@ denominator = sum((x - x_mean) ** 2 for x in ages)
 
 slope = numerator / denominator
 intercept = y_mean - slope * x_mean
-print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7`}
-      </Code>
+print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7`} />
       <Text>
         <Code>slope</Code> is the covariance of x and y divided by the variance of x (how much y
         moves together with x, scaled by how spread out x is), and <Code>intercept</Code> shifts
@@ -126,7 +123,7 @@ slope = numerator / denominator
 intercept = y_mean - slope * x_mean
 print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3`}
       </Code>
-      <PracticeCell labId={2} code={`hours =  [1, 2, 3, 4, 5]
+      <PracticeCell labId={2} cellId="concept-2" code={`hours =  [1, 2, 3, 4, 5]
 scores = [52, 58, 65, 71, 78]
 
 n = len(hours)
@@ -158,14 +155,12 @@ print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*
       <Text>
         Suppose you predicted three kids' heights and want to score how far off you were:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`actual =    [86, 101, 114]
+      <RunnableExample labId={2} code={`actual =    [86, 101, 114]
 predicted = [90, 95, 120]
 
 squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
 mse = sum(squared_errors) / len(squared_errors)
-print(mse)  # 28.67`}
-      </Code>
+print(mse)  # 28.67`} />
       <Text>
         For every prediction, subtract the true value, square the difference (so being too high
         and too low both count as "bad," and big misses are punished more than small ones), and
@@ -184,7 +179,7 @@ squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
 mse = sum(squared_errors) / len(squared_errors)
 print(mse)  # 14.33`}
       </Code>
-      <PracticeCell labId={2} code={`actual =    [52, 58, 65]
+      <PracticeCell labId={2} cellId="concept-3" code={`actual =    [52, 58, 65]
 predicted = [55, 55, 70]
 
 squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
@@ -210,8 +205,7 @@ print(mse)  # 14.33`} expectedOutput={`14.333333333333334`} />
         Say you have a handful of (x, y) points and a line you fit to them, and want to see both
         at once:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <RunnableExample labId={2} code={`import matplotlib.pyplot as plt
 
 xs = [2, 4, 6, 8, 10]
 ys = [86, 101, 114, 128, 139]
@@ -219,8 +213,8 @@ ys = [86, 101, 114, 128, 139]
 plt.scatter(xs, ys, label="real points")
 plt.plot(xs, [6.6 * x + 73.7 for x in xs], color="crimson", label="fit line")
 plt.legend()
-plt.savefig("fit.png")`}
-      </Code>
+plt.savefig("fit.png")
+plt.show()`} />
       <Text>
         <Code>plt.scatter(xs, ys)</Code> draws one dot per (x, y) pair, while{" "}
         <Code>plt.plot(xs, ys)</Code> connects points with a continuous line - here, the line's y
@@ -245,7 +239,7 @@ plt.legend()
 plt.show()
 print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a fit line`}
       </Code>
-      <PracticeCell labId={2} code={`import matplotlib.pyplot as plt
+      <PracticeCell labId={2} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 xs = [1, 2, 3, 4, 5]
 ys = [52, 58, 65, 71, 78]

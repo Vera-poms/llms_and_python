@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, OrderedList, Text, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab14Reading() {
   return (
@@ -70,7 +71,7 @@ export function Lab14Reading() {
 }
 print(f"{request['method']} {request['endpoint']}")  # expected output: POST https://api.example.com/orders`}
       </Code>
-      <PracticeCell labId={14} code={`request = {
+      <PracticeCell labId={14} cellId="concept-1" code={`request = {
     "endpoint": "https://api.example.com/orders",
     "method": "POST",
     "headers": {"Authorization": "Bearer abc123"},
@@ -96,8 +97,7 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
         amount, print a receipt - but you don't want to retype those steps at every machine. You
         bundle the steps and the data they need into one object:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-        {`class ATM:
+      <RunnableExample labId={14} code={`class ATM:
     def __init__(self, balance):
         self.balance = balance  # state the object remembers
 
@@ -107,8 +107,7 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
 
 atm = ATM(balance=100)
 atm.withdraw(30)  # 70
-atm.withdraw(20)  # 50`}
-      </Code>
+atm.withdraw(20)  # 50`} />
       <Text>
         <Code>self.balance</Code> is remembered between calls, and <Code>withdraw</Code> is the one
         place the logic lives - you never rewrite "subtract and check" by hand again.
@@ -130,7 +129,7 @@ vm = VendingMachine({"soda": 5})
 print(vm.dispense("soda"))  # expected output: 4
 print(vm.dispense("soda"))  # expected output: 3`}
       </Code>
-      <PracticeCell labId={14} code={`class VendingMachine:
+      <PracticeCell labId={14} cellId="concept-2" code={`class VendingMachine:
     def __init__(self, stock):
         self.stock = stock  # state the object remembers
 

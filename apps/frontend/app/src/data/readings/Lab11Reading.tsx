@@ -1,6 +1,7 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab11Reading() {
   return (
@@ -23,8 +24,7 @@ export function Lab11Reading() {
         Suppose you need <Code>17 * 24</Code>. You could blurt out a guess from memory, or you
         could work it out on paper:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-{`def guess_directly(a, b):
+      <RunnableExample labId={11} code={`def guess_directly(a, b):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
     return a * b  # a person doing this "in their head" might misremember a step
 
@@ -36,8 +36,7 @@ def show_the_work(a, b):
     return f"{a}*20={step1}, {a}*4={step2}, total={total}"
 
 print(guess_directly(17, 24))   # 408 - correct, but you'd have to trust it
-print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`}
-      </Code>
+print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`} />
       <Text>
         Both approaches can land on the right number, but the second one produces a trail of
         intermediate steps - a <b>reasoning trace</b> - that you (or anyone else) can check for
@@ -63,7 +62,7 @@ def show_total_steps(price, tax_rate):
 print(guess_total(50, 0.08))        # expected output: 54.0
 print(show_total_steps(50, 0.08))   # expected output: tax=4.00, total=54.00`}
       </Code>
-      <PracticeCell labId={11} code={`def guess_total(price, tax_rate):
+      <PracticeCell labId={11} cellId="concept-1" code={`def guess_total(price, tax_rate):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
     return price + price * tax_rate
 
@@ -98,16 +97,14 @@ tax=4.00, total=54.00`} />
       <Text>
         Imagine a receipt printed as one block of text, and you just want the total:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
-{`receipt = "2x Coffee  $8.00\\n1x Muffin  $3.50\\nTotal: $11.50"
+      <RunnableExample labId={11} code={`receipt = "2x Coffee  $8.00\\n1x Muffin  $3.50\\nTotal: $11.50"
 
 def extract_total(text: str, marker: str = "Total:") -> str:
     if marker not in text:
         return text.strip()
     return text.rsplit(marker, 1)[1].strip()
 
-print(extract_total(receipt))  # "$11.50"`}
-      </Code>
+print(extract_total(receipt))  # "$11.50"`} />
       <Text>
         <Code>str.rsplit(marker, 1)</Code> splits the string into two pieces at the{" "}
         <i>last</i> occurrence of <Code>marker</Code>, and <Code>[1]</Code> grabs everything after
@@ -127,7 +124,7 @@ def extract_high(text: str, marker: str = "High:") -> str:
 
 print(extract_high(forecast))  # expected output: 78F`}
       </Code>
-      <PracticeCell labId={11} code={`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
+      <PracticeCell labId={11} cellId="concept-2" code={`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
 
 def extract_high(text: str, marker: str = "High:") -> str:
     if marker not in text:
