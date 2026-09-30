@@ -53,3 +53,14 @@ def require_admin(
     if user is None or not user.is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user
+
+
+def require_admin_or_owner(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Accepts an owner token (returns None: the owner isn't a DB user) or an admin token
+    (returns the admin User, re-checked against the DB)."""
+    if is_valid_owner_token(credentials.credentials):
+        return None
+    return require_admin(credentials, db)

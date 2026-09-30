@@ -4,10 +4,11 @@ from sqlalchemy.orm import Session
 
 from core.security import hash_password
 from db.models import CellCode, Lab, LabProgress, User
-from deps import get_db, require_admin
+from deps import get_db, require_admin_or_owner
 from schemas import AdminLabProgress, AdminUserDetail, AdminUserSummary, AdminUserUpdate
 
-router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
+# Owners get the same user/progress management as admins.
+router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin_or_owner)])
 
 
 def _summaries(db: Session, users: list[User]) -> list[AdminUserSummary]:
@@ -88,12 +89,12 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> AdminUserDetail:
 def update_user(
     user_id: int,
     payload: AdminUserUpdate,
-    admin: User = Depends(require_admin),
+    admin: User | None = Depends(require_admin_or_owner),
     db: Session = Depends(get_db),
 ) -> AdminUserDetail:
     user = _get_user_or_404(db, user_id)
     if payload.is_admin is not None:
-        if user.id == admin.id and not payload.is_admin:
+        if admin is not None and user.id == admin.id and not payload.is_admin:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot remove your own admin access")
         user.is_admin = payload.is_admin
     if payload.new_password is not None:
@@ -103,8 +104,10 @@ def update_user(
 
 
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, admin: User = Depends(require_admin), db: Session = Depends(get_db)) -> None:
-    if user_id == admin.id:
+def delete_user(
+    user_id: int, admin: User | None = Depends(require_admin_or_owner), db: Session = Depends(get_db)
+) -> None:
+    if admin is not None and user_id == admin.id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot delete your own account")
     user = _get_user_or_404(db, user_id)
     # DB-level ON DELETE CASCADE covers cell_code; the ORM relationship covers lab_progress.
