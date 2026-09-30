@@ -1,7 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { getAdminToken } from "./api/adminClient";
 import { getOwnerToken } from "./api/ownerClient";
 import { useAuth } from "./context/AuthContext";
+import { AdminHomePage } from "./pages/AdminHomePage";
+import { AdminLoginPage } from "./pages/AdminLoginPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LabDetailPage } from "./pages/LabDetailPage";
 import { LabListPage } from "./pages/LabListPage";
@@ -22,6 +25,13 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 function RequireOwner({ children }: { children: JSX.Element }) {
   if (!getOwnerToken()) {
     return <Navigate to="/owner/login" replace />;
+  }
+  return children;
+}
+
+function RequireAdmin({ children }: { children: JSX.Element }) {
+  if (!getAdminToken()) {
+    return <Navigate to="/admin/login" replace />;
   }
   return children;
 }
@@ -56,6 +66,15 @@ export default function App() {
           <RequireOwner>
             <OwnerHomePage />
           </RequireOwner>
+        }
+      />
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route
+        path="/admin"
+        element={
+          <RequireAdmin>
+            <AdminHomePage />
+          </RequireAdmin>
         }
       />
       <Route path="*" element={<Navigate to="/labs" replace />} />
