@@ -1,7 +1,9 @@
-import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
 import { setOwnerToken } from "../api/ownerClient";
+import { AdminsPanel } from "../components/owner/AdminsPanel";
+import { UsersPanel } from "../components/owner/UsersPanel";
 
 export function OwnerHomePage() {
   const navigate = useNavigate();
@@ -12,12 +14,25 @@ export function OwnerHomePage() {
   }
 
   return (
-    <Box maxW="lg" mx="auto" mt={20}>
-      <Heading size="lg" mb={4}>
-        Owner dashboard
-      </Heading>
-      <Text mb={6}>Signed in as owner.</Text>
-      <Button onClick={logout}>Sign out</Button>
+    <Box maxW="4xl" mx="auto" mt={10} px={4} pb={16}>
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading size="lg">Owner dashboard</Heading>
+        <Button onClick={logout}>Sign out</Button>
+      </Flex>
+      <Tabs isLazy>
+        <TabList>
+          <Tab>Users</Tab>
+          <Tab>Admins &amp; invites</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel px={0}>
+            <UsersPanel />
+          </TabPanel>
+          <TabPanel px={0}>
+            <AdminsPanel />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 }
