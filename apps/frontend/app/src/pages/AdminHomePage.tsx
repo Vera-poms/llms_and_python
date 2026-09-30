@@ -1,7 +1,9 @@
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
+import { adminUserApi } from "../api/adminEndpoints";
 import { setAdminToken } from "../api/adminClient";
+import { UsersPanel } from "../components/users/UsersPanel";
 
 export function AdminHomePage() {
   const navigate = useNavigate();
@@ -17,7 +19,7 @@ export function AdminHomePage() {
         <Heading size="lg">Admin dashboard</Heading>
         <Button onClick={logout}>Sign out</Button>
       </Flex>
-      <Text color="gray.500">You are signed in as an admin.</Text>
+      <UsersPanel api={adminUserApi} />
     </Box>
   );
 }

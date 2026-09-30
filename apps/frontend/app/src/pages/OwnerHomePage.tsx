@@ -1,9 +1,10 @@
 import { Box, Button, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
+import { ownerUserApi } from "../api/ownerEndpoints";
 import { setOwnerToken } from "../api/ownerClient";
 import { AdminsPanel } from "../components/owner/AdminsPanel";
-import { UsersPanel } from "../components/owner/UsersPanel";
+import { UsersPanel } from "../components/users/UsersPanel";
 
 export function OwnerHomePage() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export function OwnerHomePage() {
         </TabList>
         <TabPanels>
           <TabPanel px={0}>
-            <UsersPanel />
+            <UsersPanel api={ownerUserApi} />
           </TabPanel>
           <TabPanel px={0}>
             <AdminsPanel />

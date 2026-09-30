@@ -1,20 +1,21 @@
 import { Badge, Input, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, VStack, useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 
-import { errorMessage, listUsers, type UserSummary } from "../../api/ownerEndpoints";
+import { errorMessage, type UserApi, type UserSummary } from "../../api/userManagement";
 import { UserDrawer } from "./UserDrawer";
 
-export function UsersPanel() {
+export function UsersPanel({ api }: { api: UserApi }) {
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<UserSummary[] | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
 
   const load = useCallback(() => {
-    listUsers(search.trim())
+    api
+      .listUsers(search.trim())
       .then(setUsers)
       .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load users.") }));
-  }, [search, toast]);
+  }, [api, search, toast]);
 
   useEffect(() => {
     const t = setTimeout(load, 250);
@@ -51,7 +52,7 @@ export function UsersPanel() {
         </Table>
       </TableContainer>
       {users?.length === 0 && <Text color="gray.500">No users found.</Text>}
-      <UserDrawer userId={selected} onClose={() => setSelected(null)} onChanged={load} />
+      <UserDrawer api={api} userId={selected} onClose={() => setSelected(null)} onChanged={load} />
     </VStack>
   );
 }

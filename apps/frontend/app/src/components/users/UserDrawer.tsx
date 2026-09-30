@@ -25,25 +25,18 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 
-import {
-  deleteUser,
-  errorMessage,
-  getUser,
-  resetProgress,
-  setLabDone,
-  updateUser,
-  type UserDetail,
-} from "../../api/ownerEndpoints";
+import { errorMessage, type UserApi, type UserDetail } from "../../api/userManagement";
 
 const MIN_PASSWORD = 8;
 
 interface Props {
+  api: UserApi;
   userId: number | null;
   onClose: () => void;
   onChanged: () => void;
 }
 
-export function UserDrawer({ userId, onClose, onChanged }: Props) {
+export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
   const toast = useToast();
   const [user, setUser] = useState<UserDetail | null>(null);
   const [password, setPassword] = useState("");
@@ -54,7 +47,7 @@ export function UserDrawer({ userId, onClose, onChanged }: Props) {
     setUser(null);
     setPassword("");
     if (userId === null) return;
-    getUser(userId)
+    api.getUser(userId)
       .then(setUser)
       .catch((e) => {
         toast({ status: "error", title: errorMessage(e, "Could not load user.") });
@@ -67,7 +60,7 @@ export function UserDrawer({ userId, onClose, onChanged }: Props) {
     try {
       await action();
       toast({ status: "success", title: success });
-      if (userId !== null && refresh) setUser(await getUser(userId));
+      if (userId !== null && refresh) setUser(await api.getUser(userId));
       onChanged();
       return true;
     } catch (e) {
@@ -78,7 +71,7 @@ export function UserDrawer({ userId, onClose, onChanged }: Props) {
 
   async function savePassword() {
     if (!user) return;
-    if (await run(() => updateUser(user.id, { new_password: password }), "Password updated")) {
+    if (await run(() => api.updateUser(user.id, { new_password: password }), "Password updated")) {
       setPassword("");
     }
   }
@@ -88,9 +81,9 @@ export function UserDrawer({ userId, onClose, onChanged }: Props) {
     setConfirm(null);
     if (!user || !kind) return;
     if (kind === "delete") {
-      if (await run(() => deleteUser(user.id), "User deleted", false)) onClose();
+      if (await run(() => api.deleteUser(user.id), "User deleted", false)) onClose();
     } else {
-      await run(() => resetProgress(user.id), "Progress reset");
+      await run(() => api.resetProgress(user.id), "Progress reset");
     }
   }
 
@@ -111,7 +104,7 @@ export function UserDrawer({ userId, onClose, onChanged }: Props) {
                   <Switch
                     isChecked={user.is_admin}
                     onChange={(e) =>
-                      run(() => updateUser(user.id, { is_admin: e.target.checked }), "Admin access updated")
+                      run(() => api.updateUser(user.id, { is_admin: e.target.checked }), "Admin access updated")
                     }
                   />
                 </FormControl>
@@ -151,7 +144,7 @@ export function UserDrawer({ userId, onClose, onChanged }: Props) {
                       <Switch
                         isChecked={lab.done}
                         onChange={(e) =>
-                          run(() => setLabDone(user.id, lab.lab_id, e.target.checked), "Progress updated")
+                          run(() => api.setLabDone(user.id, lab.lab_id, e.target.checked), "Progress updated")
                         }
                       />
                     </HStack>
