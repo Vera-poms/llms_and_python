@@ -49,6 +49,11 @@ export function LoginPage() {
         </VStack>
       </form>
       <Text mt={4}>
+        <Link as={RouterLink} to="/forgot-password" color="blue.500">
+          Forgot password?
+        </Link>
+      </Text>
+      <Text mt={2}>
         No account?{" "}
         <Link as={RouterLink} to="/signup" color="blue.500">
           Sign up

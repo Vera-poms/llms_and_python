@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -29,9 +31,79 @@ class UserOut(BaseModel):
     id: int
     email: str
     current_lab_index: int
+    is_admin: bool = False
 
     class Config:
         from_attributes = True
+
+
+class AdminSignupRequest(BaseModel):
+    email: EmailStr
+    password: str
+    invite_code: str
+
+
+class OwnerLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class InviteCreate(BaseModel):
+    email: EmailStr
+
+
+class InviteOut(BaseModel):
+    id: int
+    email: str
+    status: str  # pending | used | expired | revoked
+    expires_at: datetime
+    created_at: datetime
+
+
+class InviteCreated(InviteOut):
+    # Shown exactly once; only its hash is stored.
+    code: str
+    emailed: bool
+
+
+class AdminAccountOut(BaseModel):
+    id: int
+    email: str
+    created_at: datetime
+
+
+class AdminLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class AdminUserSummary(BaseModel):
+    id: int
+    email: str
+    is_admin: bool
+    created_at: datetime
+    labs_done: int
+    total_labs: int
+    hints_used: int
+    last_activity: datetime | None = None
+
+
+class AdminLabProgress(BaseModel):
+    lab_id: int
+    title: str
+    done: bool
+    hint_count: int
+    updated_at: datetime | None = None
+
+
+class AdminUserDetail(AdminUserSummary):
+    current_lab_index: int
+    labs: list[AdminLabProgress]
+
+
+class AdminUserUpdate(BaseModel):
+    is_admin: bool | None = None
+    new_password: str | None = None
 
 
 class LabProgressOut(BaseModel):

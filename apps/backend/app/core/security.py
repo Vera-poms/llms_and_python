@@ -1,9 +1,17 @@
+import hashlib
 from datetime import datetime, timedelta, timezone
 
 import bcrypt
 import jwt
 
-from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, JWT_ALGORITHM, RESET_TOKEN_EXPIRE_MINUTES, SECRET_KEY
+from core.config import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    ADMIN_TOKEN_EXPIRE_MINUTES,
+    JWT_ALGORITHM,
+    OWNER_TOKEN_EXPIRE_MINUTES,
+    RESET_TOKEN_EXPIRE_MINUTES,
+    SECRET_KEY,
+)
 
 
 def hash_password(password: str) -> str:
@@ -23,6 +31,43 @@ def create_access_token(user_id: int) -> str:
 def decode_access_token(token: str) -> int | None:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        # Only plain user tokens: reject reset and admin-scoped tokens.
+        if "purpose" in payload or "scope" in payload:
+            return None
+        return int(payload["sub"])
+    except (jwt.PyJWTError, KeyError, ValueError):
+        return None
+
+
+def create_admin_token(user_id: int) -> str:
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=ADMIN_TOKEN_EXPIRE_MINUTES)
+    payload = {"sub": str(user_id), "scope": "admin", "exp": expires_at}
+    return jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+
+def create_owner_token() -> str:
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=OWNER_TOKEN_EXPIRE_MINUTES)
+    return jwt.encode({"sub": "owner", "scope": "owner", "exp": expires_at}, SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+
+def is_valid_owner_token(token: str) -> bool:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        return payload.get("scope") == "owner"
+    except jwt.PyJWTError:
+        return False
+
+
+def hash_invite_code(code: str) -> str:
+    # Codes are 256-bit random, so a fast unsalted hash is sufficient (no brute-force risk).
+    return hashlib.sha256(code.encode("utf-8")).hexdigest()
+
+
+def decode_admin_token(token: str) -> int | None:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        if payload.get("scope") != "admin":
+            return None
         return int(payload["sub"])
     except (jwt.PyJWTError, KeyError, ValueError):
         return None

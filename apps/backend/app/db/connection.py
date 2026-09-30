@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 URL_DATABSE = os.getenv("DATABASE_URL")
@@ -26,3 +26,12 @@ def get_session() -> Session:
 
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
+    _ensure_user_is_admin_column()
+
+
+def _ensure_user_is_admin_column() -> None:
+    # create_all doesn't alter existing tables, so add the column to pre-existing databases.
+    if "is_admin" in {c["name"] for c in inspect(engine).get_columns("users")}:
+        return
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT FALSE"))

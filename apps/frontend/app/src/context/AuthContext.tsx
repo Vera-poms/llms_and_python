@@ -6,6 +6,7 @@ interface AuthContextValue {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -16,6 +17,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function authenticate(path: "login" | "signup", email: string, password: string) {
     const response = await api.post<{ access_token: string }>(`/auth/${path}`, { email, password });
+    localStorage.setItem("token", response.data.access_token);
+    setToken(response.data.access_token);
+  }
+
+  async function resetPassword(resetToken: string, newPassword: string) {
+    const response = await api.post<{ access_token: string }>("/auth/reset-password", {
+      token: resetToken,
+      new_password: newPassword,
+    });
     localStorage.setItem("token", response.data.access_token);
     setToken(response.data.access_token);
   }
@@ -31,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         token,
         login: (email, password) => authenticate("login", email, password),
         signup: (email, password) => authenticate("signup", email, password),
+        resetPassword,
         logout,
       }}
     >

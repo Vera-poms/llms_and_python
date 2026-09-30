@@ -17,4 +17,13 @@ SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM = os.getenv("SMTP_FROM", "no-reply@llm-foundations.local")
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+# The owner is a single env-configured identity (not a DB user) who invites admins.
+# Both must be set, otherwise the owner routes are disabled.
+OWNER_EMAIL = os.getenv("OWNER_EMAIL", "").strip().lower()
+OWNER_PASSWORD = os.getenv("OWNER_PASSWORD", "")
+OWNER_TOKEN_EXPIRE_MINUTES = int(os.getenv("OWNER_TOKEN_EXPIRE_MINUTES", "30"))
+ADMIN_INVITE_EXPIRE_HOURS = int(os.getenv("ADMIN_INVITE_EXPIRE_HOURS", "48"))
+ADMIN_TOKEN_EXPIRE_MINUTES = int(os.getenv("ADMIN_TOKEN_EXPIRE_MINUTES", "60"))
+ADMIN_MIN_PASSWORD_LENGTH = 12
+
+ANTHROPIC_API_KEY =os.getenv("ANTHROPIC_API_KEY", "")

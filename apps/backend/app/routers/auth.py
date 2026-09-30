@@ -1,7 +1,9 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from core.config import FRONTEND_URL
+from core.config import RESET_TOKEN_EXPIRE_MINUTES
 from core.mail import send_password_reset_email
 from core.security import (
     create_access_token,
@@ -20,6 +22,8 @@ from schemas import (
     TokenResponse,
     UserOut,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -53,16 +57,22 @@ def me(current_user: User = Depends(get_current_user)) -> User:
 
 
 @router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
-def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)) -> dict[str, str]:
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)) -> dict[str, str | int]:
     user = db.query(User).filter(User.email == payload.email).first()
     if user is not None:
         token = create_password_reset_token(user.id, user.hashed_password)
-        reset_link = f"{FRONTEND_URL}/reset-password?token={token}"
-        send_password_reset_email(user.email, reset_link)
+        try:
+            send_password_reset_email(user.email, token)
+        except Exception:
+            # Don't surface delivery failures: a 500 here would reveal the account exists.
+            logger.exception("Failed to send password reset email to %s", user.email)
 
     # Always return the same response, whether or not the email is registered,
     # so this endpoint can't be used to enumerate accounts.
-    return {"detail": "If that email is registered, a reset link has been sent."}
+    return {
+        "detail": "If that email is registered, a reset link has been sent.",
+        "expires_in_minutes": RESET_TOKEN_EXPIRE_MINUTES,
+    }
 
 
 @router.post("/reset-password", response_model=TokenResponse)

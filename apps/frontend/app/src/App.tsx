@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { useAuth } from "./context/AuthContext";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LabDetailPage } from "./pages/LabDetailPage";
 import { LabListPage } from "./pages/LabListPage";
 import { LoginPage } from "./pages/LoginPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { SignupPage } from "./pages/SignupPage";
 
 function RequireAuth({ children }: { children: JSX.Element }) {
@@ -19,6 +21,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route
         path="/labs"
         element={

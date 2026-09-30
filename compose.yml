@@ -18,6 +18,8 @@ services:
   backend:
     build:
       context: ./apps/backend/app
+    env_file:
+      - ./apps/backend/app/.env
     environment:
       DATABASE_URL: postgresql+psycopg://llms:llms_dev_password@db:5432/llms
       SECRET_KEY: dev-secret-change-me
