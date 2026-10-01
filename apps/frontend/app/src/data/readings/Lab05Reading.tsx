@@ -1,7 +1,5 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
-import { OpenFileLink } from "../../components/OpenFileLink";
-
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -284,37 +282,6 @@ print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side chart
         together to <Code>training_results.png</Code>.
       </Text>
 
-      <Heading size="sm">Modules, revisited</Heading>
-      <Text>
-        <Code>course/lab_05_training_perceptron/train.py</Code>
-        <OpenFileLink path="course/lab_05_training_perceptron/train.py" /> imports the{" "}
-        <Code>Perceptron</Code> class from <Code>lab_04_perceptron/perceptron.py</Code> - a sibling
-        folder, not a package. That's deliberate: you'll see the <Code>sys.path</Code> trick that
-        makes it importable, which is a real pattern you'll run into constantly once code stops
-        fitting in one file.
-      </Text>
-
-      <Heading size="sm">Real-world project</Heading>
-      <Text>
-        <Code>project.py</Code>
-        <OpenFileLink path="course/lab_05_training_perceptron/project.py" /> reuses lab 4's exact
-        feature pipeline on the same real review
-        dataset, but this time does a proper 80/20 train/test split, trains the perceptron with the
-        learning rule above, and reports genuinely held-out test accuracy - typically in the
-        70s-percent range, well above the untrained 50% baseline from lab 4. It also plots the
-        training accuracy curve across epochs and a 2D visualization (via PCA, for plotting only)
-        of which test points it got right vs. wrong. Real, messy, human-written text is noisy - a
-        linear model won't get everything right, and that's an honest result, not a bug.
-      </Text>
-
-      <Heading size="sm">Notebook practice</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_05_training_perceptron.ipynb</Code>
-        <OpenFileLink path="course/notebooks/lab_05_training_perceptron.ipynb" /> for the same
-        exercise, solution, and real-world project in one runnable notebook - handy for stepping
-        through the training loop and the accuracy curve cell by cell instead of running the
-        script end to end.
-      </Text>
     </VStack>
   );
 }

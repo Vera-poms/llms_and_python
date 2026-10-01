@@ -1,5 +1,5 @@
-import { Box, Button, Checkbox, Code, HStack, Link, Text, VStack } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { Badge, Box, Button, HStack, Link, Text, VStack } from "@chakra-ui/react";
+import { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
 import { api } from "../api/client";
@@ -48,9 +48,9 @@ export function LabDetailPage() {
 
   const [done, setDone] = useState(false);
   const [score, setScore] = useState<{ earned: number; possible: number; percent: number } | null>(null);
-  const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
+  // Completion is earned, not ticked: the server sets it once every graded item in the lab passes.
+  const refresh = useCallback(() => {
     api.get(`/labs`).then((response) => {
       const match = response.data.find((l: { id: number }) => l.id === id);
       if (match) {
@@ -62,15 +62,12 @@ export function LabDetailPage() {
     });
   }, [id]);
 
-  async function toggleDone() {
-    setSaving(true);
-    try {
-      const response = await api.patch(`/labs/${id}/progress`, { done: !done });
-      setDone(response.data.done);
-    } finally {
-      setSaving(false);
-    }
-  }
+  useEffect(refresh, [refresh]);
+
+  useEffect(() => {
+    window.addEventListener("lab-progress", refresh);
+    return () => window.removeEventListener("lab-progress", refresh);
+  }, [refresh]);
 
   if (!lab || !Reading) {
     return (
@@ -90,24 +87,26 @@ export function LabDetailPage() {
       </Link>
 
       <VStack align="stretch" spacing={6} mt={4}>
-        <Text fontSize="sm" color="gray.500">
-          Lab {lab.id} &middot; also available as a real file at <Code>{lab.coursePath}</Code>
-        </Text>
-
         <Reading />
 
         <Box borderTopWidth="1px" pt={4}>
-          <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} />
+          <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} onProgress={refresh} />
         </Box>
 
         <Box borderTopWidth="1px" pt={4}>
           <HStack justify="space-between">
-            <Checkbox isChecked={done} onChange={toggleDone} isDisabled={saving}>
-              Mark this lab complete
-            </Checkbox>
+            {done ? (
+              <Badge colorScheme="green" fontSize="sm" px={2} py={1}>
+                Lab complete
+              </Badge>
+            ) : (
+              <Text fontSize="sm" color="gray.500">
+                Pass every exercise and the project to complete this lab.
+              </Text>
+            )}
             {score && (
               <Text fontSize="sm" color="gray.500">
-                Score: {score.earned}/{score.possible} points ({score.percent}%) - as of page load
+                Score: {score.earned}/{score.possible} points ({score.percent}%)
               </Text>
             )}
           </HStack>

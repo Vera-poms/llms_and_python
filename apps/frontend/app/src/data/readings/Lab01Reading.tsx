@@ -1,7 +1,5 @@
 import { Code, Heading, Link, Text, VStack } from "@chakra-ui/react";
 
-import { OpenFileLink } from "../../components/OpenFileLink";
-
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -353,34 +351,6 @@ print(topics[votes.index(max(votes))])  # dicts`} />
         to sample a word at random.
       </Text>
 
-      <Heading size="sm">Code practice</Heading>
-      <Text>
-        Open <Code>course/lab_01_probability/exercise.py</Code>
-        <OpenFileLink path="course/lab_01_probability/exercise.py" /> and implement{" "}
-        <Code>tokenize</Code>, <Code>word_counts</Code>, <Code>word_probabilities</Code>, and{" "}
-        <Code>top_k</Code>. Run the file directly - it has asserts at the bottom that tell you when
-        you're right. Compare against <Code>solution.py</Code>
-        <OpenFileLink path="course/lab_01_probability/solution.py" /> once it passes.
-      </Text>
-
-      <Heading size="sm">Real-world project</Heading>
-      <Text>
-        <Code>project.py</Code>
-        <OpenFileLink path="course/lab_01_probability/project.py" /> loads ~170 real,
-        hand-written review sentences from{" "}
-        <Code>course/data/review_sentences.csv</Code>, builds a full word probability distribution
-        over the corpus, prints the greedy pick vs. several random samples from that distribution,
-        and plots the top 15 words as a bar chart - a small, literal picture of what "the model's
-        output distribution" means.
-      </Text>
-
-      <Heading size="sm">Notebook practice</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_01_probability.ipynb</Code>
-        <OpenFileLink path="course/notebooks/lab_01_probability.ipynb" /> for the same exercise,
-        solution, and real-world project in one runnable notebook - handy for stepping through the
-        word distribution and sampling cell by cell instead of running the script end to end.
-      </Text>
     </VStack>
   );
 }

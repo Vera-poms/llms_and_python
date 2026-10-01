@@ -27,3 +27,10 @@ ADMIN_TOKEN_EXPIRE_MINUTES = int(os.getenv("ADMIN_TOKEN_EXPIRE_MINUTES", "60"))
 ADMIN_MIN_PASSWORD_LENGTH = 12
 
 ANTHROPIC_API_KEY =os.getenv("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5-5")
+
+# The grader/hint tutor. Groq is the default: the course already runs on its free tier.
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "").strip()
+# Groq retired the llama-3.x models in Aug 2026; gpt-oss-120b is their production-tier replacement.
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "").strip().lower()  # "", "groq" or "anthropic"

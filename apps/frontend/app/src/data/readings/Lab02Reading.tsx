@@ -1,7 +1,5 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
-import { OpenFileLink } from "../../components/OpenFileLink";
-
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -269,35 +267,6 @@ print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a f
         exactly what the lower MSE number from Concept 3 is telling you numerically.
       </Text>
 
-      <Heading size="sm">Code practice</Heading>
-      <Text>
-        Open <Code>course/lab_02_prediction/exercise.py</Code>
-        <OpenFileLink path="course/lab_02_prediction/exercise.py" /> and implement{" "}
-        <Code>most_common_label</Code>, <Code>linear_regression_fit</Code>, <Code>predict</Code>,
-        and <Code>mean_squared_error</Code>. The asserts at the bottom check your regression
-        against a perfectly linear toy example first. Compare against <Code>solution.py</Code>
-        <OpenFileLink path="course/lab_02_prediction/solution.py" /> once it passes.
-      </Text>
-
-      <Heading size="sm">Real-world project</Heading>
-      <Text>
-        <Code>project.py</Code>
-        <OpenFileLink path="course/lab_02_prediction/project.py" /> predicts each real review's
-        word count from its character length.
-        It compares a naive baseline (always predict the mean word count) against the regression
-        fit using mean squared error, prints a prediction for a new sentence length, and plots the
-        real data points with both the fit line and the baseline overlaid - a direct look at why
-        regression usually beats "just guess the average."
-      </Text>
-
-      <Heading size="sm">Notebook practice</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_02_prediction.ipynb</Code>
-        <OpenFileLink path="course/notebooks/lab_02_prediction.ipynb" /> for the same exercise,
-        solution, and real-world project in one runnable notebook - handy for stepping through the
-        regression fit and the baseline comparison cell by cell instead of running the script end
-        to end.
-      </Text>
     </VStack>
   );
 }

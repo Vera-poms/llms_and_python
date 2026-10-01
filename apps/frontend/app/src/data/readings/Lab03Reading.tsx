@@ -1,7 +1,5 @@
 import { Code, Heading, Link, Text, VStack } from "@chakra-ui/react";
 
-import { OpenFileLink } from "../../components/OpenFileLink";
-
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -215,33 +213,6 @@ print(grid.shape)  # (2, 2)`} />
         one.
       </Text>
 
-      <Heading size="sm">Code practice</Heading>
-      <Text>
-        Open <Code>course/lab_03_conditional_probability/exercise.py</Code>
-        <OpenFileLink path="course/lab_03_conditional_probability/exercise.py" /> and implement{" "}
-        <Code>bigram_counts</Code> and <Code>conditional_probabilities</Code>. The asserts check
-        that each word's outgoing distribution sums to 1. Compare against <Code>solution.py</Code>
-        <OpenFileLink path="course/lab_03_conditional_probability/solution.py" /> once it passes.
-      </Text>
-
-      <Heading size="sm">Real-world project</Heading>
-      <Text>
-        <Code>project.py</Code>
-        <OpenFileLink path="course/lab_03_conditional_probability/project.py" /> builds a bigram
-        model from the real review corpus, uses it to
-        generate new (slightly odd, very LLM-like) sentences by sampling one word at a time, and
-        renders a matplotlib heatmap of <Code>P(next | previous)</Code> for the most frequent
-        words - the conditional-probability analogue of lab 1's bar chart.
-      </Text>
-
-      <Heading size="sm">Notebook practice</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_03_conditional_probability.ipynb</Code>
-        <OpenFileLink path="course/notebooks/lab_03_conditional_probability.ipynb" /> for the same
-        exercise, solution, and real-world project in one runnable notebook - handy for stepping
-        through the bigram model and the generated sentences cell by cell instead of running the
-        script end to end.
-      </Text>
     </VStack>
   );
 }

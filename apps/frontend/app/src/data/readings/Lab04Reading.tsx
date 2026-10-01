@@ -1,7 +1,5 @@
 import { Code, Heading, Link, ListItem, Text, UnorderedList, VStack } from "@chakra-ui/react";
 
-import { OpenFileLink } from "../../components/OpenFileLink";
-
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -284,35 +282,6 @@ print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.
         guessing."
       </Text>
 
-      <Heading size="sm">Code practice</Heading>
-      <Text>
-        Open <Code>course/lab_04_perceptron/exercise.py</Code>
-        <OpenFileLink path="course/lab_04_perceptron/exercise.py" /> and implement{" "}
-        <Code>activation</Code> and <Code>predict</Code> on the <Code>Perceptron</Code> class.
-        Compare against <Code>solution.py</Code>
-        <OpenFileLink path="course/lab_04_perceptron/solution.py" /> once it passes.
-      </Text>
-
-      <Heading size="sm">Real-world project</Heading>
-      <Text>
-        <Code>project.py</Code>
-        <OpenFileLink path="course/lab_04_perceptron/project.py" /> turns real review sentences
-        into bag-of-words vectors over a
-        vocabulary of words that lean strongly positive or negative (a tiny hand-built sentiment
-        lexicon, picked directly from the data), projects them to 2D with PCA implemented in plain
-        numpy, and runs them through a perceptron that starts with all weights at zero. It predicts
-        the same class for everything - exactly 50% accuracy on a balanced dataset. That's the
-        point: an untrained perceptron knows nothing. Lab 5 fixes that.
-      </Text>
-
-      <Heading size="sm">Notebook practice</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_04_perceptron.ipynb</Code>
-        <OpenFileLink path="course/notebooks/lab_04_perceptron.ipynb" /> for the same{" "}
-        <Code>activation</Code>/<Code>predict</Code> exercise, solution, and real-world project in
-        one runnable notebook - handy for stepping through the bag-of-words vectors and the PCA
-        projection cell by cell instead of running the script end to end.
-      </Text>
     </VStack>
   );
 }

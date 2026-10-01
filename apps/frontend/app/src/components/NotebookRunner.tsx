@@ -13,11 +13,11 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
 import { HintButton } from "./HintButton";
+import { Markdown } from "./Markdown";
 
 interface NotebookCell {
   index: number;
@@ -87,12 +87,14 @@ function GradedCell({
   labId,
   cell,
   apiKey,
-  onExerciseOk,
+  onLabDone,
+  onJudged,
 }: {
   labId: number;
   cell: NotebookCell;
   apiKey: string;
-  onExerciseOk: () => void;
+  onLabDone: () => void;
+  onJudged?: () => void;
 }) {
   const gradedId = cell.graded_cell_id as string;
   const [source, setSource] = useState(cell.source);
@@ -138,8 +140,6 @@ function GradedCell({
         setFeedback(null);
         return;
       }
-      if (cell.role === "exercise") onExerciseOk();
-
       setChecking(true);
       try {
         const judged = await api.post(`/labs/${labId}/cells/${gradedId}/judge`, {
@@ -148,6 +148,8 @@ function GradedCell({
         });
         setStatus(judged.data.correct ? "pass" : "fail");
         setFeedback(judged.data.feedback ?? null);
+        if (judged.data.lab_done) onLabDone();
+        onJudged?.();
         if (judged.data.correct) {
           try {
             await api.put(`/labs/${labId}/cells/${gradedId}/code`, { source });
@@ -217,7 +219,15 @@ function GradedCell({
   );
 }
 
-export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApiKey?: boolean }) {
+export function NotebookRunner({
+  labId,
+  needsApiKey,
+  onProgress,
+}: {
+  labId: number;
+  needsApiKey?: boolean;
+  onProgress?: () => void;
+}) {
   const [cells, setCells] = useState<NotebookCell[] | null>(null);
   const [sources, setSources] = useState<Record<number, string>>({});
   const [results, setResults] = useState<Record<number, RunResult>>({});
@@ -249,18 +259,9 @@ export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApi
       const result: RunResult = response.data;
       setResults((prev) => ({ ...prev, [cell.index]: result }));
 
-      if (cell.role === "exercise" && result.ok) {
-        await api.patch(`/labs/${labId}/progress`, { done: true });
-        setJustCompleted(true);
-      }
     } finally {
       setRunning((prev) => ({ ...prev, [cell.index]: false }));
     }
-  }
-
-  async function markExerciseDone() {
-    await api.patch(`/labs/${labId}/progress`, { done: true });
-    setJustCompleted(true);
   }
 
   async function restartKernel() {
@@ -306,15 +307,15 @@ export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApi
       {justCompleted && (
         <Alert status="success" borderRadius="md">
           <AlertIcon />
-          Exercise passed - lab marked complete.
+          All exercises and the project passed - lab complete.
         </Alert>
       )}
 
       {cells.map((cell) => {
         if (cell.cell_type === "markdown") {
           return (
-            <Box key={cell.index} className="markdown-cell">
-              <ReactMarkdown>{cell.source}</ReactMarkdown>
+            <Box key={cell.index}>
+              <Markdown>{cell.source}</Markdown>
             </Box>
           );
         }
@@ -326,7 +327,8 @@ export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApi
               labId={labId}
               cell={cell}
               apiKey={apiKey}
-              onExerciseOk={markExerciseDone}
+              onLabDone={() => setJustCompleted(true)}
+              onJudged={onProgress}
             />
           );
         }

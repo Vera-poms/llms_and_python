@@ -115,6 +115,9 @@ export function PracticeCell({
         const { correct, feedback: judgeFeedback } = judgeResponse.data;
         setCheckStatus(correct ? "pass" : "fail");
         setFeedback(judgeFeedback ?? null);
+        // These cells are scattered through the reading, so the lab page listens for this instead
+        // of threading a callback through every <PracticeCell>.
+        window.dispatchEvent(new CustomEvent("lab-progress"));
 
         if (correct) {
           try {

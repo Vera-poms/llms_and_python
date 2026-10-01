@@ -145,6 +145,8 @@ class CellJudgeRequest(BaseModel):
 class CellJudgeResponse(BaseModel):
     correct: bool
     feedback: str | None = None
+    # True once every graded item in the lab has passed, so the UI can mark the lab complete.
+    lab_done: bool = False
 
 
 class CellResultOut(BaseModel):
