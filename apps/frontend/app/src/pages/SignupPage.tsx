@@ -2,6 +2,7 @@ import { Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
+import { PasswordInput } from "../components/PasswordInput";
 import { useAuth } from "../context/AuthContext";
 
 export function SignupPage() {
@@ -35,8 +36,7 @@ export function SignupPage() {
           </FormControl>
           <FormControl>
             <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

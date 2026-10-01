@@ -87,11 +87,19 @@ def admin_login(payload: AdminLoginRequest, request: Request, db: Session = Depe
     user = db.query(User).filter(User.email == payload.email).first()
     password_ok = verify_password(payload.password, user.hashed_password if user else _DUMMY_HASH)
 
-    if user is None or not user.is_admin or not password_ok:
+    # Failures are reported specifically (the rate limiter above bounds enumeration attempts).
+    detail = None
+    if user is None or not user.is_admin:
+        detail = "No admin account exists for that email"
+        code = status.HTTP_404_NOT_FOUND
+    elif not password_ok:
+        detail = "Incorrect password"
+        code = status.HTTP_401_UNAUTHORIZED
+    if detail:
         for k in keys:
             _limiter.record_failure(k)
         logger.warning("Failed admin login for %s", payload.email)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+        raise HTTPException(status_code=code, detail=detail)
 
     for k in keys:
         _limiter.reset(k)

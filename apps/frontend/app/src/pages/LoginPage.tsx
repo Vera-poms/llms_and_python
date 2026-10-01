@@ -1,7 +1,9 @@
 import { Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack } from "@chakra-ui/react";
+import { isAxiosError } from "axios";
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
+import { PasswordInput } from "../components/PasswordInput";
 import { useAuth } from "../context/AuthContext";
 
 export function LoginPage() {
@@ -17,8 +19,10 @@ export function LoginPage() {
     try {
       await login(email, password);
       navigate("/labs");
-    } catch {
-      setError("Invalid email or password.");
+    } catch (err) {
+      const detail = isAxiosError(err) ? err.response?.data?.detail : undefined;
+      // "No account exists for that email" or "Incorrect password".
+      setError(typeof detail === "string" ? detail : "Could not log in. Try again.");
     }
   }
 
@@ -35,8 +39,7 @@ export function LoginPage() {
           </FormControl>
           <FormControl>
             <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

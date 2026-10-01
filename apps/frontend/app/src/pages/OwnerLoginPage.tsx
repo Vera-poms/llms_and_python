@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { getOwnerToken, ownerApi, setOwnerToken } from "../api/ownerClient";
+import { PasswordInput } from "../components/PasswordInput";
 
 export function OwnerLoginPage() {
   const navigate = useNavigate();
@@ -57,8 +58,7 @@ export function OwnerLoginPage() {
           </FormControl>
           <FormControl>
             <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
+            <PasswordInput
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

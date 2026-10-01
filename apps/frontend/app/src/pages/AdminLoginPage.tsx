@@ -1,9 +1,10 @@
-import { Box, Button, FormControl, FormLabel, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack } from "@chakra-ui/react";
 import { isAxiosError } from "axios";
 import { useState, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link as RouterLink, Navigate, useNavigate } from "react-router-dom";
 
 import { adminApi, getAdminToken, setAdminToken } from "../api/adminClient";
+import { PasswordInput } from "../components/PasswordInput";
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
@@ -29,9 +30,11 @@ export function AdminLoginPage() {
       setPassword("");
       if (isAxiosError(err) && err.response?.status === 429) {
         setError("Too many attempts. Try again later.");
+      } else if (isAxiosError(err) && typeof err.response?.data?.detail === "string") {
+        // "No admin account exists for that email" or "Incorrect password".
+        setError(err.response.data.detail);
       } else {
-        // Same message whether the account is not an admin, the email is wrong, or the password is wrong.
-        setError("Invalid email or password.");
+        setError("Could not sign in. Try again.");
       }
     } finally {
       setSubmitting(false);
@@ -57,8 +60,7 @@ export function AdminLoginPage() {
           </FormControl>
           <FormControl>
             <FormLabel>Password</FormLabel>
-            <Input
-              type="password"
+            <PasswordInput
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -71,6 +73,12 @@ export function AdminLoginPage() {
           </Button>
         </VStack>
       </form>
+      <Text mt={4}>
+        Have an invite?{" "}
+        <Link as={RouterLink} to="/admin/signup" color="blue.500">
+          Sign up
+        </Link>
+      </Text>
     </Box>
   );
 }

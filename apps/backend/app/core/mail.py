@@ -1,10 +1,15 @@
 import logging
 import smtplib
 from email.message import EmailMessage
+from urllib.parse import urlencode
 
-from core.config import SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER
+from core.config import FRONTEND_URL, SMTP_FROM, SMTP_HOST, SMTP_PASSWORD, SMTP_PORT, SMTP_USER
 
 logger = logging.getLogger(__name__)
+
+
+def admin_signup_url(email: str, code: str) -> str:
+    return f"{FRONTEND_URL.rstrip('/')}/admin/signup?{urlencode({'email': email, 'code': code})}"
 
 
 def _deliver(message: EmailMessage) -> None:
@@ -26,9 +31,9 @@ def send_admin_invite_email(to_email: str, code: str, expires_hours: int) -> boo
     message["To"] = to_email
     message.set_content(
         "You've been invited to be an admin.\n\n"
-        f"Your one-time invite code is:\n\n{code}\n\n"
-        f"Use it with this email address to sign up. It expires in {expires_hours} hours "
-        "and works only once.\n\n"
+        f"Sign up here:\n\n{admin_signup_url(to_email, code)}\n\n"
+        f"Or enter this one-time invite code on the sign-up page:\n\n{code}\n\n"
+        f"It expires in {expires_hours} hours and works only once.\n\n"
         "If you weren't expecting this, ignore this email."
     )
     _deliver(message)

@@ -5,6 +5,7 @@ import { getOwnerToken } from "./api/ownerClient";
 import { useAuth } from "./context/AuthContext";
 import { AdminHomePage } from "./pages/AdminHomePage";
 import { AdminLoginPage } from "./pages/AdminLoginPage";
+import { AdminSignupPage } from "./pages/AdminSignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LabDetailPage } from "./pages/LabDetailPage";
 import { LabListPage } from "./pages/LabListPage";
@@ -69,6 +70,7 @@ export default function App() {
         }
       />
       <Route path="/admin/login" element={<AdminLoginPage />} />
+      <Route path="/admin/signup" element={<AdminSignupPage />} />
       <Route
         path="/admin"
         element={

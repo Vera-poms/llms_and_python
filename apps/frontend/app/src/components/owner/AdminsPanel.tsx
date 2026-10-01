@@ -91,8 +91,10 @@ export function AdminsPanel() {
           <Alert status={created.emailed ? "success" : "warning"} alignItems="flex-start">
             <AlertIcon />
             <AlertDescription>
-              {created.emailed ? "Invite emailed." : "Email not sent — share this code yourself."} Code (shown once):{" "}
-              <Code wordBreak="break-all">{created.code}</Code>
+              {created.emailed ? "Invite emailed." : "Email not sent — share this link yourself."} Link (shown once):{" "}
+              <Code wordBreak="break-all" data-testid="invite-link">
+                {`${window.location.origin}/admin/signup?${new URLSearchParams({ email: created.email, code: created.code })}`}
+              </Code>
             </AlertDescription>
           </Alert>
         )}

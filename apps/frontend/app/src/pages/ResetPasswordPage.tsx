@@ -2,6 +2,7 @@ import { Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
+import { PasswordInput } from "../components/PasswordInput";
 import { useAuth } from "../context/AuthContext";
 
 export function ResetPasswordPage() {
@@ -45,8 +46,7 @@ export function ResetPasswordPage() {
           </FormControl>
           <FormControl>
             <FormLabel>New password</FormLabel>
-            <Input
-              type="password"
+            <PasswordInput
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               autoComplete="new-password"
@@ -55,8 +55,7 @@ export function ResetPasswordPage() {
           </FormControl>
           <FormControl>
             <FormLabel>Confirm new password</FormLabel>
-            <Input
-              type="password"
+            <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
