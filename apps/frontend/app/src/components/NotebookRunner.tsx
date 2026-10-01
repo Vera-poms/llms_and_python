@@ -17,12 +17,16 @@ import ReactMarkdown from "react-markdown";
 
 import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
+import { HintButton } from "./HintButton";
 
 interface NotebookCell {
   index: number;
   cell_type: "markdown" | "code";
   role: "reading" | "setup" | "exercise" | "solution" | "project";
   source: string;
+  // Present on the scored exercise and project cells.
+  graded_cell_id?: string | null;
+  points?: number | null;
 }
 
 export interface OutputItem {
@@ -70,6 +74,149 @@ export function CellOutput({ result }: { result: RunResult }) {
   );
 }
 
+function stdoutOf(result: RunResult): string {
+  return result.outputs
+    .filter((o) => o.type === "stream")
+    .map((o) => o.text ?? "")
+    .join("");
+}
+
+// A scored notebook cell (the lab exercise or the project): run it, get it judged against the server's
+// hidden reference, and ask for free hints. The reference solution is never sent to the browser.
+function GradedCell({
+  labId,
+  cell,
+  apiKey,
+  onExerciseOk,
+}: {
+  labId: number;
+  cell: NotebookCell;
+  apiKey: string;
+  onExerciseOk: () => void;
+}) {
+  const gradedId = cell.graded_cell_id as string;
+  const [source, setSource] = useState(cell.source);
+  const [result, setResult] = useState<RunResult | null>(null);
+  const [running, setRunning] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [status, setStatus] = useState<"idle" | "pass" | "fail">("idle");
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    api
+      .get(`/labs/${labId}/cells/${gradedId}/code`)
+      .then((response) => setSource(response.data.source))
+      .catch(() => {
+        // nothing saved yet - keep the starter source
+      });
+    api
+      .get(`/labs/${labId}/cells/results`)
+      .then((response) => {
+        const saved = (response.data as { cell_id: string; passed: boolean; feedback: string | null }[]).find(
+          (r) => r.cell_id === gradedId,
+        );
+        if (saved?.passed) {
+          setStatus("pass");
+          setFeedback(saved.feedback);
+        }
+      })
+      .catch(() => {
+        // no recorded result
+      });
+  }, [labId, gradedId]);
+
+  async function run() {
+    setRunning(true);
+    setErrorMessage(null);
+    try {
+      const response = await api.post(`/notebooks/${labId}/run`, { source, api_key: apiKey || undefined });
+      const runResult: RunResult = response.data;
+      setResult(runResult);
+      if (!runResult.ok) {
+        setStatus("idle");
+        setFeedback(null);
+        return;
+      }
+      if (cell.role === "exercise") onExerciseOk();
+
+      setChecking(true);
+      try {
+        const judged = await api.post(`/labs/${labId}/cells/${gradedId}/judge`, {
+          source,
+          output: stdoutOf(runResult),
+        });
+        setStatus(judged.data.correct ? "pass" : "fail");
+        setFeedback(judged.data.feedback ?? null);
+        if (judged.data.correct) {
+          try {
+            await api.put(`/labs/${labId}/cells/${gradedId}/code`, { source });
+          } catch {
+            setErrorMessage("Couldn't save your code - check your connection and run it again.");
+          }
+        }
+      } catch {
+        setStatus("idle");
+        setErrorMessage("Couldn't check your code - check your connection and run it again.");
+      } finally {
+        setChecking(false);
+      }
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  return (
+    <Box borderWidth="1px" borderRadius="md" p={3}>
+      <VStack align="stretch" spacing={2}>
+        <HStack justify="space-between">
+          <HStack>
+            <Badge colorScheme={ROLE_COLORS[cell.role] ?? "gray"}>{cell.role}</Badge>
+            <Badge colorScheme="teal">{cell.points} pts</Badge>
+            {status === "pass" && <Badge colorScheme="green">passed</Badge>}
+          </HStack>
+          <Button size="xs" colorScheme="blue" onClick={run} isLoading={running || checking}>
+            Run
+          </Button>
+        </HStack>
+        <CodeEditor value={source} onChange={setSource} />
+        {result && <CellOutput result={result} />}
+        {status === "pass" && (
+          <Alert status="success" borderRadius="md" py={2}>
+            <AlertIcon />
+            {feedback ?? "Correct!"}
+          </Alert>
+        )}
+        {status === "fail" && (
+          <Alert status="warning" borderRadius="md" py={2} flexDirection="column" alignItems="start">
+            <HStack>
+              <AlertIcon />
+              <Text fontWeight="bold">Not quite right yet</Text>
+            </HStack>
+            {feedback && (
+              <Text fontSize="sm" mt={1}>
+                {feedback}
+              </Text>
+            )}
+          </Alert>
+        )}
+        {errorMessage && (
+          <Alert status="error" borderRadius="md" py={2}>
+            <AlertIcon />
+            {errorMessage}
+          </Alert>
+        )}
+        <HintButton
+          labId={labId}
+          cellId={gradedId}
+          getSource={() => source}
+          getOutput={() => (result ? stdoutOf(result) : "")}
+        />
+      </VStack>
+    </Box>
+  );
+}
+
 export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApiKey?: boolean }) {
   const [cells, setCells] = useState<NotebookCell[] | null>(null);
   const [sources, setSources] = useState<Record<number, string>>({});
@@ -109,6 +256,11 @@ export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApi
     } finally {
       setRunning((prev) => ({ ...prev, [cell.index]: false }));
     }
+  }
+
+  async function markExerciseDone() {
+    await api.patch(`/labs/${labId}/progress`, { done: true });
+    setJustCompleted(true);
   }
 
   async function restartKernel() {
@@ -164,6 +316,18 @@ export function NotebookRunner({ labId, needsApiKey }: { labId: number; needsApi
             <Box key={cell.index} className="markdown-cell">
               <ReactMarkdown>{cell.source}</ReactMarkdown>
             </Box>
+          );
+        }
+
+        if (cell.graded_cell_id) {
+          return (
+            <GradedCell
+              key={cell.index}
+              labId={labId}
+              cell={cell}
+              apiKey={apiKey}
+              onExerciseOk={markExerciseDone}
+            />
           );
         }
 

@@ -12,11 +12,19 @@ interface LabApiResult {
   progress: { done: boolean; hint_count: number };
 }
 
+interface ScoreApiResult {
+  earned: number;
+  possible: number;
+  percent: number;
+  labs: { lab_id: number; earned: number; possible: number; percent: number }[];
+}
+
 export function LabListPage() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [progressById, setProgressById] = useState<Record<number, LabApiResult["progress"]>>({});
   const [loading, setLoading] = useState(true);
+  const [score, setScore] = useState<ScoreApiResult | null>(null);
 
   useEffect(() => {
     api
@@ -29,6 +37,12 @@ export function LabListPage() {
         setProgressById(byId);
       })
       .finally(() => setLoading(false));
+    api
+      .get<ScoreApiResult>("/labs/scores")
+      .then((response) => setScore(response.data))
+      .catch(() => {
+        // scores are optional on this page
+      });
   }, []);
 
   function handleLogout() {
@@ -45,9 +59,21 @@ export function LabListPage() {
         </Button>
       </HStack>
 
+      {score && (
+        <Box mb={6} p={4} borderWidth="1px" borderRadius="md">
+          <Text fontWeight="bold">
+            Course score: {score.percent}% ({score.earned}/{score.possible} points)
+          </Text>
+          <Text fontSize="xs" color="gray.500">
+            Python exercises 5 pts &middot; LLM exercises 10 pts &middot; projects 20 pts. Hints are free.
+          </Text>
+        </Box>
+      )}
+
       <VStack align="stretch" spacing={3}>
         {LABS.map((lab) => {
           const done = progressById[lab.id]?.done ?? false;
+          const labScore = score?.labs.find((l) => l.lab_id === lab.id);
           const content = (
             <HStack justify="space-between">
               <Box>
@@ -58,7 +84,10 @@ export function LabListPage() {
                   {lab.summary}
                 </Text>
               </Box>
-              {!loading && done && <Badge colorScheme="green">Done</Badge>}
+              <VStack spacing={1} align="end">
+                {labScore && <Badge colorScheme="teal">{labScore.percent}%</Badge>}
+                {!loading && done && <Badge colorScheme="green">Done</Badge>}
+              </VStack>
             </HStack>
           );
 

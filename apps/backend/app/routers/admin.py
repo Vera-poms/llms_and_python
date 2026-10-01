@@ -3,8 +3,9 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from core.security import hash_password
-from db.models import CellCode, Lab, LabProgress, User
+from db.models import CellCode, CellResult, Lab, LabProgress, User
 from deps import get_db, require_admin_or_owner
+from scoring import compute_score, score_percents
 from schemas import AdminLabProgress, AdminUserDetail, AdminUserSummary, AdminUserUpdate
 
 # Owners get the same user/progress management as admins.
@@ -25,6 +26,7 @@ def _summaries(db: Session, users: list[User]) -> list[AdminUserSummary]:
         .group_by(LabProgress.user_id)
         .all()
     }
+    percents = score_percents(db, [u.id for u in users]) if users else {}
     result = []
     for u in users:
         s = stats.get(u.id)
@@ -38,6 +40,7 @@ def _summaries(db: Session, users: list[User]) -> list[AdminUserSummary]:
                 total_labs=total_labs,
                 hints_used=int(s.hints) if s else 0,
                 last_activity=s.last if s else None,
+                score_percent=percents.get(u.id, 0.0),
             )
         )
     return result
@@ -53,6 +56,10 @@ def _get_user_or_404(db: Session, user_id: int) -> User:
 def _detail(db: Session, user: User) -> AdminUserDetail:
     summary = _summaries(db, [user])[0]
     progress = {p.lab_id: p for p in db.query(LabProgress).filter(LabProgress.user_id == user.id).all()}
+    lab_scores = {ls.lab_id: ls for ls in compute_score(db, user.id).labs}
+    results: dict[int, list[CellResult]] = {}
+    for r in db.query(CellResult).filter(CellResult.user_id == user.id).all():
+        results.setdefault(r.lab_id, []).append(r)
     labs = [
         AdminLabProgress(
             lab_id=lab.id,
@@ -60,6 +67,12 @@ def _detail(db: Session, user: User) -> AdminUserDetail:
             done=progress[lab.id].done if lab.id in progress else False,
             hint_count=progress[lab.id].hint_count if lab.id in progress else 0,
             updated_at=progress[lab.id].updated_at if lab.id in progress else None,
+            exercises_passed=sum(r.passed for r in results.get(lab.id, [])),
+            exercises_tried=len(results.get(lab.id, [])),
+            exercise_attempts=sum(r.attempts for r in results.get(lab.id, [])),
+            points_earned=lab_scores[lab.id].earned if lab.id in lab_scores else 0,
+            points_possible=lab_scores[lab.id].possible if lab.id in lab_scores else 0,
+            score_percent=lab_scores[lab.id].percent if lab.id in lab_scores else 0.0,
         )
         for lab in db.query(Lab).order_by(Lab.id).all()
     ]
@@ -112,6 +125,7 @@ def delete_user(
     user = _get_user_or_404(db, user_id)
     # DB-level ON DELETE CASCADE covers cell_code; the ORM relationship covers lab_progress.
     db.query(CellCode).filter(CellCode.user_id == user.id).delete(synchronize_session=False)
+    db.query(CellResult).filter(CellResult.user_id == user.id).delete(synchronize_session=False)
     db.delete(user)
     db.commit()
 
@@ -120,6 +134,7 @@ def delete_user(
 def reset_user_progress(user_id: int, db: Session = Depends(get_db)) -> None:
     user = _get_user_or_404(db, user_id)
     db.query(LabProgress).filter(LabProgress.user_id == user.id).delete(synchronize_session=False)
+    db.query(CellResult).filter(CellResult.user_id == user.id).delete(synchronize_session=False)
     user.current_lab_index = 0
     db.commit()
 

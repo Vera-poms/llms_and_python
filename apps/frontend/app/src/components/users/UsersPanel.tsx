@@ -31,6 +31,7 @@ export function UsersPanel({ api }: { api: UserApi }) {
             <Tr>
               <Th>Email</Th>
               <Th>Progress</Th>
+              <Th isNumeric>Score</Th>
               <Th isNumeric>Hints</Th>
               <Th>Last activity</Th>
             </Tr>
@@ -44,6 +45,7 @@ export function UsersPanel({ api }: { api: UserApi }) {
                 <Td>
                   {u.labs_done}/{u.total_labs}
                 </Td>
+                <Td isNumeric>{u.score_percent ?? 0}%</Td>
                 <Td isNumeric>{u.hints_used}</Td>
                 <Td>{u.last_activity ? new Date(u.last_activity).toLocaleString() : "—"}</Td>
               </Tr>

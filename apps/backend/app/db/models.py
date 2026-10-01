@@ -73,3 +73,21 @@ class CellCode(Base):
     cell_id: Mapped[str] = mapped_column(String(64), nullable=False)
     source: Mapped[str] = mapped_column(Text, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
+class CellResult(Base):
+    """Per-user practice cell outcome: passed stays true once earned, attempts counts every judged run."""
+
+    __tablename__ = "cell_results"
+    __table_args__ = (UniqueConstraint("user_id", "lab_id", "cell_id", name="uq_cell_results_user_lab_cell"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"), nullable=False)
+    cell_id: Mapped[str] = mapped_column(String(64), nullable=False)
+    passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    hints_used: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    feedback: Mapped[str | None] = mapped_column(Text, nullable=True)
+    first_passed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_attempt_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)

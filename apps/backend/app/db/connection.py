@@ -27,6 +27,7 @@ def get_session() -> Session:
 def init_db() -> None:
     Base.metadata.create_all(bind=engine)
     _ensure_user_is_admin_column()
+    _ensure_cell_results_hints_column()
 
 
 def _ensure_user_is_admin_column() -> None:
@@ -35,3 +36,10 @@ def _ensure_user_is_admin_column() -> None:
         return
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE users ADD COLUMN is_admin BOOLEAN NOT NULL DEFAULT FALSE"))
+
+
+def _ensure_cell_results_hints_column() -> None:
+    if "hints_used" in {c["name"] for c in inspect(engine).get_columns("cell_results")}:
+        return
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE cell_results ADD COLUMN hints_used INTEGER NOT NULL DEFAULT 0"))

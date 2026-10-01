@@ -9,6 +9,7 @@ export interface UserSummary {
   total_labs: number;
   hints_used: number;
   last_activity: string | null;
+  score_percent?: number;
 }
 
 export interface LabProgress {
@@ -17,6 +18,12 @@ export interface LabProgress {
   done: boolean;
   hint_count: number;
   updated_at: string | null;
+  exercises_passed?: number;
+  exercises_tried?: number;
+  exercise_attempts?: number;
+  points_earned?: number;
+  points_possible?: number;
+  score_percent?: number;
 }
 
 export interface UserDetail extends UserSummary {

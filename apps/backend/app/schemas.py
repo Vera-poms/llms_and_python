@@ -86,6 +86,7 @@ class AdminUserSummary(BaseModel):
     total_labs: int
     hints_used: int
     last_activity: datetime | None = None
+    score_percent: float = 0.0
 
 
 class AdminLabProgress(BaseModel):
@@ -94,6 +95,12 @@ class AdminLabProgress(BaseModel):
     done: bool
     hint_count: int
     updated_at: datetime | None = None
+    exercises_passed: int = 0
+    exercises_tried: int = 0
+    exercise_attempts: int = 0
+    points_earned: int = 0
+    points_possible: int = 0
+    score_percent: float = 0.0
 
 
 class AdminUserDetail(AdminUserSummary):
@@ -132,9 +139,7 @@ class CellCodeSave(BaseModel):
 
 class CellJudgeRequest(BaseModel):
     source: str
-    output: str
-    reference_source: str
-    reference_output: str | None = None
+    output: str = ""
 
 
 class CellJudgeResponse(BaseModel):
@@ -142,11 +147,47 @@ class CellJudgeResponse(BaseModel):
     feedback: str | None = None
 
 
+class CellResultOut(BaseModel):
+    cell_id: str
+    passed: bool
+    attempts: int
+    hints_used: int = 0
+    feedback: str | None = None
+
+
+class CellHintRequest(BaseModel):
+    source: str
+    output: str = ""
+
+
+class CellHintResponse(BaseModel):
+    hint: str
+    level: int
+    hints_used: int
+
+
+class LabScoreOut(BaseModel):
+    lab_id: int
+    earned: int
+    possible: int
+    percent: float
+
+
+class ScoreOut(BaseModel):
+    earned: int
+    possible: int
+    percent: float
+    labs: list[LabScoreOut]
+
+
 class NotebookCellOut(BaseModel):
     index: int
     cell_type: str
     role: str
     source: str
+    # Set on the exercise and project cells that are scored (see exercises.py).
+    graded_cell_id: str | None = None
+    points: int | None = None
 
 
 class NotebookOut(BaseModel):

@@ -47,7 +47,7 @@ export function LabDetailPage() {
   const Reading = READINGS[id];
 
   const [done, setDone] = useState(false);
-  const [hintCount, setHintCount] = useState(0);
+  const [score, setScore] = useState<{ earned: number; possible: number; percent: number } | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -55,8 +55,10 @@ export function LabDetailPage() {
       const match = response.data.find((l: { id: number }) => l.id === id);
       if (match) {
         setDone(match.progress.done);
-        setHintCount(match.progress.hint_count);
       }
+    });
+    api.get(`/labs/scores`).then((response) => {
+      setScore(response.data.labs.find((l: { lab_id: number }) => l.lab_id === id) ?? null);
     });
   }, [id]);
 
@@ -68,11 +70,6 @@ export function LabDetailPage() {
     } finally {
       setSaving(false);
     }
-  }
-
-  async function useHint() {
-    const response = await api.patch(`/labs/${id}/progress`, { increment_hint: true });
-    setHintCount(response.data.hint_count);
   }
 
   if (!lab || !Reading) {
@@ -108,9 +105,11 @@ export function LabDetailPage() {
             <Checkbox isChecked={done} onChange={toggleDone} isDisabled={saving}>
               Mark this lab complete
             </Checkbox>
-            <Button size="sm" variant="ghost" onClick={useHint}>
-              I used a hint ({hintCount})
-            </Button>
+            {score && (
+              <Text fontSize="sm" color="gray.500">
+                Score: {score.earned}/{score.possible} points ({score.percent}%) - as of page load
+              </Text>
+            )}
           </HStack>
         </Box>
       </VStack>

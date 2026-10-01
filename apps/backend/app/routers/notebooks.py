@@ -1,24 +1,12 @@
-import json
-from pathlib import Path
+from fastapi import APIRouter, Depends, status
 
-from fastapi import APIRouter, Depends, HTTPException, status
-
+import exercises
 import kernels
-from core.config import COURSE_DIR
 from db.models import User
 from deps import get_current_user
 from schemas import NotebookCellOut, NotebookOut, RunCellRequest, RunCellResponse
 
 router = APIRouter(prefix="/notebooks", tags=["notebooks"])
-
-NOTEBOOKS_DIR = Path(COURSE_DIR) / "notebooks"
-
-
-def _notebook_path(lab_id: int) -> Path:
-    matches = list(NOTEBOOKS_DIR.glob(f"lab_{lab_id:02d}_*.ipynb"))
-    if not matches:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No notebook for this lab")
-    return matches[0]
 
 
 def _substitute_groq_key(source: str, api_key: str | None) -> str:
@@ -32,20 +20,56 @@ def _substitute_groq_key(source: str, api_key: str | None) -> str:
 
 @router.get("/{lab_id}", response_model=NotebookOut)
 def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) -> NotebookOut:
-    path = _notebook_path(lab_id)
-    notebook = json.loads(path.read_text(encoding="utf-8"))
+    raw_cells = exercises.load_notebook_cells(lab_id)
+    solution_indexes = {c["index"] for c in exercises.project_solution_cells(raw_cells)}
+    exercise_ids = {item.cell_id for item in exercises.items_for_lab(lab_id)}
 
-    cells = []
-    for index, cell in enumerate(notebook["cells"]):
-        source = cell["source"]
-        if isinstance(source, list):
-            source = "".join(source)
+    cells: list[NotebookCellOut] = []
+    project_placed = False
+    for cell in raw_cells:
+        index, role, source = cell["index"], cell["role"], cell["source"]
+
+        if index in solution_indexes:
+            # The reference project never leaves the server: students get the written brief and an
+            # empty cell in its place (one cell, standing where the first solution cell was).
+            if not project_placed:
+                project_placed = True
+                cells.append(
+                    NotebookCellOut(
+                        index=-lab_id,
+                        cell_type="markdown",
+                        role="reading",
+                        source=exercises.project_spec(lab_id),
+                    )
+                )
+                cells.append(
+                    NotebookCellOut(
+                        index=index,
+                        cell_type="code",
+                        role="project",
+                        source="# Write your project here, following the brief above.\n",
+                        graded_cell_id=exercises.PROJECT_ID,
+                        points=exercises.POINTS["project"],
+                    )
+                )
+            continue
+
+        graded_id = None
+        points = None
+        if role == "exercise" and exercises.NOTEBOOK_EXERCISE_ID in exercise_ids:
+            graded_id = exercises.NOTEBOOK_EXERCISE_ID
+            points = exercises.POINTS["llm"]
+        elif exercises.is_project_loader(cell):
+            role = "setup"
+
         cells.append(
             NotebookCellOut(
                 index=index,
                 cell_type=cell["cell_type"],
-                role=cell["metadata"].get("role", "setup"),
+                role=role,
                 source=source,
+                graded_cell_id=graded_id,
+                points=points,
             )
         )
     return NotebookOut(cells=cells)

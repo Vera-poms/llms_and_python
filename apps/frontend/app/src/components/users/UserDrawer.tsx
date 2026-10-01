@@ -130,7 +130,7 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
                 <VStack align="stretch" spacing={2}>
                   <HStack justify="space-between">
                     <Text fontWeight="semibold">
-                      Progress ({user.labs_done}/{user.total_labs} labs, {user.hints_used} hints)
+                      Progress ({user.labs_done}/{user.total_labs} labs, {user.hints_used} hints, score {user.score_percent ?? 0}%)
                     </Text>
                     <Button size="xs" variant="outline" onClick={() => setConfirm("reset")}>
                       Reset all
@@ -139,7 +139,18 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
                   {user.labs.map((lab) => (
                     <HStack key={lab.lab_id} justify="space-between">
                       <Text fontSize="sm">
-                        {lab.title} {lab.hint_count > 0 && <Badge>{lab.hint_count} hints</Badge>}
+                        {lab.title} {lab.hint_count > 0 && <Badge>{lab.hint_count} hints</Badge>}{" "}
+                        {!!lab.exercises_tried && (
+                          <Badge colorScheme="blue">
+                            {lab.exercises_passed}/{lab.exercises_tried} exercises passed &middot;{" "}
+                            {lab.exercise_attempts} tries
+                          </Badge>
+                        )}{" "}
+                        {!!lab.points_possible && (
+                          <Badge colorScheme="teal">
+                            {lab.points_earned}/{lab.points_possible} pts
+                          </Badge>
+                        )}
                       </Text>
                       <Switch
                         isChecked={lab.done}

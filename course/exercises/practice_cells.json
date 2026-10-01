@@ -1,0 +1,308 @@
+[
+  {
+    "lab_id": 1,
+    "cell_id": "concept-1",
+    "code": "import statistics\n\ndef my_mean(values: list[float]) -> float:\n    return sum(values) / len(values)\n\nnums = [4, 8, 15, 16, 23, 42]\nprint(my_mean(nums))              # 18.0 - hand-rolled\nprint(statistics.mean(nums))      # 18 - same answer, from the standard library",
+    "expected_output": "18.0\n18"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "concept-2",
+    "code": "import re\n\npost = \"Loved the #SunsetHike, best #hiking trip of the #Summer2024!\"\nhashtags = re.findall(r\"#[A-Za-z0-9]+\", post)\nprint(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']",
+    "expected_output": "['#SunsetHike', '#hiking', '#Summer2024']"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "concept-3",
+    "code": "word = \"mississippi\"\n\nletter_counts: dict[str, int] = {}\nfor letter in word:\n    letter_counts[letter] = letter_counts.get(letter, 0) + 1\n\nprint(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}",
+    "expected_output": "{'m': 1, 'i': 4, 's': 4, 'p': 2}"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "concept-4",
+    "code": "poll_counts = {\"pizza\": 12, \"tacos\": 18, \"sushi\": 10}\ntotal = sum(poll_counts.values())  # 40\ndistribution = {food: c / total for food, c in poll_counts.items()}\nprint(distribution[\"tacos\"])          # 0.45\nprint(sum(distribution.values()))     # 1.0",
+    "expected_output": "0.45\n1.0"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "concept-5",
+    "code": "runtimes = {\"level1\": 42.1, \"level2\": 30.5, \"level3\": 55.8}\nfastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]\nprint(fastest)  # [('level2', 30.5), ('level1', 42.1)]",
+    "expected_output": "[('level2', 30.5), ('level1', 42.1)]"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "concept-6",
+    "code": "import matplotlib.pyplot as plt\n\ntopics = [\"regex\", \"dicts\", \"sorting\"]\nvotes = [6, 9, 4]\n\nplt.bar(topics, votes, color=\"salmon\")\nplt.ylabel(\"votes\")\nplt.title(\"Favorite practice topic\")\nplt.show()\nprint(topics[votes.index(max(votes))])  # dicts",
+    "expected_output": null
+  },
+  {
+    "lab_id": 2,
+    "cell_id": "concept-1",
+    "code": "weather = [\"sunny\", \"rainy\", \"sunny\", \"cloudy\", \"sunny\", \"rainy\"]\n\ncounts: dict[str, int] = {}\nfor day in weather:\n    counts[day] = counts.get(day, 0) + 1\n\nbest_guess = max(counts, key=lambda outcome: counts[outcome])\nprint(best_guess)  # 'sunny'",
+    "expected_output": "sunny"
+  },
+  {
+    "lab_id": 2,
+    "cell_id": "concept-2",
+    "code": "hours =  [1, 2, 3, 4, 5]\nscores = [52, 58, 65, 71, 78]\n\nn = len(hours)\nx_mean = sum(hours) / n\ny_mean = sum(scores) / n\n\nnumerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(hours, scores))\ndenominator = sum((x - x_mean) ** 2 for x in hours)\n\nslope = numerator / denominator\nintercept = y_mean - slope * x_mean\nprint(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3",
+    "expected_output": "6.5 45.3"
+  },
+  {
+    "lab_id": 2,
+    "cell_id": "concept-3",
+    "code": "actual =    [52, 58, 65]\npredicted = [55, 55, 70]\n\nsquared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]\nmse = sum(squared_errors) / len(squared_errors)\nprint(mse)  # 14.33",
+    "expected_output": "14.333333333333334"
+  },
+  {
+    "lab_id": 2,
+    "cell_id": "concept-4",
+    "code": "import matplotlib.pyplot as plt\n\nxs = [1, 2, 3, 4, 5]\nys = [52, 58, 65, 71, 78]\n\nplt.scatter(xs, ys, label=\"real points\")\nplt.plot(xs, [6.5 * x + 45.3 for x in xs], color=\"crimson\", label=\"fit line\")\nplt.legend()\nplt.show()\nprint(\"plotted\", len(xs), \"points with a fit line\")  # plotted 5 points with a fit line",
+    "expected_output": null
+  },
+  {
+    "lab_id": 3,
+    "cell_id": "concept-1",
+    "code": "zoo: dict[str, dict[str, int]] = {}\n\nsightings = [(\"mammals\", \"lion\"), (\"mammals\", \"zebra\"),\n             (\"mammals\", \"lion\"), (\"birds\", \"owl\")]\n\nfor category, animal in sightings:\n    counts = zoo.setdefault(category, {})\n    counts[animal] = counts.get(animal, 0) + 1\n\nprint(zoo)\n# {'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}",
+    "expected_output": "{'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}"
+  },
+  {
+    "lab_id": 3,
+    "cell_id": "concept-2",
+    "code": "after_tea = {\"biscuit\": 4, \"scone\": 1}\ntotal = sum(after_tea.values())  # 5\np_biscuit_given_tea = after_tea[\"biscuit\"] / total\nprint(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8",
+    "expected_output": "0.8"
+  },
+  {
+    "lab_id": 3,
+    "cell_id": "concept-3",
+    "code": "import matplotlib.pyplot as plt\nimport numpy as np\n\ngrid = np.array([[0.2, 0.8], [0.6, 0.4]])\n\nplt.imshow(grid, cmap=\"viridis\")\nplt.colorbar(label=\"score\")\nplt.xticks([0, 1], [\"team A\", \"team B\"])\nplt.yticks([0, 1], [\"round 1\", \"round 2\"])\nplt.show()\nprint(grid.shape)  # (2, 2)",
+    "expected_output": null
+  },
+  {
+    "lab_id": 4,
+    "cell_id": "concept-1",
+    "code": "class Playlist:\n    def __init__(self, name, songs):\n        self.name = name    # instance attribute\n        self.songs = songs  # instance attribute\n\n    def add_song(self, song):\n        self.songs.append(song)\n\nmix = Playlist(\"Road Trip\", [\"Song A\"])\nmix.add_song(\"Song B\")\nprint(mix.songs)  # ['Song A', 'Song B']",
+    "expected_output": "['Song A', 'Song B']"
+  },
+  {
+    "lab_id": 4,
+    "cell_id": "concept-2",
+    "code": "scores = [90, 80, 70]\nweights = [0.5, 0.3, 0.2]\nfinal_grade = sum(s * w for s, w in zip(scores, weights))\nprint(final_grade)  # 83.0",
+    "expected_output": "83.0"
+  },
+  {
+    "lab_id": 4,
+    "cell_id": "concept-3",
+    "code": "def freeze_alert(temp_c):\n    return 1 if temp_c <= 0 else -1\n\nprint(freeze_alert(-5))  # 1\nprint(freeze_alert(10))  # -1",
+    "expected_output": "1\n-1"
+  },
+  {
+    "lab_id": 4,
+    "cell_id": "concept-4",
+    "code": "import matplotlib.pyplot as plt\n\ncity_temp = [30, 45, 60, 75, 90]\nice_cream_sales = [10, 25, 40, 70, 95]\nplt.scatter(city_temp, ice_cream_sales)\nplt.xlabel(\"temperature (F)\")\nplt.ylabel(\"ice cream sales\")\nplt.savefig(\"ice_cream.png\")\nprint(\"Saved scatter plot to ice_cream.png\")  # Saved scatter plot to ice_cream.png",
+    "expected_output": null
+  },
+  {
+    "lab_id": 5,
+    "cell_id": "concept-1",
+    "code": "rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]\ntotal_sixes = 0\nfor round_rolls in rounds:\n    for roll in round_rolls:\n        if roll == 6:\n            total_sixes += 1\nprint(total_sixes)  # 2",
+    "expected_output": "2"
+  },
+  {
+    "lab_id": 5,
+    "cell_id": "concept-2",
+    "code": "brew_minutes = 5.0  # minutes used in the too-bitter batch\ntoo_bitter = -1     # -1 means \"too bitter\", +1 would mean \"too weak\"\nlearning_rate = 0.2\n\nadjustment = learning_rate * too_bitter * brew_minutes\nbrew_minutes += adjustment\nprint(brew_minutes)  # 4.0 - a little less brew time next time",
+    "expected_output": "4.0"
+  },
+  {
+    "lab_id": 5,
+    "cell_id": "concept-3",
+    "code": "score = 0\nscore += 10  # mutates score in place\nscore += 25\nprint(score)  # 35 - remembers every point scored before it",
+    "expected_output": "35"
+  },
+  {
+    "lab_id": 5,
+    "cell_id": "concept-4",
+    "code": "import matplotlib.pyplot as plt\n\nfig, axes = plt.subplots(1, 2, figsize=(8, 3))\naxes[0].plot([1, 2, 3], [10, 20, 15])\naxes[0].set_title(\"daily steps\")\naxes[1].bar([\"tea\", \"coffee\"], [5, 9])\naxes[1].set_title(\"drink orders\")\nplt.tight_layout()\nplt.savefig(\"two_panels.png\")\nprint(\"Saved side-by-side charts to two_panels.png\")  # Saved side-by-side charts to two_panels.png",
+    "expected_output": null
+  },
+  {
+    "lab_id": 6,
+    "cell_id": "concept-1",
+    "code": "rows = 20\nseats_per_row = 15\ntotal_seats = rows * seats_per_row\nprint(total_seats)  # 300",
+    "expected_output": "300"
+  },
+  {
+    "lab_id": 6,
+    "cell_id": "concept-2",
+    "code": "from dataclasses import dataclass\n\n@dataclass\nclass Car:\n    mpg: float\n    tank_gallons: float\n\n    def range_miles(self) -> float:\n        return self.mpg * self.tank_gallons\n\nc = Car(mpg=30.0, tank_gallons=12.0)\nprint(c.range_miles())  # 360.0",
+    "expected_output": "360.0"
+  },
+  {
+    "lab_id": 6,
+    "cell_id": "concept-3",
+    "code": "server_config = {\n    \"host\": \"localhost\",\n    \"port\": 8080,\n    \"workers\": 4,\n    \"timeout_seconds\": 30,\n}\nprint(server_config[\"workers\"])  # 4",
+    "expected_output": "4"
+  },
+  {
+    "lab_id": 6,
+    "cell_id": "concept-4",
+    "code": "import matplotlib.pyplot as plt\n\nquarters = [\"Q1\", \"Q2\"]\nbudget = [100, 120]\nactual = [90, 130]\nx = range(len(quarters))\n\nplt.bar([i - 0.2 for i in x], budget, width=0.4, label=\"budget\")\nplt.bar([i + 0.2 for i in x], actual, width=0.4, label=\"actual\")\nplt.xticks(list(x), quarters)\nplt.ylabel(\"$ thousands\")\nplt.legend()\nplt.savefig(\"budget_vs_actual.png\")\nprint(\"Saved grouped bar chart to budget_vs_actual.png\")  # Saved grouped bar chart to budget_vs_actual.png",
+    "expected_output": null
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "concept-1",
+    "code": "grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1\nprint(grid[0])  # expected output: [10, 20]\nprint(grid[1][0])  # expected output: 30",
+    "expected_output": "[10, 20]\n30"
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "concept-2",
+    "code": "prices = [2, 5, 1]\nquantities = [3, 2, 4]\ntotal = sum(p * q for p, q in zip(prices, quantities))\nprint(total)  # expected output: 20",
+    "expected_output": "20"
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "concept-3",
+    "code": "import numpy as np\n\nscores = np.array([3.0, 1.0, 0.0])\nexp_scores = np.exp(scores - scores.max())\nprobs = exp_scores / exp_scores.sum()\nprint(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]",
+    "expected_output": "[0.84 0.11 0.04]"
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "concept-4",
+    "code": "import numpy as np\n\na = [1, 2, 3]\nb = [10, 20, 30]\n\n# manual loop, element by element\nmanual = [a[i] + b[i] for i in range(len(a))]\n\n# numpy: no loop needed\nvectorized = np.array(a) + np.array(b)\nprint(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]",
+    "expected_output": "[11, 22, 33] [np.int64(11), np.int64(22), np.int64(33)]"
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "concept-5",
+    "code": "rainfall = [[5, 2, 8], [1, 9, 3]]\nplt.imshow(rainfall, cmap=\"Blues\")\nplt.colorbar(label=\"mm\")\nplt.xticks(range(3), [\"Jan\", \"Feb\", \"Mar\"])\nplt.yticks(range(2), [\"CityA\", \"CityB\"])\nplt.title(\"Monthly rainfall\")\nplt.show()\nprint(\"plotted a 2x3 rainfall grid\")  # expected output: plotted a 2x3 rainfall grid",
+    "expected_output": null
+  },
+  {
+    "lab_id": 8,
+    "cell_id": "concept-1",
+    "code": "item = \"notebook\"\nqty = 3\nmessage = f\"You ordered {qty} {item}(s).\"\nprint(message)  # expected output: You ordered 3 notebook(s).\n\norder_template = \"You ordered {qty} {item}(s).\"\nprint(order_template.format(qty=5, item=\"pen\"))  # expected output: You ordered 5 pen(s).",
+    "expected_output": "You ordered 3 notebook(s).\nYou ordered 5 pen(s)."
+  },
+  {
+    "lab_id": 8,
+    "cell_id": "concept-2",
+    "code": "def render(template, **data):\n    return template.format(**data)\n\ninvoice_template = \"Invoice for {customer}: ${amount}\"\nprint(render(invoice_template, customer=\"Alex\", amount=42))  # expected output: Invoice for Alex: $42\nprint(render(invoice_template, customer=\"Sam\", amount=17))  # expected output: Invoice for Sam: $17",
+    "expected_output": "Invoice for Alex: $42\nInvoice for Sam: $17"
+  },
+  {
+    "lab_id": 8,
+    "cell_id": "concept-3",
+    "code": "class Tally:\n    def __init__(self, start=0):\n        self.count = start  # state stored on the instance\n\n    def bump(self, n=1):\n        self.count += n\n        return self.count\n\nt = Tally()\nt.bump(2)\nprint(t.bump(3))  # expected output: 5",
+    "expected_output": "5"
+  },
+  {
+    "lab_id": 9,
+    "cell_id": "concept-1",
+    "code": "import requests\n\nresponse = requests.get(\"https://api.github.com/repos/psf/requests\")\ndata = response.json()\nprint(data[\"language\"])  # expected output: Python",
+    "expected_output": "Python"
+  },
+  {
+    "lab_id": 9,
+    "cell_id": "concept-2",
+    "code": "import os\n\nos.environ[\"MY_APP_TOKEN\"] = \"demo-token-123\"  # normally set outside your code, not like this\ntoken = os.environ[\"MY_APP_TOKEN\"]\nprint(token)  # expected output: demo-token-123",
+    "expected_output": "demo-token-123"
+  },
+  {
+    "lab_id": 9,
+    "cell_id": "concept-3",
+    "code": "data = {\"user\": \"Vera\", \"orders\": [101, 102, 103]}\nprint(data[\"user\"])  # expected output: Vera\nprint(data[\"orders\"][-1])  # expected output: 103",
+    "expected_output": "Vera\n103"
+  },
+  {
+    "lab_id": 10,
+    "cell_id": "concept-1",
+    "code": "examples = [\n    (\"hello\", \"HELLO!\"),\n    (\"bye\", \"BYE!\"),\n]\n# Instead of describing the rule in words, just show the pattern:\ndef apply_pattern(word):\n    return word.upper() + \"!\"\n\nquery = \"yes\"\nprint(apply_pattern(query))  # expected output: YES!",
+    "expected_output": "YES!"
+  },
+  {
+    "lab_id": 10,
+    "cell_id": "concept-2",
+    "code": "import json\n\nraw = '{\"item\": \"Mug\", \"price\": 9.99}'\n\ntry:\n    product = json.loads(raw)\n    if \"price\" not in product:\n        raise ValueError(\"missing price\")\n    print(product[\"item\"], product[\"price\"])  # expected output: Mug 9.99\nexcept json.JSONDecodeError:\n    print(\"not valid JSON\")\nexcept ValueError as e:\n    print(f\"parsed but incomplete: {e}\")",
+    "expected_output": "Mug 9.99"
+  },
+  {
+    "lab_id": 11,
+    "cell_id": "concept-1",
+    "code": "def guess_total(price, tax_rate):\n    \"\"\"Straight to an answer - fast, but nothing to check if it's wrong.\"\"\"\n    return price + price * tax_rate\n\ndef show_total_steps(price, tax_rate):\n    \"\"\"Break it into steps you can each verify.\"\"\"\n    tax = price * tax_rate\n    total = price + tax\n    return f\"tax={tax:.2f}, total={total:.2f}\"\n\nprint(guess_total(50, 0.08))        # expected output: 54.0\nprint(show_total_steps(50, 0.08))   # expected output: tax=4.00, total=54.00",
+    "expected_output": "54.0\ntax=4.00, total=54.00"
+  },
+  {
+    "lab_id": 11,
+    "cell_id": "concept-2",
+    "code": "forecast = \"Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F\"\n\ndef extract_high(text: str, marker: str = \"High:\") -> str:\n    if marker not in text:\n        return text.strip()\n    return text.rsplit(marker, 1)[1].strip()\n\nprint(extract_high(forecast))  # expected output: 78F",
+    "expected_output": "78F"
+  },
+  {
+    "lab_id": 12,
+    "cell_id": "concept-1",
+    "code": "support_log = [\n    {\"agent\": \"Bot\", \"message\": \"Hi, how can I help?\"},\n    {\"agent\": \"User\", \"message\": \"My order is late.\"},\n    {\"agent\": \"Bot\", \"message\": \"Let me check that for you.\"},\n]\n\nfor turn in support_log:\n    print(f\"{turn['agent']}: {turn['message']}\")\n# expected output:\n# Bot: Hi, how can I help?\n# User: My order is late.\n# Bot: Let me check that for you.",
+    "expected_output": "Bot: Hi, how can I help?\nUser: My order is late.\nBot: Let me check that for you."
+  },
+  {
+    "lab_id": 12,
+    "cell_id": "concept-2",
+    "code": "classroom_log = [\n    {\"role\": \"teacher_note\", \"text\": \"Keep answers under two sentences.\"},\n    {\"role\": \"student\", \"text\": \"What's the capital of France?\"},\n    {\"role\": \"helper\", \"text\": \"Paris.\"},\n]\n\nstanding_rule = classroom_log[0][\"text\"]\nprint(standing_rule)  # expected output: Keep answers under two sentences.",
+    "expected_output": "Keep answers under two sentences."
+  },
+  {
+    "lab_id": 12,
+    "cell_id": "concept-3",
+    "code": "discount = \"SAVE10\"                      # built once\nfor cart_total in [25, 40, 100]:          # varies every iteration\n    print(f\"Applying {discount} to ${cart_total}\")\n# expected output:\n# Applying SAVE10 to $25\n# Applying SAVE10 to $40\n# Applying SAVE10 to $100",
+    "expected_output": "Applying SAVE10 to $25\nApplying SAVE10 to $40\nApplying SAVE10 to $100"
+  },
+  {
+    "lab_id": 13,
+    "cell_id": "concept-1",
+    "code": "readings = []\nreadings.append(68)\nreadings.append(71)\nprint(readings)  # expected output: [68, 71]",
+    "expected_output": "[68, 71]"
+  },
+  {
+    "lab_id": 13,
+    "cell_id": "concept-2",
+    "code": "deliveries = []\nfor package in [\"P100\", \"P101\"]:\n    deliveries.append(f\"{package} delivered\")\nprint(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']",
+    "expected_output": "['P100 delivered', 'P101 delivered']"
+  },
+  {
+    "lab_id": 13,
+    "cell_id": "concept-3",
+    "code": "person = {\"name\": \"Sam\", \"occasion\": \"graduation\"}\ncard = f\"Congrats {person['name']} on your {person['occasion']}!\"\nprint(card)  # expected output: Congrats Sam on your graduation!",
+    "expected_output": "Congrats Sam on your graduation!"
+  },
+  {
+    "lab_id": 14,
+    "cell_id": "concept-1",
+    "code": "request = {\n    \"endpoint\": \"https://api.example.com/orders\",\n    \"method\": \"POST\",\n    \"headers\": {\"Authorization\": \"Bearer abc123\"},\n    \"body\": {\"item\": \"widget\", \"qty\": 2},\n}\nprint(f\"{request['method']} {request['endpoint']}\")  # expected output: POST https://api.example.com/orders",
+    "expected_output": "POST https://api.example.com/orders"
+  },
+  {
+    "lab_id": 14,
+    "cell_id": "concept-2",
+    "code": "class VendingMachine:\n    def __init__(self, stock):\n        self.stock = stock  # state the object remembers\n\n    def dispense(self, item):\n        self.stock[item] -= 1  # the repeated logic, written once\n        return self.stock[item]\n\nvm = VendingMachine({\"soda\": 5})\nprint(vm.dispense(\"soda\"))  # expected output: 4\nprint(vm.dispense(\"soda\"))  # expected output: 3",
+    "expected_output": "4\n3"
+  },
+  {
+    "lab_id": 15,
+    "cell_id": "concept-1",
+    "code": "class BankAccount:\n    def __init__(self):\n        self.balance = 0\n\n    def deposit(self, amount):\n        self.balance += amount\n\naccount = BankAccount()\naccount.deposit(50)\naccount.deposit(25)\nprint(account.balance)  # expected output: 75",
+    "expected_output": "75"
+  },
+  {
+    "lab_id": 15,
+    "cell_id": "concept-2",
+    "code": "class Playlist:\n    def __init__(self):\n        self.songs = []\n\n    def add(self, song):\n        self.songs.append(song)\n        print(f\"Queued: {song} ({len(self.songs)} songs total)\")\n\nplaylist = Playlist()\nplaylist.add(\"Song A\")\nplaylist.add(\"Song B\")\n# expected output:\n# Queued: Song A (1 songs total)\n# Queued: Song B (2 songs total)",
+    "expected_output": "Queued: Song A (1 songs total)\nQueued: Song B (2 songs total)"
+  },
+  {
+    "lab_id": 15,
+    "cell_id": "concept-3",
+    "code": "def fake_sender(message):\n    return f\"[fake] would send: {message}\"\n\nclass Notifier:\n    def __init__(self, sender):\n        self.sender = sender\n\n    def notify(self, message):\n        return self.sender(message)\n\nnotifier = Notifier(sender=fake_sender)\nprint(notifier.notify(\"Build complete\"))  # expected output: [fake] would send: Build complete",
+    "expected_output": "[fake] would send: Build complete"
+  }
+]

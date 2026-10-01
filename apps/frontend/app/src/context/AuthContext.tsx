@@ -2,8 +2,31 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 
 import { api } from "../api/client";
 
+// Reads the user id ("sub" claim) from the JWT. Not verified here; only used to namespace client-side storage.
+function userIdFromToken(token: string | null): string | null {
+  if (!token) return null;
+  try {
+    const payload = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const sub = JSON.parse(atob(payload)).sub;
+    return typeof sub === "string" ? sub : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearDrafts(): void {
+  try {
+    Object.keys(sessionStorage)
+      .filter((key) => key.startsWith("practice-cell:"))
+      .forEach((key) => sessionStorage.removeItem(key));
+  } catch {
+    // ignore
+  }
+}
+
 interface AuthContextValue {
   token: string | null;
+  userId: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   resetPassword: (token: string, newPassword: string) => Promise<void>;
@@ -32,6 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function logout() {
     localStorage.removeItem("token");
+    clearDrafts();
     setToken(null);
   }
 
@@ -39,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         token,
+        userId: userIdFromToken(token),
         login: (email, password) => authenticate("login", email, password),
         signup: (email, password) => authenticate("signup", email, password),
         resetPassword,

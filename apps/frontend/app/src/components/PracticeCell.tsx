@@ -2,7 +2,9 @@ import { Alert, AlertIcon, Badge, Box, Button, HStack, Text, VStack } from "@cha
 import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
+import { useAuth } from "../context/AuthContext";
 import { CodeEditor } from "./CodeEditor";
+import { HintButton } from "./HintButton";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
 function actualStdout(result: RunResult): string {
@@ -12,21 +14,23 @@ function actualStdout(result: RunResult): string {
     .join("");
 }
 
-function draftKey(labId: number, cellId: string): string {
-  return `practice-cell:${labId}:${cellId}`;
+function draftKey(userId: string, labId: number, cellId: string): string {
+  return `practice-cell:${userId}:${labId}:${cellId}`;
 }
 
-function readDraft(labId: number, cellId: string): string | null {
+function readDraft(userId: string | null, labId: number, cellId: string): string | null {
+  if (!userId) return null;
   try {
-    return sessionStorage.getItem(draftKey(labId, cellId));
+    return sessionStorage.getItem(draftKey(userId, labId, cellId));
   } catch {
     return null;
   }
 }
 
-function writeDraft(labId: number, cellId: string, source: string): void {
+function writeDraft(userId: string | null, labId: number, cellId: string, source: string): void {
+  if (!userId) return;
   try {
-    sessionStorage.setItem(draftKey(labId, cellId), source);
+    sessionStorage.setItem(draftKey(userId, labId, cellId), source);
   } catch {
     // ignore (e.g. private browsing storage restrictions)
   }
@@ -35,15 +39,16 @@ function writeDraft(labId: number, cellId: string, source: string): void {
 export function PracticeCell({
   labId,
   cellId,
-  code,
   expectedOutput,
 }: {
   labId: number;
   cellId: string;
-  code: string;
+  // Still passed by the readings, but grading uses the server's copy (course/exercises/practice_cells.json).
+  code?: string;
   expectedOutput?: string;
 }) {
-  const [source, setSource] = useState(() => readDraft(labId, cellId) ?? "# write your code here");
+  const { userId } = useAuth();
+  const [source, setSource] = useState(() => readDraft(userId, labId, cellId) ?? "# write your code here");
   const [result, setResult] = useState<RunResult | null>(null);
   const [running, setRunning] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -52,7 +57,7 @@ export function PracticeCell({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const hadDraft = readDraft(labId, cellId) !== null;
+    const hadDraft = readDraft(userId, labId, cellId) !== null;
     api
       .get(`/labs/${labId}/cells/${cellId}/code`)
       .then((response) => {
@@ -63,12 +68,27 @@ export function PracticeCell({
       .catch(() => {
         // no saved code yet - leave the textarea as-is
       });
+
+    api
+      .get(`/labs/${labId}/cells/results`)
+      .then((response) => {
+        const saved = (response.data as { cell_id: string; passed: boolean; feedback: string | null }[]).find(
+          (r) => r.cell_id === cellId,
+        );
+        if (saved?.passed) {
+          setCheckStatus("pass");
+          setFeedback(saved.feedback);
+        }
+      })
+      .catch(() => {
+        // no recorded result - leave status idle
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [labId, cellId]);
 
   function updateSource(next: string) {
     setSource(next);
-    writeDraft(labId, cellId, next);
+    writeDraft(userId, labId, cellId, next);
   }
 
   async function run() {
@@ -87,11 +107,10 @@ export function PracticeCell({
 
       setChecking(true);
       try {
+        // The answer key lives on the server; only the student's code and its output are sent.
         const judgeResponse = await api.post(`/labs/${labId}/cells/${cellId}/judge`, {
           source,
           output: actualStdout(runResult),
-          reference_source: code,
-          reference_output: expectedOutput,
         });
         const { correct, feedback: judgeFeedback } = judgeResponse.data;
         setCheckStatus(correct ? "pass" : "fail");
@@ -161,6 +180,15 @@ export function PracticeCell({
             {errorMessage}
           </Alert>
         )}
+        <HintButton
+          labId={labId}
+          cellId={cellId}
+          getSource={() => source}
+          getOutput={() => (result ? actualStdout(result) : "")}
+        />
+        <Text fontSize="xs" color="gray.500">
+          Worth 5 points.
+        </Text>
       </VStack>
     </Box>
   );
