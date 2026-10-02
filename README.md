@@ -182,6 +182,17 @@ Requires [Podman](https://podman.io) and `podman-compose`. On Windows/macOS,
 start the Podman machine first (`podman machine init` once, then
 `podman machine start`).
 
+Create the two env files from their templates and fill them in:
+
+```bash
+cp .env.example .env                                  # DB credentials, SECRET_KEY (openssl rand -hex 32)
+cp apps/backend/app/.env.example apps/backend/app/.env  # LLM keys, owner, SMTP
+```
+
+Compose refuses to start if `POSTGRES_PASSWORD` or `SECRET_KEY` is missing, and
+the backend will not boot without `SECRET_KEY`. Both `.env` files are
+git-ignored; only the `.env.example` templates are committed.
+
 ```bash
 podman-compose up --build
 ```
@@ -190,18 +201,25 @@ podman-compose up --build
 |---------|---------|-------|
 | frontend | http://localhost:5000 | Vite dev server |
 | backend | http://localhost:8020 | FastAPI; `GET /health`, docs at `/docs` |
-| db | localhost:5434 | Postgres 16; credentials are set in `compose.yml` |
+| db | localhost:5434 | Postgres 16; credentials come from the root `.env` |
 
-The backend reads `apps/backend/app/.env` (git-ignored) and mounts `./course` at
+Postgres only applies `POSTGRES_PASSWORD` when it first creates its data volume;
+after changing it, either recreate the volume (`podman-compose down -v`) or run
+`ALTER USER` in the container. The backend reads `apps/backend/app/.env` and mounts `./course` at
 `/course`. On startup it creates tables, adds missing columns
 (`users.is_admin`, `cell_results.hints_used`) and upserts the 15 labs.
 
 ### Configuration
 
+Root `.env` (read by compose): `POSTGRES_USER`, `POSTGRES_DB`,
+`POSTGRES_PASSWORD`, `SECRET_KEY`, `CORS_ORIGINS`, `VITE_API_URL`. Compose passes
+`DATABASE_URL`, `SECRET_KEY` and `CORS_ORIGINS` to the backend, so do not repeat
+them in the backend `.env`. Everything else below goes in `apps/backend/app/.env`.
+
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DATABASE_URL` | required | SQLAlchemy URL (set in `compose.yml`) |
-| `SECRET_KEY` | set in `compose.yml` | JWT signing key (HS256); use a unique random value in production |
+| `DATABASE_URL` | required | SQLAlchemy URL (built by `compose.yml` from the root `.env`) |
+| `SECRET_KEY` | required, no default | JWT signing key (HS256); from the root `.env`; use a unique random value |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `10080` (7 days) | Student token lifetime |
 | `CORS_ORIGINS` | `http://localhost:5000` | Comma-separated origins |
 | `COURSE_DIR` | `/course` | Notebooks, briefs, answer key |

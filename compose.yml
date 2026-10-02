@@ -2,13 +2,13 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: llms
-      POSTGRES_PASSWORD: llms_dev_password
-      POSTGRES_DB: llms
+      POSTGRES_USER: ${POSTGRES_USER:-llms}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-llms}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U llms -d llms"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,9 +21,9 @@ services:
     env_file:
       - ./apps/backend/app/.env
     environment:
-      DATABASE_URL: postgresql+psycopg://llms:llms_dev_password@db:5432/llms
-      SECRET_KEY: dev-secret-change-me
-      CORS_ORIGINS: http://localhost:5000
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-llms}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-llms}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5000}
     depends_on:
       db:
         condition: service_healthy
@@ -38,7 +38,7 @@ services:
       context: ./apps/frontend/app
     environment:
       # Reaches the browser, not other containers — must be the host-published backend port.
-      VITE_API_URL: http://localhost:8020
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8020}
     depends_on:
       - backend
     ports:
