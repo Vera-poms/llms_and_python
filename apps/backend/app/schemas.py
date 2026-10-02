@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import Annotated, Literal
+from urllib.parse import urlparse
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class SignupRequest(BaseModel):
@@ -214,3 +216,74 @@ class NotebookOutputItem(BaseModel):
 class RunCellResponse(BaseModel):
     outputs: list[NotebookOutputItem]
     ok: bool
+
+
+# --- weekly resources ---------------------------------------------------------------------------
+
+MAX_BLOCKS = 100
+MAX_BLOCK_CHARS = 50_000
+
+
+class TextBlock(BaseModel):
+    type: Literal["text"]
+    markdown: str = Field(max_length=MAX_BLOCK_CHARS)
+
+
+class CodeBlock(BaseModel):
+    type: Literal["code"]
+    code: str = Field(max_length=MAX_BLOCK_CHARS)
+    runnable: bool = True
+
+
+class LinkBlock(BaseModel):
+    type: Literal["link"]
+    url: str = Field(max_length=2048)
+    title: str | None = Field(default=None, max_length=255)
+    note: str | None = Field(default=None, max_length=2000)
+
+    @field_validator("url")
+    @classmethod
+    def _http_only(cls, value: str) -> str:
+        value = value.strip()
+        parsed = urlparse(value)
+        if parsed.scheme not in ("http", "https") or not parsed.netloc:
+            raise ValueError("Links must be http(s) URLs")
+        return value
+
+
+ResourceBlock = Annotated[TextBlock | CodeBlock | LinkBlock, Field(discriminator="type")]
+
+
+class ResourceWrite(BaseModel):
+    week: int = Field(ge=2, le=52)
+    title: str = Field(min_length=1, max_length=255)
+    summary: str = Field(default="", max_length=2000)
+    position: int = Field(default=0, ge=0)
+    blocks: list[ResourceBlock] = Field(default_factory=list, max_length=MAX_BLOCKS)
+
+    @field_validator("title")
+    @classmethod
+    def _strip_title(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Title is required")
+        return value
+
+
+class ResourceOut(BaseModel):
+    id: int
+    week: int
+    title: str
+    summary: str
+    position: int
+    blocks: list[ResourceBlock]
+    released_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ResourceRunRequest(BaseModel):
+    source: str = Field(max_length=MAX_BLOCK_CHARS)

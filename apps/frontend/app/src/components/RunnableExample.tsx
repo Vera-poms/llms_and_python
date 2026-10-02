@@ -5,16 +5,23 @@ import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
-export function RunnableExample({ labId, code }: { labId: number; code: string }) {
+type RunFn = (source: string) => Promise<RunResult>;
+
+// `run` overrides the default lab-notebook endpoint, e.g. for weekly resources.
+export function RunnableExample({ labId, code, run }: { labId?: number; code: string; run?: RunFn }) {
   const [source, setSource] = useState(code);
   const [result, setResult] = useState<RunResult | null>(null);
   const [running, setRunning] = useState(false);
 
-  async function run() {
+  async function execute() {
     setRunning(true);
     try {
-      const response = await api.post(`/notebooks/${labId}/run`, { source });
-      setResult(response.data);
+      if (run) {
+        setResult(await run(source));
+      } else {
+        const response = await api.post(`/notebooks/${labId}/run`, { source });
+        setResult(response.data);
+      }
     } finally {
       setRunning(false);
     }
@@ -25,7 +32,7 @@ export function RunnableExample({ labId, code }: { labId: number; code: string }
       <VStack align="stretch" spacing={2}>
         <HStack justify="space-between">
           <Badge colorScheme="gray">Run it</Badge>
-          <Button size="xs" onClick={run} isLoading={running}>
+          <Button size="xs" onClick={execute} isLoading={running}>
             Run
           </Button>
         </HStack>

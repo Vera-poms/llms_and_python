@@ -1,8 +1,11 @@
-import { Badge, Box, Button, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
 
 import { api } from "../api/client";
+import type { Resource } from "../api/resourceManagement";
+import { ResourceRenderer } from "../components/resources/ResourceRenderer";
+import { CourseSidebar } from "../components/CourseSidebar";
 import { useAuth } from "../context/AuthContext";
 import { LABS } from "../data/labs";
 
@@ -25,6 +28,18 @@ export function LabListPage() {
   const [progressById, setProgressById] = useState<Record<number, LabApiResult["progress"]>>({});
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState<ScoreApiResult | null>(null);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Week 1 is the static lab list; later weeks exist only once an admin has released a resource.
+  const weeks = [1, ...new Set(resources.map((r) => r.week))].sort((a, b) => a - b);
+  const doneIds = new Set(
+    Object.entries(progressById)
+      .filter(([, p]) => p.done)
+      .map(([id]) => Number(id)),
+  );
+  const requestedWeek = Number(searchParams.get("week")) || 1;
+  const week = weeks.includes(requestedWeek) ? requestedWeek : 1;
 
   useEffect(() => {
     api
@@ -43,6 +58,12 @@ export function LabListPage() {
       .catch(() => {
         // scores are optional on this page
       });
+    api
+      .get<Resource[]>("/resources")
+      .then((response) => setResources(response.data))
+      .catch(() => {
+        // weekly resources are optional on this page
+      });
   }, []);
 
   function handleLogout() {
@@ -51,7 +72,15 @@ export function LabListPage() {
   }
 
   return (
-    <Box maxW="2xl" mx="auto" my={12} px={4}>
+    <Flex maxW="5xl" mx="auto" my={12} px={4} gap={8} direction={{ base: "column", md: "row" }}>
+      <CourseSidebar
+        weeks={weeks}
+        active={week}
+        labs={LABS}
+        doneIds={doneIds}
+        onSelectWeek={(w) => setSearchParams(w === 1 ? {} : { week: String(w) })}
+      />
+      <Box flex="1" minW={0} maxW="2xl">
       <HStack justify="space-between" mb={6}>
         <Heading size="lg">LLM Foundations Course</Heading>
         <Button size="sm" variant="outline" onClick={handleLogout}>
@@ -59,7 +88,25 @@ export function LabListPage() {
         </Button>
       </HStack>
 
-      {score && (
+      {week !== 1 &&
+        resources
+          .filter((r) => r.week === week)
+          .map((r) => (
+            <Box key={r.id} mb={8}>
+              <Heading size="md">{r.title}</Heading>
+              {r.summary && (
+                <Text color="gray.600" _dark={{ color: "gray.300" }} mb={3}>
+                  {r.summary}
+                </Text>
+              )}
+              <ResourceRenderer
+                blocks={r.blocks}
+                run={(source) => api.post(`/resources/${r.id}/run`, { source }).then((res) => res.data)}
+              />
+            </Box>
+          ))}
+
+      {week === 1 && score && (
         <Box mb={6} p={4} borderWidth="1px" borderRadius="md">
           <Text fontWeight="bold">
             Course score: {score.percent}% ({score.earned}/{score.possible} points)
@@ -70,6 +117,7 @@ export function LabListPage() {
         </Box>
       )}
 
+      {week === 1 && (
       <VStack align="stretch" spacing={3}>
         {LABS.map((lab) => {
           const done = progressById[lab.id]?.done ?? false;
@@ -110,6 +158,8 @@ export function LabListPage() {
           );
         })}
       </VStack>
-    </Box>
+      )}
+      </Box>
+    </Flex>
   );
 }

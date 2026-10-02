@@ -1,8 +1,9 @@
-import { Box, Button, Flex, Heading } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-import { adminUserApi } from "../api/adminEndpoints";
+import { adminResourceApi, adminUserApi } from "../api/adminEndpoints";
 import { setAdminToken } from "../api/adminClient";
+import { ResourcesPanel } from "../components/resources/ResourcesPanel";
 import { UsersPanel } from "../components/users/UsersPanel";
 
 export function AdminHomePage() {
@@ -19,7 +20,20 @@ export function AdminHomePage() {
         <Heading size="lg">Admin dashboard</Heading>
         <Button onClick={logout}>Sign out</Button>
       </Flex>
-      <UsersPanel api={adminUserApi} />
+      <Tabs isLazy>
+        <TabList>
+          <Tab>Users</Tab>
+          <Tab>Weekly resources</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel px={0}>
+            <UsersPanel api={adminUserApi} />
+          </TabPanel>
+          <TabPanel px={0}>
+            <ResourcesPanel api={adminResourceApi} />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 }
