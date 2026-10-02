@@ -4,6 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Backend origin baked into the bundle at build time. Routes sit at the root
+  # (/auth, /labs, ...), so this is the bare origin with no trailing slash.
+  VITE_API_URL = "https://llms-and-python.onrender.com"
 
 # SPA fallback so BrowserRouter routes (e.g. /labs/1, /admin) work on refresh/deep links
 [[redirects]]
