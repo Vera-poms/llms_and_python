@@ -1,8 +1,9 @@
-import { Badge, Box, Button, HStack, Link, Text, VStack } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { Badge, Box, Button, Flex, HStack, Link, Text, VStack } from "@chakra-ui/react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
 import { api } from "../api/client";
+import { LabSidebar } from "../components/LabSidebar";
 import { NotebookRunner } from "../components/NotebookRunner";
 import { LABS } from "../data/labs";
 import { Lab01Reading } from "../data/readings/Lab01Reading";
@@ -46,6 +47,8 @@ export function LabDetailPage() {
   const lab = LABS.find((l) => l.id === id);
   const Reading = READINGS[id];
 
+  const readingRef = useRef<HTMLDivElement>(null);
+  const notebookRef = useRef<HTMLDivElement>(null);
   const [done, setDone] = useState(false);
   const [score, setScore] = useState<{ earned: number; possible: number; percent: number } | null>(null);
 
@@ -81,15 +84,19 @@ export function LabDetailPage() {
   }
 
   return (
-    <Box maxW="4xl" mx="auto" mt={12} px={4} mb={16}>
+    <Flex maxW="6xl" mx="auto" mt={12} px={4} mb={16} gap={8}>
+      <LabSidebar readingRef={readingRef} notebookRef={notebookRef} />
+      <Box flex="1" minW={0} maxW="4xl">
       <Link as={RouterLink} to="/labs" color="blue.500">
         &larr; All labs
       </Link>
 
       <VStack align="stretch" spacing={6} mt={4}>
-        <Reading />
+        <Box ref={readingRef}>
+          <Reading />
+        </Box>
 
-        <Box borderTopWidth="1px" pt={4}>
+        <Box ref={notebookRef} borderTopWidth="1px" pt={4}>
           <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} onProgress={refresh} />
         </Box>
 
@@ -112,6 +119,7 @@ export function LabDetailPage() {
           </HStack>
         </Box>
       </VStack>
-    </Box>
+      </Box>
+    </Flex>
   );
 }

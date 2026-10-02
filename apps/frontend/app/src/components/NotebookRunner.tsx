@@ -169,7 +169,7 @@ function GradedCell({
   }
 
   return (
-    <Box borderWidth="1px" borderRadius="md" p={3}>
+    <Box data-nav={cell.role} borderWidth="1px" borderRadius="md" p={3}>
       <VStack align="stretch" spacing={2}>
         <HStack justify="space-between">
           <HStack>
