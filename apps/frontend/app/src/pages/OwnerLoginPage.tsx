@@ -40,7 +40,7 @@ export function OwnerLoginPage() {
   }
 
   return (
-    <Box maxW="sm" mx="auto" mt={20}>
+    <Box maxW="sm" mx="auto" mt={{ base: 8, md: 20 }} px={{ base: 4, md: 0 }} pb={10}>
       <Heading size="lg" mb={6}>
         Owner sign in
       </Heading>
