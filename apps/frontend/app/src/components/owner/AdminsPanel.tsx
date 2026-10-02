@@ -5,16 +5,12 @@ import {
   Badge,
   Button,
   Code,
+  Box,
   Heading,
   HStack,
   Input,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
+  Stack,
+  Text,
   VStack,
   useToast,
 } from "@chakra-ui/react";
@@ -80,17 +76,17 @@ export function AdminsPanel() {
       <VStack align="stretch" spacing={3}>
         <Heading size="sm">Invite an admin</Heading>
         <form onSubmit={invite}>
-          <HStack>
+          <Stack direction={{ base: "column", sm: "row" }}>
             <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <Button type="submit" colorScheme="blue">
+            <Button type="submit" colorScheme="blue" flexShrink={0}>
               Send invite
             </Button>
-          </HStack>
+          </Stack>
         </form>
         {created && (
           <Alert status={created.emailed ? "success" : "warning"} alignItems="flex-start">
             <AlertIcon />
-            <AlertDescription>
+            <AlertDescription minW={0} fontSize="sm">
               {created.emailed ? "Invite emailed." : "Email not sent — share this link yourself."} Link (shown once):{" "}
               <Code wordBreak="break-all" data-testid="invite-link">
                 {`${window.location.origin}/admin/signup?${new URLSearchParams({ email: created.email, code: created.code })}`}
@@ -102,64 +98,69 @@ export function AdminsPanel() {
 
       <VStack align="stretch" spacing={2}>
         <Heading size="sm">Admins</Heading>
-        <TableContainer>
-          <Table size="sm">
-            <Tbody>
-              {admins.map((a) => (
-                <Tr key={a.id}>
-                  <Td>{a.email}</Td>
-                  <Td isNumeric>
-                    <Button
-                      size="xs"
-                      colorScheme="red"
-                      variant="outline"
-                      onClick={() =>
-                        window.confirm(`Revoke admin access for ${a.email}?`) &&
-                        run(() => revokeAdmin(a.id), "Admin revoked")
-                      }
-                    >
-                      Revoke
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
+        {admins.map((a) => (
+          <Stack
+            key={a.id}
+            direction={{ base: "column", sm: "row" }}
+            justify="space-between"
+            align={{ base: "stretch", sm: "center" }}
+            spacing={2}
+            borderBottomWidth="1px"
+            py={2}
+          >
+            <Text fontSize="sm" wordBreak="break-all" minW={0}>
+              {a.email}
+            </Text>
+            <Button
+              size="xs"
+              colorScheme="red"
+              variant="outline"
+              alignSelf={{ base: "start", sm: "center" }}
+              flexShrink={0}
+              onClick={() =>
+                window.confirm(`Revoke admin access for ${a.email}?`) && run(() => revokeAdmin(a.id), "Admin revoked")
+              }
+            >
+              Revoke
+            </Button>
+          </Stack>
+        ))}
       </VStack>
 
       <VStack align="stretch" spacing={2}>
         <Heading size="sm">Invites</Heading>
-        <TableContainer>
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>Email</Th>
-                <Th>Status</Th>
-                <Th>Expires</Th>
-                <Th />
-              </Tr>
-            </Thead>
-            <Tbody>
-              {invites.map((i) => (
-                <Tr key={i.id}>
-                  <Td>{i.email}</Td>
-                  <Td>
-                    <Badge colorScheme={STATUS_COLOR[i.status]}>{i.status}</Badge>
-                  </Td>
-                  <Td>{new Date(i.expires_at).toLocaleString()}</Td>
-                  <Td isNumeric>
-                    {i.status === "pending" && (
-                      <Button size="xs" variant="outline" onClick={() => run(() => revokeInvite(i.id), "Invite revoked")}>
-                        Revoke
-                      </Button>
-                    )}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
+        {/* A four-column table is unreadable at phone width, so each invite becomes a stacked row. */}
+        {invites.map((i) => (
+          <Box key={i.id} borderBottomWidth="1px" py={2}>
+            <Stack
+              direction={{ base: "column", sm: "row" }}
+              justify="space-between"
+              align={{ base: "stretch", sm: "center" }}
+              spacing={2}
+            >
+              <Text fontSize="sm" wordBreak="break-all" minW={0}>
+                {i.email}
+              </Text>
+              {i.status === "pending" && (
+                <Button
+                  size="xs"
+                  variant="outline"
+                  alignSelf={{ base: "start", sm: "center" }}
+                  flexShrink={0}
+                  onClick={() => run(() => revokeInvite(i.id), "Invite revoked")}
+                >
+                  Revoke
+                </Button>
+              )}
+            </Stack>
+            <HStack spacing={2} mt={1}>
+              <Badge colorScheme={STATUS_COLOR[i.status]}>{i.status}</Badge>
+              <Text fontSize="xs" color="gray.500">
+                expires {new Date(i.expires_at).toLocaleDateString()}
+              </Text>
+            </HStack>
+          </Box>
+        ))}
       </VStack>
     </VStack>
   );

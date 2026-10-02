@@ -1,9 +1,10 @@
-import { Badge, Box, Button, Flex, HStack, Link, Text, VStack } from "@chakra-ui/react";
+import { Badge, Box, Button, Flex, HStack, Link, Stack, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
 import { api } from "../api/client";
-import { LabSidebar } from "../components/LabSidebar";
+import { LabNav, LabSidebar, useLabOutline } from "../components/LabSidebar";
+import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { NotebookRunner } from "../components/NotebookRunner";
 import { LABS } from "../data/labs";
 import { Lab01Reading } from "../data/readings/Lab01Reading";
@@ -49,6 +50,7 @@ export function LabDetailPage() {
 
   const readingRef = useRef<HTMLDivElement>(null);
   const notebookRef = useRef<HTMLDivElement>(null);
+  const outline = useLabOutline(readingRef, notebookRef);
   const [done, setDone] = useState(false);
   const [score, setScore] = useState<{ earned: number; possible: number; percent: number } | null>(null);
 
@@ -84,14 +86,21 @@ export function LabDetailPage() {
   }
 
   return (
-    <Flex maxW="6xl" mx="auto" mt={12} px={4} mb={16} gap={8}>
-      <LabSidebar readingRef={readingRef} notebookRef={notebookRef} />
+    <Flex maxW="6xl" mx="auto" mt={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} mb={16} gap={8}>
+      <LabSidebar outline={outline} />
       <Box flex="1" minW={0} maxW="4xl">
-      <Link as={RouterLink} to="/labs" color="blue.500">
-        &larr; All labs
-      </Link>
+      <StickyHeader hideFrom="lg">
+        <HStack minW={0} spacing={3}>
+          <MobileNav title="Lab sections" hideFrom="lg">
+            {(close) => <LabNav outline={outline} onNavigate={close} />}
+          </MobileNav>
+          <Link as={RouterLink} to="/labs" color="blue.500">
+            &larr; All labs
+          </Link>
+        </HStack>
+      </StickyHeader>
 
-      <VStack align="stretch" spacing={6} mt={4}>
+      <VStack align="stretch" spacing={6}>
         <Box ref={readingRef}>
           <Reading />
         </Box>
@@ -101,9 +110,9 @@ export function LabDetailPage() {
         </Box>
 
         <Box borderTopWidth="1px" pt={4}>
-          <HStack justify="space-between">
+          <Stack direction={{ base: "column", sm: "row" }} justify="space-between" spacing={2}>
             {done ? (
-              <Badge colorScheme="green" fontSize="sm" px={2} py={1}>
+              <Badge colorScheme="green" fontSize="sm" px={2} py={1} alignSelf="start">
                 Lab complete
               </Badge>
             ) : (
@@ -116,7 +125,7 @@ export function LabDetailPage() {
                 Score: {score.earned}/{score.possible} points ({score.percent}%)
               </Text>
             )}
-          </HStack>
+          </Stack>
         </Box>
       </VStack>
       </Box>

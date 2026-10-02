@@ -62,7 +62,7 @@ export function Lab14Reading() {
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`request = {
     "endpoint": "https://api.example.com/orders",
     "method": "POST",
@@ -116,7 +116,7 @@ atm.withdraw(20)  # 50`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class VendingMachine:
     def __init__(self, stock):
         self.stock = stock  # state the object remembers

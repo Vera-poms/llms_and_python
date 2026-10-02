@@ -52,7 +52,7 @@ print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
         Try it: the notebook has a "Concept 1 practice" cell comparing a hand-rolled mean to{" "}
         <Code>statistics.mean</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import statistics
 
 def my_mean(values: list[float]) -> float:
@@ -119,7 +119,7 @@ print(numbers)  # ['3', '1']`} />
         Try it: the notebook has a "Concept 2 practice" cell pulling hashtags out of a post with{" "}
         <Code>re.findall</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import re
 
 post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
@@ -168,7 +168,7 @@ print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
         Try it: the notebook has a "Concept 3 practice" cell that tallies letters in a word the
         same way - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`word = "mississippi"
 
 letter_counts: dict[str, int] = {}
@@ -216,7 +216,7 @@ print(sum(distribution.values()))  # 1.0`} />
         Try it: the notebook has a "Concept 4 practice" cell normalizing poll counts into a
         distribution - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
 total = sum(poll_counts.values())  # 40
 distribution = {food: c / total for food, c in poll_counts.items()}
@@ -259,7 +259,7 @@ print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} />
         Try it: the notebook has a "Concept 5 practice" cell ranking game runtimes with the same{" "}
         <Code>sorted(..., key=..., reverse=True)</Code> pattern - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`}
@@ -307,7 +307,7 @@ plt.show()`} />
         Try it: the notebook has a "Concept 6 practice" cell plotting a small bar chart with{" "}
         <Code>plt.bar</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 topics = ["regex", "dicts", "sorting"]

@@ -45,7 +45,7 @@ tiles_needed = rows * cols  # 96`} />
         Try it: the notebook has a "Concept 1 practice" cell counting a different grid of items -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rows = 20
 seats_per_row = 15
 total_seats = rows * seats_per_row
@@ -103,7 +103,7 @@ print(r.area())  # 12.0`} />
         Try it: the notebook has a "Concept 2 practice" cell building a different dataclass -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`from dataclasses import dataclass
 
 @dataclass
@@ -167,7 +167,7 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         Try it: the notebook has a "Concept 3 practice" cell reading a different config dict -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`server_config = {
     "host": "localhost",
     "port": 8080,
@@ -233,7 +233,7 @@ plt.show()`} />
         Try it: the notebook has a "Concept 4 practice" cell plotting a different grouped bar
         chart - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 quarters = ["Q1", "Q2"]

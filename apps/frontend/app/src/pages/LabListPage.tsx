@@ -5,7 +5,8 @@ import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-d
 import { api } from "../api/client";
 import type { Resource } from "../api/resourceManagement";
 import { ResourceRenderer } from "../components/resources/ResourceRenderer";
-import { CourseSidebar } from "../components/CourseSidebar";
+import { CourseNav, CourseSidebar } from "../components/CourseSidebar";
+import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { useAuth } from "../context/AuthContext";
 import { LABS } from "../data/labs";
 
@@ -66,34 +67,54 @@ export function LabListPage() {
       });
   }, []);
 
+  function selectWeek(w: number) {
+    setSearchParams(w === 1 ? {} : { week: String(w) });
+  }
+
   function handleLogout() {
     logout();
     navigate("/login");
   }
 
   return (
-    <Flex maxW="5xl" mx="auto" my={12} px={4} gap={8} direction={{ base: "column", md: "row" }}>
+    <Flex maxW="5xl" mx="auto" my={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} gap={8}>
       <CourseSidebar
         weeks={weeks}
         active={week}
         labs={LABS}
         doneIds={doneIds}
-        onSelectWeek={(w) => setSearchParams(w === 1 ? {} : { week: String(w) })}
+        onSelectWeek={selectWeek}
       />
       <Box flex="1" minW={0} maxW="2xl">
-      <HStack justify="space-between" mb={6}>
-        <Heading size="lg">LLM Foundations Course</Heading>
-        <Button size="sm" variant="outline" onClick={handleLogout}>
+      <StickyHeader>
+        <HStack minW={0} spacing={3}>
+          <MobileNav title="Course navigation">
+            {(close) => (
+              <CourseNav
+                weeks={weeks}
+                active={week}
+                labs={LABS}
+                doneIds={doneIds}
+                onSelectWeek={selectWeek}
+                onNavigate={close}
+              />
+            )}
+          </MobileNav>
+          <Heading size={{ base: "sm", md: "lg" }} minW={0}>
+            LLM Foundations Course
+          </Heading>
+        </HStack>
+        <Button size="sm" variant="outline" flexShrink={0} onClick={handleLogout}>
           Log out
         </Button>
-      </HStack>
+      </StickyHeader>
 
       {week !== 1 &&
         resources
           .filter((r) => r.week === week)
           .map((r) => (
             <Box key={r.id} mb={8}>
-              <Heading size="md">{r.title}</Heading>
+              <Heading size={{ base: "sm", md: "md" }}>{r.title}</Heading>
               {r.summary && (
                 <Text color="gray.600" _dark={{ color: "gray.300" }} mb={3}>
                   {r.summary}
@@ -123,8 +144,8 @@ export function LabListPage() {
           const done = progressById[lab.id]?.done ?? false;
           const labScore = score?.labs.find((l) => l.lab_id === lab.id);
           const content = (
-            <HStack justify="space-between">
-              <Box>
+            <HStack justify="space-between" align="start" spacing={3}>
+              <Box minW={0}>
                 <Text fontWeight="bold">
                   {lab.id}. {lab.title}
                 </Text>
@@ -132,7 +153,7 @@ export function LabListPage() {
                   {lab.summary}
                 </Text>
               </Box>
-              <VStack spacing={1} align="end">
+              <VStack spacing={1} align="end" flexShrink={0}>
                 {labScore && <Badge colorScheme="teal">{labScore.percent}%</Badge>}
                 {!loading && done && <Badge colorScheme="green">Done</Badge>}
               </VStack>

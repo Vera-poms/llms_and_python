@@ -53,13 +53,14 @@ function sameGroups(a: NavGroups, b: NavGroups): boolean {
   return flat(a) === flat(b);
 }
 
-export function LabSidebar({
-  readingRef,
-  notebookRef,
-}: {
-  readingRef: RefObject<HTMLElement>;
-  notebookRef: RefObject<HTMLElement>;
-}) {
+export interface LabOutline {
+  groups: NavGroups;
+  activeId: string | null;
+  jump: (id: string) => void;
+}
+
+// Shared by the desktop sidebar and the mobile drawer, so the page scans and scroll-spies only once.
+export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: RefObject<HTMLElement>): LabOutline {
   const [groups, setGroups] = useState<NavGroups>({ concepts: [], coding: [] });
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -97,6 +98,13 @@ export function LabSidebar({
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  return { groups, activeId, jump };
+}
+
+// The outline entries themselves. `onNavigate` lets the mobile drawer close after a jump.
+export function LabNav({ outline, onNavigate }: { outline: LabOutline; onNavigate?: () => void }) {
+  const { groups, activeId, jump } = outline;
+
   function renderGroup(title: string, items: NavItem[]) {
     if (items.length === 0) return null;
     return (
@@ -123,7 +131,10 @@ export function LabSidebar({
                 color={isActive ? "blue.600" : undefined}
                 _hover={{ bg: "blackAlpha.50" }}
                 aria-current={isActive ? "true" : undefined}
-                onClick={() => jump(item.id)}
+                onClick={() => {
+                  jump(item.id);
+                  onNavigate?.();
+                }}
               >
                 {item.label}
               </Box>
@@ -135,10 +146,20 @@ export function LabSidebar({
   }
 
   return (
+    <VStack align="stretch" spacing={5}>
+      {renderGroup("Concepts", groups.concepts)}
+      {renderGroup("Coding", groups.coding)}
+    </VStack>
+  );
+}
+
+// Sticky outline on wide screens. Below `lg` the page puts <LabNav> in a drawer instead.
+export function LabSidebar({ outline }: { outline: LabOutline }) {
+  return (
     <Box
       as="nav"
       aria-label="Lab sections"
-      w={{ base: "full", lg: 56 }}
+      w={56}
       flexShrink={0}
       display={{ base: "none", lg: "block" }}
       position="sticky"
@@ -147,10 +168,7 @@ export function LabSidebar({
       maxH="calc(100vh - 4rem)"
       overflowY="auto"
     >
-      <VStack align="stretch" spacing={5}>
-        {renderGroup("Concepts", groups.concepts)}
-        {renderGroup("Coding", groups.coding)}
-      </VStack>
+      <LabNav outline={outline} />
     </Box>
   );
 }

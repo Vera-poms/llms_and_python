@@ -39,7 +39,7 @@ print(car.odometer)  # 15`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class BankAccount:
     def __init__(self):
         self.balance = 0
@@ -94,7 +94,7 @@ print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Playlist:
     def __init__(self):
         self.songs = []
@@ -151,7 +151,7 @@ Queued: Song B (2 songs total)`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def fake_sender(message):
     return f"[fake] would send: {message}"
 

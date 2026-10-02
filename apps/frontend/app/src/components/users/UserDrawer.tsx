@@ -18,6 +18,7 @@ import {
   HStack,
   Input,
   Spinner,
+  Stack,
   Switch,
   Text,
   VStack,
@@ -89,11 +90,13 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
 
   return (
     <>
-      <Drawer isOpen={userId !== null} onClose={onClose} size="md">
+      <Drawer isOpen={userId !== null} onClose={onClose} size={{ base: "full", md: "md" }}>
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>{user?.email ?? "User"}</DrawerHeader>
+          <DrawerHeader pr={12} fontSize="md" wordBreak="break-all">
+            {user?.email ?? "User"}
+          </DrawerHeader>
           <DrawerBody pb={8}>
             {!user ? (
               <Spinner />
@@ -111,7 +114,7 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
 
                 <FormControl>
                   <FormLabel>Set new password</FormLabel>
-                  <HStack>
+                  <Stack direction={{ base: "column", sm: "row" }}>
                     <Input
                       type="password"
                       autoComplete="new-password"
@@ -121,24 +124,24 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
                     <Button isDisabled={password.length < MIN_PASSWORD} onClick={savePassword}>
                       Save
                     </Button>
-                  </HStack>
+                  </Stack>
                   <Text fontSize="xs" color="gray.500" mt={1}>
                     At least {MIN_PASSWORD} characters.
                   </Text>
                 </FormControl>
 
                 <VStack align="stretch" spacing={2}>
-                  <HStack justify="space-between">
-                    <Text fontWeight="semibold">
+                  <HStack justify="space-between" align="start" spacing={3}>
+                    <Text fontWeight="semibold" fontSize="sm" minW={0}>
                       Progress ({user.labs_done}/{user.total_labs} labs, {user.hints_used} hints, score {user.score_percent ?? 0}%)
                     </Text>
-                    <Button size="xs" variant="outline" onClick={() => setConfirm("reset")}>
+                    <Button size="xs" variant="outline" flexShrink={0} onClick={() => setConfirm("reset")}>
                       Reset all
                     </Button>
                   </HStack>
                   {user.labs.map((lab) => (
-                    <HStack key={lab.lab_id} justify="space-between">
-                      <Text fontSize="sm">
+                    <HStack key={lab.lab_id} justify="space-between" align="start" spacing={3}>
+                      <Text fontSize="sm" minW={0}>
                         {lab.title} {lab.hint_count > 0 && <Badge>{lab.hint_count} hints</Badge>}{" "}
                         {!!lab.exercises_tried && (
                           <Badge colorScheme="blue">
@@ -153,6 +156,7 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
                         )}
                       </Text>
                       <Switch
+                        flexShrink={0}
                         isChecked={lab.done}
                         onChange={(e) =>
                           run(() => api.setLabDone(user.id, lab.lab_id, e.target.checked), "Progress updated")
@@ -171,11 +175,11 @@ export function UserDrawer({ api, userId, onClose, onChanged }: Props) {
         </DrawerContent>
       </Drawer>
 
-      <AlertDialog isOpen={confirm !== null} leastDestructiveRef={cancelRef} onClose={() => setConfirm(null)}>
+      <AlertDialog isOpen={confirm !== null} leastDestructiveRef={cancelRef} onClose={() => setConfirm(null)} isCentered>
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent mx={4}>
             <AlertDialogHeader>{confirm === "delete" ? "Delete user?" : "Reset progress?"}</AlertDialogHeader>
-            <AlertDialogBody>
+            <AlertDialogBody wordBreak="break-word">
               {confirm === "delete"
                 ? `This permanently deletes ${user?.email} and all their code and progress.`
                 : `This clears all lab progress and saved position for ${user?.email}.`}

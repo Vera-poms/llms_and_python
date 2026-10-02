@@ -38,7 +38,7 @@ print(shopping_list)  # ["milk", "eggs"]`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`readings = []
 readings.append(68)
 readings.append(71)
@@ -80,7 +80,7 @@ print(log)`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`deliveries = []
 for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
@@ -127,7 +127,7 @@ letter = f"Dear {name}, welcome to {city}!"`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`}

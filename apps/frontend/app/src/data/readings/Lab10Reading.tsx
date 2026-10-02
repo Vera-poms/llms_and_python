@@ -43,7 +43,7 @@ export function Lab10Reading() {
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`examples = [
     ("hello", "HELLO!"),
     ("bye", "BYE!"),
@@ -113,7 +113,7 @@ except ValueError as e:
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import json
 
 raw = '{"item": "Mug", "price": 9.99}'

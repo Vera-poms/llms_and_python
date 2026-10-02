@@ -16,6 +16,7 @@ import {
   Input,
   NumberInput,
   NumberInputField,
+  Stack,
   Switch,
   Text,
   Textarea,
@@ -170,8 +171,8 @@ function ResourceEditor({
 
   return (
     <VStack align="stretch" spacing={4}>
-      <HStack align="end" spacing={3}>
-        <FormControl w="28">
+      <Stack direction={{ base: "column", sm: "row" }} align={{ base: "stretch", sm: "end" }} spacing={3}>
+        <FormControl w={{ base: "full", sm: "28" }}>
           <FormLabel>Week</FormLabel>
           <NumberInput min={2} max={52} value={draft.week} onChange={(_s, n) => setDraft({ ...draft, week: n || 2 })}>
             <NumberInputField />
@@ -181,7 +182,7 @@ function ResourceEditor({
           <FormLabel>Title</FormLabel>
           <Input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
         </FormControl>
-      </HStack>
+      </Stack>
       <FormControl>
         <FormLabel>Summary</FormLabel>
         <Input value={draft.summary} onChange={(e) => setDraft({ ...draft, summary: e.target.value })} />
@@ -199,7 +200,7 @@ function ResourceEditor({
           onRemove={() => setDraft({ ...draft, blocks: draft.blocks.filter((_, j) => j !== i) })}
         />
       ))}
-      <HStack>
+      <HStack wrap="wrap" spacing={2}>
         {(["text", "code", "link"] as const).map((type) => (
           <Button
             key={type}
@@ -213,7 +214,7 @@ function ResourceEditor({
       </HStack>
 
       <Heading size="sm">Preview</Heading>
-      <Box borderWidth="1px" borderRadius="md" p={4}>
+      <Box borderWidth="1px" borderRadius="md" p={{ base: 3, md: 4 }} minW={0}>
         <Heading size="md" mb={1}>
           {draft.title || "Untitled"}
         </Heading>
@@ -291,7 +292,7 @@ export function ResourcesPanel({ api }: { api: ResourceApi }) {
 
   return (
     <VStack align="stretch" spacing={4}>
-      <HStack justify="space-between">
+      <Stack direction={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "stretch", sm: "center" }} spacing={3}>
         <Text color="gray.600" _dark={{ color: "gray.300" }} fontSize="sm">
           Week 1 is the existing labs. Resources added here start in Week 2 and are hidden from students until released.
         </Text>
@@ -302,7 +303,7 @@ export function ResourcesPanel({ api }: { api: ResourceApi }) {
         >
           New resource
         </Button>
-      </HStack>
+      </Stack>
 
       {resources && weeks.length === 0 && <Text>No weekly resources yet.</Text>}
       {weeks.length > 0 && activeWeek !== undefined && (
@@ -310,17 +311,25 @@ export function ResourcesPanel({ api }: { api: ResourceApi }) {
       )}
 
       {visible.map((r) => (
-        <Box key={r.id} borderWidth="1px" borderRadius="md" p={4}>
-          <HStack justify="space-between" mb={3} align="start">
-            <Box>
-              <Heading size="md">{r.title}</Heading>
+        <Box key={r.id} borderWidth="1px" borderRadius="md" p={{ base: 3, md: 4 }} minW={0}>
+          {/* align must stay "stretch" while stacked: "start" would size the title box to its
+              content and push it past the viewport. */}
+          <Stack
+            direction={{ base: "column", md: "row" }}
+            justify="space-between"
+            align={{ base: "stretch", md: "start" }}
+            mb={3}
+            spacing={3}
+          >
+            <Box minW={0}>
+              <Heading size={{ base: "sm", md: "md" }}>{r.title}</Heading>
               {r.summary && (
                 <Text color="gray.600" _dark={{ color: "gray.300" }}>
                   {r.summary}
                 </Text>
               )}
             </Box>
-            <HStack>
+            <HStack wrap="wrap" spacing={2}>
               <Badge colorScheme={r.released_at ? "green" : "orange"}>{r.released_at ? "Released" : "Draft"}</Badge>
               <Button
                 size="xs"
@@ -349,16 +358,16 @@ export function ResourcesPanel({ api }: { api: ResourceApi }) {
                 Delete
               </Button>
             </HStack>
-          </HStack>
+          </Stack>
           <ResourceRenderer blocks={r.blocks} run={api.run} />
         </Box>
       ))}
 
       <AlertDialog isOpen={deleting !== null} leastDestructiveRef={cancelRef} onClose={() => setDeleting(null)}>
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent mx={4}>
             <AlertDialogHeader>Delete resource</AlertDialogHeader>
-            <AlertDialogBody>Delete "{deleting?.title}"? This cannot be undone.</AlertDialogBody>
+            <AlertDialogBody wordBreak="break-word">Delete "{deleting?.title}"? This cannot be undone.</AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={() => setDeleting(null)}>
                 Cancel

@@ -59,7 +59,7 @@ template.format(name="Vera")
         Try it: the notebook has a "Concept 1 practice" cell comparing an f-string to a{" "}
         <Code>.format()</Code> template - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`item = "notebook"
 qty = 3
 message = f"You ordered {qty} {item}(s)."
@@ -114,7 +114,7 @@ render(template, name="Sam")   # "Hello, Sam!"`} />
         Try it: the notebook has a "Concept 2 practice" cell reusing one template with different data -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def render(template, **data):
     return template.format(**data)
 
@@ -169,7 +169,7 @@ c.add(3)   # 8 - remembers the previous call`} />
         Try it: the notebook has a "Concept 3 practice" cell with a small stateful class of its own -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Tally:
     def __init__(self, start=0):
         self.count = start  # state stored on the instance

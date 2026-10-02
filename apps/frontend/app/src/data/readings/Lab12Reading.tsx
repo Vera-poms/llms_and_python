@@ -40,7 +40,7 @@ for turn in chat_log:
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`support_log = [
     {"agent": "Bot", "message": "Hi, how can I help?"},
     {"agent": "User", "message": "My order is late."},
@@ -107,7 +107,7 @@ Bot: Let me check that for you.`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`classroom_log = [
     {"role": "teacher_note", "text": "Keep answers under two sentences."},
     {"role": "student", "text": "What's the capital of France?"},
@@ -160,7 +160,7 @@ for visitor in ["Sam", "Robin", "Priya"]:    # varies every iteration
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`discount = "SAVE10"                      # built once
 for cart_total in [25, 40, 100]:          # varies every iteration
     print(f"Applying {discount} to \${cart_total}")
@@ -186,7 +186,7 @@ Applying SAVE10 to $100`} />
         question, a complaint, and a question about a competitor - sending a fresh two-message list
         each time:
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
 {`system_message = build_system_message(persona)   # built once
 for question in QUESTIONS:                       # varies every iteration
     messages = [

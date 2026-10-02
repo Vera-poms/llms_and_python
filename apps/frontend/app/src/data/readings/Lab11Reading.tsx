@@ -48,7 +48,7 @@ print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def guess_total(price, tax_rate):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
     return price + price * tax_rate
@@ -114,7 +114,7 @@ print(extract_total(receipt))  # "$11.50"`} />
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
 
 def extract_high(text: str, marker: str = "High:") -> str:

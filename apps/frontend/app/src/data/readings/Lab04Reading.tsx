@@ -63,7 +63,7 @@ print(account.balance)  # 150`} />
         Try it: the notebook has a "Concept 1 practice" cell building a different class from
         scratch - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Playlist:
     def __init__(self, name, songs):
         self.name = name    # instance attribute
@@ -127,7 +127,7 @@ total = sum(q * p for q, p in zip(quantities, prices))
         Try it: the notebook has a "Concept 2 practice" cell computing a weighted total for a
         different scenario - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`scores = [90, 80, 70]
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
@@ -179,7 +179,7 @@ print(step(-2))   # -1`} />
         Try it: the notebook has a "Concept 3 practice" cell applying a step function to a
         different scenario - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def freeze_alert(temp_c):
     return 1 if temp_c <= 0 else -1
 
@@ -236,7 +236,7 @@ plt.show()`} />
         Try it: the notebook has a "Concept 4 practice" cell plotting a different scatter plot -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" p={3} borderRadius="md">
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 city_temp = [30, 45, 60, 75, 90]

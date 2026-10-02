@@ -9,6 +9,7 @@ import {
   HStack,
   Input,
   Spinner,
+  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -55,17 +56,28 @@ export function CellOutput({ result }: { result: RunResult }) {
     <VStack align="stretch" spacing={2} mt={2}>
       {result.outputs.map((output, i) => {
         if (output.type === "image") {
-          return <img key={i} src={`data:image/png;base64,${output.data}`} alt="plot output" />;
+          return <img key={i} src={`data:image/png;base64,${output.data}`} alt="plot output" style={{ maxWidth: "100%" }} />;
         }
         if (output.type === "error") {
           return (
-            <Code key={i} as="pre" whiteSpace="pre-wrap" bg="red.50" color="red.700" p={2} borderRadius="md">
+            <Code
+              key={i}
+              as="pre"
+              whiteSpace="pre-wrap"
+              wordBreak="break-word"
+              overflowX="auto"
+              maxW="100%"
+              bg="red.50"
+              color="red.700"
+              p={2}
+              borderRadius="md"
+            >
               {output.ename}: {output.evalue}
             </Code>
           );
         }
         return (
-          <Code key={i} as="pre" whiteSpace="pre-wrap" p={2} borderRadius="md">
+          <Code key={i} as="pre" whiteSpace="pre-wrap" wordBreak="break-word" overflowX="auto" maxW="100%" p={2} borderRadius="md">
             {output.text}
           </Code>
         );
@@ -169,15 +181,15 @@ function GradedCell({
   }
 
   return (
-    <Box data-nav={cell.role} borderWidth="1px" borderRadius="md" p={3}>
+    <Box data-nav={cell.role} borderWidth="1px" borderRadius="md" p={{ base: 2, md: 3 }} minW={0}>
       <VStack align="stretch" spacing={2}>
-        <HStack justify="space-between">
-          <HStack>
+        <HStack justify="space-between" align="start" spacing={2}>
+          <HStack wrap="wrap" spacing={2} minW={0}>
             <Badge colorScheme={ROLE_COLORS[cell.role] ?? "gray"}>{cell.role}</Badge>
             <Badge colorScheme="teal">{cell.points} pts</Badge>
             {status === "pass" && <Badge colorScheme="green">passed</Badge>}
           </HStack>
-          <Button size="xs" colorScheme="blue" onClick={run} isLoading={running || checking}>
+          <Button size="xs" colorScheme="blue" flexShrink={0} onClick={run} isLoading={running || checking}>
             Run
           </Button>
         </HStack>
@@ -280,14 +292,14 @@ export function NotebookRunner({
 
   return (
     <VStack align="stretch" spacing={4}>
-      <HStack justify="space-between">
+      <Stack direction={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "stretch", sm: "center" }} spacing={2}>
         <Text fontSize="sm" color="gray.500">
           Notebook - edit any cell, then Run it. Cells share state, just like a real notebook.
         </Text>
         <Button size="xs" variant="outline" onClick={restartKernel} isLoading={restarting}>
           Restart kernel
         </Button>
-      </HStack>
+      </Stack>
 
       {needsApiKey && (
         <Box>
