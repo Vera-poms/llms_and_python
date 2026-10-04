@@ -7,6 +7,7 @@ from core.config import CORS_ORIGINS
 from db.connection import get_session, init_db
 from routers import admin, admin_auth, admin_resources, auth, labs, notebooks, owner, resources
 from seed import seed_labs
+from exercises import NOTEBOOKS_DIR, COURSE_DIR
 
 logging.basicConfig(level=logging.INFO)
 
@@ -43,3 +44,20 @@ def on_startup() -> None:
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+import os
+from pathlib import Path
+
+@app.get("/debug/paths")
+def debug_paths():
+    nb = Path(NOTEBOOKS_DIR)
+    return {
+        "cwd": os.getcwd(),
+        "file": str(Path(__file__).resolve()),
+        "COURSE_DIR": str(COURSE_DIR),
+        "NOTEBOOKS_DIR": str(nb),
+        "notebooks_dir_exists": nb.exists(),
+        "notebooks_found": sorted(p.name for p in nb.glob("*.ipynb")),
+        "cwd_listing": sorted(os.listdir(os.getcwd())),
+        "env_course": os.getenv("COURSE_DIR"),
+    }
