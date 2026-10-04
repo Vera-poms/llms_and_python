@@ -1,8 +1,8 @@
 FROM python:3.14-slim-trixie AS builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends\
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    linux-headers-amd64\
+    linux-headers-amd64 \
     python3-dev \
     cargo \
     libffi-dev \
@@ -11,14 +11,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends\
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY apps/backend/app/requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.14-slim-trixie
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -37,7 +37,8 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 RUN python -m ipykernel install --sys-prefix --name python3 --display-name "Python 3"
 
-COPY --chown=appuser:appuser . .
+COPY --chown=appuser:appuser apps/backend/app/ /app
+COPY --chown=appuser:appuser course/ /course
 
 RUN mkdir -p /app/db/alembic/versions && \
     chown -R appuser:appuser /app/db/alembic/versions
