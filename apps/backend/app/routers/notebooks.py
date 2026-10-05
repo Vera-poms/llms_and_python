@@ -21,7 +21,8 @@ def _substitute_groq_key(source: str, api_key: str | None) -> str:
 @router.get("/{lab_id}", response_model=NotebookOut)
 def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) -> NotebookOut:
     raw_cells = exercises.load_notebook_cells(lab_id)
-    solution_indexes = {c["index"] for c in exercises.project_solution_cells(raw_cells)}
+    project_cells = exercises.project_solution_cells(raw_cells)
+    solution_indexes = {c["index"] for c in project_cells}
     exercise_ids = {item.cell_id for item in exercises.items_for_lab(lab_id)}
 
     cells: list[NotebookCellOut] = []
@@ -30,8 +31,9 @@ def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) ->
         index, role, source = cell["index"], cell["role"], cell["source"]
 
         if index in solution_indexes:
-            # The reference project never leaves the server: students get the written brief and an
-            # empty cell in its place (one cell, standing where the first solution cell was).
+            # Students get the written brief, an empty cell to work in, and the reference project
+            # behind a collapsible "Show solution" (like the exercise solution) - all as one group
+            # standing where the first solution cell was.
             if not project_placed:
                 project_placed = True
                 cells.append(
@@ -50,6 +52,14 @@ def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) ->
                         source="# Write your project here, following the brief above.\n",
                         graded_cell_id=exercises.PROJECT_ID,
                         points=exercises.POINTS["project"],
+                    )
+                )
+                cells.append(
+                    NotebookCellOut(
+                        index=-1000 - lab_id,
+                        cell_type="code",
+                        role="solution",
+                        source="\n\n".join(c["source"] for c in project_cells),
                     )
                 )
             continue

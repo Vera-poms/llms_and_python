@@ -105,7 +105,7 @@ function stdoutOf(result: RunResult): string {
 }
 
 // A scored notebook cell (the lab exercise or the project): run it, get it judged against the server's
-// hidden reference, and ask for free hints. The reference solution is never sent to the browser.
+// reference, and ask for free hints. The reference is shown only via the separate collapsible solution cell.
 function GradedCell({
   labId,
   cell,
