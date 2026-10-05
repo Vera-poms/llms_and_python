@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack } from "@chakra-ui/react";
 import { isAxiosError } from "axios";
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, Navigate, useNavigate, useSearchParams } from "react-router-dom";
@@ -44,6 +44,7 @@ export function AdminSignupPage() {
       setError("Passwords do not match.");
       return;
     }
+    if (submitting) return;
     setSubmitting(true);
     try {
       const response = await adminApi.post<{ access_token: string }>("/admin/auth/signup", {
@@ -67,19 +68,20 @@ export function AdminSignupPage() {
       <Heading size="lg" mb={6}>
         Admin sign up
       </Heading>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} aria-busy={submitting}>
         <VStack spacing={4} align="stretch">
           <FormControl>
             <FormLabel>Email</FormLabel>
-            <Input type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Input isDisabled={submitting} autoFocus type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </FormControl>
           <FormControl>
             <FormLabel>Invite code</FormLabel>
-            <Input value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} autoComplete="off" required />
+            <Input isDisabled={submitting} value={inviteCode} onChange={(e) => setInviteCode(e.target.value)} autoComplete="off" required />
           </FormControl>
           <FormControl>
             <FormLabel>Password</FormLabel>
             <PasswordInput
+              isDisabled={submitting}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
@@ -90,14 +92,20 @@ export function AdminSignupPage() {
           <FormControl>
             <FormLabel>Confirm password</FormLabel>
             <PasswordInput
+              isDisabled={submitting}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
               required
             />
           </FormControl>
-          {error && <Text color="red.500">{error}</Text>}
-          <Button type="submit" colorScheme="blue" isLoading={submitting}>
+          {error && (
+            <Alert status="error" borderRadius="md" role="alert">
+              <AlertIcon />
+              {error}
+            </Alert>
+          )}
+          <Button type="submit" colorScheme="blue" isLoading={submitting} loadingText="Creating account…">
             Create admin account
           </Button>
         </VStack>

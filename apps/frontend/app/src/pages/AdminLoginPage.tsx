@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Button, FormControl, FormLabel, Heading, Input, Link, Text, VStack } from "@chakra-ui/react";
 import { isAxiosError } from "axios";
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, Navigate, useNavigate } from "react-router-dom";
@@ -19,6 +19,7 @@ export function AdminLoginPage() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (submitting) return;
     setError(null);
     setSubmitting(true);
     try {
@@ -27,6 +28,7 @@ export function AdminLoginPage() {
       setPassword("");
       navigate("/admin", { replace: true });
     } catch (err) {
+      setEmail("");
       setPassword("");
       if (isAxiosError(err) && err.response?.status === 429) {
         setError("Too many attempts. Try again later.");
@@ -46,11 +48,13 @@ export function AdminLoginPage() {
       <Heading size="lg" mb={6}>
         Admin sign in
       </Heading>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} aria-busy={submitting}>
         <VStack spacing={4} align="stretch">
           <FormControl>
             <FormLabel>Email</FormLabel>
             <Input
+              isDisabled={submitting}
+              autoFocus
               type="email"
               autoComplete="username"
               value={email}
@@ -61,14 +65,20 @@ export function AdminLoginPage() {
           <FormControl>
             <FormLabel>Password</FormLabel>
             <PasswordInput
+              isDisabled={submitting}
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </FormControl>
-          {error && <Text color="red.500">{error}</Text>}
-          <Button type="submit" colorScheme="blue" isLoading={submitting}>
+          {error && (
+            <Alert status="error" borderRadius="md" role="alert">
+              <AlertIcon />
+              {error}
+            </Alert>
+          )}
+          <Button type="submit" colorScheme="blue" isLoading={submitting} loadingText="Signing in…">
             Sign in
           </Button>
         </VStack>
