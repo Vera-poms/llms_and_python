@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab03Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Conditioning the distribution</Heading>
+      <Heading as="h2" size="md">Conditioning the distribution</Heading>
       <Text>
         Lab 1's distribution was global: one <Code>P(word)</Code> for the whole corpus, ignoring
         context entirely. Real language depends heavily on what came before - "the" is far more
@@ -16,13 +16,13 @@ export function Lab03Reading() {
         context instead of a single word.
       </Text>
 
-      <Heading size="sm">Concept 1: a dictionary of dictionaries</Heading>
+      <Heading as="h3" size="sm">Concept 1: a dictionary of dictionaries</Heading>
       <Text>
         To keep "a separate distribution per previous word," you need a dictionary whose values
         are themselves dictionaries - a dict-of-dicts.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Think of organizing a pantry by shelf, then by item on each shelf:</Text>
       <RunnableExample labId={3} code={`pantry: dict[str, dict[str, int]] = {}
 
@@ -71,7 +71,7 @@ for category, animal in sightings:
 print(zoo)
 # {'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`} expectedOutput={`{'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The lab's <Code>bigram_counts</Code> uses precisely this pattern:{" "}
         <Code>counts[prev_word][next_word]</Code> is "how many times did{" "}
@@ -80,7 +80,7 @@ print(zoo)
         per-shelf counts.
       </Text>
 
-      <Heading size="sm">Concept 2: bigrams and conditional probability</Heading>
+      <Heading as="h3" size="sm">Concept 2: bigrams and conditional probability</Heading>
       <Text>
         A "bigram" is just a pair of consecutive words - in <Code>"the movie was great"</Code>,
         the bigrams are <Code>(the, movie)</Code>, <Code>(movie, was)</Code>, and{" "}
@@ -88,7 +88,7 @@ print(zoo)
         word X, what fraction of the time was it word Y?
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Suppose you tracked what people ordered after each drink at a cafe:
       </Text>
@@ -117,7 +117,7 @@ total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
 print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0.8`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         That's exactly what <Code>conditional_probabilities</Code> computes, but per previous
         word instead of per drink: for every <Code>prev_word</Code>, it takes that word's inner
@@ -130,14 +130,14 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0
         prior tokens (via attention) instead of exactly one.
       </Text>
 
-      <Heading size="sm">Concept 3: plotting with matplotlib</Heading>
+      <Heading as="h3" size="sm">Concept 3: plotting with matplotlib</Heading>
       <Text>
         A whole table of conditional probabilities - one row per previous word, one column per
         next word - is hard to read as numbers but easy to read as a heatmap: a grid of colored
         cells where color stands in for a value.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Say you have a small grid of numbers you want to see as colors instead of digits:
       </Text>
@@ -201,7 +201,7 @@ print(grid.shape)  # (2, 2)`} />
         explains n-gram language models (bigrams are the simplest, two-word case).
       </Text>
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>project.py</Code> builds exactly this kind of grid from real conditional
         probabilities: it picks the 12 most frequent previous words and the 12 most frequent next

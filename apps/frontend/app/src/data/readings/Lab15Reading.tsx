@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab15Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">The capstone</Heading>
+      <Heading as="h2" size="md">The capstone</Heading>
       <Text>
         Every earlier lab hand-rolled its own messages list. This lab wraps that bookkeeping into
         a proper <Code>GroqClient</Code> class that owns <Code>self.messages</Code> and grows it
@@ -14,9 +14,9 @@ export function Lab15Reading() {
         direct descendant of lab 14's "wrap it in a class" idea.
       </Text>
 
-      <Heading size="sm">State that lives inside the object, not next to it</Heading>
+      <Heading as="h3" size="sm">State that lives inside the object, not next to it</Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Picture a <Code>Car</Code> object that tracks its own mileage:
       </Text>
@@ -64,7 +64,7 @@ account.deposit(50)
 account.deposit(25)
 print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         In lab 13, <Code>messages</Code> was a loose variable sitting outside any object, and you
         were responsible for appending to it correctly at each step. <Code>GroqClient</Code> moves
@@ -72,9 +72,9 @@ print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
         responsible for its own history instead of you being responsible for it.
       </Text>
 
-      <Heading size="sm">Methods that encapsulate repeated steps</Heading>
+      <Heading as="h3" size="sm">Methods that encapsulate repeated steps</Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         A minimal to-do list class hides its bookkeeping behind one method instead of making every
         caller repeat it:
@@ -126,7 +126,7 @@ playlist.add("Song B")
 # Queued: Song B (2 songs total)`} expectedOutput={`Queued: Song A (1 songs total)
 Queued: Song B (2 songs total)`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>GroqClient.add_user_message</Code> and <Code>add_assistant_message</Code> are exactly
         this: each is a one-line method whose entire job is "append the right dict to{" "}
@@ -136,11 +136,11 @@ Queued: Song B (2 songs total)`} />
         every call site - the exact same win as lab 14's <Code>.post()</Code>, just one layer up.
       </Text>
 
-      <Heading size="sm">
+      <Heading as="h3" size="sm">
         Separating "how to call" from "what to say": swap the courier, not the letter
       </Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Imagine an office where every outgoing letter goes through the same internal
         process - write it, log it in the outbox, wait for a reply - regardless of whether it's
@@ -178,7 +178,7 @@ class Notifier:
 notifier = Notifier(sender=fake_sender)
 print(notifier.notify("Build complete"))  # expected output: [fake] would send: Build complete`} expectedOutput={`[fake] would send: Build complete`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>GroqClient</Code>'s constructor takes a <Code>transport</Code> callable with the
         signature <Code>transport(messages, api_key, model) -&gt; str</Code> instead of hardcoding a
@@ -197,7 +197,7 @@ print(notifier.notify("Build complete"))  # expected output: [fake] would send: 
         state; it can only look at it.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key for the project only</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key for the project only</Heading>
       <Text>
         Open <Code>course/notebooks/lab_15_groq_client.ipynb</Code>. Implement{" "}
         <Code>GroqClient</Code>: <Code>add_user_message</Code>, <Code>add_assistant_message</Code>,{" "}
@@ -207,7 +207,7 @@ print(notifier.notify("Build complete"))  # expected output: [fake] would send: 
         full messages list at the end - the messages list, in depth, for real.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           IBM's{" "}

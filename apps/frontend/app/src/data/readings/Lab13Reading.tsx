@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab13Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Putting it together</Heading>
+      <Heading as="h2" size="md">Putting it together</Heading>
       <Text>
         This lab combines everything from 8-12 into one real thing: a persistent, persona-driven
         chatbot built from your own bio - a "digital twin". Three ordinary Python ideas do all the
@@ -15,12 +15,12 @@ export function Lab13Reading() {
         into them.
       </Text>
 
-      <Heading size="sm">Idea 1: state is just a list that keeps growing</Heading>
+      <Heading as="h3" size="sm">Idea 1: state is just a list that keeps growing</Heading>
       <Text>
         "State" sounds abstract until you notice you already use it every day.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Imagine a shopping list on your phone. You never erase it between items - you just keep
         appending:
@@ -49,7 +49,7 @@ readings.append(68)
 readings.append(71)
 print(readings)  # expected output: [68, 71]`} expectedOutput={`[68, 71]`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         A chatbot's "memory" is the exact same trick, just with dicts instead of strings. Each
         turn - what the user said, what the model replied - gets appended as one more entry:{" "}
@@ -60,9 +60,9 @@ print(readings)  # expected output: [68, 71]`} expectedOutput={`[68, 71]`} />
         growing list again on every call.
       </Text>
 
-      <Heading size="sm">Idea 2: a loop that alternates between two actions</Heading>
+      <Heading as="h3" size="sm">Idea 2: a loop that alternates between two actions</Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         A simple check-in desk logs each visitor and immediately updates its log before the next
         person walks up:
@@ -91,7 +91,7 @@ for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
 print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} expectedOutput={`['P100 delivered', 'P101 delivered']`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The notebook's main loop is structurally identical, just with an API call sitting in the
         middle of the two appends:
@@ -109,9 +109,9 @@ print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} exp
         running once per message you send.
       </Text>
 
-      <Heading size="sm">Idea 3: building a prompt is just string interpolation</Heading>
+      <Heading as="h3" size="sm">Idea 3: building a prompt is just string interpolation</Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         A mail-merge letter template fills in blanks from a record:
       </Text>
@@ -136,7 +136,7 @@ print(card)  # expected output: Congrats Sam on your graduation!`}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutput={`Congrats Sam on your graduation!`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>build_digital_twin_system_prompt(profile)</Code> does the same thing at a larger
         scale: it pulls <Code>name</Code>, <Code>role</Code>, <Code>tone</Code>,{" "}
@@ -147,7 +147,7 @@ print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutpu
         prompt instead of an envelope.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
       <Text>
         Open <Code>course/notebooks/lab_13_digital_twin.ipynb</Code>. Implement{" "}
         <Code>build_digital_twin_system_prompt(profile)</Code>. The project has you fill in a{" "}
@@ -155,7 +155,7 @@ print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutpu
         runs a real multi-turn conversation against it - your own working digital twin.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM's{" "}
         <Link

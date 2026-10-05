@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab09Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Just ask</Heading>
+      <Heading as="h2" size="md">Just ask</Heading>
       <Text>
         <b>Zero-shot</b> means asking the model to do a task with no worked examples first - just an
         instruction, like "classify the sentiment of this review" with no sample reviews shown
@@ -43,13 +43,13 @@ export function Lab09Reading() {
         reading a JSON response.
       </Text>
 
-      <Heading size="md">Making an HTTP request from Python</Heading>
+      <Heading as="h2" size="md">Making an HTTP request from Python</Heading>
       <Text>
         Every website and API you've ever used works the same basic way: your computer sends a{" "}
         <b>request</b> somewhere on the internet, and gets back a <b>response</b>.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         The <Code>requests</Code> library is the standard tool for doing this yourself, instead of
         through a browser:
@@ -81,7 +81,7 @@ response = requests.get("https://api.github.com/repos/psf/requests")
 data = response.json()
 print(data["language"])  # expected output: Python`} expectedOutput={`Python`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         For example, sending the actual conversation you want an LLM to reply to. In the notebook's{" "}
         <Code>call_groq</Code>, <Code>requests.post(GROQ_API_URL, headers=headers, json=payload)</Code>{" "}
@@ -91,12 +91,12 @@ print(data["language"])  # expected output: Python`} expectedOutput={`Python`} /
         request pattern underneath, just with different URLs and payload shapes.
       </Text>
 
-      <Heading size="md">Environment variables: keeping secrets out of your code</Heading>
+      <Heading as="h2" size="md">Environment variables: keeping secrets out of your code</Heading>
       <Text>
         An API key is like a password: whoever has it can make requests (and rack up usage) as you.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         If you write a key directly into your code -{" "}
         <Code>{"api_key = \"gsk_live_abc123...\""}</Code> - it's now sitting in a file that might get
@@ -130,7 +130,7 @@ os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code,
 token = os.environ["MY_APP_TOKEN"]
 print(token)  # expected output: demo-token-123`} expectedOutput={`demo-token-123`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         As this notebook does, the key can also be typed in interactively. The notebook's setup cell
         uses <Code>getpass.getpass("Enter your GROQ_API_KEY: ")</Code>, which prompts for the key
@@ -140,13 +140,13 @@ print(token)  # expected output: demo-token-123`} expectedOutput={`demo-token-12
         builds the request headers.
       </Text>
 
-      <Heading size="md">Parsing a JSON response</Heading>
+      <Heading as="h2" size="md">Parsing a JSON response</Heading>
       <Text>
         Most web APIs reply in <b>JSON</b> - a text format for structured data that maps directly
         onto Python dicts and lists.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         A JSON object like <Code>{'{"name": "Vera", "scores": [1, 2, 3]}'}</Code> becomes a Python
         dict with a nested list, and <Code>response.json()</Code> does that conversion for you
@@ -171,7 +171,7 @@ print(data["user"])  # expected output: Vera
 print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
 103`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>Groq's response is a JSON object shaped roughly like:</Text>
       <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`{"choices": [{"message": {"content": "positive"}}]}`}
@@ -183,7 +183,7 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
         message, and that message's content string.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
       <Text>
         Open <Code>course/notebooks/lab_09_zero_shot.ipynb</Code>. Get a free key at{" "}
         <Code>console.groq.com/keys</Code> - the notebook's setup cell prompts for it with a
@@ -193,7 +193,7 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
         on 10 real review sentences and reports accuracy.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM Think:{" "}
         <Link href="https://www.ibm.com/think/topics/zero-shot-prompting" isExternal color="blue.500">

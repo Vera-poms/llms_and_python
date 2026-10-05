@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab04Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">From distributions to decisions</Heading>
+      <Heading as="h2" size="md">From distributions to decisions</Heading>
       <Text>
         Labs 1-3 built distributions over words. A perceptron does something different: given a
         vector of numbers describing some input, it decides between two classes. It's the
@@ -27,13 +27,13 @@ export function Lab04Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Heading size="sm">Deep dive: Python classes, from scratch</Heading>
+      <Heading as="h3" size="sm">Deep dive: Python classes, from scratch</Heading>
       <Text>
         A <Code>class</Code> is a template for bundling data (called <Code>attributes</Code>)
         together with the functions that act on that data (called <Code>methods</Code>).
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -88,7 +88,7 @@ mix = Playlist("Road Trip", ["Song A"])
 mix.add_song("Song B")
 print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -100,13 +100,13 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
         weights and a bias. Same idea, different data.
       </Text>
 
-      <Heading size="sm">Deep dive: the dot product</Heading>
+      <Heading as="h3" size="sm">Deep dive: the dot product</Heading>
       <Text>
         A dot product multiplies two lists of numbers position-by-position and adds up the
         results.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -138,7 +138,7 @@ weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
 print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -149,14 +149,14 @@ print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
         feature" - the weighted sum is the entire computation that decides which class wins.
       </Text>
 
-      <Heading size="sm">Deep dive: the step (activation) function</Heading>
+      <Heading as="h3" size="sm">Deep dive: the step (activation) function</Heading>
       <Text>
         The weighted sum <Code>z</Code> from <Code>net_input</Code> can be any real number - it
         doesn't look like a decision yet. An <Code>activation</Code> function converts a number
         into a decision.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -193,7 +193,7 @@ print(freeze_alert(-5))  # 1
 print(freeze_alert(10))  # -1`} expectedOutput={`1
 -1`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -204,13 +204,13 @@ print(freeze_alert(10))  # -1`} expectedOutput={`1
         something more meaningful for the next step - is exactly the same one this lab introduces.
       </Text>
 
-      <Heading size="sm">Deep dive: plotting with matplotlib</Heading>
+      <Heading as="h3" size="sm">Deep dive: plotting with matplotlib</Heading>
       <Text>
         A plot is just numbers turned into pixels - matplotlib is the standard Python library for
         doing that turn.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -266,7 +266,7 @@ print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.
         plus-activation shape scales up into modern architectures.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>

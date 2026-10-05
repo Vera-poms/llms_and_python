@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab14Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Naming what you've already been doing</Heading>
+      <Heading as="h2" size="md">Naming what you've already been doing</Heading>
       <Text>
         Labs 9-13 all made the same shape of HTTP call to Groq. Every REST API call, regardless of
         provider, breaks down into the same 5 components:
@@ -29,9 +29,9 @@ export function Lab14Reading() {
         </ListItem>
       </OrderedList>
 
-      <Heading size="sm">An HTTP request is just a piece of mail</Heading>
+      <Heading as="h3" size="sm">An HTTP request is just a piece of mail</Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Before touching code, it helps to picture sending a physical letter:
       </Text>
@@ -79,7 +79,7 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
 }
 print(f"{request['method']} {request['endpoint']}")  # expected output: POST https://api.example.com/orders`} expectedOutput={`POST https://api.example.com/orders`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         Look back at <Code>call_groq</Code> from the earlier labs with that lens: the URL constant
         is the endpoint, <Code>requests.post(...)</Code> is the method, the{" "}
@@ -89,9 +89,9 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
         pieces - this lab just gives them names.
       </Text>
 
-      <Heading size="sm">Wrapping repeated logic into a class</Heading>
+      <Heading as="h3" size="sm">Wrapping repeated logic into a class</Heading>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Think of an ATM. Every withdrawal follows the same steps - check the balance, subtract the
         amount, print a receipt - but you don't want to retype those steps at every machine. You
@@ -142,7 +142,7 @@ print(vm.dispense("soda"))  # expected output: 4
 print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
 3`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>SimpleAPIClient</Code> is the same pattern applied to HTTP calls: its constructor
         stores <Code>self.base_url</Code> and <Code>self.headers</Code> once, and its{" "}
@@ -160,7 +160,7 @@ print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
         {" -> "}response. Once you can see that shape, a new API's docs stop looking unfamiliar.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
       <Text>
         Open <Code>course/notebooks/lab_14_universal_api_components.ipynb</Code>. Implement{" "}
         <Code>SimpleAPIClient</Code> - a small, generic, reusable class not specific to Groq at
@@ -169,7 +169,7 @@ print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
         instead of the raw request, to show the abstraction really does transfer to any REST API.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM's{" "}
         <Link href="https://www.ibm.com/think/topics/rest-apis" isExternal color="blue.500">

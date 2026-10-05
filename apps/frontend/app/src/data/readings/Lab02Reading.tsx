@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab02Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Two kinds of "simple prediction"</Heading>
+      <Heading as="h2" size="md">Two kinds of "simple prediction"</Heading>
       <Text>
         Lab 1 gave you a probability distribution over discrete outcomes (words). Sometimes what
         you want to predict is continuous instead - a number, not a category. This lab contrasts
@@ -14,12 +14,12 @@ export function Lab02Reading() {
         regression (predict a number from another number using a straight-line fit).
       </Text>
 
-      <Heading size="sm">Concept 1: a frequency baseline</Heading>
+      <Heading as="h3" size="sm">Concept 1: a frequency baseline</Heading>
       <Text>
         The simplest possible prediction strategy is "guess whatever you've seen most often."
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Say you're guessing whether a coin is fair by looking at past flips:</Text>
       <RunnableExample labId={2} code={`flips = ["heads", "tails", "heads", "heads", "tails", "heads"]
 
@@ -57,21 +57,21 @@ for day in weather:
 best_guess = max(counts, key=lambda outcome: counts[outcome])
 print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The lab's <Code>most_common_label</Code> is this exact pattern applied to a list of 0/1
         labels: it's the "dumbest possible baseline" you always compare a smarter model against, to
         make sure the smarter model is actually earning its complexity.
       </Text>
 
-      <Heading size="sm">Concept 2: fitting a straight line (linear regression)</Heading>
+      <Heading as="h3" size="sm">Concept 2: fitting a straight line (linear regression)</Heading>
       <Text>
         Linear regression finds the straight line <Code>y = slope * x + intercept</Code> that best
         fits a set of (x, y) points. "Best" means minimizing the total squared vertical distance
         between the line and every real point (the "least-squares" fit).
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Picture predicting a child's height from their age using a handful of measurements:
       </Text>
@@ -135,7 +135,7 @@ slope = numerator / denominator
 intercept = y_mean - slope * x_mean
 print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3`} expectedOutput={`6.5 45.3`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This closed-form formula is exactly what the lab's <Code>linear_regression_fit</Code>{" "}
         implements. Once you have <Code>slope</Code> and <Code>intercept</Code>,{" "}
@@ -146,10 +146,10 @@ print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*
         error between predictions and reality.
       </Text>
 
-      <Heading size="sm">Concept 3: measuring error with mean squared error</Heading>
+      <Heading as="h3" size="sm">Concept 3: measuring error with mean squared error</Heading>
       <Text>How do you know if a fit (or a baseline) is any good?</Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Suppose you predicted three kids' heights and want to score how far off you were:
       </Text>
@@ -184,7 +184,7 @@ squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
 mse = sum(squared_errors) / len(squared_errors)
 print(mse)  # 14.33`} expectedOutput={`14.333333333333334`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>mean_squared_error</Code> is precisely this computation, applied to whatever
         predictions and true values you hand it. This is exactly how the project compares the
@@ -192,13 +192,13 @@ print(mse)  # 14.33`} expectedOutput={`14.333333333333334`} />
         strategies.
       </Text>
 
-      <Heading size="sm">Concept 4: plotting with matplotlib</Heading>
+      <Heading as="h3" size="sm">Concept 4: plotting with matplotlib</Heading>
       <Text>
         Seeing the real data alongside a fitted line makes it obvious, at a glance, whether the
         line is actually capturing the trend.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Say you have a handful of (x, y) points and a line you fit to them, and want to see both
         at once:
@@ -255,7 +255,7 @@ print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a f
         </Link>
       </Text>
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>project.py</Code> does exactly this with the real review data:{" "}
         <Code>plt.scatter(char_lengths, word_counts, ...)</Code> plots every real sentence as a

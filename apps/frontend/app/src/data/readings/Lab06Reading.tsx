@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab06Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">What's actually inside a transformer</Heading>
+      <Heading as="h2" size="md">What's actually inside a transformer</Heading>
       <Text>
         A decoder-only LLM (GPT-style) is, at a high level, a stack of identical blocks wrapped
         around a vocabulary embedding and an output head: a <Code>token embedding</Code> lookup
@@ -21,12 +21,12 @@ export function Lab06Reading() {
         them tells you a lot about a model before you ever run it.
       </Text>
 
-      <Heading size="sm">Deep dive: counting things programmatically</Heading>
+      <Heading as="h3" size="sm">Deep dive: counting things programmatically</Heading>
       <Text>
         A parameter count is just repeated multiplication of sizes.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -56,7 +56,7 @@ seats_per_row = 15
 total_seats = rows * seats_per_row
 print(total_seats)  # 300`} expectedOutput={`300`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -70,13 +70,13 @@ print(total_seats)  # 300`} expectedOutput={`300`} />
         that model is nicknamed "124M."
       </Text>
 
-      <Heading size="sm">Deep dive: dataclasses as config objects</Heading>
+      <Heading as="h3" size="sm">Deep dive: dataclasses as config objects</Heading>
       <Text>
         A <Code>dataclass</Code> is a shortcut for writing a class whose entire job is to hold a
         fixed set of named values.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>Compare it to describing a rectangle:</Text>
@@ -130,7 +130,7 @@ class Car:
 c = Car(mpg=30.0, tank_gallons=12.0)
 print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -141,13 +141,13 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         object playing the same "bundle of data plus behavior" role a class always does.
       </Text>
 
-      <Heading size="sm">Deep dive: config dicts as the shape of a real model</Heading>
+      <Heading as="h3" size="sm">Deep dive: config dicts as the shape of a real model</Heading>
       <Text>
         Real models describe their architecture as a small dictionary (or JSON file) of
         hyperparameters rather than code.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>GPT-2 small's real configuration looks like this:</Text>
@@ -184,7 +184,7 @@ print(server_config["workers"])  # 4`}
 }
 print(server_config["workers"])  # 4`} expectedOutput={`4`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -196,13 +196,13 @@ print(server_config["workers"])  # 4`} expectedOutput={`4`} />
         driving the same <Code>count_parameters</Code> math you implemented in the exercise.
       </Text>
 
-      <Heading size="sm">Deep dive: plotting with matplotlib</Heading>
+      <Heading as="h3" size="sm">Deep dive: plotting with matplotlib</Heading>
       <Text>
         A grouped bar chart puts two related bars next to each other for every category, which is
         the natural way to compare "two numbers per item" side by side.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -274,7 +274,7 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
         lab bothers counting them by hand.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -289,7 +289,7 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
         the formulas you implemented in the exercise actually match reality.
       </Text>
 
-      <Heading size="sm">Notebook</Heading>
+      <Heading as="h3" size="sm">Notebook</Heading>
       <Text>
         Open <Code>course/notebooks/lab_06_llm_architecture.ipynb</Code> (upload it to{" "}
         <Code>colab.research.google.com</Code>, or run it locally in Jupyter). Implement a

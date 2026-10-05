@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab11Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Making the model show its work</Heading>
+      <Heading as="h2" size="md">Making the model show its work</Heading>
       <Text>
         For tasks that involve any reasoning (arithmetic, logic, multi-step inference), asking a
         model to think step by step before answering - chain-of-thought - measurably improves
@@ -14,12 +14,12 @@ export function Lab11Reading() {
         text, so you need a clear final-answer marker to reliably pull the actual answer back out.
       </Text>
 
-      <Heading size="sm">Concept: comparing two approaches side by side</Heading>
+      <Heading as="h3" size="sm">Concept: comparing two approaches side by side</Heading>
       <Text>
         Chain-of-thought is the difference between blurting out an answer and showing your work.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Suppose you need <Code>17 * 24</Code>. You could blurt out a guess from memory, or you
         could work it out on paper:
@@ -76,7 +76,7 @@ print(guess_total(50, 0.08))        # expected output: 54.0
 print(show_total_steps(50, 0.08))   # expected output: tax=4.00, total=54.00`} expectedOutput={`54.0
 tax=4.00, total=54.00`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The lab's <Code>build_direct_prompt(question)</Code> asks for a short answer immediately
         (the "guess directly" path), while <Code>build_cot_prompt(question)</Code> explicitly asks
@@ -87,13 +87,13 @@ tax=4.00, total=54.00`} />
         the correct number more often than the rushed direct answer.
       </Text>
 
-      <Heading size="sm">Concept: pulling a value out of a larger string</Heading>
+      <Heading as="h3" size="sm">Concept: pulling a value out of a larger string</Heading>
       <Text>
         Once the model has "shown its work," your code still needs to lift just the final answer
         back out of all that reasoning text.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Imagine a receipt printed as one block of text, and you just want the total:
       </Text>
@@ -133,7 +133,7 @@ def extract_high(text: str, marker: str = "High:") -> str:
 
 print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>extract_final_answer(reply_text, marker="Answer:")</Code> does precisely this on a
         model's chain-of-thought reply: the model might write several paragraphs of reasoning, but
@@ -143,7 +143,7 @@ print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} /
         without a person having to read the whole paragraph.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
       <Text>
         Open <Code>course/notebooks/lab_11_chain_of_thought.ipynb</Code>. Implement{" "}
         <Code>build_direct_prompt</Code>, <Code>build_cot_prompt</Code> (adds a "think step by
@@ -153,7 +153,7 @@ print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} /
         models often get wrong when rushed into a one-shot answer.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Link href="https://www.ibm.com/think/topics/chain-of-thoughts" isExternal>

@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab08Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">The map before the territory</Heading>
+      <Heading as="h2" size="md">The map before the territory</Heading>
       <Text>Labs 9-15 each cover one way of shaping a prompt to get better results from an LLM:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -31,10 +31,10 @@ export function Lab08Reading() {
         state and knows how to act on it.
       </Text>
 
-      <Heading size="md">String formatting: filling blanks in text</Heading>
+      <Heading as="h2" size="md">String formatting: filling blanks in text</Heading>
       <Text>Say you want to greet someone by name, filling a blank in a piece of text with a value.</Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>You could paste strings together:</Text>
       <RunnableExample labId={8} code={`name = "Vera"
 greeting = "Hello, " + name + "!"
@@ -77,7 +77,7 @@ order_template = "You ordered {qty} {item}(s)."
 print(order_template.format(qty=5, item="pen"))  # expected output: You ordered 5 pen(s).`} expectedOutput={`You ordered 3 notebook(s).
 You ordered 5 pen(s).`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         That distinction matters: an f-string bakes in its values immediately, but a{" "}
         <Code>.format()</Code> template can be written once, stored, and filled in later with
@@ -86,14 +86,14 @@ You ordered 5 pen(s).`} />
         different reviews.
       </Text>
 
-      <Heading size="md">Separating the template from the data</Heading>
+      <Heading as="h2" size="md">Separating the template from the data</Heading>
       <Text>
         Notice the pattern above: <Code>{"\"Hello, {name}!\""}</Code> is the reusable <b>template</b> -
         the shape of the message that never changes. The word <Code>"Vera"</Code> is the{" "}
         <b>data</b> - it changes every time. Keeping these two separate is a small but powerful idea.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         A function that takes a template and reuses it with different data, nothing LLM-related here:
       </Text>
@@ -130,7 +130,7 @@ print(render(invoice_template, customer="Alex", amount=42))  # expected output: 
 print(render(invoice_template, customer="Sam", amount=17))  # expected output: Invoice for Sam: $17`} expectedOutput={`Invoice for Alex: $42
 Invoice for Sam: $17`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         In this lab's <Code>PromptTemplate</Code>, the template is the string passed into{" "}
         <Code>__init__</Code> (e.g. <Code>"Classify the sentiment of this review: {"{review}"}"</Code>
@@ -140,13 +140,13 @@ Invoice for Sam: $17`} />
         sentences.
       </Text>
 
-      <Heading size="md">A class that stores state and has a method to act on it</Heading>
+      <Heading as="h2" size="md">A class that stores state and has a method to act on it</Heading>
       <Text>
         A Python <b>class</b> is a blueprint for bundling data together with the functions
         ("methods") that operate on that data.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Here's the idea with something totally unrelated to LLMs - a class that remembers a running total:</Text>
       <RunnableExample labId={8} code={`class Counter:
     def __init__(self, start=0):
@@ -194,7 +194,7 @@ t = Tally()
 t.bump(2)
 print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>PromptTemplate</Code> follows the exact same shape. Its <Code>__init__</Code> stores{" "}
         <Code>self.template</Code> (the raw string) and computes <Code>self.required_vars</Code> - the
@@ -208,7 +208,7 @@ print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
         broken prompt to an LLM.
       </Text>
 
-      <Heading size="sm">Notebook</Heading>
+      <Heading as="h3" size="sm">Notebook</Heading>
       <Text>
         Open <Code>course/notebooks/lab_08_prompting_techniques.ipynb</Code>. Implement a{" "}
         <Code>PromptTemplate</Code> class (template + required variables + validation), then the
@@ -216,7 +216,7 @@ print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
         yet, this lab is fully offline.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM Think:{" "}
         <Link href="https://www.ibm.com/think/topics/prompt-engineering" isExternal color="blue.500">

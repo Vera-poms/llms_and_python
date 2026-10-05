@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab05Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">The perceptron learning rule</Heading>
+      <Heading as="h2" size="md">The perceptron learning rule</Heading>
       <Text>
         Training means adjusting <Code>weights</Code> and <Code>bias</Code> so the perceptron
         stops getting things wrong. The rule is almost embarrassingly simple: for every example it
@@ -27,12 +27,12 @@ export function Lab05Reading() {
         function.
       </Text>
 
-      <Heading size="sm">Deep dive: looping over epochs and data</Heading>
+      <Heading as="h3" size="sm">Deep dive: looping over epochs and data</Heading>
       <Text>
         A "for loop" repeats a block of code once per item in a sequence.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -72,7 +72,7 @@ for round_rolls in rounds:
             total_sixes += 1
 print(total_sixes)  # 2`} expectedOutput={`2`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -84,12 +84,12 @@ print(total_sixes)  # 2`} expectedOutput={`2`} />
         number of passes over the data instead of stopping after one pass.
       </Text>
 
-      <Heading size="sm">Deep dive: the perceptron learning rule</Heading>
+      <Heading as="h3" size="sm">Deep dive: the perceptron learning rule</Heading>
       <Text>
         The update rule is <Code>weight_update = learning_rate * error * input</Code>.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -133,7 +133,7 @@ adjustment = learning_rate * too_bitter * brew_minutes
 brew_minutes += adjustment
 print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput={`4.0`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -146,13 +146,13 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
         push the weights toward predicting <Code>+1</Code> for inputs like this one.
       </Text>
 
-      <Heading size="sm">Deep dive: error, loss, and mutating state</Heading>
+      <Heading as="h3" size="sm">Deep dive: error, loss, and mutating state</Heading>
       <Text>
         "Error" here just means "how many examples did the model get wrong in this epoch" -
         counted in <Code>errors_per_epoch</Code>.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -184,7 +184,7 @@ score += 10  # mutates score in place
 score += 25
 print(score)  # 35 - remembers every point scored before it`} expectedOutput={`35`} />
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -198,13 +198,13 @@ print(score)  # 35 - remembers every point scored before it`} expectedOutput={`3
         underlying pattern of state that persists and improves over time is identical.
       </Text>
 
-      <Heading size="sm">Deep dive: plotting with matplotlib</Heading>
+      <Heading as="h3" size="sm">Deep dive: plotting with matplotlib</Heading>
       <Text>
         matplotlib can draw more than one chart in a single figure, which is useful when two plots
         tell a story better side by side than apart.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         In plain Python
       </Heading>
       <Text>
@@ -266,7 +266,7 @@ print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side chart
         a differentiable loss that gradient descent can optimize.
       </Text>
 
-      <Heading size="xs" color="gray.600">
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>

@@ -15,7 +15,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab07Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Attention, the short version</Heading>
+      <Heading as="h2" size="md">Attention, the short version</Heading>
       <Text>
         Self-attention lets every word in a sequence look at every other word and decide how much
         to "pay attention" to it. For each word, three vectors are derived from its embedding: a{" "}
@@ -41,14 +41,14 @@ export function Lab07Reading() {
         notebook code leans on them without re-explaining them.
       </Text>
 
-      <Heading size="md">Vectors and matrices are just lists of numbers</Heading>
+      <Heading as="h2" size="md">Vectors and matrices are just lists of numbers</Heading>
       <Text>
         A <b>vector</b> is nothing more than an ordered list of numbers, like <Code>[1.0, 0.0]</Code>.
         A <b>matrix</b> is a grid of numbers - think of a spreadsheet where every row is one vector
         stacked on top of the next.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Here's a small matrix that has nothing to do with language models yet - just a 2x2 grid of numbers:</Text>
       <RunnableExample labId={7} code={`M = [[1.0, 0.0],
      [0.0, 1.0]]`} />
@@ -72,7 +72,7 @@ print(grid[0])  # expected output: [10, 20]
 print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
 30`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         In this lab, every word in a sentence gets turned into a vector (its "embedding" - a list of
         numbers that's supposed to capture something about the word's meaning or usage). Stack all of
@@ -81,13 +81,13 @@ print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
         word's query/key/value vector.
       </Text>
 
-      <Heading size="md">Matrix multiplication: dot products between many vectors at once</Heading>
+      <Heading as="h2" size="md">Matrix multiplication: dot products between many vectors at once</Heading>
       <Text>
         Matrix multiplication is built out of a simpler operation, applied many times at once: the{" "}
         <b>dot product</b>.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         A dot product multiplies two vectors element-by-element, then adds up the results:
       </Text>
@@ -122,7 +122,7 @@ quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
 print(total)  # expected output: 20`} expectedOutput={`20`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This is exactly what <Code>scores = Q @ K.T</Code> does in{" "}
         <Code>scaled_dot_product_attention</Code>. <Code>K.T</Code> ("K transposed") flips the key
@@ -133,10 +133,10 @@ print(total)  # expected output: 20`} expectedOutput={`20`} />
         get longer, so the next step (softmax) behaves well numerically.
       </Text>
 
-      <Heading size="md">Softmax: turning raw scores into a probability distribution</Heading>
+      <Heading as="h2" size="md">Softmax: turning raw scores into a probability distribution</Heading>
       <Text>Softmax turns a list of raw scores into a list of percentages that add up to 100%.</Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Suppose you have three raw scores: <Code>[2.0, 1.0, 0.1]</Code>. You'd like to turn them into
         percentages that sum to 1.0, where a bigger score gets a bigger share. Softmax does exactly
@@ -175,7 +175,7 @@ exp_scores = np.exp(scores - scores.max())
 probs = exp_scores / exp_scores.sum()
 print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} expectedOutput={`[0.84 0.11 0.04]`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This is the same operation from lab 1's <Code>word_probabilities</Code>, just applied to
         attention scores instead of word counts, and vectorized with numpy so it works on a whole row
@@ -189,13 +189,13 @@ print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} expectedOutput=
         defining property of softmax.
       </Text>
 
-      <Heading size="md">Why numpy instead of plain Python lists</Heading>
+      <Heading as="h2" size="md">Why numpy instead of plain Python lists</Heading>
       <Text>
         You could represent a matrix as a list of lists in plain Python, but doing math on it means
         writing explicit loops: looping over rows, looping over columns, summing products by hand.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <RunnableExample labId={7} code={`a = [[1, 2], [3, 4]]
 b = [[5, 6], [7, 8]]
 
@@ -245,7 +245,7 @@ manual = [a[i] + b[i] for i in range(len(a))]
 vectorized = np.array(a) + np.array(b)
 print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} expectedOutput={`[11, 22, 33] [np.int64(11), np.int64(22), np.int64(33)]`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>softmax</Code> and <Code>scaled_dot_product_attention</Code> lean on exactly those two
         things:
@@ -267,13 +267,13 @@ print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} 
         about five lines: numpy is doing the heavy lifting that would otherwise be nested loops.
       </Text>
 
-      <Heading size="md">Deep dive: visualizing a matrix with matplotlib</Heading>
+      <Heading as="h2" size="md">Deep dive: visualizing a matrix with matplotlib</Heading>
       <Text>
         A matrix of numbers is hard to read at a glance - a colored grid, where color stands in for
         value, is much easier to scan.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Here's a small, non-LLM example: a mock grid of exam scores, one row per student, one column
         per subject, turned into a heatmap with <Code>plt.imshow</Code>:
@@ -319,7 +319,7 @@ plt.title("Monthly rainfall")
 plt.show()
 print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall grid`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The notebook does exactly this with <Code>attn_weights</Code>, the matrix{" "}
         <Code>scaled_dot_product_attention</Code> returns: <Code>plt.imshow(attn_weights, cmap="magma")</Code>{" "}
@@ -331,7 +331,7 @@ print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall 
         visible instead of read as raw numbers.
       </Text>
 
-      <Heading size="sm">Notebook</Heading>
+      <Heading as="h3" size="sm">Notebook</Heading>
       <Text>
         Open <Code>course/notebooks/lab_07_attention.ipynb</Code>. Implement <Code>softmax</Code>{" "}
         and <Code>scaled_dot_product_attention</Code> with plain numpy, then the project reuses
@@ -339,7 +339,7 @@ print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall 
         review sentences through attention, plotting a word-by-word attention heatmap.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM Think:{" "}
         <Link href="https://www.ibm.com/think/topics/self-attention" isExternal color="blue.500">

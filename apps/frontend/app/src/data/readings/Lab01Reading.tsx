@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab01Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Why probability?</Heading>
+      <Heading as="h2" size="md">Why probability?</Heading>
       <Text>
         An LLM never "knows" the next word for certain. At every step it produces a probability
         distribution over its entire vocabulary - a number for every possible next token that all
@@ -15,14 +15,14 @@ export function Lab01Reading() {
         that one idea, so we build the whole pipeline from scratch, on real text, in this lab.
       </Text>
 
-      <Heading size="sm">Concept 1: Python modules and imports</Heading>
+      <Heading as="h3" size="sm">Concept 1: Python modules and imports</Heading>
       <Text>
         Every file in this course opens with a handful of <Code>import</Code> lines before any
         real logic starts - worth understanding before anything else, since the rest of this lab
         leans on them immediately.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Python ships with a large standard library, and countless more packages are one{" "}
         <Code>pip install</Code> away. <Code>import</Code> pulls one of those in and hands you its
@@ -72,7 +72,7 @@ print(my_mean(nums))              # 18.0 - hand-rolled
 print(statistics.mean(nums))      # 18 - same answer, from the standard library`} expectedOutput={`18.0
 18`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This lab's notebook opens with exactly three imports: <Code>import random</Code>,{" "}
         <Code>import re</Code>, and <Code>import matplotlib.pyplot as plt</Code>. <Code>re</Code>{" "}
@@ -88,7 +88,7 @@ print(statistics.mean(nums))      # 18 - same answer, from the standard library`
         infrastructure <Code>import</Code> lets every Python program share.
       </Text>
 
-      <Heading size="sm">Concept 2: turning text into tokens with regex</Heading>
+      <Heading as="h3" size="sm">Concept 2: turning text into tokens with regex</Heading>
       <Text>
         Before you can count words, you have to decide what counts as a "word." The string{" "}
         <Code>"The Movie, was great!"</Code> has capital letters and punctuation glued to it -{" "}
@@ -97,7 +97,7 @@ print(statistics.mean(nums))      # 18 - same answer, from the standard library`
         of text so you can pull matching pieces out of a bigger string.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Forget language for a second. Say you have a messy string of prices scraped from a
         webpage and you just want the numbers:
@@ -132,7 +132,7 @@ post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
 hashtags = re.findall(r"#[A-Za-z0-9]+", post)
 print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`['#SunsetHike', '#hiking', '#Summer2024']`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The lab's <Code>tokenize</Code> function does the same trick, but with letters instead of
         digits: <Code>re.findall(r"[a-z]+", sentence.lower())</Code>. Lowercasing first means{" "}
@@ -143,13 +143,13 @@ print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`
         into the discrete units the model actually counts and predicts over.
       </Text>
 
-      <Heading size="sm">Concept 3: counting things with a dictionary</Heading>
+      <Heading as="h3" size="sm">Concept 3: counting things with a dictionary</Heading>
       <Text>
         A Python <Code>dict</Code> maps keys to values, and it's the natural tool any time you
         need to tally "how many of each thing."
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Imagine counting fruit in a basket:</Text>
       <RunnableExample labId={1} code={`basket = ["apple", "pear", "apple", "apple", "pear", "fig"]
 
@@ -185,7 +185,7 @@ for letter in word:
 
 print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m': 1, 'i': 4, 's': 4, 'p': 2}`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The lab's <Code>word_counts</Code> function is precisely this loop, just counting tokens
         instead of fruit: it tokenizes every sentence and tallies each word into a{" "}
@@ -194,13 +194,13 @@ print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m'
         anything resembling "intelligence" enters the picture.
       </Text>
 
-      <Heading size="sm">Concept 4: from counts to a probability distribution</Heading>
+      <Heading as="h3" size="sm">Concept 4: from counts to a probability distribution</Heading>
       <Text>
         A probability distribution is just a set of numbers that (a) are all between 0 and 1 and
         (b) add up to exactly 1.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Think of a six-sided die: each face has probability <Code>1/6</Code>, and{" "}
         <Code>1/6 * 6 = 1</Code>. If you rolled a die 60 times and it came up "3" twenty times, you
@@ -230,7 +230,7 @@ print(distribution["tacos"])          # 0.45
 print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
 1.0`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>word_probabilities</Code> applies exactly this normalization to word counts: divide
         every count by the sum of all counts, and the raw frequencies become a valid distribution
@@ -240,13 +240,13 @@ print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
         normalize-so-it-sums-to-1 idea.
       </Text>
 
-      <Heading size="sm">Concept 5: sorting to find the top-k</Heading>
+      <Heading as="h3" size="sm">Concept 5: sorting to find the top-k</Heading>
       <Text>
         Once you have a distribution, a common next question is "what are the most likely
         outcomes?"
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Python's <Code>sorted()</Code> takes a <Code>key</Code> function that tells it what to
         sort by, and <Code>reverse=True</Code> flips it to descending order:
@@ -268,7 +268,7 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('level2', 30.5), ('level1', 42.1)]`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>top_k</Code> sorts a <Code>(word, probability)</Code> distribution the same way and
         slices the first <Code>k</Code> entries. "Greedy decoding" - one of the two ways an LLM
@@ -276,13 +276,13 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('lev
         always take the single most probable next token.
       </Text>
 
-      <Heading size="sm">Concept 6: plotting with matplotlib</Heading>
+      <Heading as="h3" size="sm">Concept 6: plotting with matplotlib</Heading>
       <Text>
         A distribution is easier to feel in a picture than in a list of numbers, and{" "}
         <Code>matplotlib</Code> is Python's standard plotting library.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Say you surveyed people's favorite color and want to see the results as a bar chart:
       </Text>
@@ -339,7 +339,7 @@ print(topics[votes.index(max(votes))])  # dicts`} />
         and how "temperature" reshapes that distribution.
       </Text>
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>project.py</Code> does the same thing with real numbers: it takes the top 15{" "}
         <Code>(word, probability)</Code> pairs from <Code>top_k(dist, 15)</Code> and calls{" "}

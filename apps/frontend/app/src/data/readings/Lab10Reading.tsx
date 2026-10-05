@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab10Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">Showing, not just telling</Heading>
+      <Heading as="h2" size="md">Showing, not just telling</Heading>
       <Text>
         Few-shot prompting adds a handful of worked (input, output) examples to the messages list
         before the real question - it steers the model's <i>format</i> far more reliably than
@@ -14,13 +14,13 @@ export function Lab10Reading() {
         JSON) instead of just reading it.
       </Text>
 
-      <Heading size="sm">Concept: teaching by example, not by rule</Heading>
+      <Heading as="h3" size="sm">Concept: teaching by example, not by rule</Heading>
       <Text>
         Few-shot prompting is just this idea applied to a model's messages list instead of a
         person.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Imagine you want a friend to reformat a list of names from "First Last" to "Last, F." You
         could describe the rule in words ("take the last word, put it first, add a comma, then the
@@ -66,7 +66,7 @@ def apply_pattern(word):
 query = "yes"
 print(apply_pattern(query))  # expected output: YES!`} expectedOutput={`YES!`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         In this lab, <Code>build_few_shot_messages(examples, query)</Code> does exactly this for
         the API's messages list: it takes a list of <Code>(review, result_dict)</Code> pairs and
@@ -77,13 +77,13 @@ print(apply_pattern(query))  # expected output: YES!`} expectedOutput={`YES!`} /
         you want back, which is far more reliable than just telling it "reply with JSON."
       </Text>
 
-      <Heading size="sm">Concept: parsing (and trusting) JSON output</Heading>
+      <Heading as="h3" size="sm">Concept: parsing (and trusting) JSON output</Heading>
       <Text>
         A model's reply is just text, so before your program can use it as data, that text has to
         be parsed and checked.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         Say you have a text file of contacts, one JSON object per line, and you want to load them
         into a Python program:
@@ -142,7 +142,7 @@ except json.JSONDecodeError:
 except ValueError as e:
     print(f"parsed but incomplete: {e}")`} expectedOutput={`Mug 9.99`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This is exactly the situation with a model's reply: it's just text, and even when you ask
         nicely for JSON, models sometimes wrap it in <Code>```json ... ```</Code> fences or drop a
@@ -157,7 +157,7 @@ except ValueError as e:
         actual structured data, not a paragraph of prose.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
       <Text>
         Open <Code>course/notebooks/lab_10_few_shot_structured.ipynb</Code>. Implement{" "}
         <Code>build_few_shot_messages(examples, query)</Code> and{" "}
@@ -167,7 +167,7 @@ except ValueError as e:
         parsed results.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Link href="https://www.ibm.com/think/topics/few-shot-prompting" isExternal>

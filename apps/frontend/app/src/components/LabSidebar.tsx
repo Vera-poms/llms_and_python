@@ -4,6 +4,8 @@ import { type RefObject, useEffect, useState } from "react";
 interface NavItem {
   id: string;
   label: string;
+  // 0 = topic, 1 = sub-topic, 2 = sub-sub-topic; drives the indentation.
+  level: number;
 }
 
 interface NavGroups {
@@ -11,45 +13,39 @@ interface NavGroups {
   coding: NavItem[];
 }
 
-// Reading headings that are sub-sections or boilerplate rather than concepts.
-const NOT_A_CONCEPT = /^(in plain python|applied to this lab|further reading|notebook\b)/i;
+const HEADING_LEVEL: Record<string, number> = { H2: 0, H3: 1, H4: 2 };
 
 function ensureId(el: Element, id: string): string {
   if (!el.id) el.id = id;
   return el.id;
 }
 
-// Builds the lab's outline from the rendered page: concept headings from the reading, and the coding
-// sections (plain Python, try it live, exercise, project) from markers the lab components render.
-function scan(reading: HTMLElement | null, notebook: HTMLElement | null): NavGroups {
-  const concepts: NavItem[] = [];
-  const coding: NavItem[] = [];
-
-  const headings = Array.from(reading?.querySelectorAll("h2") ?? []);
-  headings.forEach((h, i) => {
-    const text = h.textContent?.trim() ?? "";
-    if (text && !NOT_A_CONCEPT.test(text)) {
-      concepts.push({ id: ensureId(h, `nav-concept-${i}`), label: text });
+// Every heading (h2-h4) under `root`, in page order, plus any "Try it live" cells when `withCells` is set.
+// The page's own h1 title is left out - it is not a section of the lab.
+function collect(root: HTMLElement | null, prefix: string, withCells: boolean): NavItem[] {
+  const items: NavItem[] = [];
+  const selector = withCells ? 'h2, h3, h4, [data-nav="try-it"]' : "h2, h3, h4";
+  let tryItCount = 0;
+  Array.from(root?.querySelectorAll(selector) ?? []).forEach((el, i) => {
+    if (el.getAttribute("data-nav") === "try-it") {
+      tryItCount += 1;
+      items.push({ id: ensureId(el, `${prefix}-try-it-${i}`), label: `Try it live (${tryItCount})`, level: 2 });
+      return;
     }
+    const text = el.textContent?.replace(/\s+/g, " ").trim() ?? "";
+    if (text) items.push({ id: ensureId(el, `${prefix}-${i}`), label: text, level: HEADING_LEVEL[el.tagName] ?? 0 });
   });
+  return items;
+}
 
-  const plain = headings.find((h) => /^in plain python/i.test(h.textContent?.trim() ?? ""));
-  if (plain) coding.push({ id: ensureId(plain, "nav-plain"), label: "In plain Python" });
-
-  const tryIt = reading?.querySelector('[data-nav="try-it"]');
-  if (tryIt) coding.push({ id: ensureId(tryIt, "nav-try-it"), label: "Try it live" });
-
-  const exercise = notebook?.querySelector('[data-nav="exercise"]');
-  if (exercise) coding.push({ id: ensureId(exercise, "nav-exercise"), label: "Exercises" });
-
-  const project = notebook?.querySelector('[data-nav="project"]');
-  if (project) coding.push({ id: ensureId(project, "nav-project"), label: "Project" });
-
-  return { concepts, coding };
+// Builds the lab's outline from the rendered page: the reading's topics and sub-topics, and the
+// notebook's own sections (setup, exercise, solution, project and any practice blocks).
+function scan(reading: HTMLElement | null, notebook: HTMLElement | null): NavGroups {
+  return { concepts: collect(reading, "nav-reading", true), coding: collect(notebook, "nav-notebook", false) };
 }
 
 function sameGroups(a: NavGroups, b: NavGroups): boolean {
-  const flat = (g: NavGroups) => [...g.concepts, ...g.coding].map((i) => `${i.id}|${i.label}`).join("\n");
+  const flat = (g: NavGroups) => [...g.concepts, ...g.coding].map((i) => `${i.id}|${i.label}|${i.level}`).join("\n");
   return flat(a) === flat(b);
 }
 
@@ -121,13 +117,14 @@ export function LabNav({ outline, onNavigate }: { outline: LabOutline; onNavigat
                 as="button"
                 type="button"
                 textAlign="left"
-                px={2}
+                pl={2 + item.level * 3}
+                pr={2}
                 py={1}
-                fontSize="sm"
+                fontSize={item.level === 0 ? "sm" : "xs"}
                 borderRadius="md"
                 borderLeftWidth="2px"
                 borderLeftColor={isActive ? "blue.500" : "transparent"}
-                fontWeight={isActive ? "bold" : "normal"}
+                fontWeight={isActive ? "bold" : item.level === 0 ? "semibold" : "normal"}
                 color={isActive ? "blue.600" : undefined}
                 _hover={{ bg: "blackAlpha.50" }}
                 aria-current={isActive ? "true" : undefined}

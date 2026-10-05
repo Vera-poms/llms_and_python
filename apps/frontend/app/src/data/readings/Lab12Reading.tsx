@@ -6,7 +6,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab12Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading size="md">The instruction that never goes away</Heading>
+      <Heading as="h2" size="md">The instruction that never goes away</Heading>
       <Text>
         A system message sits at the front of the messages list and shapes every reply for the
         rest of the conversation, independent of whatever the user asks - it's how you give a
@@ -14,13 +14,13 @@ export function Lab12Reading() {
         turn.
       </Text>
 
-      <Heading size="sm">Concept: a list of dicts as a conversation</Heading>
+      <Heading as="h3" size="sm">Concept: a list of dicts as a conversation</Heading>
       <Text>
         Before looking at the "system" role specifically, it helps to see what a conversation
         even <i>is</i> in code.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         You can represent a chat log between two friends as a plain Python list, where each turn
         is a small dict with who spoke and what they said:
@@ -69,7 +69,7 @@ for turn in support_log:
 User: My order is late.
 Bot: Let me check that for you.`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The API's <Code>messages</Code> list works exactly the same way, except each dict has a{" "}
         <Code>"role"</Code> key (instead of <Code>"speaker"</Code>) and a <Code>"content"</Code>{" "}
@@ -78,13 +78,13 @@ Bot: Let me check that for you.`} />
         course that talks to Groq is, underneath, just building one of these lists.
       </Text>
 
-      <Heading size="sm">Concept: the "system" role vs. "user"/"assistant"</Heading>
+      <Heading as="h3" size="sm">Concept: the "system" role vs. "user"/"assistant"</Heading>
       <Text>
         Not every entry in that list is a "turn" someone took - one role is different from the
         rest.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         In the chat log above, both speakers are peers - there's no third party setting ground
         rules. Now imagine a group chat with a bot moderator whose message is pinned at the top and
@@ -126,7 +126,7 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`}
 standing_rule = classroom_log[0]["text"]
 print(standing_rule)  # expected output: Keep answers under two sentences.`} expectedOutput={`Keep answers under two sentences.`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This lab's <Code>build_system_message(persona)</Code> builds exactly that pinned,
         standing message: given a dict like{" "}
@@ -137,13 +137,13 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`} exp
         says.
       </Text>
 
-      <Heading size="sm">Concept: state that stays fixed while the conversation varies</Heading>
+      <Heading as="h3" size="sm">Concept: state that stays fixed while the conversation varies</Heading>
       <Text>
         Once you have a system message, the interesting part is what happens when you reuse it
         across many different requests.
       </Text>
 
-      <Heading size="xs" color="gray.600">In plain Python</Heading>
+      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>
         This is the same shape as a loop where one variable is built once outside the loop and
         stays fixed, while another variable is fresh on every iteration:
@@ -179,7 +179,7 @@ for cart_total in [25, 40, 100]:          # varies every iteration
 Applying SAVE10 to $40
 Applying SAVE10 to $100`} />
 
-      <Heading size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The real-world project cell builds <Code>system_message</Code> from the persona{" "}
         <b>once</b>, then loops over four very different user questions - a brewing tip, a stock
@@ -204,7 +204,7 @@ for question in QUESTIONS:                       # varies every iteration
         just the same system message being resent, unchanged, on every single call.
       </Text>
 
-      <Heading size="sm">Notebook - needs a free Groq API key</Heading>
+      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
       <Text>
         Open <Code>course/notebooks/lab_12_system_instructions.ipynb</Code>. Implement{" "}
         <Code>build_system_message(persona)</Code>, templating a persona dict (name, role, tone,
@@ -213,7 +213,7 @@ for question in QUESTIONS:                       # varies every iteration
         13's digital twin.
       </Text>
 
-      <Heading size="sm">Further reading</Heading>
+      <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Link href="https://www.ibm.com/think/topics/prompt-engineering-techniques" isExternal>
