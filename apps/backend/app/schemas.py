@@ -190,6 +190,7 @@ class SolutionPartsResponse(BaseModel):
     user_lines: int
     total_lines: int
     penalty: int
+    max_cost: int
     whole_cost: int
     solved: bool = False
     whole_code: str | None = None

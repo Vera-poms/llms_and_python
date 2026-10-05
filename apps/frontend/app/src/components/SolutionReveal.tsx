@@ -19,6 +19,7 @@ interface SolutionView {
   user_lines: number;
   total_lines: number;
   penalty: number;
+  max_cost: number;
   whole_cost: number;
   solved: boolean;
   whole_code?: string | null;
@@ -35,7 +36,7 @@ function assemble(view: SolutionView): string {
 const costLabel = (cost: number) => (cost === 0 ? "free" : `-${cost} pt${cost === 1 ? "" : "s"}`);
 
 // Reveals the reference solution piece by piece. A single line costs 1 point, a function/block costs 3, and
-// the whole solution costs 5 (piecemeal reveals never add up to more than that).
+// the whole solution costs as much as the exercise is worth (you never lose more than that).
 export function SolutionReveal({
   labId,
   cellId,
@@ -133,7 +134,7 @@ export function SolutionReveal({
                 <Text fontSize="sm">
                   You've written <b>{view.user_lines}</b> line{view.user_lines === 1 ? "" : "s"}; the full solution is{" "}
                   <b>{view.total_lines}</b>. Pick only the part you're stuck on - a single line costs 1 point,
-                  a function or block costs 3, the whole solution costs 5 (so you never pay more than 5 in total).
+                  a function or block costs 3, the whole solution costs {view.max_cost} (so you never pay more than {view.max_cost} in total).
                   {view.penalty > 0 && ` You've spent ${view.penalty} so far.`}
                 </Text>
               )}

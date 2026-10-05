@@ -447,14 +447,14 @@ def hint_for_cell(
 def _solution_view(item: exercises.GradedItem, result: CellResult, student_source: str) -> SolutionPartsResponse:
     parts = solutions.split_parts(item.reference_source)
     revealed = solutions.parse_revealed(result.revealed_parts)
-    penalty = solutions.penalty_for(revealed, parts)
+    penalty = solutions.penalty_for(revealed, parts, item.points)
     # Once the student has solved it there is nothing left to withhold: show everything, for free.
     whole = solutions.WHOLE_ID in revealed or bool(result.passed)
 
     out = []
     for p in parts:
         paid = whole or p.id in revealed
-        marginal = 0 if paid else solutions.penalty_for(revealed | {p.id}, parts) - penalty
+        marginal = 0 if paid else solutions.penalty_for(revealed | {p.id}, parts, item.points) - penalty
         out.append(
             SolutionPartOut(
                 id=p.id,
@@ -470,7 +470,8 @@ def _solution_view(item: exercises.GradedItem, result: CellResult, student_sourc
         user_lines=len(solutions.code_lines(student_source[:MAX_SOURCE_CHARS])),
         total_lines=len(solutions.code_lines(item.reference_source)),
         penalty=penalty,
-        whole_cost=0 if whole else solutions.WHOLE_COST - penalty,
+        max_cost=item.points,
+        whole_cost=0 if whole else item.points - penalty,
         solved=bool(result.passed),
         whole_code=item.reference_source if whole else None,
         parts=out,
@@ -515,9 +516,9 @@ def reveal_solution(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No such part of the solution")
 
     revealed = solutions.parse_revealed(result.revealed_parts)
-    before = solutions.penalty_for(revealed, parts)
+    before = solutions.penalty_for(revealed, parts, item.points)
     revealed.add(payload.part)
-    after = solutions.penalty_for(revealed, parts)
+    after = solutions.penalty_for(revealed, parts, item.points)
 
     result.revealed_parts = ",".join(sorted(revealed))
     result.solution_penalty = after

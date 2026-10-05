@@ -1,14 +1,13 @@
 """Splits a reference solution into revealable parts and prices them.
 
 A student can reveal the solution piece by piece: each function/class/block or single statement
-costs PART_COST (single line) or BLOCK_COST (function/block), the whole thing costs WHOLE_COST. Piecemeal reveals never add up to more than the
-whole (so asking for everything after a few parts only costs the difference). Imports are free.
+costs PART_COST (single line) or BLOCK_COST (function/block), the whole solution costs the points the exercise is worth (its cap). Revealing several parts never costs more
+than that cap (so asking for everything after a few parts only costs the difference). Imports are free.
 """
 
 import ast
 from dataclasses import dataclass
 
-WHOLE_COST = 5
 PART_COST = 1  # a single line
 BLOCK_COST = 3  # a function, class, loop or other multi-line block
 WHOLE_ID = "all"
@@ -111,10 +110,11 @@ def _split_on_blank_lines(lines: list[str]) -> list[Part]:
     return parts
 
 
-def penalty_for(revealed: set[str], parts: list[Part]) -> int:
+def penalty_for(revealed: set[str], parts: list[Part], cap: int) -> int:
+    """Points to deduct for the revealed parts; `cap` is the exercise's own points."""
     if WHOLE_ID in revealed:
-        return WHOLE_COST
-    return min(WHOLE_COST, sum(p.cost for p in parts if p.id in revealed))
+        return cap
+    return min(cap, sum(p.cost for p in parts if p.id in revealed))
 
 
 def parse_revealed(stored: str) -> set[str]:
