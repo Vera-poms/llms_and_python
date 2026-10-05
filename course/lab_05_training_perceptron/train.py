@@ -50,6 +50,6 @@ if __name__ == "__main__":
 
     assert errors[-1] == 0, "should converge to zero training errors on a linearly separable set"
     for xi, target in zip(X, y):
-        assert model.predict(xi) == target
+        assert model.predict(xi) == target, 'model.predict(xi) should be ' + repr(target) + ", got " + repr(model.predict(xi))
 
     print("Training converged. Errors per epoch:", errors)

@@ -211,6 +211,8 @@ class NotebookOutputItem(BaseModel):
     ename: str | None = None
     evalue: str | None = None
     traceback: list[str] | None = None
+    line: int | None = None
+    code: str | None = None
 
 
 class RunCellResponse(BaseModel):

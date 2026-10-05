@@ -37,6 +37,9 @@ export interface OutputItem {
   data?: string;
   ename?: string;
   evalue?: string;
+  traceback?: string[];
+  line?: number | null;
+  code?: string | null;
 }
 
 export interface RunResult {
@@ -72,7 +75,15 @@ export function CellOutput({ result }: { result: RunResult }) {
               p={2}
               borderRadius="md"
             >
-              {output.ename}: {output.evalue}
+              {output.ename}
+              {output.evalue ? `: ${output.evalue}` : ""}
+              {output.line != null && `\n\nFailed at line ${output.line}${output.code ? `:  ${output.code}` : ""}`}
+              {output.traceback && output.traceback.length > 0 && (
+                <details style={{ marginTop: 8 }}>
+                  <summary style={{ cursor: "pointer" }}>Full traceback</summary>
+                  {output.traceback.join("\n")}
+                </details>
+              )}
             </Code>
           );
         }

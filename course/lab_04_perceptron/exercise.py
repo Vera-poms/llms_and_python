@@ -17,11 +17,11 @@ class Perceptron:
 
     def activation(self, z: float) -> int:
         """TODO: return +1 if z >= 0, else -1."""
-        raise NotImplementedError
+        raise NotImplementedError("Perceptron.activation() is not implemented yet - replace the TODO with your code")
 
     def predict(self, x: np.ndarray) -> int:
         """TODO: run x through net_input then activation."""
-        raise NotImplementedError
+        raise NotImplementedError("Perceptron.predict() is not implemented yet - replace the TODO with your code")
 
 
 if __name__ == "__main__":
@@ -29,10 +29,10 @@ if __name__ == "__main__":
     p.weights = np.array([1.0, -1.0])
     p.bias = 0.5
 
-    assert p.activation(0.3) == 1
-    assert p.activation(-0.3) == -1
+    assert p.activation(0.3) == 1, 'p.activation(0.3) should be ' + repr(1) + ", got " + repr(p.activation(0.3))
+    assert p.activation(-0.3) == -1, 'p.activation(-0.3) should be ' + repr(-1) + ", got " + repr(p.activation(-0.3))
 
-    assert p.predict(np.array([1.0, 0.0])) == 1   # net = 1*1 + -1*0 + 0.5 = 1.5
-    assert p.predict(np.array([0.0, 2.0])) == -1  # net = 0 + -2 + 0.5 = -1.5
+    assert p.predict(np.array([1.0, 0.0])) == 1, 'p.predict(np.array([1.0, 0.0])) should be ' + repr(1) + ", got " + repr(p.predict(np.array([1.0, 0.0])))   # net = 1*1 + -1*0 + 0.5 = 1.5
+    assert p.predict(np.array([0.0, 2.0])) == -1, 'p.predict(np.array([0.0, 2.0])) should be ' + repr(-1) + ", got " + repr(p.predict(np.array([0.0, 2.0])))  # net = 0 + -2 + 0.5 = -1.5
 
     print("All checks passed.")
