@@ -112,3 +112,22 @@ class Resource(Base):
     uploaded_by: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
+class Review(Base):
+    """A student's review of a lab or one of its topics/sub-topics (topic "" = the whole lab).
+    One per user/lab/topic: resubmitting updates it. Only the owner can read these."""
+
+    __tablename__ = "reviews"
+    __table_args__ = (UniqueConstraint("user_id", "lab_id", "topic", name="uq_reviews_user_lab_topic"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"), index=True, nullable=False)
+    topic: Mapped[str] = mapped_column(String(255), default="", server_default="", nullable=False)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)
+    comment: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+    user: Mapped["User"] = relationship()

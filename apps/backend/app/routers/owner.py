@@ -10,7 +10,7 @@ from core.config import ADMIN_INVITE_EXPIRE_HOURS, OWNER_EMAIL, OWNER_PASSWORD
 from core.mail import send_admin_invite_email
 from core.ratelimit import FailureLimiter
 from core.security import create_owner_token, hash_invite_code
-from db.models import AdminInvite, User
+from db.models import AdminInvite, Lab, Review, User
 from deps import get_db, require_owner
 from schemas import (
     AdminAccountOut,
@@ -18,6 +18,7 @@ from schemas import (
     InviteCreated,
     InviteOut,
     OwnerLoginRequest,
+    ReviewOut,
     TokenResponse,
 )
 
@@ -137,3 +138,24 @@ def revoke_admin(user_id: int, db: Session = Depends(get_db)) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Admin not found")
     user.is_admin = False
     db.commit()
+
+
+@router.get("/reviews", response_model=list[ReviewOut], dependencies=[Depends(require_owner)])
+def list_reviews(lab_id: int | None = None, db: Session = Depends(get_db)) -> list[ReviewOut]:
+    query = db.query(Review, Lab.title, User.email).join(Lab, Lab.id == Review.lab_id).join(User, User.id == Review.user_id)
+    if lab_id is not None:
+        query = query.filter(Review.lab_id == lab_id)
+    return [
+        ReviewOut(
+            id=r.id,
+            lab_id=r.lab_id,
+            lab_title=title,
+            topic=r.topic,
+            rating=r.rating,
+            comment=r.comment,
+            user_email=email,
+            created_at=r.created_at,
+            updated_at=r.updated_at,
+        )
+        for r, title, email in query.order_by(Review.updated_at.desc()).all()
+    ]

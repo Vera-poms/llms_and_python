@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { ownerUserApi } from "../api/ownerEndpoints";
 import { setOwnerToken } from "../api/ownerClient";
 import { AdminsPanel } from "../components/owner/AdminsPanel";
+import { ReviewsPanel } from "../components/owner/ReviewsPanel";
 import { MobileNav, NavList, StickyHeader } from "../components/MobileNav";
 import { UsersPanel } from "../components/users/UsersPanel";
 
-const TABS = ["Users", "Admins & invites"];
+const TABS = ["Users", "Admins & invites", "Reviews"];
 
 export function OwnerHomePage() {
   const navigate = useNavigate();
@@ -61,6 +62,9 @@ export function OwnerHomePage() {
           </TabPanel>
           <TabPanel px={0}>
             <AdminsPanel />
+          </TabPanel>
+          <TabPanel px={0}>
+            <ReviewsPanel />
           </TabPanel>
         </TabPanels>
       </Tabs>

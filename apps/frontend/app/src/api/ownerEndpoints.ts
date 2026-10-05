@@ -20,6 +20,20 @@ export interface AdminAccount {
   created_at: string;
 }
 
+export interface Review {
+  id: number;
+  lab_id: number;
+  lab_title: string;
+  topic: string;
+  rating: number;
+  comment: string;
+  user_email: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export const listReviews = () => ownerApi.get<Review[]>("/owner/reviews").then((r) => r.data);
+
 export const ownerUserApi = createUserApi(ownerApi);
 
 export const listInvites = () => ownerApi.get<Invite[]>("/owner/invites").then((r) => r.data);

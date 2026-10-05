@@ -6,6 +6,7 @@ import { api } from "../api/client";
 import { LabNav, LabSidebar, useLabOutline } from "../components/LabSidebar";
 import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { NotebookRunner } from "../components/NotebookRunner";
+import { ReviewModal, type ReviewTarget } from "../components/ReviewModal";
 import { LABS } from "../data/labs";
 import { Lab01Reading } from "../data/readings/Lab01Reading";
 import { Lab02Reading } from "../data/readings/Lab02Reading";
@@ -51,6 +52,7 @@ export function LabDetailPage() {
   const readingRef = useRef<HTMLDivElement>(null);
   const notebookRef = useRef<HTMLDivElement>(null);
   const outline = useLabOutline(readingRef, notebookRef);
+  const [reviewing, setReviewing] = useState<ReviewTarget | null>(null);
   const [done, setDone] = useState(false);
   const [score, setScore] = useState<{ earned: number; possible: number; percent: number } | null>(null);
 
@@ -74,6 +76,8 @@ export function LabDetailPage() {
     return () => window.removeEventListener("lab-progress", refresh);
   }, [refresh]);
 
+  const openReview = (topic: string) => lab && setReviewing({ labId: lab.id, labTitle: lab.title, topic });
+
   if (!lab || !Reading) {
     return (
       <Box maxW="2xl" mx="auto" mt={12} px={4}>
@@ -87,12 +91,12 @@ export function LabDetailPage() {
 
   return (
     <Flex maxW="6xl" mx="auto" mt={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} mb={16} gap={8}>
-      <LabSidebar outline={outline} />
+      <LabSidebar outline={outline} onReview={openReview} />
       <Box flex="1" minW={0} maxW="4xl">
       <StickyHeader hideFrom="lg">
         <HStack minW={0} spacing={3}>
           <MobileNav title="Lab sections" hideFrom="lg">
-            {(close) => <LabNav outline={outline} onNavigate={close} />}
+            {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} />}
           </MobileNav>
           <Link as={RouterLink} to="/labs" color="blue.500">
             &larr; All labs
@@ -129,6 +133,7 @@ export function LabDetailPage() {
         </Box>
       </VStack>
       </Box>
+      <ReviewModal target={reviewing} onClose={() => setReviewing(null)} />
     </Flex>
   );
 }

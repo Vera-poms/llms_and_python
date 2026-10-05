@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from core.config import CORS_ORIGINS
 from db.connection import get_session, init_db
-from routers import admin, admin_auth, admin_resources, auth, labs, notebooks, owner, resources
+from routers import admin, admin_auth, admin_resources, auth, labs, notebooks, owner, resources, reviews
 from seed import seed_labs
 from exercises import NOTEBOOKS_DIR, COURSE_DIR
 
@@ -28,6 +28,7 @@ app.include_router(admin.router)
 app.include_router(admin_resources.router)
 app.include_router(resources.router)
 app.include_router(labs.router)
+app.include_router(reviews.router)
 app.include_router(notebooks.router)
 
 

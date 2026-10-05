@@ -1,4 +1,4 @@
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, VStack } from "@chakra-ui/react";
 import { type RefObject, useEffect, useState } from "react";
 
 interface NavItem {
@@ -98,7 +98,16 @@ export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: R
 }
 
 // The outline entries themselves. `onNavigate` lets the mobile drawer close after a jump.
-export function LabNav({ outline, onNavigate }: { outline: LabOutline; onNavigate?: () => void }) {
+// `onReview` adds the review entry points: one for the whole lab and one beside every topic.
+export function LabNav({
+  outline,
+  onNavigate,
+  onReview,
+}: {
+  outline: LabOutline;
+  onNavigate?: () => void;
+  onReview?: (topic: string) => void;
+}) {
   const { groups, activeId, jump } = outline;
 
   function renderGroup(title: string, items: NavItem[]) {
@@ -112,29 +121,47 @@ export function LabNav({ outline, onNavigate }: { outline: LabOutline; onNavigat
           {items.map((item) => {
             const isActive = item.id === activeId;
             return (
-              <Box
-                key={item.id}
-                as="button"
-                type="button"
-                textAlign="left"
-                pl={2 + item.level * 3}
-                pr={2}
-                py={1}
-                fontSize={item.level === 0 ? "sm" : "xs"}
-                borderRadius="md"
-                borderLeftWidth="2px"
-                borderLeftColor={isActive ? "blue.500" : "transparent"}
-                fontWeight={isActive ? "bold" : item.level === 0 ? "semibold" : "normal"}
-                color={isActive ? "blue.600" : undefined}
-                _hover={{ bg: "blackAlpha.50" }}
-                aria-current={isActive ? "true" : undefined}
-                onClick={() => {
-                  jump(item.id);
-                  onNavigate?.();
-                }}
-              >
-                {item.label}
-              </Box>
+              <Flex key={item.id} align="center" _hover={{ bg: "blackAlpha.50" }} borderRadius="md">
+                <Box
+                  as="button"
+                  type="button"
+                  flex="1"
+                  minW={0}
+                  textAlign="left"
+                  pl={2 + item.level * 3}
+                  pr={2}
+                  py={1}
+                  fontSize={item.level === 0 ? "sm" : "xs"}
+                  borderLeftWidth="2px"
+                  borderLeftColor={isActive ? "blue.500" : "transparent"}
+                  fontWeight={isActive ? "bold" : item.level === 0 ? "semibold" : "normal"}
+                  color={isActive ? "blue.600" : undefined}
+                  aria-current={isActive ? "true" : undefined}
+                  onClick={() => {
+                    jump(item.id);
+                    onNavigate?.();
+                  }}
+                >
+                  {item.label}
+                </Box>
+                {onReview && (
+                  <Box
+                    as="button"
+                    type="button"
+                    aria-label={`Review: ${item.label}`}
+                    title="Leave a review"
+                    px={2}
+                    color="gray.400"
+                    _hover={{ color: "yellow.400" }}
+                    onClick={() => {
+                      onReview(item.label);
+                      onNavigate?.();
+                    }}
+                  >
+                    ☆
+                  </Box>
+                )}
+              </Flex>
             );
           })}
         </VStack>
@@ -144,6 +171,19 @@ export function LabNav({ outline, onNavigate }: { outline: LabOutline; onNavigat
 
   return (
     <VStack align="stretch" spacing={5}>
+      {onReview && (
+        <Button
+          size="sm"
+          variant="outline"
+          leftIcon={<span aria-hidden="true">★</span>}
+          onClick={() => {
+            onReview("");
+            onNavigate?.();
+          }}
+        >
+          Review this lab
+        </Button>
+      )}
       {renderGroup("Concepts", groups.concepts)}
       {renderGroup("Coding", groups.coding)}
     </VStack>
@@ -151,7 +191,7 @@ export function LabNav({ outline, onNavigate }: { outline: LabOutline; onNavigat
 }
 
 // Sticky outline on wide screens. Below `lg` the page puts <LabNav> in a drawer instead.
-export function LabSidebar({ outline }: { outline: LabOutline }) {
+export function LabSidebar({ outline, onReview }: { outline: LabOutline; onReview?: (topic: string) => void }) {
   return (
     <Box
       as="nav"
@@ -165,7 +205,7 @@ export function LabSidebar({ outline }: { outline: LabOutline }) {
       maxH="calc(100vh - 4rem)"
       overflowY="auto"
     >
-      <LabNav outline={outline} />
+      <LabNav outline={outline} onReview={onReview} />
     </Box>
   );
 }

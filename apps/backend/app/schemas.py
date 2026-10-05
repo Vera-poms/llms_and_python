@@ -325,3 +325,27 @@ class ResourceOut(BaseModel):
 
 class ResourceRunRequest(BaseModel):
     source: str = Field(max_length=MAX_BLOCK_CHARS)
+
+
+class ReviewCreate(BaseModel):
+    lab_id: int
+    topic: Annotated[str, Field(max_length=255)] = ""
+    rating: Annotated[int, Field(ge=1, le=5)]
+    comment: Annotated[str, Field(max_length=2000)] = ""
+
+    @field_validator("topic", "comment")
+    @classmethod
+    def _strip(cls, v: str) -> str:
+        return v.strip()
+
+
+class ReviewOut(BaseModel):
+    id: int
+    lab_id: int
+    lab_title: str
+    topic: str
+    rating: int
+    comment: str
+    user_email: str
+    created_at: datetime
+    updated_at: datetime
