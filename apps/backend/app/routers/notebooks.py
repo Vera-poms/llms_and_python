@@ -30,10 +30,25 @@ def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) ->
     for cell in raw_cells:
         index, role, source = cell["index"], cell["role"], cell["source"]
 
+        if role == "solution":
+            # The solution code never leaves the server. An empty placeholder stands in its place and the
+            # UI shows the paid "Show solution" options there (/labs/{id}/cells/{cell}/solution).
+            if cell["cell_type"] == "code" and exercises.NOTEBOOK_EXERCISE_ID in exercise_ids:
+                cells.append(
+                    NotebookCellOut(
+                        index=index,
+                        cell_type="code",
+                        role="solution",
+                        source="",
+                        graded_cell_id=exercises.NOTEBOOK_EXERCISE_ID,
+                    )
+                )
+            continue
+
         if index in solution_indexes:
-            # Students get the written brief, an empty cell to work in, and the reference project
-            # behind a collapsible "Show solution" (like the exercise solution) - all as one group
-            # standing where the first solution cell was.
+            # The reference project never leaves the server: students get the written brief and an
+            # empty cell in its place (one cell, standing where the first solution cell was). The
+            # reference is only released piece by piece through the paid solution endpoints.
             if not project_placed:
                 project_placed = True
                 cells.append(
@@ -59,7 +74,8 @@ def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) ->
                         index=-1000 - lab_id,
                         cell_type="code",
                         role="solution",
-                        source="\n\n".join(c["source"] for c in project_cells),
+                        source="",
+                        graded_cell_id=exercises.PROJECT_ID,
                     )
                 )
             continue

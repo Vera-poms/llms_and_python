@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Code,
-  Collapse,
   HStack,
   Input,
   Spinner,
@@ -13,12 +12,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
 import { HintButton } from "./HintButton";
 import { Markdown } from "./Markdown";
+import { SolutionReveal } from "./SolutionReveal";
 
 interface NotebookCell {
   index: number;
@@ -105,19 +105,21 @@ function stdoutOf(result: RunResult): string {
 }
 
 // A scored notebook cell (the lab exercise or the project): run it, get it judged against the server's
-// reference, and ask for free hints. The reference is shown only via the separate collapsible solution cell.
+// reference, and ask for free hints. The solution is only released piece by piece, at a point cost (SolutionReveal).
 function GradedCell({
   labId,
   cell,
   apiKey,
   onLabDone,
   onJudged,
+  onSourceChange,
 }: {
   labId: number;
   cell: NotebookCell;
   apiKey: string;
   onLabDone: () => void;
   onJudged?: () => void;
+  onSourceChange: (gradedId: string, source: string) => void;
 }) {
   const gradedId = cell.graded_cell_id as string;
   const [source, setSource] = useState(cell.source);
@@ -127,6 +129,8 @@ function GradedCell({
   const [status, setStatus] = useState<"idle" | "pass" | "fail">("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => onSourceChange(gradedId, source), [gradedId, source]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     api
@@ -258,7 +262,7 @@ export function NotebookRunner({
   const [apiKey, setApiKey] = useState("");
   const [justCompleted, setJustCompleted] = useState(false);
   const [restarting, setRestarting] = useState(false);
-  const [solutionOpen, setSolutionOpen] = useState<Record<number, boolean>>({});
+  const gradedSources = useRef<Record<string, string>>({});
 
   useEffect(() => {
     api.get(`/notebooks/${labId}`).then((response) => {
@@ -343,6 +347,20 @@ export function NotebookRunner({
           );
         }
 
+        if (cell.role === "solution" && cell.graded_cell_id) {
+          const solutionFor = cell.graded_cell_id;
+          return (
+            <SolutionReveal
+              key={cell.index}
+              labId={labId}
+              cellId={solutionFor}
+              getSource={() => gradedSources.current[solutionFor] ?? ""}
+              onChanged={onProgress}
+              apiKey={apiKey}
+            />
+          );
+        }
+
         if (cell.graded_cell_id) {
           return (
             <GradedCell
@@ -352,6 +370,9 @@ export function NotebookRunner({
               apiKey={apiKey}
               onLabDone={() => setJustCompleted(true)}
               onJudged={onProgress}
+              onSourceChange={(id, value) => {
+                gradedSources.current[id] = value;
+              }}
             />
           );
         }
@@ -377,25 +398,6 @@ export function NotebookRunner({
             {result && <CellOutput result={result} />}
           </Box>
         );
-
-        if (cell.role === "solution") {
-          const isOpen = !!solutionOpen[cell.index];
-          return (
-            <Box key={cell.index}>
-              <Button
-                size="xs"
-                variant="outline"
-                mb={2}
-                onClick={() => setSolutionOpen((prev) => ({ ...prev, [cell.index]: !isOpen }))}
-              >
-                {isOpen ? "Hide solution" : "Show solution"}
-              </Button>
-              <Collapse in={isOpen} animateOpacity>
-                {cellBody}
-              </Collapse>
-            </Box>
-          );
-        }
 
         return <Box key={cell.index}>{cellBody}</Box>;
       })}

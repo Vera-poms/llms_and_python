@@ -170,6 +170,42 @@ class CellHintResponse(BaseModel):
     hints_used: int
 
 
+class SolutionPartsRequest(BaseModel):
+    source: str = ""
+
+
+class SolutionPartOut(BaseModel):
+    id: str
+    label: str
+    kind: str = "line"
+    lines: int
+    # Points this part would cost right now (0 once revealed, or when the whole solution is revealed).
+    cost: int
+    written: bool
+    # Only filled for parts the student has already paid for.
+    code: str | None = None
+
+
+class SolutionPartsResponse(BaseModel):
+    user_lines: int
+    total_lines: int
+    penalty: int
+    whole_cost: int
+    solved: bool = False
+    whole_code: str | None = None
+    parts: list[SolutionPartOut]
+
+
+class SolutionRevealRequest(BaseModel):
+    part: str
+    source: str = ""
+
+
+class SolutionRevealResponse(BaseModel):
+    parts: SolutionPartsResponse
+    points_deducted: int
+
+
 class LabScoreOut(BaseModel):
     lab_id: int
     earned: int

@@ -28,6 +28,7 @@ def init_db() -> None:
     Base.metadata.create_all(bind=engine)
     _ensure_user_is_admin_column()
     _ensure_cell_results_hints_column()
+    _ensure_cell_results_solution_columns()
 
 
 def _ensure_user_is_admin_column() -> None:
@@ -43,3 +44,11 @@ def _ensure_cell_results_hints_column() -> None:
         return
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE cell_results ADD COLUMN hints_used INTEGER NOT NULL DEFAULT 0"))
+
+def _ensure_cell_results_solution_columns() -> None:
+    existing = {c["name"] for c in inspect(engine).get_columns("cell_results")}
+    with engine.begin() as conn:
+        if "revealed_parts" not in existing:
+            conn.execute(text("ALTER TABLE cell_results ADD COLUMN revealed_parts TEXT NOT NULL DEFAULT ''"))
+        if "solution_penalty" not in existing:
+            conn.execute(text("ALTER TABLE cell_results ADD COLUMN solution_penalty INTEGER NOT NULL DEFAULT 0"))

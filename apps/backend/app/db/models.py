@@ -88,6 +88,9 @@ class CellResult(Base):
     passed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     hints_used: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
+    # Solution reveals: comma-separated part ids ("all" = whole solution) and the points they cost.
+    revealed_parts: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    solution_penalty: Mapped[int] = mapped_column(Integer, default=0, server_default="0", nullable=False)
     feedback: Mapped[str | None] = mapped_column(Text, nullable=True)
     first_passed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_attempt_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)

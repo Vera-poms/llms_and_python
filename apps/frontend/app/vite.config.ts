@@ -6,5 +6,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 5000,
+    // File-change events don't cross the Windows -> container bind mount, so poll for edits.
+    watch: { usePolling: true, interval: 300 },
   },
 });

@@ -21,7 +21,13 @@ from schemas import (
     LabProgressOut,
     ProgressUpdate,
     ScoreOut,
+    SolutionPartOut,
+    SolutionPartsRequest,
+    SolutionPartsResponse,
+    SolutionRevealRequest,
+    SolutionRevealResponse,
 )
+import solutions
 from scoring import compute_score
 
 router = APIRouter(prefix="/labs", tags=["labs"])
@@ -436,3 +442,84 @@ def hint_for_cell(
     db.commit()
 
     return CellHintResponse(hint=hint, level=level, hints_used=result.hints_used)
+
+
+def _solution_view(item: exercises.GradedItem, result: CellResult, student_source: str) -> SolutionPartsResponse:
+    parts = solutions.split_parts(item.reference_source)
+    revealed = solutions.parse_revealed(result.revealed_parts)
+    penalty = solutions.penalty_for(revealed, parts)
+    # Once the student has solved it there is nothing left to withhold: show everything, for free.
+    whole = solutions.WHOLE_ID in revealed or bool(result.passed)
+
+    out = []
+    for p in parts:
+        paid = whole or p.id in revealed
+        marginal = 0 if paid else solutions.penalty_for(revealed | {p.id}, parts) - penalty
+        out.append(
+            SolutionPartOut(
+                id=p.id,
+                label=p.label,
+                kind=p.kind,
+                lines=p.lines,
+                cost=marginal,
+                written=solutions.written_by_student(p, student_source),
+                code=p.code if paid else None,
+            )
+        )
+    return SolutionPartsResponse(
+        user_lines=len(solutions.code_lines(student_source[:MAX_SOURCE_CHARS])),
+        total_lines=len(solutions.code_lines(item.reference_source)),
+        penalty=penalty,
+        whole_cost=0 if whole else solutions.WHOLE_COST - penalty,
+        solved=bool(result.passed),
+        whole_code=item.reference_source if whole else None,
+        parts=out,
+    )
+
+
+def _solution_item(db: Session, lab_id: int, cell_id: str) -> exercises.GradedItem:
+    if db.get(Lab, lab_id) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lab not found")
+    item = exercises.get_item(lab_id, cell_id)
+    if item.kind == "python":
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="This cell has no solution to reveal")
+    return item
+
+
+@router.post("/{lab_id}/cells/{cell_id}/solution", response_model=SolutionPartsResponse)
+def solution_parts(
+    lab_id: int,
+    cell_id: str,
+    payload: SolutionPartsRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> SolutionPartsResponse:
+    """What can be revealed (no code, no charge), based on how much the student has already written."""
+    item = _solution_item(db, lab_id, cell_id)
+    result = _get_or_create_result(db, current_user.id, lab_id, cell_id)
+    return _solution_view(item, result, payload.source)
+
+
+@router.post("/{lab_id}/cells/{cell_id}/solution/reveal", response_model=SolutionRevealResponse)
+def reveal_solution(
+    lab_id: int,
+    cell_id: str,
+    payload: SolutionRevealRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> SolutionRevealResponse:
+    item = _solution_item(db, lab_id, cell_id)
+    result = _get_or_create_result(db, current_user.id, lab_id, cell_id)
+    parts = solutions.split_parts(item.reference_source)
+    if payload.part != solutions.WHOLE_ID and payload.part not in {p.id for p in parts}:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No such part of the solution")
+
+    revealed = solutions.parse_revealed(result.revealed_parts)
+    before = solutions.penalty_for(revealed, parts)
+    revealed.add(payload.part)
+    after = solutions.penalty_for(revealed, parts)
+
+    result.revealed_parts = ",".join(sorted(revealed))
+    result.solution_penalty = after
+    db.commit()
+    return SolutionRevealResponse(parts=_solution_view(item, result, payload.source), points_deducted=after - before)
