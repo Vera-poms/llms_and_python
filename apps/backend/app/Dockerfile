@@ -40,11 +40,15 @@ RUN python -m ipykernel install --sys-prefix --name python3 --display-name "Pyth
 COPY --chown=appuser:appuser apps/backend/app/ /app
 COPY --chown=appuser:appuser course/ /course
 
-RUN mkdir -p /app/db/alembic/versions && \
-    chown -R appuser:appuser /app/db/alembic/versions
+# The server runs as root so it can start each code-runner kernel under its own unprivileged uid
+# (see kernels.py). Kernels must not be able to read the app source or the course solutions.
+RUN chmod -R go-rwx /app /course
 
-USER appuser
+# Build matplotlib's font cache now; building it per kernel takes many seconds on a small CPU.
+RUN mkdir -p /tmp/kernel_mpl && MPLCONFIGDIR=/tmp/kernel_mpl python -c "import matplotlib.pyplot"
 
 EXPOSE 8020
 
-CMD ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8020", "--reload"]
+# Production: one worker (kernel sessions live in memory), no reloader. exec keeps the server as PID 1.
+# Render provides PORT; compose.yml overrides this command with the dev server.
+CMD ["sh", "-c", "exec fastapi run main.py --host 0.0.0.0 --port ${PORT:-8020}"]

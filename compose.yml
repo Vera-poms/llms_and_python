@@ -24,6 +24,7 @@ services:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-llms}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/${POSTGRES_DB:-llms}
       SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5000}
+    command: ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8020", "--reload"]
     depends_on:
       db:
         condition: service_healthy

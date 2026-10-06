@@ -8,6 +8,13 @@ if not URL_DATABSE:
         "DATABASE_URL not set. It must be in the environment before db.connection"
     )
 
+# Render's DATABASE_URL starts with postgres:// or postgresql://, which SQLAlchemy maps to psycopg2.
+# The app ships psycopg 3, so name the driver explicitly.
+for _prefix in ("postgres://", "postgresql://"):
+    if URL_DATABSE.startswith(_prefix):
+        URL_DATABSE = "postgresql+psycopg://" + URL_DATABSE[len(_prefix):]
+        break
+
 class Base(DeclarativeBase):
     pass
 

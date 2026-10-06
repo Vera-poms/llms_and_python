@@ -2,11 +2,15 @@ from fastapi import APIRouter, Depends, status
 
 import exercises
 import kernels
+from core.ratelimit import FailureLimiter
 from db.models import User
 from deps import get_current_user
 from schemas import NotebookCellOut, NotebookOut, RunCellRequest, RunCellResponse
 
 router = APIRouter(prefix="/notebooks", tags=["notebooks"])
+
+# At most 30 cell runs per user per minute (the limiter counts every attempt, not only failures).
+_run_limiter = FailureLimiter(max_failures=30, window_seconds=60)
 
 
 def _substitute_groq_key(source: str, api_key: str | None) -> str:
@@ -107,8 +111,16 @@ def run_cell(
     payload: RunCellRequest,
     current_user: User = Depends(get_current_user),
 ) -> RunCellResponse:
+    key = str(current_user.id)
+    if _run_limiter.is_blocked(key):
+        # Returned as a normal failed run (not an HTTP error) so the notebook UI shows the message.
+        return RunCellResponse(**kernels.error_result("RateLimited", "Too many runs. Wait a few seconds and try again."))
+    _run_limiter.record_failure(key)
     source = _substitute_groq_key(payload.source, payload.api_key)
-    result = kernels.run_cell(current_user.id, lab_id, source)
+    try:
+        result = kernels.run_cell(current_user.id, lab_id, source)
+    except kernels.KernelBusy as exc:
+        return RunCellResponse(**kernels.error_result("ServerBusy", str(exc)))
     return RunCellResponse(**result)
 
 
