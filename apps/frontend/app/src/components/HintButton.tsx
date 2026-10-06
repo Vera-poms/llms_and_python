@@ -39,14 +39,17 @@ export function HintButton({ labId, cellId, getSource, getOutput }: Props) {
       <Button size="xs" variant="outline" onClick={requestHint} isLoading={loading} alignSelf="start">
         {hints.length === 0 ? "Get a hint" : "Another hint"}
       </Button>
-      {hints.map((hint, i) => (
-        <Alert key={i} status="info" borderRadius="md" py={2} alignItems="start">
-          <AlertIcon />
-          <Box fontSize="sm" minW={0} sx={{ "& > :last-child": { mb: 0 } }}>
-            <Markdown>{hint}</Markdown>
-          </Box>
-        </Alert>
-      ))}
+      {/* Newest first, so a fresh hint appears right under the button instead of below the old ones. */}
+      {hints
+        .map((hint, i) => (
+          <Alert key={i} status="info" borderRadius="md" py={2} alignItems="start">
+            <AlertIcon />
+            <Box fontSize="sm" minW={0} sx={{ "& > :last-child": { mb: 0 } }}>
+              <Markdown>{hint}</Markdown>
+            </Box>
+          </Alert>
+        ))
+        .reverse()}
       {hints.length > 0 && (
         <Text fontSize="xs" color="gray.500">
           Hints are free - they don't reduce your score.
