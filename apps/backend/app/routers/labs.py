@@ -36,6 +36,8 @@ logger = logging.getLogger(__name__)
 MAX_SOURCE_CHARS = 20_000
 MAX_OUTPUT_CHARS = 6_000
 MAX_HINT_LEVEL = 3
+# Level-3 hints are up to five beginner-friendly numbered steps; 400 tokens cut them off mid-sentence.
+HINT_MAX_TOKENS = 1000
 UNAVAILABLE = "Automatic checking is unavailable right now - try again in a moment."
 
 
@@ -386,7 +388,7 @@ def _llm_hint(item: exercises.GradedItem, payload: CellHintRequest, level: int) 
     user_prompt = "\n\n".join(parts)
 
     fragments = _reference_fragments(item.reference_source)
-    hint = llm.complete(system_prompt, user_prompt, max_tokens=400)
+    hint = llm.complete(system_prompt, user_prompt, max_tokens=HINT_MAX_TOKENS)
     _, leaked = _redact_leaks(hint, fragments)
     if not leaked:
         return hint
@@ -396,7 +398,7 @@ def _llm_hint(item: exercises.GradedItem, payload: CellHintRequest, level: int) 
         "\n\nYour previous attempt copied the reference solution. Rewrite it with NO code at all - "
         "plain English only."
     )
-    hint = llm.complete(retry_prompt, user_prompt, max_tokens=400)
+    hint = llm.complete(retry_prompt, user_prompt, max_tokens=HINT_MAX_TOKENS)
     hint, leaked = _redact_leaks(hint, fragments)
     if leaked:
         logger.warning("Hint still leaked the reference after retry for lab %s %s", item.lab_id, item.cell_id)

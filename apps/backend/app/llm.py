@@ -71,6 +71,18 @@ def _post(url: str, headers: dict, payload: dict) -> dict:
     return response.json()
 
 
+def _tidy(text: str, truncated: bool) -> str:
+    """Strip the reply; if the model hit its token limit, drop the dangling half-sentence."""
+    text = text.strip()
+    if not truncated:
+        return text
+    logger.warning("LLM reply hit max_tokens; trimming to the last complete sentence")
+    cut = max(text.rfind(mark) for mark in (". ", "! ", "? ", ".\n", "!\n", "?\n"))
+    if cut == -1:
+        return text[:-1] if text.endswith((".", "!", "?")) else text
+    return text[: cut + 1].rstrip()
+
+
 def _complete_groq(system_prompt: str, user_prompt: str, max_tokens: int) -> str:
     data = _post(
         GROQ_URL,
@@ -85,7 +97,8 @@ def _complete_groq(system_prompt: str, user_prompt: str, max_tokens: int) -> str
             ],
         },
     )
-    return data["choices"][0]["message"]["content"].strip()
+    choice = data["choices"][0]
+    return _tidy(choice["message"]["content"], choice.get("finish_reason") == "length")
 
 
 def _complete_anthropic(system_prompt: str, user_prompt: str, max_tokens: int) -> str:
@@ -103,7 +116,7 @@ def _complete_anthropic(system_prompt: str, user_prompt: str, max_tokens: int) -
             "messages": [{"role": "user", "content": user_prompt}],
         },
     )
-    return data["content"][0]["text"].strip()
+    return _tidy(data["content"][0]["text"], data.get("stop_reason") == "max_tokens")
 
 
 def complete(system_prompt: str, user_prompt: str, max_tokens: int = 400) -> str:

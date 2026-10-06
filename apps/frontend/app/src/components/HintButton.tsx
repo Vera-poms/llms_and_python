@@ -1,7 +1,8 @@
-import { Alert, AlertIcon, Button, Text, VStack } from "@chakra-ui/react";
+import { Alert, AlertIcon, Box, Button, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
 import { api } from "../api/client";
+import { Markdown } from "./Markdown";
 
 interface Props {
   labId: number;
@@ -41,9 +42,9 @@ export function HintButton({ labId, cellId, getSource, getOutput }: Props) {
       {hints.map((hint, i) => (
         <Alert key={i} status="info" borderRadius="md" py={2} alignItems="start">
           <AlertIcon />
-          <Text fontSize="sm" whiteSpace="pre-wrap">
-            {hint}
-          </Text>
+          <Box fontSize="sm" minW={0} sx={{ "& > :last-child": { mb: 0 } }}>
+            <Markdown>{hint}</Markdown>
+          </Box>
         </Alert>
       ))}
       {hints.length > 0 && (
