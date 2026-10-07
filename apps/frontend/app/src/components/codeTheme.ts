@@ -11,8 +11,8 @@ export const DARK_PLUS = {
   gutterBackground: "#1e1e1e",
   gutterForeground: "#858585",
   caret: "#aeafad",
-  selection: "#264f78",
-  activeLine: "#2a2d2e",
+  selection: "#3a73b0",
+  activeLine: "#ffffff0d",
 };
 
 export const LIGHT_PLUS = {
@@ -21,8 +21,8 @@ export const LIGHT_PLUS = {
   gutterBackground: "#ffffff",
   gutterForeground: "#237893",
   caret: "#000000",
-  selection: "#add6ff",
-  activeLine: "#f3f3f3",
+  selection: "#7ab8f5",
+  activeLine: "#0000000a",
 };
 
 export type Palette = typeof DARK_PLUS;
@@ -47,9 +47,13 @@ export function editorTheme(palette: Palette, dark: boolean) {
       },
       ".cm-activeLine": { backgroundColor: palette.activeLine },
       ".cm-activeLineGutter": { backgroundColor: palette.activeLine },
-      "&.cm-focused .cm-selectionBackground, .cm-selectionBackground": {
+      // Selection layer is drawn beneath the content, so an opaque active-line background
+      // (above) would hide it; both focused and unfocused states need an explicit color.
+      ".cm-selectionBackground, &.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground": {
         backgroundColor: palette.selection,
       },
+      // Read-only snippets (CodeBlock) have no drawSelection, so the browser's native selection is used.
+      ".cm-content ::selection, .cm-line::selection": { backgroundColor: palette.selection },
     },
     { dark },
   );
