@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [react()],
+  base: '/llms_and_python/',
   server: {
     host: true,
     port: 5000,
