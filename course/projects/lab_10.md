@@ -1,105 +1,109 @@
 # Project: Few-Shot Structured JSON Sentiment with Groq
 
 ## Goal
+The question: **can we get a model to reply in the same shape every time? And what do we do on the rare day it does not?**
 
-A program can only use a language model's answer if the answer has a predictable shape. A sentence like "I think this review is pretty positive!" is hard for code to read. A JSON object like `{"sentiment": "positive", "confidence": 0.95}` is easy. The real question here is: **can we get a model to reply in the same machine-readable shape every time, and what do we do on the rare occasion it does not?**
+A program can only use a model's answer if the answer has a shape it can read. A sentence like "I think this review is pretty positive!" is hard for code to read. A *JSON* object like `{"sentiment": "positive", "confidence": 0.95}` is easy. JSON is a text format for data, and Python reads it into a `dict`.
 
-This is a live project. It sends real requests to Groq, so it needs your Groq API key.
+This is a live project. It sends real requests to Groq, so it needs your Groq API key. Groq is the website that runs the model for you.
 
 You will:
 
 1. Write down two worked examples (`FEW_SHOT_EXAMPLES`) that show the model the exact reply shape you want.
 2. Choose how many reviews to test (`N_SAMPLES = 8`) and make an empty list (`results`) to collect answers.
-3. Loop over the first 8 reviews. For each one, ask the model for JSON and parse the reply.
-4. Catch any bad reply and store it as an error row instead of letting the program crash.
+3. Loop over the first 8 reviews. For each one, ask the model for JSON and read the reply.
+4. Catch any bad reply and store it as an error row, so the program does not crash.
 5. Print one neat, aligned line per review.
 
-Takeaway: showing the model examples (few-shot prompting) plus defensive parsing gives you structured data you can trust, and bad replies become rows in a table rather than crashes.
-
-## Words you will see
-
-- **LLM**: a large language model, a program that continues text. Here it is `llama-3.1-8b-instant`, running on Groq.
-- **API call**: your code sends a request over the internet and gets a reply back. `call_groq` does this for you.
-- **Message**: one turn of a chat, written as a dictionary like `{"role": "user", "content": "Hello"}`. The `role` is `"system"` (standing instructions), `"user"` (the person asking) or `"assistant"` (the model).
-- **Few-shot prompting**: putting a few worked examples (the "shots") into the messages before your real question. The model copies the pattern. Your function `build_few_shot_messages` does this by replaying each example as a fake earlier user turn and assistant turn.
-- **JSON**: a text format for data. `{"sentiment": "positive", "confidence": 0.95}` is JSON. Python reads it into a `dict`.
-- **JSON mode**: a setting you send to the API (`response_format={"type": "json_object"}`) that tells the model its reply must be valid JSON. It makes bad JSON rarer but does not make it impossible, and it does not check that your keys are present.
-- **Keyword argument**: an argument passed by name, like `response_format=...`. You pass it to `call_groq` by name.
-- **Confidence**: a number between 0 and 1 that the model reports for how sure it is. It is the model's own claim, not a measured probability.
-- **Defensive parsing**: assuming the reply might be broken and wrapping the parse in `try`/`except`.
-- **`try` / `except`**: Python's way to say "attempt this; if it raises this kind of error, do that instead of crashing".
-- **`json.JSONDecodeError`**: the error raised when text is not valid JSON.
-- **`ValueError`**: a general "bad value" error. Your `parse_json_response` raises it when `sentiment` or `confidence` is missing. `JSONDecodeError` is a special kind of `ValueError`.
-- **Non-deterministic**: the output can change from run to run. The model samples its words with some randomness (temperature 0.7), so two runs can differ.
+Takeaway: showing the model examples (called *few-shot prompting*) and expecting some bad replies gives you data you can trust. A bad reply becomes a row in a table, not a crash.
 
 ## What you start with
-
 The setup cell and the dataset cell have already run. These names exist in the notebook:
 
 | Name | What it is | Example |
 |---|---|---|
-| `GROQ_API_KEY` | your key, typed in via getpass | a long string; do not print it |
-| `json`, `requests` | imported libraries | |
+| `GROQ_API_KEY` | your key, typed in with getpass | a long string; do not print it |
+| `json`, `requests` | libraries that are already imported | |
 | `GROQ_API_URL` | the Groq web address | `"https://api.groq.com/openai/v1/chat/completions"` |
-| `DEFAULT_MODEL` | model name | `"llama-3.1-8b-instant"` |
-| `call_groq(messages, api_key=None, model=DEFAULT_MODEL, temperature=0.7, response_format=None) -> str` | sends a chat request and returns the reply text. `response_format` is put straight into the request body. | `call_groq([{"role": "user", "content": "Hi"}])` returns something like `"Hello!"` |
-| `sentences` | list of review strings | `["the movie was absolutely wonderful and kept me hooked the whole time", "i loved every minute of this film", ...]` |
-| `labels` | list of 0/1 ground-truth labels, same order as `sentences` (not needed in this project) | `[1, 1, 1, ...]` |
+| `DEFAULT_MODEL` | the model name | `"llama-3.1-8b-instant"` |
+| `call_groq(messages, api_key=None, model=DEFAULT_MODEL, temperature=0.7, response_format=None) -> str` | sends a chat request and gives back the reply text. `response_format` goes straight into the request. | `call_groq([{"role": "user", "content": "Hi"}])` gives something like `"Hello!"` |
+| `sentences` | a list of review strings | `["the movie was absolutely wonderful and kept me hooked the whole time", "i loved every minute of this film", ...]` |
+| `labels` | a list of 0s and 1s, in the same order as `sentences` (you do not need it here) | `[1, 1, 1, ...]` |
 
-Do not write your own HTTP code. Use `call_groq`.
+A *message* is one chat turn, written as a dict like `{"role": "user", "content": "Hello"}`. The `role` is `"system"` (standing rules), `"user"` (the person asking) or `"assistant"` (the model). A list of messages is what you send to `call_groq`.
+
+Do not write your own web code. Use `call_groq`.
 
 You must have already written and run these two functions in the exercise cell (the `json` import is in the setup cell):
 
-- `build_few_shot_messages(examples: list[tuple[str, dict]], query: str) -> list[dict]`: builds the full messages list: a system instruction, then one user turn and one assistant turn per example, then the real `query` as the last user turn.
-- `parse_json_response(text: str) -> dict`: strips code fences (the ```` ```json ```` wrapper some models add), parses the JSON, raises `ValueError` if `sentiment` or `confidence` is missing, and lets `json.JSONDecodeError` happen if the text is not valid JSON.
+- `build_few_shot_messages(examples: list[tuple[str, dict]], query: str) -> list[dict]`: builds the full list of messages. First comes a system message. Then one user message and one assistant message for each example. The real `query` is the last user message.
+- `parse_json_response(text: str) -> dict`: removes the code fence (the three-backtick `json` wrapper some models add), reads the JSON, and raises `ValueError` if `sentiment` or `confidence` is missing. If the text is not JSON at all, `json.JSONDecodeError` happens.
 
-If you get `NameError` or `NotImplementedError`, go back and finish and run the exercise cell first.
+If you get `NameError` or `NotImplementedError`, go back. Finish the exercise cell and run it first.
 
 ## Steps
 
 ### Step 1: Define `FEW_SHOT_EXAMPLES`
-
+Code shape (replace each `...`):
+```python
+FEW_SHOT_EXAMPLES = [
+    (..., {"sentiment": ..., "confidence": ...}),
+    (..., {"sentiment": ..., "confidence": ...}),
+]
+```
 Why: the examples are what teach the model your reply shape.
 
-Create a variable named exactly `FEW_SHOT_EXAMPLES`. It is a **list of exactly two tuples**. Each tuple is `(review_text, result_dict)`. Use these values exactly:
+Make a variable named exactly `FEW_SHOT_EXAMPLES`. It is a **list of exactly two tuples**. A *tuple* is a fixed pair like `("some text", {"key": 1})`. Each tuple here is `(review_text, result_dict)`. Use these values exactly:
 
 - `("This is the best purchase I've made all year.", {"sentiment": "positive", "confidence": 0.97})`
 - `("It broke after two days and support ignored me.", {"sentiment": "negative", "confidence": 0.95})`
 
 Shape reminder (not your data): `[("some text", {"key": 1}), ("other text", {"key": 2})]`.
 
-Note that `0.97` and `0.95` are numbers (floats), not strings. There are no quotes around them.
+Note that `0.97` and `0.95` are numbers, not strings. There are no quotes around them.
 
 **Check:** `len(FEW_SHOT_EXAMPLES)` is `2`, and `FEW_SHOT_EXAMPLES[0][1]["sentiment"]` is `"positive"`.
 
 ### Step 2: Define `N_SAMPLES` and `results`
+Code shape:
+```python
+N_SAMPLES = ...
+results = ...
+```
+Why: `N_SAMPLES` keeps the number of live calls small. Each call takes time and counts against your free quota. `results` is where you keep each answer.
 
-Why: `N_SAMPLES` keeps the number of live calls small (each call takes time and counts against your free quota). `results` is where you collect each answer.
-
-Write `N_SAMPLES = 8` and `results = []` (an empty list). Do this before the loop, so the list starts empty once and is not reset each iteration.
+Write `N_SAMPLES = 8` and `results = []` (an empty list). Do this before the loop. Then the list starts empty once and is not reset on each pass.
 
 **Check:** `N_SAMPLES == 8` and `results == []`.
 
 ### Step 3: Loop over the first 8 reviews
-
-`sentences[:N_SAMPLES]` is a slice. It gives the first 8 items of the list. For example, `["a", "b", "c"][:2]` is `["a", "b"]`. Write `for review in sentences[:N_SAMPLES]:`.
+Code shape:
+```python
+for review in sentences[:N_SAMPLES]:
+    messages = ...
+    reply = call_groq(..., response_format=...)
+    try:
+        parsed = ...
+        results.append((..., ..., ...))
+    except (..., ...) as e:
+        results.append((..., ..., ...))
+```
+`sentences[:N_SAMPLES]` is a *slice*. It gives the first 8 items of the list. For example, `["a", "b", "c"][:2]` is `["a", "b"]`. Write `for review in sentences[:N_SAMPLES]:`.
 
 Inside the loop, do two things for each review.
 
-**3a. Call the model.** Build the messages with your function: `build_few_shot_messages(FEW_SHOT_EXAMPLES, review)`. Pass the result to `call_groq` as its first argument. Also pass `response_format={"type": "json_object"}` as a keyword argument. This switches on JSON mode. Do not change the model or the temperature. Keep the defaults. The call returns a plain string, for example `'{"sentiment": "positive", "confidence": 0.95}'`. Save it in a variable such as `reply`.
+**3a. Call the model.** Build the messages with your function: `build_few_shot_messages(FEW_SHOT_EXAMPLES, review)`. Give the result to `call_groq` as its first argument. Also give it `response_format={"type": "json_object"}`. You pass this one *by name*, like `response_format=...`. It turns on *JSON mode*, which tells the model its reply must be valid JSON. JSON mode makes bad JSON rarer, but not impossible. It also does not check that your keys are there. Do not change the model or the temperature (the temperature is how random the model's word choice is, 0.7 here). Keep the defaults. The call gives back a plain string, for example `'{"sentiment": "positive", "confidence": 0.95}'`. Save it in a variable such as `reply`.
 
-Library call to know: `call_groq(messages, response_format=...)`. It sends the request and gives back the reply text.
+**3b. Read the reply safely.** Wrap the next lines in `try:`. A `try:` block means: "attempt this. If it fails, jump to `except` and do that instead of crashing."
 
-**3b. Parse the reply safely.** Wrap the next lines in `try:`.
+- Call `parse_json_response(reply)`. It gives back a dict, for example `{"sentiment": "positive", "confidence": 0.95}`.
+- Add one tuple to `results`: `(review, parsed["sentiment"], parsed["confidence"])`. That is three items: the review text, the sentiment word, and the confidence number. *Confidence* is a number from 0 to 1 that the model says for how sure it is. It is the model's own claim, not a measured chance. Use `results.append(...)` with the tuple inside, so double brackets: `results.append((a, b, c))`.
 
-- Call `parse_json_response(reply)`. It returns a dict, for example `{"sentiment": "positive", "confidence": 0.95}`.
-- Append one tuple to `results`: `(review, parsed["sentiment"], parsed["confidence"])`. That is three items: the review text, the sentiment string, the confidence number. Use `results.append(...)` with the tuple inside, so double brackets: `results.append((a, b, c))`.
+**3c. Handle a bad reply.** Add `except (json.JSONDecodeError, ValueError) as e:`. Catch both, as a tuple in brackets. `json.JSONDecodeError` is the error for text that is not valid JSON. `ValueError` is the error your function raises when a key is missing. Inside, add `(review, f"PARSE ERROR: {e}", None)` to `results`. A failure becomes a row whose second item starts with `PARSE ERROR: `, then Python's own error message. Its confidence is `None` (not the string `"None"`).
 
-**3c. Handle a bad reply.** Add `except (json.JSONDecodeError, ValueError) as e:`. Catch both, as a tuple in brackets. Inside it, append `(review, f"PARSE ERROR: {e}", None)`. So a failure becomes a row whose second item starts with `PARSE ERROR: `, followed by Python's own error message, and whose confidence is `None` (not the string `"None"`).
+Why this step exists: a model sometimes gives invalid JSON or forgets a key. If you did not catch the error, one bad reply on review 5 would crash the loop. You would lose the other 7 results.
 
-Why this step exists: a model sometimes returns invalid JSON or forgets a key. If you did not catch the error, one bad reply on review 5 would crash the loop and you would lose the other 7 results.
-
-Worked example of what goes into `results` (shape only; the confidence values will vary):
+Example of what goes into `results` (shape only; the confidence numbers will vary):
 
 ```
 ("the movie was absolutely wonderful and kept me hooked the whole time", "positive", 0.95)
@@ -109,41 +113,30 @@ Worked example of what goes into `results` (shape only; the confidence values wi
 **Check:** after the loop, `len(results) == 8`. Every item is a tuple of length 3, even for failures.
 
 ### Step 4: Print one aligned line per result
+Code shape:
+```python
+for review, sentiment, confidence in results:
+    print(f"{...:<25} conf={...}  {...}")
+```
+Why: aligned columns make the results easy to scan.
 
-Why: aligned columns make a table of results easy to scan.
+After the loop (not inside it), loop over `results` in order. Print one line per tuple, with exactly this layout:
 
-After the loop (not inside it), loop over `results` in order and print one line per tuple, with exactly this layout:
-
-1. the sentiment (or error string), left-aligned and padded to 25 characters wide,
+1. the sentiment (or the error text), left-aligned and padded to 25 characters wide,
 2. then `conf=` and the confidence,
 3. then two spaces,
 4. then the first 55 characters of the review.
 
-Library idea: an f-string can pad. Inside `{ }`, the part after a colon is a format spec. `{x:<25}` means "left-align `x` in a 25-wide field". For example `f"{'hi':<5}|"` gives `hi   |`. The slice `review[:55]` keeps the first 55 characters.
+An f-string can pad. Inside `{ }`, the part after a colon says how to show the value. `{x:<25}` means "left-align `x` in a 25-wide space". For example, `f"{'hi':<5}|"` gives `hi   |`. The slice `review[:55]` keeps the first 55 characters.
 
-Tip: the sentiment column may be a long error string. If it is longer than 25 characters, padding does nothing and it just prints in full. That is fine. Also a `None` confidence prints as `conf=None`. That is expected for error rows.
+Tip: the sentiment column may be a long error text. If it is longer than 25 characters, padding does nothing and it prints in full. That is fine. A `None` confidence prints as `conf=None`. That is normal for error rows.
 
-Worked example, using the first dataset review (verified). Note that the sentiment word plus its padding fills 25 characters, then `conf=0.95`, two spaces, then the cut-off review:
+Example, using the first review in the data. The sentiment word plus its padding fills 25 characters, then `conf=0.95`, two spaces, then the cut-off review:
 
 ```
 positive                  conf=0.95  the movie was absolutely wonderful and kept me hooked t
 ```
 
-The review is cut at exactly 55 characters, which here ends in `hooked t`. Your confidence number will differ.
+The review is cut at exactly 55 characters, which here ends in `hooked t`. Your confidence number will be different.
 
-**Check:** you see 8 lines, and in each line the text `conf=` starts in the same column when the sentiment is shorter than 25 characters.
-
-## What a correct result looks like
-
-- Exactly 8 printed lines, one per review, in the same order as the dataset.
-- The first 8 reviews are all positive movie reviews. You should usually see `positive` on each line, with a confidence between 0 and 1 (often 0.9 to 0.99).
-- Values are **not deterministic**. The confidence numbers will change between runs. An occasional line like `PARSE ERROR: ...   conf=None` can appear. That is fine, and it shows your error handling working.
-- Deterministic parts: there are always 8 lines, they are in dataset order, and the review text on each line is always the same.
-- Needs network access and a valid key. A `401` error means the key is wrong. A `429` error means you called too fast, so wait a minute and re-run.
-
-## How you'll be graded
-
-1. `FEW_SHOT_EXAMPLES` has exactly the two specified examples and `N_SAMPLES` is 8.
-2. Each request uses the few-shot messages built by the student's `build_few_shot_messages` and requests JSON mode via `response_format={"type": "json_object"}`.
-3. Replies are parsed with `parse_json_response`, with parse/validation errors caught and stored as `PARSE ERROR: ...` rows with `None` confidence rather than crashing.
-4. Results are printed one per line, in order, showing sentiment, confidence and a truncated review.
+**Check:** you see 8 lines. In each line the text `conf=` starts in the same column when the sentiment is shorter than 25 characters.

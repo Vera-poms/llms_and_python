@@ -58,6 +58,30 @@ print(account.balance)  # 150`} />
         method's first parameter is <Code>self</Code>, and Python fills it in automatically when
         you call <Code>account.deposit(50)</Code>.
       </Text>
+      <Text>Here is what happens, line by line, with the real numbers:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>class BankAccount:</Code> only describes the template. Nothing is made yet. An{" "}
+          <b>attribute</b> is a piece of data that belongs to an object, like a name tag. A{" "}
+          <b>method</b> is a function that belongs to an object.
+        </ListItem>
+        <ListItem>
+          <Code>BankAccount("Vera", 100)</Code> makes one real account (an <b>object</b>). Python
+          runs <Code>__init__</Code> with <Code>owner = "Vera"</Code> and{" "}
+          <Code>balance = 100</Code>. It stores them as <Code>self.owner</Code> and{" "}
+          <Code>self.balance</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>account.deposit(50)</Code> runs the method. Here <Code>self</Code> is{" "}
+          <Code>account</Code> and <Code>amount</Code> is 50.{" "}
+          <Code>self.balance += 50</Code> is short for "new balance = old balance + 50". So 100 +
+          50 = 150.
+        </ListItem>
+        <ListItem>
+          <Code>print(account.balance)</Code> reads the attribute back: 150. Another account made
+          with <Code>BankAccount("Sam", 10)</Code> would have its own balance. They do not share.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell building a different class from
@@ -87,6 +111,28 @@ print(mix.songs)  # ['Song A', 'Song B']`}
 mix = Playlist("Road Trip", ["Song A"])
 mix.add_song("Song B")
 print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          <Code>Playlist("Road Trip", ["Song A"])</Code> makes a playlist object.{" "}
+          <Code>__init__</Code> saves <Code>self.name = "Road Trip"</Code> and{" "}
+          <Code>self.songs = ["Song A"]</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>mix.add_song("Song B")</Code> runs the method. <Code>self.songs.append(song)</Code>{" "}
+          adds "Song B" to the end of the list. <Code>append</Code> changes the list that is
+          already stored. It does not make a new one.
+        </ListItem>
+        <ListItem>
+          <Code>print(mix.songs)</Code> shows the list: two songs now.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> <Code>['Song A', 'Song B']</Code>. Try adding a line{" "}
+        <Code>mix.add_song("Song C")</Code> before the print. The list should grow to three songs.
+      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -99,6 +145,39 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
         to make a decision. A bank account bundles an owner and a balance; a perceptron bundles
         weights and a bias. Same idea, different data.
       </Text>
+      <Text>Here is the lab's real class, in short:</Text>
+      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+        {`class Perceptron:
+    def __init__(self, n_features):
+        self.weights = np.zeros(n_features)
+        self.bias = 0.0
+
+    def net_input(self, x):
+        return float(np.dot(x, self.weights) + self.bias)
+
+    def activation(self, z):
+        return 1 if z >= 0 else -1
+
+    def predict(self, x):
+        return self.activation(self.net_input(x))`}
+      </Code>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>Perceptron(n_features=2)</Code> runs <Code>__init__</Code>. <Code>np.zeros(2)</Code>{" "}
+          makes <Code>[0.0, 0.0]</Code> for the weights. The bias starts at 0.0. A new perceptron
+          knows nothing yet.
+        </ListItem>
+        <ListItem>
+          The lab then sets <Code>p.weights = np.array([1.0, -1.0])</Code> and{" "}
+          <Code>p.bias = 0.5</Code> by hand. You can change attributes from outside the class.
+        </ListItem>
+        <ListItem>
+          <Code>p.predict(np.array([1.0, 0.0]))</Code>: <Code>self</Code> is <Code>p</Code> and{" "}
+          <Code>x</Code> is <Code>[1.0, 0.0]</Code>. <Code>predict</Code> calls{" "}
+          <Code>self.net_input(x)</Code>, then passes the result to <Code>self.activation</Code>.
+          The next two sections show those two steps with numbers.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Deep dive: the dot product</Heading>
       <Text>
@@ -122,6 +201,23 @@ total = sum(q * p for q, p in zip(quantities, prices))
         each pair, and <Code>sum</Code> adds all the products together - three apples' worth of
         price, plus two breads' worth of price, collapsed into one number.
       </Text>
+      <Text>Here is what each part does with the real numbers:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>zip(quantities, prices)</Code> pairs the lists up: (3, 0.50) and (2, 2.00).
+        </ListItem>
+        <ListItem>
+          <Code>q * p</Code> multiplies each pair: 3 * 0.50 = 1.50 for the apples, and 2 * 2.00 =
+          4.00 for the bread.
+        </ListItem>
+        <ListItem>
+          <Code>sum(...)</Code> adds them: 1.50 + 4.00 = 5.50.
+        </ListItem>
+        <ListItem>
+          The two lists must be the same length. Position 0 goes with position 0, and position 1
+          goes with position 1.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell computing a weighted total for a
@@ -137,6 +233,26 @@ print(final_grade)  # 83.0`}
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
 print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          <Code>scores</Code> are three marks: 90, 80 and 70. <Code>weights</Code> say how much
+          each mark counts: 50%, 30% and 20%.
+        </ListItem>
+        <ListItem>
+          The products are 90 * 0.5 = 45.0, 80 * 0.3 = 24.0 and 70 * 0.2 = 14.0.
+        </ListItem>
+        <ListItem>
+          45.0 + 24.0 + 14.0 = 83.0. This is a dot product, just like the grocery total.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> <Code>83.0</Code>. Try swapping the weights to{" "}
+        <Code>[0.2, 0.3, 0.5]</Code>. Now the 70 counts the most, and the grade falls to 18 + 24 +
+        35 = 77.0.
+      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -148,6 +264,29 @@ print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
         prices," a perceptron computes "features times how much the model cares about each
         feature" - the weighted sum is the entire computation that decides which class wins.
       </Text>
+      <Text>
+        Take the lab's perceptron with <Code>weights = [1.0, -1.0]</Code>, <Code>bias = 0.5</Code>{" "}
+        and input <Code>x = [1.0, 0.0]</Code>:
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>np.dot(x, self.weights)</Code> = 1.0 * 1.0 + 0.0 * (-1.0) = 1.0 + 0.0 = 1.0.{" "}
+          <Code>np</Code> is numpy, a toolbox for lists of numbers.
+        </ListItem>
+        <ListItem>
+          <Code>+ self.bias</Code> adds 0.5, so the score is 1.5. <Code>float(...)</Code> makes
+          sure it is a plain decimal number.
+        </ListItem>
+        <ListItem>
+          A positive weight (1.0) means "this feature pushes toward yes". A negative weight (-1.0)
+          means "this feature pushes toward no". A weight of 0 means "ignore this feature". A new
+          perceptron has all weights at 0, so it ignores everything.
+        </ListItem>
+        <ListItem>
+          The bias moves the score up or down for every input. It is like starting a race a little
+          ahead of the line.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Deep dive: the step (activation) function</Heading>
       <Text>
@@ -174,6 +313,25 @@ print(step(-2))   # -1`} />
         two values - it throws away the magnitude of the number and keeps only which side of zero
         it landed on.
       </Text>
+      <Text>Here is what each line does:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>1 if z &gt;= 0 else -1</Code> is a one-line "if". It reads: give back 1 if{" "}
+          <Code>z</Code> is 0 or more, otherwise give back -1. <Code>&gt;=</Code> means "greater
+          than or equal to".
+        </ListItem>
+        <ListItem>
+          <Code>step(3)</Code>: 3 is bigger than 0, so the answer is 1.
+        </ListItem>
+        <ListItem>
+          <Code>step(-2)</Code>: -2 is less than 0, so the answer is -1.
+        </ListItem>
+        <ListItem>
+          <Code>step(0)</Code> is 1, because the test says "or equal". Exactly 0 goes to the +1
+          side. <Code>step(1000)</Code> and <Code>step(0.001)</Code> both give 1. Only the side
+          matters, not the size.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell applying a step function to a
@@ -192,6 +350,26 @@ print(freeze_alert(10))  # -1`}
 print(freeze_alert(-5))  # 1
 print(freeze_alert(10))  # -1`} expectedOutput={`1
 -1`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          <Code>freeze_alert</Code> is a step function with the test turned around:{" "}
+          <Code>&lt;=</Code> means "less than or equal to". At 0 degrees or colder it gives 1
+          (alert). Otherwise it gives -1 (no alert).
+        </ListItem>
+        <ListItem>
+          <Code>freeze_alert(-5)</Code>: -5 is below 0, so the result is 1.
+        </ListItem>
+        <ListItem>
+          <Code>freeze_alert(10)</Code>: 10 is above 0, so the result is -1.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> two lines, <Code>1</Code> and then <Code>-1</Code>. Try{" "}
+        <Code>print(freeze_alert(0))</Code>. You get 1, because 0 is "less than or equal to" 0.
+      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -203,6 +381,25 @@ print(freeze_alert(10))  # -1`} expectedOutput={`1
         training with gradient descent, but the underlying idea - squash a raw number into
         something more meaningful for the next step - is exactly the same one this lab introduces.
       </Text>
+      <Text>
+        Finish the example from the dot product section. The score <Code>z</Code> was 1.5 for{" "}
+        <Code>x = [1.0, 0.0]</Code>:
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>self.activation(1.5)</Code>: 1.5 is 0 or more, so the answer is <Code>1</Code>.
+          The class is +1.
+        </ListItem>
+        <ListItem>
+          Try a second input, <Code>x = [0.0, 2.0]</Code>. The dot product is 0.0 * 1.0 + 2.0 *
+          (-1.0) = -2.0. Add the bias 0.5 and the score is -1.5. That is below 0, so{" "}
+          <Code>activation</Code> gives <Code>-1</Code>.
+        </ListItem>
+        <ListItem>
+          So <Code>predict</Code> is two steps in a row: first a score, then a decision. The
+          decision is always exactly 1 or -1, never 0.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Deep dive: plotting with matplotlib</Heading>
       <Text>
@@ -231,6 +428,25 @@ plt.show()`} />
         a file instead of popping up a window - handy when you're running a script rather than a
         notebook.
       </Text>
+      <Text>Here is what each line does with the real numbers:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>hours_studied</Code> goes on the x axis (the sideways one). <Code>exam_score</Code>{" "}
+          goes on the y axis (the up-and-down one). They are paired by position: (1, 50), (2, 55),
+          (3, 65), (4, 70), (5, 90).
+        </ListItem>
+        <ListItem>
+          <Code>plt.scatter</Code> draws 5 dots. The dots go up from left to right, so more study
+          hours go with higher scores.
+        </ListItem>
+        <ListItem>
+          <Code>plt.xlabel</Code> and <Code>plt.ylabel</Code> write the names beside the axes.
+        </ListItem>
+        <ListItem>
+          <Code>plt.savefig("scores.png")</Code> saves the picture as a file called{" "}
+          <Code>scores.png</Code>. <Code>plt.show()</Code> then shows it on screen.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell plotting a different scatter plot -
@@ -256,6 +472,32 @@ plt.xlabel("temperature (F)")
 plt.ylabel("ice cream sales")
 plt.savefig("ice_cream.png")
 print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.png`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          <Code>city_temp</Code> has 5 temperatures (30 to 90). <Code>ice_cream_sales</Code> has 5
+          sales numbers (10 to 95). Position by position they make the dots (30, 10), (45, 25),
+          (60, 40), (75, 70) and (90, 95).
+        </ListItem>
+        <ListItem>
+          <Code>plt.scatter(city_temp, ice_cream_sales)</Code> draws those 5 dots. The warmer it
+          is, the higher the dot.
+        </ListItem>
+        <ListItem>
+          The two label lines name the axes. <Code>plt.savefig("ice_cream.png")</Code> writes the
+          picture to a file.
+        </ListItem>
+        <ListItem>
+          The last line prints a plain message, so you know the save worked.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> a chart of dots climbing to the right, and the text{" "}
+        <Code>Saved scatter plot to ice_cream.png</Code>. Try changing the last sales number from
+        95 to 5. The last dot drops to the bottom right.
+      </Text>
 
       <Text>
         Further reading:{" "}
@@ -281,6 +523,29 @@ print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.
         <Code>untrained_boundary.png</Code>, is a visual version of "50% accuracy, no better than
         guessing."
       </Text>
+      <Text>Here is how to read that plot:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Each dot is one review. Green dots are positive reviews (label +1). Red dots are negative
+          ones (label -1). Two scatter calls are used so each class gets its own color.
+        </ListItem>
+        <ListItem>
+          PCA is a way to squash many numbers per review down to 2, so the review fits on a flat
+          chart. The two squashed numbers become x and y. The chart is a flat shadow of the real
+          data.
+        </ListItem>
+        <ListItem>
+          The dashed line is where the score is exactly 0. A perceptron says "+1" on one side of
+          it and "-1" on the other. With a trained model, green dots would sit on one side, and
+          red dots on the other.
+        </ListItem>
+        <ListItem>
+          Here the weights are all 0, so every score is 0 + bias 0.0 = 0.0. Since{" "}
+          <Code>activation(0.0)</Code> is +1, the untrained model says "+1" for every review. It is
+          right for the positive ones and wrong for the negative ones. That is why the line cannot
+          split the two colors.
+        </ListItem>
+      </UnorderedList>
 
     </VStack>
   );

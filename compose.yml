@@ -17,7 +17,8 @@ services:
 
   backend:
     build:
-      context: ./apps/backend/app
+      context: .
+      network: host
     env_file:
       - ./apps/backend/app/.env
     environment:
@@ -37,6 +38,7 @@ services:
   frontend:
     build:
       context: ./apps/frontend/app
+      network: host
     environment:
       # Reaches the browser, not other containers — must be the host-published backend port.
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8020}

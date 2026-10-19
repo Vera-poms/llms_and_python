@@ -40,6 +40,21 @@ tiles_needed = rows * cols  # 96`} />
         Nothing fancy - the floor is a grid, and a grid's total cell count is always{" "}
         <Code>rows * cols</Code>, whether the cells are floor tiles or numbers in a table.
       </Text>
+      <Text>Here is what each line does:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>rows = 12</Code> and <Code>cols = 8</Code> store two numbers. A name like{" "}
+          <Code>rows</Code> is called a <b>variable</b>. It is a label stuck on a value.
+        </ListItem>
+        <ListItem>
+          <Code>rows * cols</Code> multiplies them: 12 * 8 = 96. Picture 12 lines of 8 tiles. That
+          is 96 tiles.
+        </ListItem>
+        <ListItem>
+          Everything after <Code>#</Code> is a <b>comment</b>. Python ignores it. It is a note for
+          people.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell counting a different grid of items -
@@ -55,6 +70,25 @@ print(total_seats)  # 300`}
 seats_per_row = 15
 total_seats = rows * seats_per_row
 print(total_seats)  # 300`} expectedOutput={`300`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          A hall has 20 rows, with 15 seats in each row. The two numbers are stored in{" "}
+          <Code>rows</Code> and <Code>seats_per_row</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>total_seats = rows * seats_per_row</Code> is 20 * 15 = 300.
+        </ListItem>
+        <ListItem>
+          <Code>print</Code> shows the number.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> <Code>300</Code>. Try changing <Code>rows</Code> to 10. You
+        should now see <Code>150</Code>.
+      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -69,6 +103,35 @@ print(total_seats)  # 300`} expectedOutput={`300`} />
         small's real dimensions and you land within about 1% of 124,439,808 - which is exactly why
         that model is nicknamed "124M."
       </Text>
+      <Text>
+        Here are the lab's methods on a tiny model. A <b>parameter</b> is one number the model
+        learns. The settings are <Code>vocab_size=1000</Code> (how many different tokens it
+        knows), <Code>d_model=64</Code> (how many numbers describe each token),{" "}
+        <Code>n_layers=2</Code> (how many blocks are stacked) and <Code>d_ff=256</Code> (the
+        width of the feed-forward step inside each block).
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>embedding_params</Code>: a table with 1000 rows and 64 columns. 1000 * 64 = 64,000.
+        </ListItem>
+        <ListItem>
+          <Code>attention_params_per_layer</Code>: 4 tables (query, key, value and output), each 64
+          by 64. 4 * 64 * 64 = 16,384 for one block.
+        </ListItem>
+        <ListItem>
+          <Code>feed_forward_params_per_layer</Code>: one 64 by 256 table and one 256 by 64 table.
+          64 * 256 + 256 * 64 = 32,768 for one block.
+        </ListItem>
+        <ListItem>
+          <Code>layernorm_params_per_layer</Code>: 2 * 2 * 64 = 256 for one block.{" "}
+          <Code>output_head_params</Code>: 64 * 1000 = 64,000.
+        </ListItem>
+        <ListItem>
+          <Code>count_parameters</Code> multiplies the per-block numbers by 2 blocks: attention
+          32,768, feed-forward 65,536, layer norm 512. It adds the embedding and the head. The
+          total is 64,000 + 32,768 + 65,536 + 512 + 64,000 = 226,816.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Deep dive: dataclasses as config objects</Heading>
       <Text>
@@ -98,6 +161,28 @@ print(r.area())  # 12.0`} />
         constructor - the decorator just generates that boilerplate for you from the type-annotated
         fields.
       </Text>
+      <Text>Here is what each part of that example does:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A <b>class</b> is a blueprint for one kind of thing. <Code>Rectangle</Code> says "every
+          rectangle has a width and a height".
+        </ListItem>
+        <ListItem>
+          <Code>@dataclass</Code> sits on top of the class. It is called a <b>decorator</b>, and it
+          adds extra features. Here it writes the setup code for you.
+        </ListItem>
+        <ListItem>
+          <Code>width: float</Code> and <Code>height: float</Code> are the <b>fields</b>. The word
+          after the colon is a hint about the kind of value. Python does not force it.
+        </ListItem>
+        <ListItem>
+          <Code>Rectangle(width=4, height=3)</Code> builds one rectangle. <Code>r.area()</Code>{" "}
+          calls the method. Inside it, <Code>self</Code> means "this rectangle", so{" "}
+          <Code>self.width * self.height</Code> is 4 * 3 = 12. Because 4 and 3 are whole numbers,
+          printing it shows <Code>12</Code>. It would show <Code>12.0</Code> if you used 4.0 and
+          3.0.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell building a different dataclass -
@@ -129,6 +214,27 @@ class Car:
 
 c = Car(mpg=30.0, tank_gallons=12.0)
 print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          <Code>Car</Code> is a blueprint with two fields: <Code>mpg</Code> (miles per gallon) and{" "}
+          <Code>tank_gallons</Code> (the size of the fuel tank).
+        </ListItem>
+        <ListItem>
+          <Code>Car(mpg=30.0, tank_gallons=12.0)</Code> builds one car and stores it in{" "}
+          <Code>c</Code>. This car goes 30 miles on one gallon and holds 12 gallons.
+        </ListItem>
+        <ListItem>
+          <Code>c.range_miles()</Code> multiplies 30.0 * 12.0 = 360.0. That is how far it can go on
+          a full tank.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> <Code>360.0</Code>. Try changing <Code>tank_gallons</Code> to{" "}
+        <Code>10.0</Code>. You should now see <Code>300.0</Code>.
+      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -140,6 +246,25 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         methods (like <Code>count_parameters</Code>) that compute things from them - a config
         object playing the same "bundle of data plus behavior" role a class always does.
       </Text>
+      <Text>Here it is on the tiny model from before:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>cfg = ModelConfig(vocab_size=1000, d_model=64, n_layers=2, n_heads=4, d_ff=256)</Code>{" "}
+          stores the five numbers in one object.
+        </ListItem>
+        <ListItem>
+          <Code>cfg.d_model</Code> gives back 64. A dot reads one field.
+        </ListItem>
+        <ListItem>
+          <Code>cfg.embedding_params()</Code> runs <Code>self.vocab_size * self.d_model</Code>, and{" "}
+          <Code>self</Code> is <Code>cfg</Code>. So it is 1000 * 64 = 64,000.
+        </ListItem>
+        <ListItem>
+          <Code>cfg.count_parameters()</Code> calls the other methods and returns a dict with the
+          pieces: embedding, attention, feed_forward, layernorm, output_head and total. A{" "}
+          <b>dict</b> is a set of labeled values.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Deep dive: config dicts as the shape of a real model</Heading>
       <Text>
@@ -162,6 +287,22 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         It's a plain dictionary - no classes, no code, just named numbers - which is exactly why
         it's easy to save as JSON, load in any language, and diff between model versions.
       </Text>
+      <Text>Here is how to read it:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A dict is a set of <b>key: value</b> pairs inside curly braces. The key is the label and
+          the value is what is stored. <Code>"d_model": 768</Code> means "the label d_model holds
+          768".
+        </ListItem>
+        <ListItem>
+          <Code>gpt2_small_config["n_layers"]</Code> gives <Code>12</Code>. You look up a value by
+          its key, in square brackets.
+        </ListItem>
+        <ListItem>
+          The five keys match the five fields of <Code>ModelConfig</Code>. Those numbers are all
+          you need to work out how big the model is.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell reading a different config dict -
@@ -183,6 +324,25 @@ print(server_config["workers"])  # 4`}
     "timeout_seconds": 30,
 }
 print(server_config["workers"])  # 4`} expectedOutput={`4`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          <Code>server_config</Code> holds four settings for a made-up server: its address (
+          <Code>host</Code>), the door number it listens on (<Code>port</Code>), how many helpers it
+          runs (<Code>workers</Code>) and how long it waits (<Code>timeout_seconds</Code>).
+        </ListItem>
+        <ListItem>
+          <Code>server_config["workers"]</Code> looks up the key <Code>"workers"</Code> and gives
+          its value, 4.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> <Code>4</Code>. Try printing <Code>server_config["port"]</Code>{" "}
+        instead. You should see <Code>8080</Code>. If you misspell a key, like{" "}
+        <Code>"worker"</Code>, Python stops with a <Code>KeyError</Code>.
+      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -195,6 +355,28 @@ print(server_config["workers"])  # 4`} expectedOutput={`4`} />
         this lab's project cell is the same structure: real published numbers, not made up ones,
         driving the same <Code>count_parameters</Code> math you implemented in the exercise.
       </Text>
+      <Text>
+        In the notebook, <Code>REAL_CONFIGS</Code> is a dict whose keys are model names. Each value
+        is a pair: a <Code>ModelConfig</Code> and the real published total. The loop{" "}
+        <Code>for name, (config, real_total) in REAL_CONFIGS.items()</Code> takes one model at a
+        time and splits the pair into two names. Here are the steps for GPT-2 small:
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>config.count_parameters()</Code> runs your formulas on 50,257 tokens, 768 numbers
+          per token, 12 blocks and a feed-forward width of 3,072. The embedding alone is 50,257 *
+          768 = 38,597,376.
+        </ListItem>
+        <ListItem>
+          GPT-2 uses the same table for the input and for the output head. So the real model counts
+          it once. The notebook subtracts <Code>breakdown["output_head"]</Code> to match.
+        </ListItem>
+        <ListItem>
+          The computed total is 123,568,896. The published total is 124,439,808. The difference is
+          870,912, which is about 0.7%. The formulas leave out some small parts, such as the bias
+          numbers and the table that tells the model where each word sits in the sentence.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Deep dive: plotting with matplotlib</Heading>
       <Text>
@@ -228,6 +410,26 @@ plt.show()`} />
         side-by-side instead of on top of each other; <Code>xticks</Code> labels each pair with the
         candidate's name, and <Code>legend</Code> says which bar color means which series.
       </Text>
+      <Text>Here are the numbers in that example:</Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>range(len(names))</Code> is <Code>range(2)</Code>, which gives 0 and 1. Think of
+          them as the spot for each candidate on the bottom line.
+        </ListItem>
+        <ListItem>
+          <Code>[i - 0.2 for i in x]</Code> gives <Code>[-0.2, 0.8]</Code>. These are the spots for
+          the "predicted" bars, a little to the left. <Code>[i + 0.2 for i in x]</Code> gives{" "}
+          <Code>[0.2, 1.2]</Code> for the "actual" bars, a little to the right.
+        </ListItem>
+        <ListItem>
+          <Code>width=0.4</Code> makes each bar 0.4 wide. The two bars are 0.4 apart, so they touch
+          side by side and do not overlap.
+        </ListItem>
+        <ListItem>
+          <Code>plt.xticks(list(x), names)</Code> puts "Alicia" under spot 0 and "Ben" under spot
+          1. The pair sits around the name.
+        </ListItem>
+      </UnorderedList>
 
       <Text fontSize="sm" color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell plotting a different grouped bar
@@ -263,6 +465,33 @@ plt.ylabel("$ thousands")
 plt.legend()
 plt.savefig("budget_vs_actual.png")
 print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar chart to budget_vs_actual.png`} />
+      <Text fontSize="sm">
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4} fontSize="sm">
+        <ListItem>
+          There are two quarters. Q1 had a budget of 100 and spent 90. Q2 had a budget of 120 and
+          spent 130 (in thousands of dollars).
+        </ListItem>
+        <ListItem>
+          The first <Code>plt.bar</Code> draws the budget bars at spots -0.2 and 0.8, with heights
+          100 and 120. The second draws the actual bars at spots 0.2 and 1.2, with heights 90 and
+          130.
+        </ListItem>
+        <ListItem>
+          <Code>xticks</Code> writes Q1 and Q2 under the pairs. <Code>ylabel</Code> names the
+          up-and-down axis. <Code>legend</Code> says which color is budget and which is actual.
+        </ListItem>
+        <ListItem>
+          <Code>savefig</Code> saves the picture to a file, then the cell prints a message.
+        </ListItem>
+      </UnorderedList>
+      <Text fontSize="sm">
+        <b>What you should see:</b> the line{" "}
+        <Code>Saved grouped bar chart to budget_vs_actual.png</Code>. This cell does not call{" "}
+        <Code>plt.show()</Code>, so you may not see the chart on screen. Try changing the Q1
+        actual from 90 to 150. In the saved chart that bar would be taller than its budget bar.
+      </Text>
 
       <Text>
         Further reading:{" "}
@@ -288,6 +517,24 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
         published parameter count. Bars nearly the same height is the chart's way of showing that
         the formulas you implemented in the exercise actually match reality.
       </Text>
+      <Text>
+        Here is how it lines up with the numbers. The loop first fills three lists:{" "}
+        <Code>names</Code>, <Code>computed</Code> and <Code>published</Code>. Each has one entry
+        per model, in the same order. For the two models they hold the names, about 123.6 million
+        and 353.6 million, and then 124.4 million and 354.8 million.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>x = range(len(names))</Code> is 0 for GPT-2 small and 1 for GPT-2 medium.
+        </ListItem>
+        <ListItem>
+          The "computed" bars sit at -0.2 and 0.8. The "published" bars sit at 0.2 and 1.2.
+        </ListItem>
+        <ListItem>
+          For each model, the two bars are almost the same height. That is the 0.7% and 0.4% gaps
+          you see in the printed <Code>diff</Code>.
+        </ListItem>
+      </UnorderedList>
 
       <Heading as="h3" size="sm">Notebook</Heading>
       <Text>
