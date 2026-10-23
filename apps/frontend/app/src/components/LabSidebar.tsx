@@ -1,6 +1,9 @@
 import { Box, Button, Flex, Text, VStack } from "@chakra-ui/react";
 import { type RefObject, useEffect, useState } from "react";
 
+import type { BookmarkState } from "../hooks/useBookmark";
+import type { HighlightsState } from "../hooks/useHighlights";
+
 interface NavItem {
   id: string;
   label: string;
@@ -103,12 +106,17 @@ export function LabNav({
   outline,
   onNavigate,
   onReview,
+  bookmark,
+  highlights,
 }: {
   outline: LabOutline;
   onNavigate?: () => void;
   onReview?: (topic: string) => void;
+  bookmark?: BookmarkState;
+  highlights?: HighlightsState;
 }) {
   const { groups, activeId, jump } = outline;
+  const activeItem = [...groups.concepts, ...groups.coding].find((i) => i.id === activeId);
 
   function renderGroup(title: string, items: NavItem[]) {
     if (items.length === 0) return null;
@@ -144,6 +152,21 @@ export function LabNav({
                 >
                   {item.label}
                 </Box>
+                {bookmark && (
+                  <Box
+                    as="button"
+                    type="button"
+                    aria-label={item.id === bookmark.targetId ? "Remove bookmark" : `Bookmark: ${item.label}`}
+                    title={item.id === bookmark.targetId ? "Remove bookmark" : "Bookmark this spot"}
+                    px={1}
+                    fontSize="xs"
+                    opacity={item.id === bookmark.targetId ? 1 : 0.35}
+                    _hover={{ opacity: 1 }}
+                    onClick={() => (item.id === bookmark.targetId ? bookmark.clear() : bookmark.save(item))}
+                  >
+                    🔖
+                  </Box>
+                )}
                 {onReview && (
                   <Box
                     as="button"
@@ -171,6 +194,40 @@ export function LabNav({
 
   return (
     <VStack align="stretch" spacing={5}>
+      {bookmark && (
+        <VStack align="stretch" spacing={1}>
+          {bookmark.targetId && (
+            <Button
+              size="sm"
+              colorScheme="yellow"
+              variant="outline"
+              whiteSpace="normal"
+              height="auto"
+              py={1}
+              onClick={() => {
+                bookmark.goTo();
+                onNavigate?.();
+              }}
+            >
+              Resume: {bookmark.label}
+            </Button>
+          )}
+          {bookmark.label && (
+            <Button size="xs" variant="ghost" colorScheme="red" onClick={bookmark.clear}>
+              Remove bookmark
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            leftIcon={<span aria-hidden="true">🔖</span>}
+            isDisabled={!activeItem}
+            onClick={() => activeItem && bookmark.save(activeItem)}
+          >
+            Bookmark where I am
+          </Button>
+        </VStack>
+      )}
       {onReview && (
         <Button
           size="sm"
@@ -186,12 +243,59 @@ export function LabNav({
       )}
       {renderGroup("Concepts", groups.concepts)}
       {renderGroup("Coding", groups.coding)}
+      {highlights && highlights.items.length > 0 && (
+        <Box>
+          <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" color="gray.500" px={2} mb={1}>
+            My highlights
+          </Text>
+          <VStack align="stretch" spacing={0}>
+            {highlights.items.map((h) => (
+              <Box
+                key={h.id}
+                as="button"
+                type="button"
+                textAlign="left"
+                px={2}
+                py={1}
+                borderRadius="md"
+                _hover={{ bg: "blackAlpha.50" }}
+                onClick={() => {
+                  highlights.jump(h.id);
+                  onNavigate?.();
+                }}
+              >
+                <Flex align="center" gap={2}>
+                  <Box w={3} h={3} borderRadius="full" flexShrink={0} bg={h.color} />
+                  <Text fontSize="xs" noOfLines={1}>
+                    {h.text}
+                  </Text>
+                </Flex>
+                {h.note && (
+                  <Text fontSize="xs" color="gray.500" fontStyle="italic" pl={5} noOfLines={2}>
+                    {h.note}
+                  </Text>
+                )}
+              </Box>
+            ))}
+          </VStack>
+        </Box>
+      )}
     </VStack>
   );
 }
 
 // Sticky outline on wide screens. Below `lg` the page puts <LabNav> in a drawer instead.
-export function LabSidebar({ outline, onReview }: { outline: LabOutline; onReview?: (topic: string) => void }) {
+export function LabSidebar({
+  outline,
+  onReview,
+  bookmark,
+  highlights,
+}: {
+  outline: LabOutline;
+  onReview?: (topic: string) => void;
+  bookmark?: BookmarkState;
+  highlights?: HighlightsState;
+}) {
   return (
     <Box
       as="nav"
@@ -205,7 +309,7 @@ export function LabSidebar({ outline, onReview }: { outline: LabOutline; onRevie
       maxH="calc(100vh - 4rem)"
       overflowY="auto"
     >
-      <LabNav outline={outline} onReview={onReview} />
+      <LabNav outline={outline} onReview={onReview} bookmark={bookmark} highlights={highlights} />
     </Box>
   );
 }

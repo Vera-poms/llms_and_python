@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { useCodeDraft } from "../hooks/useCodeDraft";
 import { CodeEditor } from "./CodeEditor";
+import { DraftStatus } from "./DraftStatus";
 import { emphasizeNumbers } from "./prose";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
@@ -55,13 +57,14 @@ export function PracticeCell({
   const [checkStatus, setCheckStatus] = useState<"idle" | "pass" | "fail">("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const draft = useCodeDraft(labId, cellId, source);
 
   useEffect(() => {
     const hadDraft = readDraft(userId, labId, cellId) !== null;
     api
       .get(`/labs/${labId}/cells/${cellId}/code`)
       .then((response) => {
-        if (!hadDraft) {
+        if (!hadDraft && !draft.hasUnsavedEdit()) {
           setSource(response.data.source);
         }
       })
@@ -87,6 +90,7 @@ export function PracticeCell({
   }, [labId, cellId]);
 
   function updateSource(next: string) {
+    draft.markEdited();
     setSource(next);
     writeDraft(userId, labId, cellId, next);
   }
@@ -166,6 +170,7 @@ export function PracticeCell({
           <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
             Submit
           </Button>
+          <DraftStatus status={draft.status} />
         </HStack>
         {result && <CellOutput result={result} />}
         {checkStatus === "pass" && (

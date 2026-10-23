@@ -3,7 +3,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from core.security import hash_password
-from db.models import CellCode, CellResult, Lab, LabProgress, User
+from db.models import CellCode, CellResult, Lab, LabProgress, ReadingBookmark, ReadingHighlight, User
 from deps import get_db, require_admin_or_owner
 from scoring import compute_score, score_percents
 from schemas import AdminLabProgress, AdminUserDetail, AdminUserSummary, AdminUserUpdate
@@ -126,6 +126,8 @@ def delete_user(
     # DB-level ON DELETE CASCADE covers cell_code; the ORM relationship covers lab_progress.
     db.query(CellCode).filter(CellCode.user_id == user.id).delete(synchronize_session=False)
     db.query(CellResult).filter(CellResult.user_id == user.id).delete(synchronize_session=False)
+    db.query(ReadingBookmark).filter(ReadingBookmark.user_id == user.id).delete(synchronize_session=False)
+    db.query(ReadingHighlight).filter(ReadingHighlight.user_id == user.id).delete(synchronize_session=False)
     db.delete(user)
     db.commit()
 

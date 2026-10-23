@@ -7,9 +7,11 @@ from sqlalchemy.orm import Session
 
 import exercises
 import llm
-from db.models import CellCode, CellResult, Lab, LabProgress, User
+from db.models import CellCode, CellResult, Lab, LabProgress, ReadingBookmark, ReadingHighlight, User
 from deps import get_current_user, get_db
 from schemas import (
+    BookmarkOut,
+    BookmarkSave,
     CellCodeOut,
     CellCodeSave,
     CellHintRequest,
@@ -17,6 +19,9 @@ from schemas import (
     CellJudgeRequest,
     CellJudgeResponse,
     CellResultOut,
+    HighlightCreate,
+    HighlightOut,
+    HighlightUpdate,
     LabOut,
     LabProgressOut,
     ProgressUpdate,
@@ -36,6 +41,7 @@ logger = logging.getLogger(__name__)
 MAX_SOURCE_CHARS = 20_000
 MAX_OUTPUT_CHARS = 6_000
 MAX_HINT_LEVEL = 3
+MAX_HIGHLIGHTS_PER_LAB = 200
 # Level-3 hints are up to five beginner-friendly numbered steps; 400 tokens cut them off mid-sentence.
 HINT_MAX_TOKENS = 1000
 UNAVAILABLE = "Automatic checking is unavailable right now - try again in a moment."
@@ -274,6 +280,152 @@ def save_cell_code(
     db.refresh(saved)
 
     return CellCodeOut(source=saved.source)
+
+
+def _find_bookmark(db: Session, user_id: int, lab_id: int) -> ReadingBookmark | None:
+    return (
+        db.query(ReadingBookmark)
+        .filter(ReadingBookmark.user_id == user_id, ReadingBookmark.lab_id == lab_id)
+        .first()
+    )
+
+
+@router.get("/{lab_id}/bookmark", response_model=BookmarkOut)
+def get_bookmark(
+    lab_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> BookmarkOut:
+    saved = _find_bookmark(db, current_user.id, lab_id)
+    if saved is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No bookmark for this lab")
+    return BookmarkOut(anchor_id=saved.anchor_id, label=saved.label)
+
+
+@router.put("/{lab_id}/bookmark", response_model=BookmarkOut)
+def save_bookmark(
+    lab_id: int,
+    payload: BookmarkSave,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> BookmarkOut:
+    if db.get(Lab, lab_id) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lab not found")
+    saved = _find_bookmark(db, current_user.id, lab_id)
+    if saved is None:
+        saved = ReadingBookmark(user_id=current_user.id, lab_id=lab_id, anchor_id=payload.anchor_id, label=payload.label)
+        db.add(saved)
+    else:
+        saved.anchor_id = payload.anchor_id
+        saved.label = payload.label
+    db.commit()
+    return BookmarkOut(anchor_id=saved.anchor_id, label=saved.label)
+
+
+@router.delete("/{lab_id}/bookmark", status_code=status.HTTP_204_NO_CONTENT)
+def delete_bookmark(
+    lab_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    db.query(ReadingBookmark).filter(
+        ReadingBookmark.user_id == current_user.id, ReadingBookmark.lab_id == lab_id
+    ).delete(synchronize_session=False)
+    db.commit()
+
+
+def _highlight_out(h: ReadingHighlight) -> HighlightOut:
+    return HighlightOut(id=h.id, text=h.text, prefix=h.prefix, suffix=h.suffix, color=h.color, note=h.note)
+
+
+def _own_highlight(db: Session, user_id: int, lab_id: int, highlight_id: int) -> ReadingHighlight:
+    found = (
+        db.query(ReadingHighlight)
+        .filter(
+            ReadingHighlight.id == highlight_id,
+            ReadingHighlight.user_id == user_id,
+            ReadingHighlight.lab_id == lab_id,
+        )
+        .first()
+    )
+    if found is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Highlight not found")
+    return found
+
+
+@router.get("/{lab_id}/highlights", response_model=list[HighlightOut])
+def list_highlights(
+    lab_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> list[HighlightOut]:
+    rows = (
+        db.query(ReadingHighlight)
+        .filter(ReadingHighlight.user_id == current_user.id, ReadingHighlight.lab_id == lab_id)
+        .order_by(ReadingHighlight.id)
+        .all()
+    )
+    return [_highlight_out(h) for h in rows]
+
+
+@router.post("/{lab_id}/highlights", response_model=HighlightOut, status_code=status.HTTP_201_CREATED)
+def create_highlight(
+    lab_id: int,
+    payload: HighlightCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> HighlightOut:
+    if db.get(Lab, lab_id) is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lab not found")
+    existing = (
+        db.query(ReadingHighlight)
+        .filter(ReadingHighlight.user_id == current_user.id, ReadingHighlight.lab_id == lab_id)
+        .count()
+    )
+    if existing >= MAX_HIGHLIGHTS_PER_LAB:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Too many highlights in this lab")
+    highlight = ReadingHighlight(
+        user_id=current_user.id,
+        lab_id=lab_id,
+        text=payload.text,
+        prefix=payload.prefix,
+        suffix=payload.suffix,
+        color=payload.color.lower(),
+        note=payload.note.strip(),
+    )
+    db.add(highlight)
+    db.commit()
+    db.refresh(highlight)
+    return _highlight_out(highlight)
+
+
+@router.patch("/{lab_id}/highlights/{highlight_id}", response_model=HighlightOut)
+def update_highlight(
+    lab_id: int,
+    highlight_id: int,
+    payload: HighlightUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> HighlightOut:
+    highlight = _own_highlight(db, current_user.id, lab_id, highlight_id)
+    if payload.color is not None:
+        highlight.color = payload.color.lower()
+    if payload.note is not None:
+        highlight.note = payload.note.strip()
+    db.commit()
+    db.refresh(highlight)
+    return _highlight_out(highlight)
+
+
+@router.delete("/{lab_id}/highlights/{highlight_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_highlight(
+    lab_id: int,
+    highlight_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> None:
+    db.delete(_own_highlight(db, current_user.id, lab_id, highlight_id))
+    db.commit()
 
 
 @router.post("/{lab_id}/cells/{cell_id}/judge", response_model=CellJudgeResponse)

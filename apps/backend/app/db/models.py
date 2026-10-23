@@ -75,6 +75,39 @@ class CellCode(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
 
+class ReadingBookmark(Base):
+    """Where a student left off reading a lab: one per user/lab. The anchor id and the heading's text
+    are both kept so the spot can still be found if the reading's headings are reordered."""
+
+    __tablename__ = "reading_bookmarks"
+    __table_args__ = (UniqueConstraint("user_id", "lab_id", name="uq_reading_bookmarks_user_lab"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"), nullable=False)
+    anchor_id: Mapped[str] = mapped_column(String(128), nullable=False)
+    label: Mapped[str] = mapped_column(String(255), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
+class ReadingHighlight(Base):
+    """A passage a student highlighted in a lab's reading, with a color and an optional note.
+    The passage is found again by its text plus a little text on either side, since the page has no stable offsets."""
+
+    __tablename__ = "reading_highlights"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+    lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"), nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+    prefix: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    suffix: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    color: Mapped[str] = mapped_column(String(7), nullable=False)
+    note: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
+
+
 class CellResult(Base):
     """Per-user practice cell outcome: passed stays true once earned, attempts counts every judged run."""
 

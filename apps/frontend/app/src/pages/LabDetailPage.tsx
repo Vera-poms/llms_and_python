@@ -1,4 +1,4 @@
-import { Badge, Box, Button, Flex, HStack, Link, Stack, Text, VStack } from "@chakra-ui/react";
+import { Alert, AlertIcon, Badge, Box, Button, Flex, HStack, Link, Stack, Text, VStack } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
@@ -7,6 +7,9 @@ import { LabNav, LabSidebar, useLabOutline } from "../components/LabSidebar";
 import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { NotebookRunner } from "../components/NotebookRunner";
 import { ReviewModal, type ReviewTarget } from "../components/ReviewModal";
+import { HighlightToolbar } from "../components/HighlightToolbar";
+import { useBookmark } from "../hooks/useBookmark";
+import { useHighlights } from "../hooks/useHighlights";
 import { LABS } from "../data/labs";
 import { Lab01Reading } from "../data/readings/Lab01Reading";
 import { Lab02Reading } from "../data/readings/Lab02Reading";
@@ -52,6 +55,9 @@ export function LabDetailPage() {
   const readingRef = useRef<HTMLDivElement>(null);
   const notebookRef = useRef<HTMLDivElement>(null);
   const outline = useLabOutline(readingRef, notebookRef);
+  const bookmark = useBookmark(id, outline);
+  const highlights = useHighlights(id, readingRef);
+  const [resumeDismissed, setResumeDismissed] = useState(false);
   const [reviewing, setReviewing] = useState<ReviewTarget | null>(null);
   const [done, setDone] = useState(false);
   const [score, setScore] = useState<{ earned: number; possible: number; percent: number } | null>(null);
@@ -91,12 +97,12 @@ export function LabDetailPage() {
 
   return (
     <Flex maxW="6xl" mx="auto" mt={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} mb={16} gap={8}>
-      <LabSidebar outline={outline} onReview={openReview} />
+      <LabSidebar outline={outline} onReview={openReview} bookmark={bookmark} highlights={highlights} />
       <Box flex="1" minW={0} maxW="4xl">
       <StickyHeader hideFrom="lg">
         <HStack minW={0} spacing={3}>
           <MobileNav title="Lab sections" hideFrom="lg">
-            {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} />}
+            {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} bookmark={bookmark} highlights={highlights} />}
           </MobileNav>
           <Link as={RouterLink} to="/labs" color="blue.500">
             &larr; All labs
@@ -104,7 +110,39 @@ export function LabDetailPage() {
         </HStack>
       </StickyHeader>
 
-      <VStack align="stretch" spacing={6}>
+      <VStack
+        align="stretch"
+        spacing={6}
+        sx={{
+          // The bookmarked heading (set by useBookmark) is highlighted; graded cells get an outline instead
+          // so their own tint stays readable.
+          "[data-bookmarked]:not([data-nav])": {
+            bg: "yellow.100",
+            borderRadius: "md",
+            boxShadow: "-4px 0 0 0 var(--chakra-colors-yellow-400)",
+            pl: 2,
+            _dark: { bg: "yellow.900" },
+          },
+          "[data-nav][data-bookmarked]": { outline: "3px solid", outlineColor: "yellow.400" },
+        }}
+      >
+        {bookmark.targetId && !resumeDismissed && (
+          <Alert status="info" borderRadius="md" flexWrap="wrap" gap={2}>
+            <AlertIcon />
+            <Text flex="1" minW={0}>
+              You left off at &ldquo;{bookmark.label}&rdquo;.
+            </Text>
+            <Button size="sm" onClick={bookmark.goTo}>
+              Continue reading
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => setResumeDismissed(true)}>
+              Dismiss
+            </Button>
+            <Button size="sm" variant="ghost" colorScheme="red" onClick={bookmark.clear}>
+              Remove bookmark
+            </Button>
+          </Alert>
+        )}
         <Box ref={readingRef}>
           <Reading />
         </Box>
@@ -133,6 +171,7 @@ export function LabDetailPage() {
         </Box>
       </VStack>
       </Box>
+      <HighlightToolbar highlights={highlights} />
       <ReviewModal target={reviewing} onClose={() => setReviewing(null)} />
     </Flex>
   );

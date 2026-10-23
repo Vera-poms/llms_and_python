@@ -15,7 +15,9 @@ import {
 import { useEffect, useRef, useState } from "react";
 
 import { api } from "../api/client";
+import { useCodeDraft } from "../hooks/useCodeDraft";
 import { CodeEditor } from "./CodeEditor";
+import { DraftStatus } from "./DraftStatus";
 import { emphasizeNumbers } from "./prose";
 import { HintButton } from "./HintButton";
 import { Markdown } from "./Markdown";
@@ -136,13 +138,22 @@ function GradedCell({
   const [status, setStatus] = useState<"idle" | "pass" | "fail">("idle");
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const draft = useCodeDraft(labId, gradedId, source);
+
+  function edit(next: string) {
+    draft.markEdited();
+    setSource(next);
+  }
 
   useEffect(() => onSourceChange(gradedId, source), [gradedId, source]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     api
       .get(`/labs/${labId}/cells/${gradedId}/code`)
-      .then((response) => setSource(response.data.source))
+      .then((response) => {
+        // Don't clobber code the student started typing while this was loading.
+        if (!draft.hasUnsavedEdit()) setSource(response.data.source);
+      })
       .catch(() => {
         // nothing saved yet - keep the starter source
       });
@@ -238,11 +249,12 @@ function GradedCell({
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={setSource} onRun={run} />
+        <CodeEditor value={source} onChange={edit} onRun={run} />
         <HStack>
           <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
             Submit
           </Button>
+          <DraftStatus status={draft.status} />
         </HStack>
         {result && <CellOutput result={result} />}
         {status === "pass" && (

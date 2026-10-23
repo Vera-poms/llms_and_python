@@ -136,7 +136,42 @@ class CellCodeOut(BaseModel):
 
 
 class CellCodeSave(BaseModel):
-    source: str
+    source: str = Field(max_length=20_000)
+
+
+class BookmarkSave(BaseModel):
+    anchor_id: str = Field(min_length=1, max_length=128)
+    label: str = Field(min_length=1, max_length=255)
+
+
+HEX_COLOR = r"^#[0-9a-fA-F]{6}$"
+
+
+class HighlightCreate(BaseModel):
+    text: str = Field(min_length=1, max_length=1000)
+    prefix: str = Field(default="", max_length=100)
+    suffix: str = Field(default="", max_length=100)
+    color: str = Field(pattern=HEX_COLOR)
+    note: str = Field(default="", max_length=500)
+
+
+class HighlightUpdate(BaseModel):
+    color: str | None = Field(default=None, pattern=HEX_COLOR)
+    note: str | None = Field(default=None, max_length=500)
+
+
+class HighlightOut(BaseModel):
+    id: int
+    text: str
+    prefix: str
+    suffix: str
+    color: str
+    note: str
+
+
+class BookmarkOut(BaseModel):
+    anchor_id: str
+    label: str
 
 
 class CellJudgeRequest(BaseModel):
