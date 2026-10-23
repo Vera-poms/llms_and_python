@@ -1,13 +1,11 @@
 import {
-  Code,
   Heading,
   Link,
-  ListItem,
   OrderedList,
-  Text,
   UnorderedList,
   VStack,
 } from "@chakra-ui/react";
+import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";

@@ -20,6 +20,7 @@ import type { ComponentProps, ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { CodeBlock } from "./CodeBlock";
+import { isNumericExpression, NUMBER_PATTERN } from "./prose";
 
 // Chakra's CSS reset strips default heading sizes, list bullets and indentation, so raw
 // ReactMarkdown output renders as one flat wall of text. Every element is mapped explicitly here.
@@ -60,8 +61,8 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
     </OrderedList>
   ),
   li: ({ children }) => <ListItem lineHeight="tall">{children}</ListItem>,
-  strong: ({ children }) => (
-    <Text as="strong" fontWeight="semibold">
+  strong: ({ children, className }) => (
+    <Text as="strong" fontWeight={className === NUMBER_CLASS ? "bold" : "semibold"}>
       {children}
     </Text>
   ),
@@ -97,8 +98,19 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
     if (fenced) {
       return <CodeBlock code={text} />;
     }
+    // Code spans that are just numbers or arithmetic on them (e.g. `7.39 + 2.72`) are worked
+    // numbers too, so they get the same emphasis as numbers in plain text.
+    const numeric = isNumericExpression(text);
     return (
-      <Code px={1.5} py={0.5} borderRadius="sm" colorScheme="purple" fontSize="0.875em" whiteSpace="pre-wrap">
+      <Code
+        px={1.5}
+        py={0.5}
+        borderRadius="sm"
+        colorScheme="purple"
+        fontSize="0.875em"
+        fontWeight={numeric ? "bold" : undefined}
+        whiteSpace="pre-wrap"
+      >
         {children}
       </Code>
     );
@@ -106,6 +118,56 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
   pre: ({ children }: { children?: ReactNode }) => <>{children}</>,
 };
 
+const NUMBER_CLASS = "md-number";
+const SKIP_TAGS = new Set(["code", "pre", "strong", "a"]);
+
+type HastNode = {
+  type: string;
+  value?: string;
+  tagName?: string;
+  properties?: Record<string, unknown>;
+  children?: HastNode[];
+};
+
+function boldNumbers(node: HastNode): void {
+  if (!node.children || (node.type === "element" && SKIP_TAGS.has(node.tagName ?? ""))) return;
+
+  const next: HastNode[] = [];
+  for (const child of node.children) {
+    if (child.type !== "text" || !child.value) {
+      boldNumbers(child);
+      next.push(child);
+      continue;
+    }
+    let last = 0;
+    for (const match of child.value.matchAll(NUMBER_PATTERN)) {
+      if (match.index > last) next.push({ type: "text", value: child.value.slice(last, match.index) });
+      next.push({
+        type: "element",
+        tagName: "strong",
+        properties: { className: NUMBER_CLASS },
+        children: [{ type: "text", value: match[0] }],
+      });
+      last = match.index + match[0].length;
+    }
+    if (last === 0) {
+      next.push(child);
+    } else if (last < child.value.length) {
+      next.push({ type: "text", value: child.value.slice(last) });
+    }
+  }
+  node.children = next;
+}
+
+// Rehype plugin: walks the parsed tree and wraps numbers in plain text with <strong>.
+function rehypeBoldNumbers() {
+  return (tree: HastNode) => boldNumbers(tree);
+}
+
 export function Markdown({ children }: { children: string }) {
-  return <ReactMarkdown components={components}>{children}</ReactMarkdown>;
+  return (
+    <ReactMarkdown components={components} rehypePlugins={[rehypeBoldNumbers]}>
+      {children}
+    </ReactMarkdown>
+  );;
 }

@@ -16,6 +16,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
+import { emphasizeNumbers } from "./prose";
 import { HintButton } from "./HintButton";
 import { Markdown } from "./Markdown";
 import { SolutionReveal } from "./SolutionReveal";
@@ -179,6 +180,7 @@ function GradedCell({
 
   // Run only tries the code and shows its output; nothing is graded or saved.
   async function run() {
+    if (running || checking) return;
     await execute();
   }
 
@@ -236,7 +238,7 @@ function GradedCell({
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={setSource} />
+        <CodeEditor value={source} onChange={setSource} onRun={run} />
         <HStack>
           <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
             Submit
@@ -246,7 +248,7 @@ function GradedCell({
         {status === "pass" && (
           <Alert status="success" borderRadius="md" py={2}>
             <AlertIcon />
-            {feedback ?? "Correct!"}
+            {feedback ? emphasizeNumbers(feedback) : "Correct!"}
           </Alert>
         )}
         {status === "fail" && (
@@ -257,7 +259,7 @@ function GradedCell({
             </HStack>
             {feedback && (
               <Text fontSize="sm" mt={1}>
-                {feedback}
+                {emphasizeNumbers(feedback)}
               </Text>
             )}
           </Alert>
@@ -310,6 +312,7 @@ export function NotebookRunner({
   }, [labId]);
 
   async function runCell(cell: NotebookCell) {
+    if (running[cell.index]) return;
     setRunning((prev) => ({ ...prev, [cell.index]: true }));
     try {
       const response = await api.post(`/notebooks/${labId}/run`, {
@@ -427,6 +430,7 @@ export function NotebookRunner({
             <CodeEditor
               value={sources[cell.index] ?? ""}
               onChange={(value) => setSources((prev) => ({ ...prev, [cell.index]: value }))}
+              onRun={() => runCell(cell)}
             />
             {result && <CellOutput result={result} />}
           </Box>

@@ -14,6 +14,7 @@ export function RunnableExample({ labId, code, run }: { labId?: number; code: st
   const [running, setRunning] = useState(false);
 
   async function execute() {
+    if (running) return;
     setRunning(true);
     try {
       if (run) {
@@ -36,7 +37,7 @@ export function RunnableExample({ labId, code, run }: { labId?: number; code: st
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={setSource} minHeight="60px" />
+        <CodeEditor value={source} onChange={setSource} minHeight="60px" onRun={execute} />
         {result && <CellOutput result={result} />}
       </VStack>
     </Box>

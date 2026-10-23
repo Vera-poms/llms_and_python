@@ -1,9 +1,10 @@
 import { useColorMode } from "@chakra-ui/react";
 import { python } from "@codemirror/lang-python";
-import { syntaxHighlighting, syntaxTree } from "@codemirror/language";
+import { indentWithTab } from "@codemirror/commands";
+import { indentUnit, syntaxHighlighting, syntaxTree } from "@codemirror/language";
 import { Diagnostic, linter, lintGutter } from "@codemirror/lint";
-import { Compartment, EditorState } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { Compartment, EditorState, Prec } from "@codemirror/state";
+import { EditorView, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { useEffect, useRef } from "react";
 
@@ -92,13 +93,18 @@ export function CodeEditor({
   value,
   onChange,
   minHeight = "80px",
+  onRun,
 }: {
   value: string;
   onChange: (value: string) => void;
   minHeight?: string;
+  // Called on Shift+Enter; the editor is created once, so keep the latest callback in a ref.
+  onRun?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
+  const onRunRef = useRef(onRun);
+  onRunRef.current = onRun;
   const { colorMode } = useColorMode();
 
   useEffect(() => {
@@ -110,6 +116,20 @@ export function CodeEditor({
     const state = EditorState.create({
       doc: value,
       extensions: [
+        Prec.highest(
+          keymap.of([
+            {
+              key: "Shift-Enter",
+              run: () => {
+                onRunRef.current?.();
+                return true;
+              },
+            },
+          ]),
+        ),
+        indentUnit.of("    "),
+        EditorState.tabSize.of(4),
+        keymap.of([indentWithTab]),
         basicSetup,
         python(),
         pythonLinter,

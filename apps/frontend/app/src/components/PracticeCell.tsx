@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { CodeEditor } from "./CodeEditor";
+import { emphasizeNumbers } from "./prose";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
 function actualStdout(result: RunResult): string {
@@ -108,6 +109,7 @@ export function PracticeCell({
 
   // Run only tries the code and shows its output; nothing is graded or saved.
   async function run() {
+    if (running || checking) return;
     await execute();
   }
 
@@ -159,7 +161,7 @@ export function PracticeCell({
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={updateSource} minHeight="60px" />
+        <CodeEditor value={source} onChange={updateSource} minHeight="60px" onRun={run} />
         <HStack>
           <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
             Submit
@@ -169,7 +171,7 @@ export function PracticeCell({
         {checkStatus === "pass" && (
           <Alert status="success" borderRadius="md" py={2}>
             <AlertIcon />
-            {feedback ?? "Correct!"}
+            {feedback ? emphasizeNumbers(feedback) : "Correct!"}
           </Alert>
         )}
         {checkStatus === "fail" && (
@@ -180,7 +182,7 @@ export function PracticeCell({
             </HStack>
             {feedback && (
               <Text fontSize="sm" mt={1}>
-                {feedback}
+                {emphasizeNumbers(feedback)}
               </Text>
             )}
             {expectedOutput && (

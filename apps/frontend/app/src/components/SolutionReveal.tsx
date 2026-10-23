@@ -68,6 +68,7 @@ export function SolutionReveal({
   const hiddenAtLevel = view ? view.parts.filter((part) => part.kind === level && !part.code) : [];
 
   async function run() {
+    if (running) return;
     setRunning(true);
     try {
       const response = await api.post(`/notebooks/${labId}/run`, { source: draft, api_key: apiKey || undefined });
@@ -202,7 +203,7 @@ export function SolutionReveal({
                     Run
                   </Button>
                 </HStack>
-                <CodeEditor value={draft} onChange={setDraft} />
+                <CodeEditor value={draft} onChange={setDraft} onRun={run} />
                 {result && <CellOutput result={result} />}
               </Box>
             </>
