@@ -47,19 +47,19 @@ print(car.odometer)  # 15`} />
         </ListItem>
         <ListItem>
           <Code>car.drive(10)</Code> calls a <b>method</b>, a function that belongs to the object.{" "}
-          <Code>self.odometer += miles</Code> means "add miles to what is already there". 0 + 10 =
+          <Code>self.odometer += miles</Code> means "add miles to what is already there". <Code>0 + 10</Code> =
           10.
         </ListItem>
         <ListItem>
-          <Code>car.drive(5)</Code> starts from the saved 10. 10 + 5 = 15. So{" "}
+          <Code>car.drive(5)</Code> starts from the saved 10. <Code>10 + 5 = 15</Code>. So{" "}
           <Code>print(car.odometer)</Code> shows <Code>15</Code>.
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class BankAccount:
     def __init__(self):
         self.balance = 0
@@ -83,26 +83,26 @@ account = BankAccount()
 account.deposit(50)
 account.deposit(25)
 print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>BankAccount()</Code> builds an account. <Code>__init__</Code> sets{" "}
           <Code>self.balance</Code> to 0.
         </ListItem>
         <ListItem>
-          <Code>account.deposit(50)</Code> adds 50 to the saved balance. 0 + 50 = 50.
+          <Code>account.deposit(50)</Code> adds 50 to the saved balance. <Code>0 + 50 = 50</Code>.
         </ListItem>
         <ListItem>
-          <Code>account.deposit(25)</Code> adds 25 to the saved 50. 50 + 25 = 75.
+          <Code>account.deposit(25)</Code> adds 25 to the saved 50. <Code>50 + 25 = 75</Code>.
         </ListItem>
         <ListItem>
           <Code>print(account.balance)</Code> reads the number the object kept. Nobody outside had
           to track it.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>75</Code>. Try adding <Code>account.deposit(100)</Code>{" "}
         before the print. You should see <Code>175</Code>.
       </Text>
@@ -168,10 +168,10 @@ print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Playlist:
     def __init__(self):
         self.songs = []
@@ -202,10 +202,10 @@ playlist.add("Song B")
 # Queued: Song A (1 songs total)
 # Queued: Song B (2 songs total)`} expectedOutput={`Queued: Song A (1 songs total)
 Queued: Song B (2 songs total)`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>Playlist()</Code> builds an object with <Code>self.songs</Code> set to an empty
           list.
@@ -221,7 +221,7 @@ Queued: Song B (2 songs total)`} />
           songs" wording is a small grammar quirk. The count is right.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, with the totals 1 and 2. Try adding a third call,{" "}
         <Code>playlist.add("Song C")</Code>. You should get a line that ends in{" "}
         <Code>(3 songs total)</Code>.
@@ -289,10 +289,10 @@ Queued: Song B (2 songs total)`} />
         can run it later.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def fake_sender(message):
     return f"[fake] would send: {message}"
 
@@ -318,10 +318,10 @@ class Notifier:
 
 notifier = Notifier(sender=fake_sender)
 print(notifier.notify("Build complete"))  # expected output: [fake] would send: Build complete`} expectedOutput={`[fake] would send: Build complete`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>fake_sender</Code> is the stand-in courier. It does not send anything. It just
           returns the text <Code>"[fake] would send: ..."</Code> with the message filled in.
@@ -337,7 +337,7 @@ print(notifier.notify("Build complete"))  # expected output: [fake] would send: 
           <Code>"[fake] would send: Build complete"</Code>, and that is printed.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>[fake] would send: Build complete</Code>. Try writing a
         second function, <Code>def loud_sender(message): return message.upper()</Code>, and build{" "}
         <Code>Notifier(sender=loud_sender)</Code>. You should see <Code>BUILD COMPLETE</Code>. The{" "}

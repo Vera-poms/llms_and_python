@@ -79,10 +79,10 @@ export function Lab14Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`request = {
     "endpoint": "https://api.example.com/orders",
     "method": "POST",
@@ -98,10 +98,10 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
     "body": {"item": "widget", "qty": 2},
 }
 print(f"{request['method']} {request['endpoint']}")  # expected output: POST https://api.example.com/orders`} expectedOutput={`POST https://api.example.com/orders`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>request</Code> is one dict that holds the parts of a request. The keys{" "}
           <Code>endpoint</Code> and <Code>method</Code> hold plain text. <Code>headers</Code> and{" "}
@@ -121,7 +121,7 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
           <Code>POST https://api.example.com/orders</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one line, the method and then the address. Try changing{" "}
         <Code>"POST"</Code> to <Code>"GET"</Code> and run it again. The line should start with{" "}
         <Code>GET</Code>. You can also add{" "}
@@ -206,19 +206,19 @@ atm.withdraw(20)  # 50`} />
         </ListItem>
         <ListItem>
           <Code>atm.withdraw(30)</Code> is a <b>method</b>, which is a function that belongs to the
-          object. <Code>self.balance -= amount</Code> means "take away". 100 - 30 = 70. It
+          object. <Code>self.balance -= amount</Code> means "take away". <Code>100 - 30 = 70</Code>. It
           returns 70.
         </ListItem>
         <ListItem>
-          <Code>atm.withdraw(20)</Code> starts from the saved 70, not from 100. 70 - 20 = 50. That
+          <Code>atm.withdraw(20)</Code> starts from the saved 70, not from 100. <Code>70 - 20 = 50</Code>. That
           is what "the object remembers" means.
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class VendingMachine:
     def __init__(self, stock):
         self.stock = stock  # state the object remembers
@@ -243,25 +243,25 @@ vm = VendingMachine({"soda": 5})
 print(vm.dispense("soda"))  # expected output: 4
 print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
 3`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>VendingMachine({"{"}"soda": 5{"}"})</Code> builds the machine. <Code>__init__</Code>{" "}
           saves the dict as <Code>self.stock</Code>. The machine has 5 sodas.
         </ListItem>
         <ListItem>
           <Code>vm.dispense("soda")</Code> runs <Code>self.stock["soda"] -= 1</Code>, which is the
-          same as "soda = soda - 1". 5 - 1 = 4. It returns 4, and the first print shows{" "}
+          same as "soda = soda - 1". <Code>5 - 1 = 4</Code>. It returns 4, and the first print shows{" "}
           <Code>4</Code>.
         </ListItem>
         <ListItem>
-          The second call starts from the saved 4. 4 - 1 = 3. The second print shows{" "}
+          The second call starts from the saved 4. <Code>4 - 1 = 3</Code>. The second print shows{" "}
           <Code>3</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, <Code>4</Code> then <Code>3</Code>. Try building the
         machine with <Code>{"{"}"soda": 5, "chips": 2{"}"}</Code> and add{" "}
         <Code>print(vm.dispense("chips"))</Code>. You should see <Code>1</Code>, and the soda count

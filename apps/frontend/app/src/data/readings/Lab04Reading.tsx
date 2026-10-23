@@ -83,11 +83,11 @@ print(account.balance)  # 150`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell building a different class from
         scratch - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Playlist:
     def __init__(self, name, songs):
         self.name = name    # instance attribute
@@ -111,10 +111,10 @@ print(mix.songs)  # ['Song A', 'Song B']`}
 mix = Playlist("Road Trip", ["Song A"])
 mix.add_song("Song B")
 print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>Playlist("Road Trip", ["Song A"])</Code> makes a playlist object.{" "}
           <Code>__init__</Code> saves <Code>self.name = "Road Trip"</Code> and{" "}
@@ -129,7 +129,7 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
           <Code>print(mix.songs)</Code> shows the list: two songs now.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>['Song A', 'Song B']</Code>. Try adding a line{" "}
         <Code>mix.add_song("Song C")</Code> before the print. The list should grow to three songs.
       </Text>
@@ -146,7 +146,7 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
         weights and a bias. Same idea, different data.
       </Text>
       <Text>Here is the lab's real class, in short:</Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Perceptron:
     def __init__(self, n_features):
         self.weights = np.zeros(n_features)
@@ -207,11 +207,11 @@ total = sum(q * p for q, p in zip(quantities, prices))
           <Code>zip(quantities, prices)</Code> pairs the lists up: (3, 0.50) and (2, 2.00).
         </ListItem>
         <ListItem>
-          <Code>q * p</Code> multiplies each pair: 3 * 0.50 = 1.50 for the apples, and 2 * 2.00 =
+          <Code>q * p</Code> multiplies each pair: <Code>3 * 0.50 = 1.50</Code> for the apples, and <Code>2 * 2.00</Code> =
           4.00 for the bread.
         </ListItem>
         <ListItem>
-          <Code>sum(...)</Code> adds them: 1.50 + 4.00 = 5.50.
+          <Code>sum(...)</Code> adds them: <Code>1.50 + 4.00 = 5.50</Code>.
         </ListItem>
         <ListItem>
           The two lists must be the same length. Position 0 goes with position 0, and position 1
@@ -219,11 +219,11 @@ total = sum(q * p for q, p in zip(quantities, prices))
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell computing a weighted total for a
         different scenario - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`scores = [90, 80, 70]
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
@@ -233,24 +233,24 @@ print(final_grade)  # 83.0`}
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
 print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>scores</Code> are three marks: 90, 80 and 70. <Code>weights</Code> say how much
           each mark counts: 50%, 30% and 20%.
         </ListItem>
         <ListItem>
-          The products are 90 * 0.5 = 45.0, 80 * 0.3 = 24.0 and 70 * 0.2 = 14.0.
+          The products are <Code>90 * 0.5 = 45.0</Code>, <Code>80 * 0.3 = 24.0</Code> and <Code>70 * 0.2 = 14.0</Code>.
         </ListItem>
         <ListItem>
-          45.0 + 24.0 + 14.0 = 83.0. This is a dot product, just like the grocery total.
+          <Code>45.0 + 24.0 + 14.0 = 83.0</Code>. This is a dot product, just like the grocery total.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>83.0</Code>. Try swapping the weights to{" "}
-        <Code>[0.2, 0.3, 0.5]</Code>. Now the 70 counts the most, and the grade falls to 18 + 24 +
+        <Code>[0.2, 0.3, 0.5]</Code>. Now the 70 counts the most, and the grade falls to <Code>18 + 24</Code> +
         35 = 77.0.
       </Text>
 
@@ -270,7 +270,7 @@ print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>np.dot(x, self.weights)</Code> = 1.0 * 1.0 + 0.0 * (-1.0) = 1.0 + 0.0 = 1.0.{" "}
+          <Code>np.dot(x, self.weights)</Code> = <Code>1.0 * 1.0 + 0.0 * (-1.0) = 1.0 + 0.0 = 1.0</Code>.{" "}
           <Code>np</Code> is numpy, a toolbox for lists of numbers.
         </ListItem>
         <ListItem>
@@ -333,11 +333,11 @@ print(step(-2))   # -1`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell applying a step function to a
         different scenario - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def freeze_alert(temp_c):
     return 1 if temp_c <= 0 else -1
 
@@ -350,10 +350,10 @@ print(freeze_alert(10))  # -1`}
 print(freeze_alert(-5))  # 1
 print(freeze_alert(10))  # -1`} expectedOutput={`1
 -1`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>freeze_alert</Code> is a step function with the test turned around:{" "}
           <Code>&lt;=</Code> means "less than or equal to". At 0 degrees or colder it gives 1
@@ -366,7 +366,7 @@ print(freeze_alert(10))  # -1`} expectedOutput={`1
           <Code>freeze_alert(10)</Code>: 10 is above 0, so the result is -1.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, <Code>1</Code> and then <Code>-1</Code>. Try{" "}
         <Code>print(freeze_alert(0))</Code>. You get 1, because 0 is "less than or equal to" 0.
       </Text>
@@ -391,7 +391,7 @@ print(freeze_alert(10))  # -1`} expectedOutput={`1
           The class is +1.
         </ListItem>
         <ListItem>
-          Try a second input, <Code>x = [0.0, 2.0]</Code>. The dot product is 0.0 * 1.0 + 2.0 *
+          Try a second input, <Code>x = [0.0, 2.0]</Code>. The dot product is <Code>0.0 * 1.0 + 2.0</Code> *
           (-1.0) = -2.0. Add the bias 0.5 and the score is -1.5. That is below 0, so{" "}
           <Code>activation</Code> gives <Code>-1</Code>.
         </ListItem>
@@ -448,11 +448,11 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell plotting a different scatter plot -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 city_temp = [30, 45, 60, 75, 90]
@@ -472,10 +472,10 @@ plt.xlabel("temperature (F)")
 plt.ylabel("ice cream sales")
 plt.savefig("ice_cream.png")
 print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.png`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>city_temp</Code> has 5 temperatures (30 to 90). <Code>ice_cream_sales</Code> has 5
           sales numbers (10 to 95). Position by position they make the dots (30, 10), (45, 25),
@@ -493,7 +493,7 @@ print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.
           The last line prints a plain message, so you know the save worked.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a chart of dots climbing to the right, and the text{" "}
         <Code>Saved scatter plot to ice_cream.png</Code>. Try changing the last sales number from
         95 to 5. The last dot drops to the bottom right.

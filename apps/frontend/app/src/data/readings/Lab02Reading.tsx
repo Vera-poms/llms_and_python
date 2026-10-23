@@ -55,11 +55,11 @@ print(best_guess)  # 'heads'`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell guessing the most common weather
         outcome the same way - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
 
 counts: dict[str, int] = {}
@@ -77,16 +77,16 @@ for day in weather:
 
 best_guess = max(counts, key=lambda outcome: counts[outcome])
 print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>weather</Code> is a list of 6 days: sunny 3 times, rainy 2 times, cloudy 1 time.
         </ListItem>
         <ListItem>
           The loop builds <Code>counts</Code>:{" "}
-          <Code>{"{'sunny': 3, 'rainy': 2, 'cloudy': 1}"}</Code>. 3 + 2 + 1 = 6, so every day is
+          <Code>{"{'sunny': 3, 'rainy': 2, 'cloudy': 1}"}</Code>. <Code>3 + 2 + 1 = 6</Code>, so every day is
           counted.
         </ListItem>
         <ListItem>
@@ -94,7 +94,7 @@ print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
           <Code>"sunny"</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one line, <Code>sunny</Code>. Try adding two more{" "}
         <Code>"rainy"</Code> to the list. Rainy now has 4, so the answer changes to{" "}
         <Code>rainy</Code>.
@@ -102,7 +102,7 @@ print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>most_common_label</Code> is this exact pattern applied to a list of 0/1
+        The lab's <Code>most_common_label</Code> is this exact pattern applied to a list of <Code>0/1</Code>
         labels: it's the "dumbest possible baseline" you always compare a smarter model against, to
         make sure the smarter model is actually earning its complexity.
       </Text>
@@ -110,7 +110,7 @@ print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
         Here is the lab's real code. It is the same as the weather cell, but the keys are the
         numbers 0 and 1:
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def most_common_label(labels):
     counts = {}
     for label in labels:
@@ -176,8 +176,8 @@ print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>n = 5</Code> children. <Code>x_mean</Code> = (2 + 4 + 6 + 8 + 10) / 5 = 6.{" "}
-          <Code>y_mean</Code> = (86 + 101 + 114 + 128 + 139) / 5 = 568 / 5 = 113.6.
+          <Code>n = 5</Code> children. <Code>x_mean</Code> = <Code>(2 + 4 + 6 + 8 + 10) / 5 = 6</Code>.{" "}
+          <Code>y_mean</Code> = <Code>(86 + 101 + 114 + 128 + 139) / 5 = 568</Code> / 5 = 113.6.
         </ListItem>
         <ListItem>
           For each child, <Code>x - x_mean</Code> is how far the age is from 6: -4, -2, 0, 2, 4.{" "}
@@ -185,25 +185,25 @@ print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7
           25.4.
         </ListItem>
         <ListItem>
-          <Code>numerator</Code> multiplies each pair and adds: 110.4 + 25.2 + 0 + 28.8 + 101.6 =
+          <Code>numerator</Code> multiplies each pair and adds: <Code>110.4 + 25.2 + 0 + 28.8 + 101.6</Code> =
           266. <Code>zip</Code> is what walks the two lists together, one pair at a time.
         </ListItem>
         <ListItem>
-          <Code>denominator</Code> squares the age gaps and adds: 16 + 4 + 0 + 4 + 16 = 40.{" "}
+          <Code>denominator</Code> squares the age gaps and adds: <Code>16 + 4 + 0 + 4 + 16 = 40</Code>.{" "}
           <Code>** 2</Code> means "to the power of 2", so "times itself".
         </ListItem>
         <ListItem>
-          <Code>slope</Code> = 266 / 40 = 6.65. <Code>intercept</Code> = 113.6 - 6.65 * 6 =
+          <Code>slope</Code> = <Code>266 / 40 = 6.65</Code>. <Code>intercept</Code> = <Code>113.6 - 6.65 * 6</Code> =
           73.7. So the line says: height = 6.65 * age + 73.7. (The comment in the code rounds the
           slope to about 6.6.)
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell fitting a line to study hours vs.
         exam scores - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`hours =  [1, 2, 3, 4, 5]
 scores = [52, 58, 65, 71, 78]
 
@@ -231,29 +231,29 @@ denominator = sum((x - x_mean) ** 2 for x in hours)
 slope = numerator / denominator
 intercept = y_mean - slope * x_mean
 print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3`} expectedOutput={`6.5 45.3`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           5 students studied 1 to 5 hours and got scores 52, 58, 65, 71, 78.
         </ListItem>
         <ListItem>
-          <Code>x_mean</Code> = 15 / 5 = 3. <Code>y_mean</Code> = 324 / 5 = 64.8.
+          <Code>x_mean</Code> = <Code>15 / 5 = 3</Code>. <Code>y_mean</Code> = <Code>324 / 5 = 64.8</Code>.
         </ListItem>
         <ListItem>
           Hour gaps from 3: -2, -1, 0, 1, 2. Score gaps from 64.8: -12.8, -6.8, 0.2, 6.2, 13.2.
         </ListItem>
         <ListItem>
-          <Code>numerator</Code> = 25.6 + 6.8 + 0 + 6.2 + 26.4 = 65. <Code>denominator</Code> = 4
-          + 1 + 0 + 1 + 4 = 10.
+          <Code>numerator</Code> = <Code>25.6 + 6.8 + 0 + 6.2 + 26.4 = 65</Code>. <Code>denominator</Code> = 4
+          + <Code>1 + 0 + 1 + 4 = 10</Code>.
         </ListItem>
         <ListItem>
-          <Code>slope</Code> = 65 / 10 = 6.5. <Code>intercept</Code> = 64.8 - 6.5 * 3 = 45.3.{" "}
+          <Code>slope</Code> = <Code>65 / 10 = 6.5</Code>. <Code>intercept</Code> = <Code>64.8 - 6.5 * 3 = 45.3</Code>.{" "}
           <Code>round(..., 2)</Code> keeps 2 numbers after the decimal point.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>6.5 45.3</Code>. It means each extra hour of study adds
         about 6.5 points, and a student with 0 hours would get about 45.3. Try changing the last
         score from 78 to 90 and run it again. The slope should go up.
@@ -279,15 +279,15 @@ print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*
           <Code>n = 3</Code>, <Code>x_mean</Code> = 2, <Code>y_mean</Code> = 5.
         </ListItem>
         <ListItem>
-          <Code>numerator</Code> = (-1)(-2) + (0)(0) + (1)(2) = 2 + 0 + 2 = 4.{" "}
-          <Code>denominator</Code> = 1 + 0 + 1 = 2.
+          <Code>numerator</Code> = <Code>(-1)(-2) + (0)(0) + (1)(2) = 2 + 0 + 2 = 4</Code>.{" "}
+          <Code>denominator</Code> = <Code>1 + 0 + 1 = 2</Code>.
         </ListItem>
         <ListItem>
-          <Code>slope</Code> = 4 / 2 = 2.0. <Code>intercept</Code> = 5 - 2.0 * 2 = 1.0. The
+          <Code>slope</Code> = <Code>4 / 2 = 2.0</Code>. <Code>intercept</Code> = <Code>5 - 2.0 * 2 = 1.0</Code>. The
           function returns <Code>(2.0, 1.0)</Code>.
         </ListItem>
         <ListItem>
-          <Code>predict(10, 2.0, 1.0)</Code> is 2.0 * 10 + 1.0 = 21.0. You just plug the new x
+          <Code>predict(10, 2.0, 1.0)</Code> is <Code>2.0 * 10 + 1.0 = 21.0</Code>. You just plug the new x
           into the line.
         </ListItem>
       </UnorderedList>
@@ -323,12 +323,12 @@ print(mse)  # 29.333...`} />
           <Code>zip(actual, predicted)</Code> pairs them up: (86, 90), (101, 95), (114, 120).
         </ListItem>
         <ListItem>
-          <Code>(a - p) ** 2</Code> for each pair: (86 - 90) = -4, squared is 16. (101 - 95) = 6,
-          squared is 36. (114 - 120) = -6, squared is 36. So{" "}
+          <Code>(a - p) ** 2</Code> for each pair: <Code>(86 - 90) = -4</Code>, squared is 16. <Code>(101 - 95) = 6</Code>,
+          squared is 36. <Code>(114 - 120) = -6</Code>, squared is 36. So{" "}
           <Code>squared_errors</Code> is <Code>[16, 36, 36]</Code>.
         </ListItem>
         <ListItem>
-          <Code>mse</Code> = (16 + 36 + 36) / 3 = 88 / 3, which is about 29.33.
+          <Code>mse</Code> = <Code>(16 + 36 + 36) / 3 = 88</Code> / 3, which is about 29.33.
         </ListItem>
         <ListItem>
           Squaring makes -4 and 4 both become 16, so a miss in either direction counts the same.
@@ -336,11 +336,11 @@ print(mse)  # 29.333...`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell scoring a different set of
         predictions with MSE - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`actual =    [52, 58, 65]
 predicted = [55, 55, 70]
 
@@ -354,24 +354,24 @@ predicted = [55, 55, 70]
 squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
 mse = sum(squared_errors) / len(squared_errors)
 print(mse)  # 14.33`} expectedOutput={`14.333333333333334`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The true scores are 52, 58, 65. The guesses are 55, 55, 70.
         </ListItem>
         <ListItem>
-          The gaps are 52 - 55 = -3, 58 - 55 = 3, and 65 - 70 = -5. Squared they are 9, 9 and 25.
+          The gaps are <Code>52 - 55 = -3</Code>, <Code>58 - 55 = 3</Code>, and <Code>65 - 70 = -5</Code>. Squared they are 9, 9 and 25.
         </ListItem>
         <ListItem>
-          <Code>mse</Code> = (9 + 9 + 25) / 3 = 43 / 3 = 14.333...
+          <Code>mse</Code> = <Code>(9 + 9 + 25) / 3 = 43</Code> / 3 = 14.333...
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>14.333333333333334</Code>. The long tail of digits is
         normal for a division that never ends. Try changing the last guess from 70 to 65. The
-        last gap is now 0, so MSE drops to (9 + 9 + 0) / 3 = 6.0.
+        last gap is now 0, so MSE drops to <Code>(9 + 9 + 0) / 3 = 6.0</Code>.
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
@@ -387,7 +387,7 @@ print(mse)  # 14.33`} expectedOutput={`14.333333333333334`} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The mean baseline always guesses the average, 3.0. The guesses are{" "}
-          <Code>[3.0, 3.0]</Code>. The gaps are -1 and 1, squared 1 and 1, so MSE = 2 / 2 = 1.0.
+          <Code>[3.0, 3.0]</Code>. The gaps are -1 and 1, squared 1 and 1, so MSE = <Code>2 / 2 = 1.0</Code>.
         </ListItem>
         <ListItem>
           A line that predicts exactly <Code>[2, 4]</Code> has gaps of 0 and 0, so MSE = 0.0.
@@ -437,7 +437,7 @@ plt.show()`} />
           <b>scatter plot</b> is a chart of separate dots. Nothing joins them.
         </ListItem>
         <ListItem>
-          <Code>[6.6 * x + 73.7 for x in xs]</Code> builds a new list. For age 2 it gives 6.6 * 2
+          <Code>[6.6 * x + 73.7 for x in xs]</Code> builds a new list. For age 2 it gives <Code>6.6 * 2</Code>
           + 73.7 = 86.9. For age 10 it gives 139.7. The other ages fall in between.
         </ListItem>
         <ListItem>
@@ -449,11 +449,11 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell plotting the study-hours fit line the
         same way - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 xs = [1, 2, 3, 4, 5]
@@ -475,10 +475,10 @@ plt.plot(xs, [6.5 * x + 45.3 for x in xs], color="crimson", label="fit line")
 plt.legend()
 plt.show()
 print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a fit line`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>xs</Code> are hours studied (1 to 5). <Code>ys</Code> are the real scores (52 to
           78).
@@ -492,7 +492,7 @@ print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a f
           <Code>len(xs)</Code> counts the points: 5. The last line prints it.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a chart with 5 dots, a red line close to all of them, and a
         legend. Under the chart you see{" "}
         <Code>plotted 5 points with a fit line</Code>. Try changing the line to{" "}

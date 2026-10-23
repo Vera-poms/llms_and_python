@@ -90,11 +90,11 @@ print(data["stargazers_count"])`} />
         other side answers it. Your chat message to the model is that letter.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell making a GET request to a different API -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import requests
 
 response = requests.get("https://api.github.com/repos/psf/requests")
@@ -106,10 +106,10 @@ print(data["language"])  # expected output: Python`}
 response = requests.get("https://api.github.com/repos/psf/requests")
 data = response.json()
 print(data["language"])  # expected output: Python`} expectedOutput={`Python`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>requests.get(...)</Code> asks GitHub for information about the project called{" "}
           <Code>psf/requests</Code>. This needs an internet connection.
@@ -124,7 +124,7 @@ print(data["language"])  # expected output: Python`} expectedOutput={`Python`} /
           <Code>"Python"</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one word, <Code>Python</Code>. Try changing{" "}
         <Code>"language"</Code> to <Code>"name"</Code> and run it again. You should see{" "}
         <Code>requests</Code>, the name of the project.
@@ -210,11 +210,11 @@ api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed i
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell reading a value back out of{" "}
         <Code>os.environ</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import os
 
 os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code, not like this
@@ -226,10 +226,10 @@ print(token)  # expected output: demo-token-123`}
 os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code, not like this
 token = os.environ["MY_APP_TOKEN"]
 print(token)  # expected output: demo-token-123`} expectedOutput={`demo-token-123`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>os.environ["MY_APP_TOKEN"] = "demo-token-123"</Code> writes a new note called{" "}
           <Code>MY_APP_TOKEN</Code>. Here we do it inside the code only so the cell can run by
@@ -243,7 +243,7 @@ print(token)  # expected output: demo-token-123`} expectedOutput={`demo-token-12
           <Code>print(token)</Code> shows it.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>demo-token-123</Code>. Try changing the name in the last
         read to <Code>"OTHER_TOKEN"</Code>. You should get a <Code>KeyError</Code>, because that
         note was never written.
@@ -316,11 +316,11 @@ data["scores"][0]  # 1`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell drilling into a different small dict -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`data = {"user": "Vera", "orders": [101, 102, 103]}
 print(data["user"])  # expected output: Vera
 print(data["orders"][-1])  # expected output: 103`}
@@ -329,10 +329,10 @@ print(data["orders"][-1])  # expected output: 103`}
 print(data["user"])  # expected output: Vera
 print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
 103`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>data</Code> has two labels: <Code>"user"</Code> holds the text <Code>"Vera"</Code>,
           and <Code>"orders"</Code> holds the list <Code>[101, 102, 103]</Code>.
@@ -345,7 +345,7 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
           item". A minus number counts from the end. The last item is 103.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, <Code>Vera</Code> and then <Code>103</Code>. Try
         changing <Code>[-1]</Code> to <Code>[-2]</Code>. You should see 102, the second item from
         the end.
@@ -353,7 +353,7 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>Groq's response is a JSON object shaped roughly like:</Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`{"choices": [{"message": {"content": "positive"}}]}`}
       </Code>
       <Text>

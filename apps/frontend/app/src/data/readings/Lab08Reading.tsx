@@ -80,11 +80,11 @@ template.format(name="Vera")
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell comparing an f-string to a{" "}
         <Code>.format()</Code> template - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`item = "notebook"
 qty = 3
 message = f"You ordered {qty} {item}(s)."
@@ -101,10 +101,10 @@ print(message)  # expected output: You ordered 3 notebook(s).
 order_template = "You ordered {qty} {item}(s)."
 print(order_template.format(qty=5, item="pen"))  # expected output: You ordered 5 pen(s).`} expectedOutput={`You ordered 3 notebook(s).
 You ordered 5 pen(s).`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>item</Code> holds <Code>"notebook"</Code> and <Code>qty</Code> holds 3.
         </ListItem>
@@ -122,7 +122,7 @@ You ordered 5 pen(s).`} />
           is <Code>"You ordered 5 pen(s)."</Code>. The same template gave a different sentence.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, <Code>You ordered 3 notebook(s).</Code> and then{" "}
         <Code>You ordered 5 pen(s).</Code>. Try changing <Code>qty=5</Code> to{" "}
         <Code>qty=12</Code> and run it again. Only the number in the second line changes.
@@ -202,11 +202,11 @@ render(template, name="Sam")   # "Hello, Sam!"`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell reusing one template with different data -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def render(template, **data):
     return template.format(**data)
 
@@ -221,10 +221,10 @@ invoice_template = "Invoice for {customer}: \${amount}"
 print(render(invoice_template, customer="Alex", amount=42))  # expected output: Invoice for Alex: $42
 print(render(invoice_template, customer="Sam", amount=17))  # expected output: Invoice for Sam: $17`} expectedOutput={`Invoice for Alex: $42
 Invoice for Sam: $17`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>invoice_template</Code> is the reusable text. It has two blanks:{" "}
           <Code>{"{customer}"}</Code> and <Code>{"{amount}"}</Code>. The <Code>$</Code> sign is
@@ -240,7 +240,7 @@ Invoice for Sam: $17`} />
           <Code>Invoice for Sam: $17</Code>. The template was not changed or copied.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two invoice lines, one for Alex and one for Sam. Try adding a
         third call with <Code>customer="Mia", amount=99</Code>. You should get a third line for
         Mia without touching the template.
@@ -320,19 +320,19 @@ c.add(3)   # 8 - remembers the previous call`} />
         </ListItem>
         <ListItem>
           <Code>c.add(5)</Code> runs the method on <Code>c</Code>. <Code>self.total += amount</Code>{" "}
-          means "add to what is already stored". 0 + 5 = 5, and 5 is returned.
+          means "add to what is already stored". <Code>0 + 5 = 5</Code>, and 5 is returned.
         </ListItem>
         <ListItem>
-          <Code>c.add(3)</Code> starts from the stored 5, not from 0. 5 + 3 = 8. This is what
+          <Code>c.add(3)</Code> starts from the stored 5, not from 0. <Code>5 + 3 = 8</Code>. This is what
           "remembers" means: the number is kept inside the object between calls.
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell with a small stateful class of its own -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Tally:
     def __init__(self, start=0):
         self.count = start  # state stored on the instance
@@ -356,24 +356,24 @@ print(t.bump(3))  # expected output: 5`}
 t = Tally()
 t.bump(2)
 print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>t = Tally()</Code> makes one object. <Code>__init__</Code> runs and stores{" "}
           <Code>count = 0</Code> inside it.
         </ListItem>
         <ListItem>
-          <Code>t.bump(2)</Code> adds 2: 0 + 2 = 2. It returns 2, but nothing prints it, so you do
+          <Code>t.bump(2)</Code> adds 2: <Code>0 + 2 = 2</Code>. It returns 2, but nothing prints it, so you do
           not see it.
         </ListItem>
         <ListItem>
-          <Code>t.bump(3)</Code> adds 3 to the stored 2: 2 + 3 = 5. This one is inside{" "}
+          <Code>t.bump(3)</Code> adds 3 to the stored 2: <Code>2 + 3 = 5</Code>. This one is inside{" "}
           <Code>print</Code>, so the 5 shows on screen.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a single line, <Code>5</Code>. Try changing{" "}
         <Code>t.bump(3)</Code> to <Code>t.bump()</Code> with nothing in the brackets. The default{" "}
         <Code>n=1</Code> is used, so you should see 3.

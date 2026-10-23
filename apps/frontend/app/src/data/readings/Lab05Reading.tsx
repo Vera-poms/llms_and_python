@@ -72,11 +72,11 @@ print(heads_count)  # 3`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell looping over a different nested
         dataset - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
 total_sixes = 0
 for round_rolls in rounds:
@@ -92,10 +92,10 @@ for round_rolls in rounds:
         if roll == 6:
             total_sixes += 1
 print(total_sixes)  # 2`} expectedOutput={`2`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>rounds</Code> is a list that holds three smaller lists. Each small list is one
           round of three dice rolls.
@@ -110,7 +110,7 @@ print(total_sixes)  # 2`} expectedOutput={`2`} />
           <Code>[4, 4, 4]</Code> has none, so it stays 2.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> the single number <Code>2</Code>. Try changing one of the 4s
         to a 6 and run it again. You should now see <Code>3</Code>.
       </Text>
@@ -179,24 +179,24 @@ print(butter_amount)  # 1.8 - a little less butter next time`} />
       <Text>Here is that recipe example with the real numbers:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>learning_rate * went_too_flat * butter_amount</Code> is 0.1 * -1 * 2.0 = -0.2. The
+          <Code>learning_rate * went_too_flat * butter_amount</Code> is <Code>0.1 * -1 * 2.0 = -0.2</Code>. The
           minus sign means "go down".
         </ListItem>
         <ListItem>
-          <Code>butter_amount += adjustment</Code> is 2.0 + (-0.2) = 1.8. That is a small step, and
+          <Code>butter_amount += adjustment</Code> is <Code>2.0 + (-0.2) = 1.8</Code>. That is a small step, and
           not a jump to 0.
         </ListItem>
         <ListItem>
-          If <Code>butter_amount</Code> were 0, the adjustment would be 0.1 * -1 * 0 = 0. An
+          If <Code>butter_amount</Code> were 0, the adjustment would be <Code>0.1 * -1 * 0 = 0</Code>. An
           ingredient that was not there is not blamed.
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell applying the update rule to a
         different scenario - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`brew_minutes = 5.0  # minutes used in the too-bitter batch
 too_bitter = -1     # -1 means "too bitter", +1 would mean "too weak"
 learning_rate = 0.2
@@ -212,23 +212,23 @@ learning_rate = 0.2
 adjustment = learning_rate * too_bitter * brew_minutes
 brew_minutes += adjustment
 print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput={`4.0`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The brew time was 5.0 minutes and the coffee was too bitter. <Code>too_bitter</Code> is{" "}
           <Code>-1</Code>, which means "go down".
         </ListItem>
         <ListItem>
-          <Code>adjustment</Code> is 0.2 * -1 * 5.0 = -1.0. The step is 20% of the brew time, and
+          <Code>adjustment</Code> is <Code>0.2 * -1 * 5.0 = -1.0</Code>. The step is 20% of the brew time, and
           it points down.
         </ListItem>
         <ListItem>
-          <Code>brew_minutes += adjustment</Code> is 5.0 + (-1.0) = 4.0. The last line prints it.
+          <Code>brew_minutes += adjustment</Code> is <Code>5.0 + (-1.0) = 4.0</Code>. The last line prints it.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>4.0</Code>. Try changing <Code>too_bitter</Code> to{" "}
         <Code>1</Code> ("too weak"). The adjustment becomes +1.0 and you should see{" "}
         <Code>6.0</Code>.
@@ -256,12 +256,12 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>predict</Code> works out 0 * -2 + 0 * -2 + 0 = 0. The perceptron says "+1 when the
+          <Code>predict</Code> works out <Code>0 * -2 + 0 * -2 + 0 = 0</Code>. The perceptron says "+1 when the
           number is 0 or more", so it answers <Code>+1</Code>. That does not match{" "}
           <Code>-1</Code>, so it is a mistake.
         </ListItem>
         <ListItem>
-          <Code>update = learning_rate * target</Code> is 0.1 * -1 = -0.1.
+          <Code>update = learning_rate * target</Code> is <Code>0.1 * -1 = -0.1</Code>.
         </ListItem>
         <ListItem>
           <Code>update * xi</Code> is -0.1 * [-2.0, -2.0] = [0.2, 0.2]. Both weights go up to{" "}
@@ -271,7 +271,7 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
           <Code>model.bias += update</Code> makes the bias -0.1.
         </ListItem>
         <ListItem>
-          Check: now the number for this example is 0.2 * -2 + 0.2 * -2 + (-0.1) = -0.9. That is
+          Check: now the number for this example is <Code>0.2 * -2 + 0.2 * -2 + (-0.1) = -0.9</Code>. That is
           below 0, so the perceptron now says <Code>-1</Code>. It is fixed.
         </ListItem>
       </UnorderedList>
@@ -317,11 +317,11 @@ print(balance)  # 170 - remembers every deposit before it`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell mutating a running total in place -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`score = 0
 score += 10  # mutates score in place
 score += 25
@@ -331,21 +331,21 @@ print(score)  # 35 - remembers every point scored before it`}
 score += 10  # mutates score in place
 score += 25
 print(score)  # 35 - remembers every point scored before it`} expectedOutput={`35`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>score = 0</Code> starts the game with no points.
         </ListItem>
         <ListItem>
-          <Code>score += 10</Code> changes the same variable to 0 + 10 = 10.
+          <Code>score += 10</Code> changes the same variable to <Code>0 + 10 = 10</Code>.
         </ListItem>
         <ListItem>
-          <Code>score += 25</Code> starts from the 10 that is already there: 10 + 25 = 35.
+          <Code>score += 25</Code> starts from the 10 that is already there: <Code>10 + 25 = 35</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>35</Code>. Try adding one more line,{" "}
         <Code>score += 5</Code>, before the print. You should now see <Code>40</Code>.
       </Text>
@@ -379,12 +379,12 @@ print(score)  # 35 - remembers every point scored before it`} expectedOutput={`3
           <Code>[0.2, 0.2]</Code>, the bias becomes -0.1 and <Code>errors</Code> is 1.
         </ListItem>
         <ListItem>
-          Epoch 1, example 4: 0.2 * -3 + 0.2 * -1 - 0.1 = -0.9. It says -1, which is right. The
+          Epoch 1, example 4: <Code>0.2 * -3 + 0.2 * -1 - 0.1 = -0.9</Code>. It says -1, which is right. The
           epoch ends with 1 mistake, so <Code>1</Code> is added to the list.
         </ListItem>
         <ListItem>
           Epoch 2: <Code>errors</Code> starts at 0 again, but the weights are kept. Example 1 gives
-          0.4 + 0.4 - 0.1 = 0.7, which is +1 and right. All four are right, so 0 is added.
+          <Code>0.4 + 0.4 - 0.1 = 0.7</Code>, which is +1 and right. All four are right, so 0 is added.
           Epoch 3 is the same. The list is <Code>[1, 0, 0]</Code>.
         </ListItem>
       </UnorderedList>
@@ -426,11 +426,11 @@ plt.show()`} />
         <Code>.set_title</Code>, exactly like you would on a single-plot figure.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell plotting two different side-by-side
         charts - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
@@ -452,10 +452,10 @@ axes[1].set_title("drink orders")
 plt.tight_layout()
 plt.savefig("two_panels.png")
 print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side charts to two_panels.png`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>plt.subplots(1, 2, figsize=(8, 3))</Code> makes one picture with 1 row and 2
           columns of charts. <Code>figsize</Code> is the size in inches: 8 wide and 3 tall. The
@@ -477,7 +477,7 @@ print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side chart
           <Code>savefig</Code> writes the picture to a file. The last line prints a message.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> the line <Code>Saved side-by-side charts to two_panels.png</Code>.
         This cell saves the picture to a file and does not call <Code>plt.show()</Code>, so you may
         not see the chart on screen. Try changing the coffee number from 9 to 2. The right bar
@@ -514,7 +514,7 @@ print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side chart
           Left panel: <Code>accuracy_per_epoch = [1 - e / len(X_train) for e in errors_per_epoch]</Code>.
           <b> Accuracy</b> is the share of examples that were right. Say there are 80 training
           examples and the mistakes per epoch are <Code>[10, 4, 0]</Code>. Then the accuracy is 1 -
-          10/80 = 0.875, then 1 - 4/80 = 0.95, then 1 - 0/80 = 1.0. The line climbs.
+          <Code>10/80 = 0.875</Code>, then <Code>1 - 4/80 = 0.95</Code>, then <Code>1 - 0/80 = 1.0</Code>. The line climbs.
         </ListItem>
         <ListItem>
           <Code>range(1, len(errors_per_epoch) + 1)</Code> gives the epoch numbers 1, 2, 3 for the

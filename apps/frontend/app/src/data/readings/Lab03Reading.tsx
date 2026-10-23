@@ -73,11 +73,11 @@ print(pantry)
         <Code>[...]</Code> picks the shelf. The second picks the item.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell grouping zoo animals by category the
         same way - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`zoo: dict[str, dict[str, int]] = {}
 
 sightings = [("mammals", "lion"), ("mammals", "zebra"),
@@ -101,10 +101,10 @@ for category, animal in sightings:
 
 print(zoo)
 # {'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`} expectedOutput={`{'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>sightings</Code> has 4 pairs: a category and an animal seen in it.
         </ListItem>
@@ -122,7 +122,7 @@ print(zoo)
           <Code>("birds", "owl")</Code>: a new category. Owl gets 1.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b>{" "}
         <Code>{"{'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}"}</Code>. Try adding{" "}
         <Code>("birds", "owl")</Code> to the list one more time. The owl count should become 2.
@@ -140,7 +140,7 @@ print(zoo)
         Here is the lab's real code. The "shelf" is the previous word, and the "item" is the word
         that comes next:
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`for sentence in sentences:
     words = tokenize(sentence)
     for prev, nxt in zip(words, words[1:]):
@@ -205,10 +205,10 @@ print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} />
           3 a muffin and 1 nothing.
         </ListItem>
         <ListItem>
-          <Code>total</Code> = 6 + 3 + 1 = 10 people who had coffee.
+          <Code>total</Code> = <Code>6 + 3 + 1 = 10</Code> people who had coffee.
         </ListItem>
         <ListItem>
-          6 / 10 = 0.6. Muffin would be 3 / 10 = 0.3 and nothing 1 / 10 = 0.1. These add up to
+          <Code>6 / 10 = 0.6</Code>. Muffin would be <Code>3 / 10 = 0.3</Code> and nothing <Code>1 / 10 = 0.1</Code>. These add up to
           1.0.
         </ListItem>
         <ListItem>
@@ -217,11 +217,11 @@ print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell computing P(biscuit | tea) the same
         way - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`after_tea = {"biscuit": 4, "scone": 1}
 total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
@@ -231,25 +231,25 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`}
 total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
 print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0.8`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>after_tea</Code> says: of the people who had tea, 4 ordered a biscuit and 1 ordered
           a scone.
         </ListItem>
         <ListItem>
-          <Code>total</Code> = 4 + 1 = 5.
+          <Code>total</Code> = <Code>4 + 1 = 5</Code>.
         </ListItem>
         <ListItem>
-          <Code>after_tea["biscuit"] / total</Code> = 4 / 5 = 0.8. The scone chance is 1 / 5 =
-          0.2, and 0.8 + 0.2 = 1.0.
+          <Code>after_tea["biscuit"] / total</Code> = <Code>4 / 5 = 0.8</Code>. The scone chance is <Code>1 / 5</Code> =
+          0.2, and <Code>0.8 + 0.2 = 1.0</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>0.8</Code>. Try changing the scone count to 4. The total
-        becomes 8, so the biscuit chance drops to 4 / 8 = 0.5.
+        becomes 8, so the biscuit chance drops to <Code>4 / 8 = 0.5</Code>.
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
@@ -265,7 +265,7 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0
         prior tokens (via attention) instead of exactly one.
       </Text>
       <Text>Here is the lab's real code:</Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`for prev, next_counts in counts.items():
     total = sum(next_counts.values())
     cond[prev] = {nxt: count / total for nxt, count in next_counts.items()}`}
@@ -276,12 +276,12 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>prev = "a"</Code>: the inner counts are <Code>{"{'b': 1, 'c': 1}"}</Code>. The
-          total is 1 + 1 = 2. So b gets 1 / 2 = 0.5 and c gets 1 / 2 = 0.5. The row is{" "}
+          total is <Code>1 + 1 = 2</Code>. So b gets <Code>1 / 2 = 0.5</Code> and c gets <Code>1 / 2 = 0.5</Code>. The row is{" "}
           <Code>{"{'b': 0.5, 'c': 0.5}"}</Code>.
         </ListItem>
         <ListItem>
           <Code>prev = "b"</Code>: the inner counts are <Code>{"{'a': 1}"}</Code>. The total is 1.
-          So a gets 1 / 1 = 1.0. After "b" the next word is always "a".
+          So a gets <Code>1 / 1 = 1.0</Code>. After "b" the next word is always "a".
         </ListItem>
         <ListItem>
           Each row adds up to 1.0 on its own. The total is worked out per previous word, not once
@@ -346,11 +346,11 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell plotting a small heatmap with{" "}
         <Code>plt.imshow</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 import numpy as np
 
@@ -374,10 +374,10 @@ plt.xticks([0, 1], ["team A", "team B"])
 plt.yticks([0, 1], ["round 1", "round 2"])
 plt.show()
 print(grid.shape)  # (2, 2)`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>grid</Code> has two rows: <Code>[0.2, 0.8]</Code> for round 1 and{" "}
           <Code>[0.6, 0.4]</Code> for round 2. The columns are team A and team B.
@@ -391,7 +391,7 @@ print(grid.shape)  # (2, 2)`} />
           <Code>(2, 2)</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a 2 by 2 picture with a color bar labeled "score", and the
         text <Code>(2, 2)</Code> under it. Try changing 0.8 to 0.1. That square turns dark, and the
         colors on the whole chart shift to match the new range.

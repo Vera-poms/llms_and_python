@@ -81,11 +81,11 @@ print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell comparing a hand-rolled mean to{" "}
         <Code>statistics.mean</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import statistics
 
 def my_mean(values: list[float]) -> float:
@@ -104,16 +104,16 @@ nums = [4, 8, 15, 16, 23, 42]
 print(my_mean(nums))              # 18.0 - hand-rolled
 print(statistics.mean(nums))      # 18 - same answer, from the standard library`} expectedOutput={`18.0
 18`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>import statistics</Code> loads another toolbox. It has tools for averages.
         </ListItem>
         <ListItem>
           <Code>my_mean</Code> is the hand-made version. <Code>sum(values)</Code> adds the numbers
-          up: 4 + 8 + 15 + 16 + 23 + 42 = 108. <Code>len(values)</Code> counts them: 6. Then 108 /
+          up: <Code>4 + 8 + 15 + 16 + 23 + 42 = 108</Code>. <Code>len(values)</Code> counts them: 6. Then 108 /
           6 = 18.0.
         </ListItem>
         <ListItem>
@@ -122,7 +122,7 @@ print(statistics.mean(nums))      # 18 - same answer, from the standard library`
           written is a little different.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, <Code>18.0</Code> and then <Code>18</Code>. Press{" "}
         <b>Run</b> to check. Then try changing a number in <Code>nums</Code> and run it again. Both
         answers should change together.
@@ -201,11 +201,11 @@ print(numbers)  # ['3', '1']`} />
         backslashes and brackets alone. It is a good habit for every pattern.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell pulling hashtags out of a post with{" "}
         <Code>re.findall</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import re
 
 post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
@@ -217,10 +217,10 @@ print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`}
 post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
 hashtags = re.findall(r"#[A-Za-z0-9]+", post)
 print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`['#SunsetHike', '#hiking', '#Summer2024']`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>post</Code> is a sentence with three hashtags hidden in it.
         </ListItem>
@@ -234,7 +234,7 @@ print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`
           a letter or digit, so it is left out.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a list with the three hashtags. Try changing the pattern to{" "}
         <Code>r"[A-Za-z]+"</Code> and run it again. You get every word now, and the{" "}
         <Code>#</Code> signs and digits are gone.
@@ -294,13 +294,13 @@ print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>"apple"</Code>: not in <Code>counts</Code> yet, so <Code>get</Code> gives 0.{" "}
-          0 + 1 = 1. Now <Code>counts</Code> is <Code>{"{'apple': 1}"}</Code>.
+          <Code>0 + 1 = 1</Code>. Now <Code>counts</Code> is <Code>{"{'apple': 1}"}</Code>.
         </ListItem>
         <ListItem>
           <Code>"pear"</Code>: new too. <Code>{"{'apple': 1, 'pear': 1}"}</Code>.
         </ListItem>
         <ListItem>
-          <Code>"apple"</Code> again: <Code>get</Code> now gives 1. 1 + 1 = 2. The apple entry is
+          <Code>"apple"</Code> again: <Code>get</Code> now gives 1. <Code>1 + 1 = 2</Code>. The apple entry is
           replaced with 2.
         </ListItem>
         <ListItem>
@@ -316,11 +316,11 @@ print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
         That is why we use <Code>get</Code> with a default of 0.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell that tallies letters in a word the
         same way - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`word = "mississippi"
 
 letter_counts: dict[str, int] = {}
@@ -336,10 +336,10 @@ for letter in word:
     letter_counts[letter] = letter_counts.get(letter, 0) + 1
 
 print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m': 1, 'i': 4, 's': 4, 'p': 2}`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>for letter in word</Code> walks through <Code>"mississippi"</Code> one letter at a
           time. A string works like a list of letters.
@@ -349,10 +349,10 @@ print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m'
           if the letter is new) and adds 1.
         </ListItem>
         <ListItem>
-          The word has 11 letters: 1 m, 4 i, 4 s and 2 p. 1 + 4 + 4 + 2 = 11, so nothing is lost.
+          The word has 11 letters: 1 m, 4 i, 4 s and 2 p. <Code>1 + 4 + 4 + 2 = 11</Code>, so nothing is lost.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>{"{'m': 1, 'i': 4, 's': 4, 'p': 2}"}</Code>. The letters
         come out in the order they first showed up. Try a different word, like{" "}
         <Code>"banana"</Code>, and check the counts by hand.
@@ -406,18 +406,18 @@ print(distribution[3])  # 0.333...
 print(sum(distribution.values()))  # 1.0`} />
       <Text>
         Here is what each line does. <Code>sum(roll_counts.values())</Code> adds the six counts:
-        8 + 11 + 20 + 9 + 7 + 5 = 60. The dict comprehension{" "}
+        <Code>8 + 11 + 20 + 9 + 7 + 5 = 60</Code>. The dict comprehension{" "}
         <Code>{"{face: c / total for face, c in roll_counts.items()}"}</Code> is a short way to
         say "build a new dict. For each face and its count, store count divided by total." So face
-        3 gets 20 / 60 = 0.333, and face 6 gets 5 / 60 = 0.083. The last line adds all the new
+        3 gets <Code>20 / 60 = 0.333</Code>, and face 6 gets <Code>5 / 60 = 0.083</Code>. The last line adds all the new
         values and gets 1.0. This is how you check that you did it right.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell normalizing poll counts into a
         distribution - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
 total = sum(poll_counts.values())  # 40
 distribution = {food: c / total for food, c in poll_counts.items()}
@@ -430,26 +430,26 @@ distribution = {food: c / total for food, c in poll_counts.items()}
 print(distribution["tacos"])          # 0.45
 print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
 1.0`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>poll_counts</Code> says 12 people picked pizza, 18 picked tacos and 10 picked
           sushi.
         </ListItem>
         <ListItem>
-          <Code>total</Code> is 12 + 18 + 10 = 40 people.
+          <Code>total</Code> is <Code>12 + 18 + 10 = 40</Code> people.
         </ListItem>
         <ListItem>
-          Each count is divided by 40: pizza 12/40 = 0.3, tacos 18/40 = 0.45, sushi 10/40 = 0.25.
+          Each count is divided by 40: pizza <Code>12/40 = 0.3</Code>, tacos <Code>18/40 = 0.45</Code>, sushi <Code>10/40 = 0.25</Code>.
         </ListItem>
         <ListItem>
-          0.3 + 0.45 + 0.25 = 1.0. The first print shows the tacos chance (0.45). The second
+          <Code>0.3 + 0.45 + 0.25 = 1.0</Code>. The first print shows the tacos chance (0.45). The second
           print shows the total (1.0).
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>0.45</Code> and then <Code>1.0</Code>. If the second
         line is not 1.0, check that you divided by the <b>total</b> and not by one of the counts.
       </Text>
@@ -468,13 +468,13 @@ print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>total = sum(counts.values())</Code> gives 1 + 3 = 4.
+          <Code>total = sum(counts.values())</Code> gives <Code>1 + 3 = 4</Code>.
         </ListItem>
         <ListItem>
-          <Code>a</Code> gets 1 / 4 = 0.25. <Code>b</Code> gets 3 / 4 = 0.75.
+          <Code>a</Code> gets <Code>1 / 4 = 0.25</Code>. <Code>b</Code> gets <Code>3 / 4 = 0.75</Code>.
         </ListItem>
         <ListItem>
-          0.25 + 0.75 = 1.0, so it is a valid distribution. It also means "if I pick a random word
+          <Code>0.25 + 0.75 = 1.0</Code>, so it is a valid distribution. It also means "if I pick a random word
           from the text, there is a 75% chance it is <Code>b</Code>."
         </ListItem>
       </UnorderedList>
@@ -508,11 +508,11 @@ print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} />
         Finally <Code>[:2]</Code> keeps the first two pairs. This is called a slice.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 5 practice" cell ranking game runtimes with the same{" "}
         <Code>sorted(..., key=..., reverse=True)</Code> pattern - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`}
@@ -520,10 +520,10 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`}
       <PracticeCell labId={1} cellId="concept-5" code={`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('level2', 30.5), ('level1', 42.1)]`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>runtimes.items()</Code> gives the pairs: level1 42.1, level2 30.5, level3 55.8.
         </ListItem>
@@ -536,7 +536,7 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('lev
           these are the two fastest levels.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>[('level2', 30.5), ('level1', 42.1)]</Code>. Try adding{" "}
         <Code>reverse=True</Code> and run it again. Now you get the two slowest levels.
       </Text>
@@ -615,11 +615,11 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 6 practice" cell plotting a small bar chart with{" "}
         <Code>plt.bar</Code> - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 topics = ["regex", "dicts", "sorting"]
@@ -641,10 +641,10 @@ plt.ylabel("votes")
 plt.title("Favorite practice topic")
 plt.show()
 print(topics[votes.index(max(votes))])  # dicts`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>topics</Code> and <Code>votes</Code> are two lists in the same order: regex has 6
           votes, dicts has 9, sorting has 4.
@@ -659,7 +659,7 @@ print(topics[votes.index(max(votes))])  # dicts`} />
           name of the winner.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a bar chart with three bars, and then the word{" "}
         <Code>dicts</Code> under it. Try changing a vote count so another topic wins. The chart
         and the printed name should both change.

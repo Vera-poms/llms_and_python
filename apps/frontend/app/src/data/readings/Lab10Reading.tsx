@@ -61,10 +61,10 @@ export function Lab10Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`examples = [
     ("hello", "HELLO!"),
     ("bye", "BYE!"),
@@ -86,10 +86,10 @@ def apply_pattern(word):
 
 query = "yes"
 print(apply_pattern(query))  # expected output: YES!`} expectedOutput={`YES!`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>examples</Code> holds two pairs: <Code>"hello"</Code> becomes{" "}
           <Code>"HELLO!"</Code> and <Code>"bye"</Code> becomes <Code>"BYE!"</Code>. Look at them
@@ -109,7 +109,7 @@ print(apply_pattern(query))  # expected output: YES!`} expectedOutput={`YES!`} /
           the pattern, the same way you would show examples to a model.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one line, <Code>YES!</Code>. Try changing <Code>query</Code>{" "}
         to <Code>"thanks"</Code>. You should see <Code>THANKS!</Code>.
       </Text>
@@ -218,10 +218,10 @@ except ValueError as e:
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import json
 
 raw = '{"item": "Mug", "price": 9.99}'
@@ -249,10 +249,10 @@ except json.JSONDecodeError:
     print("not valid JSON")
 except ValueError as e:
     print(f"parsed but incomplete: {e}")`} expectedOutput={`Mug 9.99`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>raw</Code> is text holding a product: item <Code>"Mug"</Code> and price 9.99.
         </ListItem>
@@ -270,7 +270,7 @@ except ValueError as e:
           between them: <Code>Mug 9.99</Code>. No <Code>except</Code> block runs.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one line, <Code>Mug 9.99</Code>. Try changing{" "}
         <Code>raw</Code> to <Code>{"'{\"item\": \"Mug\"}'"}</Code>. The price is gone now, so you
         should see <Code>parsed but incomplete: missing price</Code>.

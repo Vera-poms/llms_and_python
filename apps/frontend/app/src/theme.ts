@@ -5,6 +5,12 @@ export const theme = extendTheme({
     initialColorMode: "light",
     useSystemColorMode: false,
   },
+  components: {
+    // Inline code (calculations, names) uses the same purple as the notebook's markdown cells.
+    Code: {
+      defaultProps: { colorScheme: "purple" },
+    },
+  },
   fonts: {
     heading: "system-ui, sans-serif",
     body: "system-ui, sans-serif",

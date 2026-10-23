@@ -77,11 +77,11 @@ export function Lab07Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for indexing into a small matrix - run it
         before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
 print(grid[0])  # expected output: [10, 20]
 print(grid[1][0])  # expected output: 30`}
@@ -90,10 +90,10 @@ print(grid[1][0])  # expected output: 30`}
 print(grid[0])  # expected output: [10, 20]
 print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
 30`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>grid</Code> has two rows: <Code>[10, 20]</Code> is row 0 and <Code>[30, 40]</Code>{" "}
           is row 1.
@@ -107,7 +107,7 @@ print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
           item 0 of that row, which is 30.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lines, <Code>[10, 20]</Code> and then <Code>30</Code>. Try
         printing <Code>grid[0][1]</Code>. You should see <Code>20</Code>. That is row 0, item 1.
       </Text>
@@ -162,13 +162,13 @@ dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
       <Text>Here is the dot product from that example, one step at a time:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>a[0]*b[0]</Code> is 1 * 4 = 4.
+          <Code>a[0]*b[0]</Code> is <Code>1 * 4 = 4</Code>.
         </ListItem>
         <ListItem>
-          <Code>a[1]*b[1]</Code> is 2 * 5 = 10.
+          <Code>a[1]*b[1]</Code> is <Code>2 * 5 = 10</Code>.
         </ListItem>
         <ListItem>
-          <Code>a[2]*b[2]</Code> is 3 * 6 = 18. Adding them: 4 + 10 + 18 = 32.
+          <Code>a[2]*b[2]</Code> is <Code>3 * 6 = 18</Code>. Adding them: <Code>4 + 10 + 18 = 32</Code>.
         </ListItem>
         <ListItem>
           The example has no <Code>print</Code>, so the <Code>dot == 32</Code> comment is there to
@@ -176,11 +176,11 @@ dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell computing a dot product by hand - run it
         before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`prices = [2, 5, 1]
 quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
@@ -190,10 +190,10 @@ print(total)  # expected output: 20`}
 quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
 print(total)  # expected output: 20`} expectedOutput={`20`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           Think of a shopping list. <Code>prices</Code> says the three items cost 2, 5 and 1.{" "}
           <Code>quantities</Code> says you buy 3, 2 and 4 of them.
@@ -203,11 +203,11 @@ print(total)  # expected output: 20`} expectedOutput={`20`} />
         </ListItem>
         <ListItem>
           <Code>p * q for p, q in ...</Code> multiplies each pair: 6, 10 and 4.{" "}
-          <Code>sum(...)</Code> adds them: 6 + 10 + 4 = 20. That is the total bill, and it is a dot
+          <Code>sum(...)</Code> adds them: <Code>6 + 10 + 4 = 20</Code>. That is the total bill, and it is a dot
           product.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>20</Code>. Try changing the last quantity from 4 to 0. You
         should see <Code>16</Code>, because the 4 from the last pair disappears.
       </Text>
@@ -236,8 +236,8 @@ print(total)  # expected output: 20`} expectedOutput={`20`} />
           not change here.
         </ListItem>
         <ListItem>
-          <Code>Q @ K.T</Code>: query 0 with key 0 is 1 * 1 + 0 * 0 = 1. Query 0 with key 1 is 1 *
-          0 + 0 * 1 = 0. Query 1 gives 0 and 1. So the scores are <Code>[[1, 0], [0, 1]]</Code>.
+          <Code>Q @ K.T</Code>: query 0 with key 0 is <Code>1 * 1 + 0 * 0 = 1</Code>. Query 0 with key 1 is 1 *
+          <Code>0 + 0 * 1 = 0</Code>. Query 1 gives 0 and 1. So the scores are <Code>[[1, 0], [0, 1]]</Code>.
         </ListItem>
         <ListItem>
           Divide by <Code>sqrt(2)</Code>, about 1.414: the scores become about 0.707 and 0.
@@ -274,12 +274,12 @@ print([round(s, 2) for s in softmax])`} />
           1.11.
         </ListItem>
         <ListItem>
-          <Code>total</Code> adds them: 7.39 + 2.72 + 1.11 is about 11.2. The comment says 11.22
+          <Code>total</Code> adds them: <Code>7.39 + 2.72 + 1.11</Code> is about 11.2. The comment says 11.22
           because it adds the rounded numbers. The exact total rounds to 11.21.
         </ListItem>
         <ListItem>
-          Each one is divided by the total: 7.39 / 11.2 is about 0.66, 2.72 / 11.2 is about 0.24
-          and 1.11 / 11.2 is about 0.10. The biggest score (2.0) gets the biggest share.
+          Each one is divided by the total: <Code>7.39 / 11.2</Code> is about 0.66, <Code>2.72 / 11.2</Code> is about 0.24
+          and <Code>1.11 / 11.2</Code> is about 0.10. The biggest score (2.0) gets the biggest share.
         </ListItem>
         <ListItem>
           <Code>round(x, 2)</Code> just cuts a number to 2 digits after the point, so the print is
@@ -287,11 +287,11 @@ print([round(s, 2) for s in softmax])`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell running softmax on a different set of
         scores - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import numpy as np
 
 scores = np.array([3.0, 1.0, 0.0])
@@ -305,10 +305,10 @@ scores = np.array([3.0, 1.0, 0.0])
 exp_scores = np.exp(scores - scores.max())
 probs = exp_scores / exp_scores.sum()
 print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} expectedOutput={`[0.84 0.11 0.04]`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>np.array([3.0, 1.0, 0.0])</Code> makes a numpy array. It is like a list that can do
           math on all its numbers at once.
@@ -327,7 +327,7 @@ print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} expectedOutput=
           <Code>[0.84 0.11 0.04]</Code>. They add up to about 1.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>[0.84 0.11 0.04]</Code>. Try changing the first score
         from 3.0 to 1.0. The first two scores are then equal, and you should see{" "}
         <Code>[0.42 0.42 0.16]</Code>.
@@ -400,7 +400,7 @@ result = np.array(a) + np.array(b)`} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The loop version makes an empty grid of zeros. Then it visits each spot: <Code>i</Code>{" "}
-          is the row and <Code>j</Code> is the column. <Code>a[0][0] + b[0][0]</Code> is 1 + 5 = 6.
+          is the row and <Code>j</Code> is the column. <Code>a[0][0] + b[0][0]</Code> is <Code>1 + 5 = 6</Code>.
           It does this 4 times in all, to get <Code>[[6, 8], [10, 12]]</Code>.
         </ListItem>
         <ListItem>
@@ -413,11 +413,11 @@ result = np.array(a) + np.array(b)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell comparing a manual loop to a vectorized
         numpy operation - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import numpy as np
 
 a = [1, 2, 3]
@@ -441,14 +441,14 @@ manual = [a[i] + b[i] for i in range(len(a))]
 # numpy: no loop needed
 vectorized = np.array(a) + np.array(b)
 print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} expectedOutput={`[11, 22, 33] [np.int64(11), np.int64(22), np.int64(33)]`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>manual</Code> uses a loop idea: <Code>[a[i] + b[i] for i in range(len(a))]</Code>.
-          <Code> len(a)</Code> is 3, so <Code>i</Code> is 0, 1 and 2. That gives 1 + 10, 2 + 20 and
-          3 + 30, which is <Code>[11, 22, 33]</Code>.
+          <Code> len(a)</Code> is 3, so <Code>i</Code> is 0, 1 and 2. That gives <Code>1 + 10</Code>, <Code>2 + 20</Code> and
+          <Code>3 + 30</Code>, which is <Code>[11, 22, 33]</Code>.
         </ListItem>
         <ListItem>
           <Code>np.array(a) + np.array(b)</Code> adds the two arrays spot by spot, with no loop.
@@ -459,7 +459,7 @@ print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} 
           like one.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> two lists with the numbers 11, 22 and 33. The first is a plain
         list. In the second list, newer numpy versions may print each number as{" "}
         <Code>np.int64(11)</Code>, which is just numpy's way to say "a whole number". The values are
@@ -556,11 +556,11 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 5 practice" cell plotting a different toy grid as a heatmap -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rainfall = [[5, 2, 8], [1, 9, 3]]
 plt.imshow(rainfall, cmap="Blues")
 plt.colorbar(label="mm")
@@ -578,10 +578,10 @@ plt.yticks(range(2), ["CityA", "CityB"])
 plt.title("Monthly rainfall")
 plt.show()
 print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall grid`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>rainfall</Code> has 2 rows (two cities) and 3 columns (three months). CityA had 5,
           2 and 8 mm. CityB had 1, 9 and 3 mm.
@@ -600,7 +600,7 @@ print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall 
           The last line prints a message.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> a small blue grid with a color strip, and then the line{" "}
         <Code>plotted a 2x3 rainfall grid</Code>. Try changing the 9 to 0. That square should turn
         the palest, and the darkest one should become CityA's 8 in March.

@@ -47,7 +47,7 @@ tiles_needed = rows * cols  # 96`} />
           <Code>rows</Code> is called a <b>variable</b>. It is a label stuck on a value.
         </ListItem>
         <ListItem>
-          <Code>rows * cols</Code> multiplies them: 12 * 8 = 96. Picture 12 lines of 8 tiles. That
+          <Code>rows * cols</Code> multiplies them: <Code>12 * 8 = 96</Code>. Picture 12 lines of 8 tiles. That
           is 96 tiles.
         </ListItem>
         <ListItem>
@@ -56,11 +56,11 @@ tiles_needed = rows * cols  # 96`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell counting a different grid of items -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rows = 20
 seats_per_row = 15
 total_seats = rows * seats_per_row
@@ -70,22 +70,22 @@ print(total_seats)  # 300`}
 seats_per_row = 15
 total_seats = rows * seats_per_row
 print(total_seats)  # 300`} expectedOutput={`300`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           A hall has 20 rows, with 15 seats in each row. The two numbers are stored in{" "}
           <Code>rows</Code> and <Code>seats_per_row</Code>.
         </ListItem>
         <ListItem>
-          <Code>total_seats = rows * seats_per_row</Code> is 20 * 15 = 300.
+          <Code>total_seats = rows * seats_per_row</Code> is <Code>20 * 15 = 300</Code>.
         </ListItem>
         <ListItem>
           <Code>print</Code> shows the number.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>300</Code>. Try changing <Code>rows</Code> to 10. You
         should now see <Code>150</Code>.
       </Text>
@@ -112,24 +112,24 @@ print(total_seats)  # 300`} expectedOutput={`300`} />
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>embedding_params</Code>: a table with 1000 rows and 64 columns. 1000 * 64 = 64,000.
+          <Code>embedding_params</Code>: a table with 1000 rows and 64 columns. <Code>1000 * 64 = 64,000</Code>.
         </ListItem>
         <ListItem>
           <Code>attention_params_per_layer</Code>: 4 tables (query, key, value and output), each 64
-          by 64. 4 * 64 * 64 = 16,384 for one block.
+          by 64. <Code>4 * 64 * 64 = 16,384</Code> for one block.
         </ListItem>
         <ListItem>
           <Code>feed_forward_params_per_layer</Code>: one 64 by 256 table and one 256 by 64 table.
-          64 * 256 + 256 * 64 = 32,768 for one block.
+          <Code>64 * 256 + 256 * 64 = 32,768</Code> for one block.
         </ListItem>
         <ListItem>
-          <Code>layernorm_params_per_layer</Code>: 2 * 2 * 64 = 256 for one block.{" "}
-          <Code>output_head_params</Code>: 64 * 1000 = 64,000.
+          <Code>layernorm_params_per_layer</Code>: <Code>2 * 2 * 64 = 256</Code> for one block.{" "}
+          <Code>output_head_params</Code>: <Code>64 * 1000 = 64,000</Code>.
         </ListItem>
         <ListItem>
           <Code>count_parameters</Code> multiplies the per-block numbers by 2 blocks: attention
           32,768, feed-forward 65,536, layer norm 512. It adds the embedding and the head. The
-          total is 64,000 + 32,768 + 65,536 + 512 + 64,000 = 226,816.
+          total is <Code>64,000 + 32,768 + 65,536 + 512 + 64,000 = 226,816</Code>.
         </ListItem>
       </UnorderedList>
 
@@ -178,17 +178,17 @@ print(r.area())  # 12.0`} />
         <ListItem>
           <Code>Rectangle(width=4, height=3)</Code> builds one rectangle. <Code>r.area()</Code>{" "}
           calls the method. Inside it, <Code>self</Code> means "this rectangle", so{" "}
-          <Code>self.width * self.height</Code> is 4 * 3 = 12. Because 4 and 3 are whole numbers,
+          <Code>self.width * self.height</Code> is <Code>4 * 3 = 12</Code>. Because 4 and 3 are whole numbers,
           printing it shows <Code>12</Code>. It would show <Code>12.0</Code> if you used 4.0 and
           3.0.
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell building a different dataclass -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`from dataclasses import dataclass
 
 @dataclass
@@ -214,10 +214,10 @@ class Car:
 
 c = Car(mpg=30.0, tank_gallons=12.0)
 print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>Car</Code> is a blueprint with two fields: <Code>mpg</Code> (miles per gallon) and{" "}
           <Code>tank_gallons</Code> (the size of the fuel tank).
@@ -227,11 +227,11 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
           <Code>c</Code>. This car goes 30 miles on one gallon and holds 12 gallons.
         </ListItem>
         <ListItem>
-          <Code>c.range_miles()</Code> multiplies 30.0 * 12.0 = 360.0. That is how far it can go on
+          <Code>c.range_miles()</Code> multiplies <Code>30.0 * 12.0 = 360.0</Code>. That is how far it can go on
           a full tank.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>360.0</Code>. Try changing <Code>tank_gallons</Code> to{" "}
         <Code>10.0</Code>. You should now see <Code>300.0</Code>.
       </Text>
@@ -257,7 +257,7 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         </ListItem>
         <ListItem>
           <Code>cfg.embedding_params()</Code> runs <Code>self.vocab_size * self.d_model</Code>, and{" "}
-          <Code>self</Code> is <Code>cfg</Code>. So it is 1000 * 64 = 64,000.
+          <Code>self</Code> is <Code>cfg</Code>. So it is <Code>1000 * 64 = 64,000</Code>.
         </ListItem>
         <ListItem>
           <Code>cfg.count_parameters()</Code> calls the other methods and returns a dict with the
@@ -304,11 +304,11 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell reading a different config dict -
         run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`server_config = {
     "host": "localhost",
     "port": 8080,
@@ -324,10 +324,10 @@ print(server_config["workers"])  # 4`}
     "timeout_seconds": 30,
 }
 print(server_config["workers"])  # 4`} expectedOutput={`4`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>server_config</Code> holds four settings for a made-up server: its address (
           <Code>host</Code>), the door number it listens on (<Code>port</Code>), how many helpers it
@@ -338,7 +338,7 @@ print(server_config["workers"])  # 4`} expectedOutput={`4`} />
           its value, 4.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>4</Code>. Try printing <Code>server_config["port"]</Code>{" "}
         instead. You should see <Code>8080</Code>. If you misspell a key, like{" "}
         <Code>"worker"</Code>, Python stops with a <Code>KeyError</Code>.
@@ -431,11 +431,11 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 4 practice" cell plotting a different grouped bar
         chart - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 
 quarters = ["Q1", "Q2"]
@@ -465,10 +465,10 @@ plt.ylabel("$ thousands")
 plt.legend()
 plt.savefig("budget_vs_actual.png")
 print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar chart to budget_vs_actual.png`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           There are two quarters. Q1 had a budget of 100 and spent 90. Q2 had a budget of 120 and
           spent 130 (in thousands of dollars).
@@ -486,7 +486,7 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
           <Code>savefig</Code> saves the picture to a file, then the cell prints a message.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> the line{" "}
         <Code>Saved grouped bar chart to budget_vs_actual.png</Code>. This cell does not call{" "}
         <Code>plt.show()</Code>, so you may not see the chart on screen. Try changing the Q1

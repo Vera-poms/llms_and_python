@@ -48,15 +48,15 @@ print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`
       <Text>Here is what the two functions do with 17 and 24:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>guess_directly(17, 24)</Code> multiplies in one go: 17 * 24 = 408. You get the
+          <Code>guess_directly(17, 24)</Code> multiplies in one go: <Code>17 * 24 = 408</Code>. You get the
           answer, but no steps to look at.
         </ListItem>
         <ListItem>
-          <Code>show_the_work</Code> splits 24 into 20 + 4. <Code>step1</Code> is 17 * 20 = 340.{" "}
-          <Code>step2</Code> is 17 * 4 = 68.
+          <Code>show_the_work</Code> splits 24 into <Code>20 + 4</Code>. <Code>step1</Code> is <Code>17 * 20 = 340</Code>.{" "}
+          <Code>step2</Code> is <Code>17 * 4 = 68</Code>.
         </ListItem>
         <ListItem>
-          <Code>total = step1 + step2</Code> is 340 + 68 = 408. The same answer, reached in small
+          <Code>total = step1 + step2</Code> is <Code>340 + 68 = 408</Code>. The same answer, reached in small
           pieces.
         </ListItem>
         <ListItem>
@@ -66,10 +66,10 @@ print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def guess_total(price, tax_rate):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
     return price + price * tax_rate
@@ -96,15 +96,15 @@ def show_total_steps(price, tax_rate):
 print(guess_total(50, 0.08))        # expected output: 54.0
 print(show_total_steps(50, 0.08))   # expected output: tax=4.00, total=54.00`} expectedOutput={`54.0
 tax=4.00, total=54.00`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The goal: a price of 50 plus 8% tax (0.08 is 8 out of 100).
         </ListItem>
         <ListItem>
-          <Code>guess_total(50, 0.08)</Code> does it all in one line: 50 + 50 * 0.08 = 50 + 4.0 =
+          <Code>guess_total(50, 0.08)</Code> does it all in one line: <Code>50 + 50 * 0.08 = 50</Code> + 4.0 =
           54.0. Only the final number comes back.
         </ListItem>
         <ListItem>
@@ -117,7 +117,7 @@ tax=4.00, total=54.00`} />
           result is the text <Code>"tax=4.00, total=54.00"</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>54.0</Code> and then <Code>tax=4.00, total=54.00</Code>.
         Try changing 50 to 80 in both calls. You should see <Code>86.4</Code> and then{" "}
         <Code>tax=6.40, total=86.40</Code>.
@@ -150,7 +150,7 @@ tax=4.00, total=54.00`} />
           this form: 'Answer: &lt;your answer&gt;'". The model is pushed to write its steps first.
         </ListItem>
         <ListItem>
-          A good chain-of-thought reply might be: "12 * 10 = 120. 12 * 3 = 36. 120 + 36 = 156."
+          A good chain-of-thought reply might be: "<Code>12 * 10 = 120</Code>. <Code>12 * 3 = 36</Code>. <Code>120 + 36 = 156</Code>."
           then a new line, <Code>Answer: 156</Code>. The last line is the part your code will pull
           out.
         </ListItem>
@@ -206,10 +206,10 @@ print(extract_total(receipt))  # "$11.50"`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
 
 def extract_high(text: str, marker: str = "High:") -> str:
@@ -227,10 +227,10 @@ def extract_high(text: str, marker: str = "High:") -> str:
     return text.rsplit(marker, 1)[1].strip()
 
 print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>forecast</Code> is one string with three lines: "Morning: cloudy", "Afternoon:
           sunny" and "High: 78F".
@@ -248,7 +248,7 @@ print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} /
           The first two lines are thrown away. Only the value after the label is kept.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one line, <Code>78F</Code>. Try changing the marker to{" "}
         <Code>"Afternoon:"</Code> in the call, like{" "}
         <Code>extract_high(forecast, "Afternoon:")</Code>. Now everything after that label is kept,
@@ -265,8 +265,8 @@ print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} /
         without a person having to read the whole paragraph.
       </Text>
       <Text>
-        Take this reply, where the line breaks are real new lines: "12 * 10 = 120", "12 * 3 =
-        36", "120 + 36 = 156", and then <Code>Answer: 156</Code>.
+        Take this reply, where the line breaks are real new lines: "<Code>12 * 10 = 120</Code>", "<Code>12 * 3</Code> =
+        36", "<Code>120 + 36 = 156</Code>", and then <Code>Answer: 156</Code>.
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>

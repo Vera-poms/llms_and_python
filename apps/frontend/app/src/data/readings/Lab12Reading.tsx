@@ -65,10 +65,10 @@ for turn in chat_log:
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`support_log = [
     {"agent": "Bot", "message": "Hi, how can I help?"},
     {"agent": "User", "message": "My order is late."},
@@ -96,10 +96,10 @@ for turn in support_log:
 # Bot: Let me check that for you.`} expectedOutput={`Bot: Hi, how can I help?
 User: My order is late.
 Bot: Let me check that for you.`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>support_log</Code> is a list of 3 dicts. Each dict has the keys{" "}
           <Code>"agent"</Code> and <Code>"message"</Code>.
@@ -113,7 +113,7 @@ Bot: Let me check that for you.`} />
           printed lines.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> three lines, in the same order as the list. Try adding a fourth
         dict, like <Code>{'{"agent": "User", "message": "Thanks!"}'}</Code>, and run it again. You
         should get a fourth line without changing the loop.
@@ -128,7 +128,7 @@ Bot: Let me check that for you.`} />
         course that talks to Groq is, underneath, just building one of these lists.
       </Text>
       <Text>A tiny messages list, with two turns, looks like this:</Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`messages = [
     {"role": "user", "content": "Hi"},
     {"role": "assistant", "content": "Hello!"},
@@ -183,10 +183,10 @@ print(messages[1]["content"])  # Hello!`}
         looks.
       </Text>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`classroom_log = [
     {"role": "teacher_note", "text": "Keep answers under two sentences."},
     {"role": "student", "text": "What's the capital of France?"},
@@ -204,10 +204,10 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`}
 
 standing_rule = classroom_log[0]["text"]
 print(standing_rule)  # expected output: Keep answers under two sentences.`} expectedOutput={`Keep answers under two sentences.`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>classroom_log</Code> is a list of 3 dicts. The first one has the role{" "}
           <Code>"teacher_note"</Code>. It is the standing rule, like the system message.
@@ -222,7 +222,7 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`} exp
           <Code>standing_rule</Code> and is printed.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> one line, <Code>Keep answers under two sentences.</Code>. Try
         changing <Code>[0]</Code> to <Code>[2]</Code>. You should now see <Code>Paris.</Code>,
         because the third dict holds the helper's answer.
@@ -242,7 +242,7 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`} exp
         Here is the lab's real code, run on a tiny persona. The persona is{" "}
         <Code>{'{"name": "Rae", "role": "a coffee helper", "tone": "warm", "constraints": ["be brief", "no jokes"]}'}</Code>:
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`lines = [
     f"You are {persona['name']}, {persona['role']}.",
     f"Your tone is {persona['tone']}.",
@@ -309,10 +309,10 @@ for visitor in ["Sam", "Robin", "Priya"]:    # varies every iteration
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has a "Concept 3 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`discount = "SAVE10"                      # built once
 for cart_total in [25, 40, 100]:          # varies every iteration
     print(f"Applying {discount} to \${cart_total}")
@@ -330,10 +330,10 @@ for cart_total in [25, 40, 100]:          # varies every iteration
 # Applying SAVE10 to $100`} expectedOutput={`Applying SAVE10 to $25
 Applying SAVE10 to $40
 Applying SAVE10 to $100`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>discount</Code> is set once to <Code>"SAVE10"</Code>. It is the fixed part.
         </ListItem>
@@ -347,7 +347,7 @@ Applying SAVE10 to $100`} />
           pass 1 prints <Code>Applying SAVE10 to $25</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> three lines. The code SAVE10 is the same on all of them, and
         the amount changes: $25, $40, $100. Try changing <Code>discount</Code> to{" "}
         <Code>"SAVE20"</Code>. All three lines change together, because they share the one fixed
@@ -361,7 +361,7 @@ Applying SAVE10 to $100`} />
         question, a complaint, and a question about a competitor - sending a fresh two-message list
         each time:
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
 {`system_message = build_system_message(persona)   # built once
 for question in QUESTIONS:                       # varies every iteration
     messages = [

@@ -53,10 +53,10 @@ print(shopping_list)  # ["milk", "eggs"]`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`readings = []
 readings.append(68)
 readings.append(71)
@@ -66,10 +66,10 @@ print(readings)  # expected output: [68, 71]`}
 readings.append(68)
 readings.append(71)
 print(readings)  # expected output: [68, 71]`} expectedOutput={`[68, 71]`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>readings = []</Code> starts with an empty list. Think of it as an empty notebook
           page for temperature readings.
@@ -83,7 +83,7 @@ print(readings)  # expected output: [68, 71]`} expectedOutput={`[68, 71]`} />
           68 is still there, and that is the "state" part.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>[68, 71]</Code>. Try adding a third line,{" "}
         <Code>readings.append(75)</Code>, before the print. You should see{" "}
         <Code>[68, 71, 75]</Code>.
@@ -157,10 +157,10 @@ print(log)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`deliveries = []
 for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
@@ -170,10 +170,10 @@ print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`}
 for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
 print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} expectedOutput={`['P100 delivered', 'P101 delivered']`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>deliveries</Code> starts as an empty list.
         </ListItem>
@@ -186,7 +186,7 @@ print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} exp
           ends, and <Code>print</Code> shows the whole list.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>['P100 delivered', 'P101 delivered']</Code>. Try adding{" "}
         <Code>"P102"</Code> to the list of packages. You should get a third item at the end.
       </Text>
@@ -265,10 +265,10 @@ letter = f"Dear {name}, welcome to {city}!"`} />
         </ListItem>
       </UnorderedList>
 
-      <Text fontSize="sm" color="gray.600">
+      <Text color="gray.600">
         Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
       </Text>
-      <Code display="block" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
+      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`}
@@ -276,10 +276,10 @@ print(card)  # expected output: Congrats Sam on your graduation!`}
       <PracticeCell labId={13} cellId="concept-3" code={`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutput={`Congrats Sam on your graduation!`} />
-      <Text fontSize="sm">
+      <Text>
         <b>What this cell does, step by step:</b>
       </Text>
-      <UnorderedList spacing={1} pl={4} fontSize="sm">
+      <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>person</Code> is a dict with 2 keys: <Code>"name"</Code> is <Code>"Sam"</Code> and{" "}
           <Code>"occasion"</Code> is <Code>"graduation"</Code>.
@@ -295,7 +295,7 @@ print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutpu
           <Code>"Congrats Sam on your graduation!"</Code>.
         </ListItem>
       </UnorderedList>
-      <Text fontSize="sm">
+      <Text>
         <b>What you should see:</b> <Code>Congrats Sam on your graduation!</Code>. Try changing{" "}
         <Code>"graduation"</Code> to <Code>"promotion"</Code>. The card should say "on your
         promotion!".
