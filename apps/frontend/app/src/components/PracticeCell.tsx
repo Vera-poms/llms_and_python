@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { CodeEditor } from "./CodeEditor";
-import { HintButton } from "./HintButton";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
 function actualStdout(result: RunResult): string {
@@ -91,49 +90,63 @@ export function PracticeCell({
     writeDraft(userId, labId, cellId, next);
   }
 
-  async function run() {
+  async function execute(): Promise<RunResult | null> {
     setRunning(true);
     setErrorMessage(null);
     try {
       const response = await api.post(`/notebooks/${labId}/run`, { source });
       const runResult: RunResult = response.data;
       setResult(runResult);
-
-      if (!runResult.ok) {
-        setCheckStatus("idle");
-        setFeedback(null);
-        return;
-      }
-
-      setChecking(true);
-      try {
-        // The answer key lives on the server; only the student's code and its output are sent.
-        const judgeResponse = await api.post(`/labs/${labId}/cells/${cellId}/judge`, {
-          source,
-          output: actualStdout(runResult),
-        });
-        const { correct, feedback: judgeFeedback } = judgeResponse.data;
-        setCheckStatus(correct ? "pass" : "fail");
-        setFeedback(judgeFeedback ?? null);
-        // These cells are scattered through the reading, so the lab page listens for this instead
-        // of threading a callback through every <PracticeCell>.
-        window.dispatchEvent(new CustomEvent("lab-progress"));
-
-        if (correct) {
-          try {
-            await api.put(`/labs/${labId}/cells/${cellId}/code`, { source });
-          } catch {
-            setErrorMessage("Couldn't save your code - check your connection and try running it again.");
-          }
-        }
-      } catch {
-        setCheckStatus("idle");
-        setErrorMessage("Couldn't check your code - check your connection and try running it again.");
-      } finally {
-        setChecking(false);
-      }
+      return runResult;
+    } catch {
+      setErrorMessage("Couldn't run your code - check your connection and try again.");
+      return null;
     } finally {
       setRunning(false);
+    }
+  }
+
+  // Run only tries the code and shows its output; nothing is graded or saved.
+  async function run() {
+    await execute();
+  }
+
+  async function submit() {
+    const runResult = await execute();
+    if (!runResult) return;
+
+    if (!runResult.ok) {
+      setCheckStatus("idle");
+      setFeedback(null);
+      return;
+    }
+
+    setChecking(true);
+    try {
+      // The answer key lives on the server; only the student's code and its output are sent.
+      const judgeResponse = await api.post(`/labs/${labId}/cells/${cellId}/judge`, {
+        source,
+        output: actualStdout(runResult),
+      });
+      const { correct, feedback: judgeFeedback } = judgeResponse.data;
+      setCheckStatus(correct ? "pass" : "fail");
+      setFeedback(judgeFeedback ?? null);
+      // These cells are scattered through the reading, so the lab page listens for this instead
+      // of threading a callback through every <PracticeCell>.
+      window.dispatchEvent(new CustomEvent("lab-progress"));
+
+      if (correct) {
+        try {
+          await api.put(`/labs/${labId}/cells/${cellId}/code`, { source });
+        } catch {
+          setErrorMessage("Couldn't save your code - check your connection and try submitting again.");
+        }
+      }
+    } catch {
+      setCheckStatus("idle");
+      setErrorMessage("Couldn't check your code - check your connection and try submitting again.");
+    } finally {
+      setChecking(false);
     }
   }
 
@@ -142,11 +155,16 @@ export function PracticeCell({
       <VStack align="stretch" spacing={2}>
         <HStack justify="space-between">
           <Badge colorScheme="blue">Try it live</Badge>
-          <Button size="xs" colorScheme="blue" onClick={run} isLoading={running || checking}>
+          <Button size="xs" colorScheme="blue" onClick={run} isLoading={running} isDisabled={checking}>
             Run
           </Button>
         </HStack>
         <CodeEditor value={source} onChange={updateSource} minHeight="60px" />
+        <HStack>
+          <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
+            Submit
+          </Button>
+        </HStack>
         {result && <CellOutput result={result} />}
         {checkStatus === "pass" && (
           <Alert status="success" borderRadius="md" py={2}>
@@ -183,12 +201,6 @@ export function PracticeCell({
             {errorMessage}
           </Alert>
         )}
-        <HintButton
-          labId={labId}
-          cellId={cellId}
-          getSource={() => source}
-          getOutput={() => (result ? actualStdout(result) : "")}
-        />
         <Text fontSize="xs" color="gray.500">
           Worth 5 points.
         </Text>

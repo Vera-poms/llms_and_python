@@ -155,43 +155,57 @@ function GradedCell({
       });
   }, [labId, gradedId]);
 
-  async function run() {
+  async function execute(): Promise<RunResult | null> {
     setRunning(true);
     setErrorMessage(null);
     try {
       const response = await api.post(`/notebooks/${labId}/run`, { source, api_key: apiKey || undefined });
       const runResult: RunResult = response.data;
       setResult(runResult);
-      if (!runResult.ok) {
-        setStatus("idle");
-        setFeedback(null);
-        return;
-      }
-      setChecking(true);
-      try {
-        const judged = await api.post(`/labs/${labId}/cells/${gradedId}/judge`, {
-          source,
-          output: stdoutOf(runResult),
-        });
-        setStatus(judged.data.correct ? "pass" : "fail");
-        setFeedback(judged.data.feedback ?? null);
-        if (judged.data.lab_done) onLabDone();
-        onJudged?.();
-        if (judged.data.correct) {
-          try {
-            await api.put(`/labs/${labId}/cells/${gradedId}/code`, { source });
-          } catch {
-            setErrorMessage("Couldn't save your code - check your connection and run it again.");
-          }
-        }
-      } catch {
-        setStatus("idle");
-        setErrorMessage("Couldn't check your code - check your connection and run it again.");
-      } finally {
-        setChecking(false);
-      }
+      return runResult;
+    } catch {
+      setErrorMessage("Couldn't run your code - check your connection and try again.");
+      return null;
     } finally {
       setRunning(false);
+    }
+  }
+
+  // Run only tries the code and shows its output; nothing is graded or saved.
+  async function run() {
+    await execute();
+  }
+
+  async function submit() {
+    const runResult = await execute();
+    if (!runResult) return;
+    if (!runResult.ok) {
+      setStatus("idle");
+      setFeedback(null);
+      return;
+    }
+    setChecking(true);
+    try {
+      const judged = await api.post(`/labs/${labId}/cells/${gradedId}/judge`, {
+        source,
+        output: stdoutOf(runResult),
+      });
+      setStatus(judged.data.correct ? "pass" : "fail");
+      setFeedback(judged.data.feedback ?? null);
+      if (judged.data.lab_done) onLabDone();
+      onJudged?.();
+      if (judged.data.correct) {
+        try {
+          await api.put(`/labs/${labId}/cells/${gradedId}/code`, { source });
+        } catch {
+          setErrorMessage("Couldn't save your code - check your connection and submit it again.");
+        }
+      }
+    } catch {
+      setStatus("idle");
+      setErrorMessage("Couldn't check your code - check your connection and submit it again.");
+    } finally {
+      setChecking(false);
     }
   }
 
@@ -204,11 +218,16 @@ function GradedCell({
             <Badge colorScheme="teal">{cell.points} pts</Badge>
             {status === "pass" && <Badge colorScheme="green">passed</Badge>}
           </HStack>
-          <Button size="xs" colorScheme="blue" flexShrink={0} onClick={run} isLoading={running || checking}>
+          <Button size="xs" colorScheme="blue" flexShrink={0} onClick={run} isLoading={running} isDisabled={checking}>
             Run
           </Button>
         </HStack>
         <CodeEditor value={source} onChange={setSource} />
+        <HStack>
+          <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
+            Submit
+          </Button>
+        </HStack>
         {result && <CellOutput result={result} />}
         {status === "pass" && (
           <Alert status="success" borderRadius="md" py={2}>
