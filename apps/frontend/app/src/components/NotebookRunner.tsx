@@ -54,6 +54,12 @@ const ROLE_COLORS: Record<string, string> = {
   setup: "gray",
 };
 
+// Card background per role, matching the role badge color.
+const CARD_TINT: Record<string, { light: string; dark: string }> = {
+  exercise: { light: "orange.50", dark: "orange.900" },
+  project: { light: "green.50", dark: "green.900" },
+};
+
 export function CellOutput({ result }: { result: RunResult }) {
   return (
     <VStack align="stretch" spacing={2} mt={2}>
@@ -210,7 +216,15 @@ function GradedCell({
   }
 
   return (
-    <Box data-nav={cell.role} borderWidth="1px" borderRadius="md" p={{ base: 2, md: 3 }} minW={0}>
+    <Box
+      data-nav={cell.role}
+      borderWidth="1px"
+      borderRadius="md"
+      p={{ base: 2, md: 3 }}
+      minW={0}
+      bg={CARD_TINT[cell.role]?.light}
+      _dark={CARD_TINT[cell.role] ? { bg: CARD_TINT[cell.role].dark } : undefined}
+    >
       <VStack align="stretch" spacing={2}>
         <HStack justify="space-between" align="start" spacing={2}>
           <HStack wrap="wrap" spacing={2} minW={0}>
