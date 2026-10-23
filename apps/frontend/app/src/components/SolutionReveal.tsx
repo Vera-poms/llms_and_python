@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
-import { CellOutput, RunResult } from "./NotebookRunner";
+import { CARD_TINT, CellOutput, RunResult } from "./NotebookRunner";
 
 interface Part {
   id: string;
@@ -43,9 +43,12 @@ export function SolutionReveal({
   getSource,
   onChanged,
   apiKey,
+  activityRole,
 }: {
   labId: number;
   cellId: string;
+  // Role of the exercise or project this solution belongs to; the solution card takes its color.
+  activityRole?: string;
   getSource: () => string;
   onChanged?: () => void;
   apiKey?: string;
@@ -65,6 +68,7 @@ export function SolutionReveal({
     if (view) setDraft(assemble(view));
   }, [view]);
 
+  const tint = activityRole ? CARD_TINT[activityRole] : undefined;
   const hiddenAtLevel = view ? view.parts.filter((part) => part.kind === level && !part.code) : [];
 
   async function run() {
@@ -196,7 +200,13 @@ export function SolutionReveal({
                 </>
               )}
 
-              <Box borderWidth="1px" borderRadius="md" p={3}>
+              <Box
+                borderWidth="1px"
+                borderRadius="md"
+                p={3}
+                bg={tint?.light}
+                _dark={tint ? { bg: tint.dark } : undefined}
+              >
                 <HStack justify="space-between" mb={2}>
                   <Badge colorScheme="purple">solution</Badge>
                   <Button size="xs" colorScheme="blue" onClick={run} isLoading={running}>

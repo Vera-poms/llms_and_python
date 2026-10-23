@@ -58,7 +58,7 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 // Card background per role, matching the role badge color.
-const CARD_TINT: Record<string, { light: string; dark: string }> = {
+export const CARD_TINT: Record<string, { light: string; dark: string }> = {
   exercise: { light: "orange.50", dark: "orange.900" },
   project: { light: "green.50", dark: "green.900" },
 };
@@ -402,6 +402,7 @@ export function NotebookRunner({
               key={cell.index}
               labId={labId}
               cellId={solutionFor}
+              activityRole={cells.find((c) => c.role !== "solution" && c.graded_cell_id === solutionFor)?.role}
               getSource={() => gradedSources.current[solutionFor] ?? ""}
               onChanged={onProgress}
               apiKey={apiKey}
@@ -426,8 +427,14 @@ export function NotebookRunner({
         }
 
         const result = results[cell.index];
+        // A setup cell takes the color of the activity (exercise or project) it prepares for: the next one after it.
+        const activityRole =
+          cell.role === "setup"
+            ? cells.find((c) => c.index > cell.index && (c.role === "exercise" || c.role === "project"))?.role
+            : undefined;
+        const tint = activityRole ? CARD_TINT[activityRole] : undefined;
         const cellBody = (
-          <Box borderWidth="1px" borderRadius="md" p={3}>
+          <Box borderWidth="1px" borderRadius="md" p={3} bg={tint?.light} _dark={tint ? { bg: tint.dark } : undefined}>
             <HStack justify="space-between" mb={2}>
               <Badge colorScheme={ROLE_COLORS[cell.role] ?? "gray"}>{cell.role}</Badge>
               <Button
