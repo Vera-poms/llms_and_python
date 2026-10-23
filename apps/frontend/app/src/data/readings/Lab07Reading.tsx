@@ -643,14 +643,6 @@ print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall 
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h3" size="sm">Notebook</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_07_attention.ipynb</Code>. Implement <Code>softmax</Code>{" "}
-        and <Code>scaled_dot_product_attention</Code> with plain numpy, then the project reuses
-        lab 3's bigram table (re-derived here) as toy word embeddings and runs real tokenized
-        review sentences through attention, plotting a word-by-word attention heatmap.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM Think:{" "}

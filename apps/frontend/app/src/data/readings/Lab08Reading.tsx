@@ -427,14 +427,6 @@ print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h3" size="sm">Notebook</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_08_prompting_techniques.ipynb</Code>. Implement a{" "}
-        <Code>PromptTemplate</Code> class (template + required variables + validation), then the
-        project renders a small template library against real review sentences - no API key needed
-        yet, this lab is fully offline.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM Think:{" "}

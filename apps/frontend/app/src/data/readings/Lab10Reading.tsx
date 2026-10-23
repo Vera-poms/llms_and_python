@@ -325,16 +325,6 @@ except ValueError as e:
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_10_few_shot_structured.ipynb</Code>. Implement{" "}
-        <Code>build_few_shot_messages(examples, query)</Code> and{" "}
-        <Code>parse_json_response(text)</Code> - the parser has to cope with models that wrap JSON
-        in <Code>```json</Code> fences even when told not to. The project asks Groq for{" "}
-        <Code>{'{"sentiment": ..., "confidence": ...}'}</Code> on real sentences and tabulates the
-        parsed results.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>

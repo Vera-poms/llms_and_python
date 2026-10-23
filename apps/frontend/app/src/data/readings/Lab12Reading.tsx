@@ -408,15 +408,6 @@ for question in QUESTIONS:                       # varies every iteration
         will not be exactly the same each time. Check the tone and the rules, not the exact words.
       </Text>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_12_system_instructions.ipynb</Code>. Implement{" "}
-        <Code>build_system_message(persona)</Code>, templating a persona dict (name, role, tone,
-        constraints) into a system prompt. The project uses one persona across several very
-        different user questions to spot-check that the instruction actually holds. Sets up lab
-        13's digital twin.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>

@@ -346,14 +346,6 @@ print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutpu
         <Code>"FastAPI"</Code> inside the string.
       </Text>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_13_digital_twin.ipynb</Code>. Implement{" "}
-        <Code>build_digital_twin_system_prompt(profile)</Code>. The project has you fill in a{" "}
-        <Code>my_profile</Code> dict with your own real name, role, facts, and boundaries, then
-        runs a real multi-turn conversation against it - your own working digital twin.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM's{" "}

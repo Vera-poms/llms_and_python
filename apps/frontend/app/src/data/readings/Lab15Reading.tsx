@@ -383,16 +383,6 @@ print(notifier.notify("Build complete"))  # expected output: [fake] would send: 
         always go system, user, assistant, user, assistant (5 lines).
       </Text>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key for the project only</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_15_groq_client.ipynb</Code>. Implement{" "}
-        <Code>GroqClient</Code>: <Code>add_user_message</Code>, <Code>add_assistant_message</Code>,{" "}
-        <Code>send()</Code>, <Code>reset()</Code>, and a <Code>history</Code> property. The
-        exercise's asserts run entirely offline via a fake transport. The project then rebuilds
-        lab 13's digital twin on top of the finished class with a real transport, and prints the
-        full messages list at the end - the messages list, in depth, for real.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>

@@ -404,16 +404,6 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_09_zero_shot.ipynb</Code>. Get a free key at{" "}
-        <Code>console.groq.com/keys</Code> - the notebook's setup cell prompts for it with a
-        hidden input field (via <Code>getpass</Code>), it's never written into the notebook file
-        or sent anywhere but Groq. Implement <Code>build_zero_shot_messages</Code> and{" "}
-        <Code>parse_label</Code> (pure, offline-testable), then the project calls Groq zero-shot
-        on 10 real review sentences and reports accuracy.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM Think:{" "}

@@ -535,22 +535,6 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
           you see in the printed <Code>diff</Code>.
         </ListItem>
       </UnorderedList>
-
-      <Heading as="h3" size="sm">Notebook</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_06_llm_architecture.ipynb</Code> (upload it to{" "}
-        <Code>colab.research.google.com</Code>, or run it locally in Jupyter). Implement a
-        dataclass-based parameter counter, then compare against real published GPT-2 configs and
-        see how close a simple formula gets to the real numbers.
-      </Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>Exercise: implement per-component parameter counts on a small config</ListItem>
-        <ListItem>Solution: the filled-in counter</ListItem>
-        <ListItem>
-          Project: real GPT-2 small/medium configs vs. their real published parameter totals, with
-          a bar chart of the breakdown
-        </ListItem>
-      </UnorderedList>
     </VStack>
   );
 }

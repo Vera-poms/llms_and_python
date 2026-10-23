@@ -326,15 +326,6 @@ print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
         the model's wording can change.
       </Text>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_14_universal_api_components.ipynb</Code>. Implement{" "}
-        <Code>SimpleAPIClient</Code> - a small, generic, reusable class not specific to Groq at
-        all. The exercise itself makes a real call to a public echo API (httpbin.org, no key
-        needed) to prove it works; the project repeats lab 9's zero-shot call through this client
-        instead of the raw request, to show the abstraction really does transfer to any REST API.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>
         IBM's{" "}

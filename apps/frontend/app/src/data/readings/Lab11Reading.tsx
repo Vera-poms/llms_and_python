@@ -291,16 +291,6 @@ print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} /
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h3" size="sm">Notebook - needs a free Groq API key</Heading>
-      <Text>
-        Open <Code>course/notebooks/lab_11_chain_of_thought.ipynb</Code>. Implement{" "}
-        <Code>build_direct_prompt</Code>, <Code>build_cot_prompt</Code> (adds a "think step by
-        step, then answer as 'Answer: &lt;answer&gt;'" instruction), and{" "}
-        <Code>extract_final_answer</Code>. The project compares direct-answer vs.
-        chain-of-thought prompting on a handful of small reasoning questions - the kind small/fast
-        models often get wrong when rushed into a one-shot answer.
-      </Text>
-
       <Heading as="h3" size="sm">Further reading</Heading>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
