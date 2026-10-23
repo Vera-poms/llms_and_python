@@ -88,7 +88,7 @@ export function CellOutput({ result }: { result: RunResult }) {
           );
         }
         return (
-          <Code key={i} as="pre" whiteSpace="pre-wrap" wordBreak="break-word" overflowX="auto" maxW="100%" p={2} borderRadius="md">
+          <Code key={i} as="pre" colorScheme="gray" whiteSpace="pre-wrap" wordBreak="break-word" overflowX="auto" maxW="100%" p={2} borderRadius="md">
             {output.text}
           </Code>
         );
