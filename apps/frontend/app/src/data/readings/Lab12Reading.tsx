@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab12Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">The instruction that never goes away</Heading>
+      <Heading as="h2" size="md">System messages: one instruction for the whole chat</Heading>
       <Text>
         A system message sits at the front of the messages list and shapes every reply for the
         rest of the conversation, independent of whatever the user asks - it's how you give a

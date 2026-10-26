@@ -13,7 +13,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab07Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Attention, the short version</Heading>
+      <Heading as="h2" size="md">How attention works: scores, softmax, weighted average</Heading>
       <Text>
         Self-attention lets every word in a sequence look at every other word and decide how much
         to "pay attention" to it. For each word, three vectors are derived from its embedding: a{" "}

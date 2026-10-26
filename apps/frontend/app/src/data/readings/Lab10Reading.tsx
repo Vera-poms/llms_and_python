@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab10Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Showing, not just telling</Heading>
+      <Heading as="h2" size="md">Few-shot prompting: steer the reply with examples</Heading>
       <Text>
         Few-shot prompting adds a handful of worked (input, output) examples to the messages list
         before the real question - it steers the model's <i>format</i> far more reliably than

@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab09Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Just ask</Heading>
+      <Heading as="h2" size="md">Zero-shot prompting and your first API call</Heading>
       <Text>
         <b>Zero-shot</b> means asking the model to do a task with no worked examples first - just an
         instruction, like "classify the sentiment of this review" with no sample reviews shown

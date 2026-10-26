@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab15Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">The capstone</Heading>
+      <Heading as="h2" size="md">GroqClient: a class that owns the messages list</Heading>
       <Text>
         Every earlier lab hand-rolled its own messages list. This lab wraps that bookkeeping into
         a proper <Code>GroqClient</Code> class that owns <Code>self.messages</Code> and grows it

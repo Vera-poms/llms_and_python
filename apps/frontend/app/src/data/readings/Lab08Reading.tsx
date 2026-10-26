@@ -7,30 +7,21 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab08Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">The map before the territory</Heading>
-      <Text>Labs 9-15 each cover one way of shaping a prompt to get better results from an LLM:</Text>
+      <Heading as="h2" size="md">Prompt templates: the two Python ideas behind them</Heading>
+      <Text>
+        A <b>prompt template</b> is a piece of text with blanks in it. You fill the blanks with
+        your data and get a finished prompt string, ready to send to a model. This lab builds a{" "}
+        <Code>PromptTemplate</Code> that does this, with no live API call yet.
+      </Text>
+      <Text>Two ordinary Python ideas make it work. This reading explains each from scratch:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <b>Zero-shot</b> (lab 9) - just ask, no examples
+          <b>String formatting</b> - filling blanks in text with values
         </ListItem>
         <ListItem>
-          <b>Few-shot</b> (lab 10) - show worked examples first, often to steer structured output
-        </ListItem>
-        <ListItem>
-          <b>Chain-of-thought</b> (lab 11) - ask the model to reason step by step before answering
-        </ListItem>
-        <ListItem>
-          <b>System instructions</b> (lab 12) - a persistent instruction shaping every reply
+          <b>A class</b> - one object that stores the template and knows how to fill it
         </ListItem>
       </UnorderedList>
-      <Text>
-        All of these are really about building the right <b>messages list</b> to send to the API
-        (lab 15 goes deep on that). This lab builds the reusable piece underneath all of them - a
-        template system for turning "a task plus some data" into a finished prompt string, with no
-        live API call yet. The rest of this reading explains, from scratch, the two Python ideas
-        that <Code>PromptTemplate</Code> is built from: string formatting, and a class that stores
-        state and knows how to act on it.
-      </Text>
 
       <Heading as="h2" size="md">String formatting: filling blanks in text</Heading>
       <Text>Say you want to greet someone by name, filling a blank in a piece of text with a value.</Text>

@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab11Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Making the model show its work</Heading>
+      <Heading as="h2" size="md">Chain-of-thought: asking the model to think step by step</Heading>
       <Text>
         For tasks that involve any reasoning (arithmetic, logic, multi-step inference), asking a
         model to think step by step before answering - chain-of-thought - measurably improves

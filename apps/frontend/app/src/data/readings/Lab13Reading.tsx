@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab13Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Putting it together</Heading>
+      <Heading as="h2" size="md">The digital twin: three Python ideas behind a chat that remembers</Heading>
       <Text>
         This lab combines everything from 8-12 into one real thing: a persistent, persona-driven
         chatbot built from your own bio - a "digital twin". Three ordinary Python ideas do all the

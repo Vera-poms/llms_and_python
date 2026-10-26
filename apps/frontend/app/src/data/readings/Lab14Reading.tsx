@@ -7,7 +7,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 export function Lab14Reading() {
   return (
     <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Naming what you've already been doing</Heading>
+      <Heading as="h2" size="md">The 5 parts of every API call</Heading>
       <Text>
         Labs 9-13 all made the same shape of HTTP call to Groq. Every REST API call, regardless of
         provider, breaks down into the same 5 components:
