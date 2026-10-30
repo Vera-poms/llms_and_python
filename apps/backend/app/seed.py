@@ -19,6 +19,10 @@ SEED_LABS: list[tuple[int, str]] = [
     (13, "Free APIs and Integration: The Complete Digital Twin"),
     (14, "The 5 Universal API Components"),
     (15, "The Messages List In Depth / GroqClient Wrapper Class"),
+    (16, "String Surgery: Teaching Your Digital Twin to Read"),
+    (17, "Context Window Management: How Your Twin Manages Its Working Memory"),
+    (18, "Embeddings Deep Dive: Teaching Your Twin to Understand Meaning"),
+    (19, "RAG 101: Your Digital Twin Finally Gets Its Memory"),
 ]
 
 

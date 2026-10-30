@@ -304,5 +304,77 @@
     "cell_id": "concept-3",
     "code": "def fake_sender(message):\n    return f\"[fake] would send: {message}\"\n\nclass Notifier:\n    def __init__(self, sender):\n        self.sender = sender\n\n    def notify(self, message):\n        return self.sender(message)\n\nnotifier = Notifier(sender=fake_sender)\nprint(notifier.notify(\"Build complete\"))  # expected output: [fake] would send: Build complete",
     "expected_output": "[fake] would send: Build complete"
+  },
+  {
+    "lab_id": 16,
+    "cell_id": "concept-1",
+    "code": "title = \"digital twin\"\nprint(title[:7])   # expected output: digital\nprint(title[-4:])  # expected output: twin\nprint(len(title))  # expected output: 12",
+    "expected_output": "digital\ntwin\n12"
+  },
+  {
+    "lab_id": 16,
+    "cell_id": "concept-2",
+    "code": "note = \"  buy   MILK  and   eggs \\n\"\nwords = note.lower().split()\nprint(words)            # expected output: ['buy', 'milk', 'and', 'eggs']\nprint(\" \".join(words))  # expected output: buy milk and eggs",
+    "expected_output": "['buy', 'milk', 'and', 'eggs']\nbuy milk and eggs"
+  },
+  {
+    "lab_id": 16,
+    "cell_id": "concept-3",
+    "code": "numbers = [1, 2, 3, 4, 5, 6, 7, 8]\nfor start in range(0, len(numbers), 2):\n    print(numbers[start:start + 4])\n# expected output: four lines, each 4 long except the last",
+    "expected_output": "[1, 2, 3, 4]\n[3, 4, 5, 6]\n[5, 6, 7, 8]\n[7, 8]"
+  },
+  {
+    "lab_id": 17,
+    "cell_id": "concept-1",
+    "code": "text = \"Hello! How can I help you today?\"\nprint(len(text))           # expected output: 32\nprint(len(text) // 4 + 1)  # expected output: 9",
+    "expected_output": "32\n9"
+  },
+  {
+    "lab_id": 17,
+    "cell_id": "concept-2",
+    "code": "costs = [5, 3, 9, 5]\nbudget = 15\nused = 0\nfor cost in reversed(costs):\n    if used + cost > budget:\n        break\n    used += cost\nprint(used)  # expected output: 14",
+    "expected_output": "14"
+  },
+  {
+    "lab_id": 17,
+    "cell_id": "concept-3",
+    "code": "history = [\"system\", \"hi\", \"hello\", \"bye\"]\nsystem = history[:1]\nrest = history[1:]\ntrimmed = system + rest[-2:]\nprint(trimmed)  # expected output: ['system', 'hello', 'bye']\nprint(history)  # expected output: ['system', 'hi', 'hello', 'bye']",
+    "expected_output": "['system', 'hello', 'bye']\n['system', 'hi', 'hello', 'bye']"
+  },
+  {
+    "lab_id": 18,
+    "cell_id": "concept-1",
+    "code": "a = [2, 0, 1]\nb = [1, 5, 4]\nprint(sum(x * y for x, y in zip(a, b)))  # expected output: 6",
+    "expected_output": "6"
+  },
+  {
+    "lab_id": 18,
+    "cell_id": "concept-2",
+    "code": "import math\nv = [6, 8]\nprint(math.sqrt(sum(x * x for x in v)))  # expected output: 10.0",
+    "expected_output": "10.0"
+  },
+  {
+    "lab_id": 18,
+    "cell_id": "concept-3",
+    "code": "vectors = [[2, 4], [4, 0], [0, 2]]\nprint([sum(c) / len(vectors) for c in zip(*vectors)])  # expected output: [2.0, 2.0]\nscores = [0.1, 0.7, 0.3]\nprint(scores.index(max(scores)))                       # expected output: 1",
+    "expected_output": "[2.0, 2.0]\n1"
+  },
+  {
+    "lab_id": 19,
+    "cell_id": "concept-1",
+    "code": "class Basket:\n    def __init__(self):\n        self.items = []\n\n    def add(self, name, price):\n        self.items.append((name, price))\n\nbasket = Basket()\nbasket.add(\"pen\", 2)\nbasket.add(\"book\", 7)\nprint(basket.items)       # expected output: [('pen', 2), ('book', 7)]\nprint(len(basket.items))  # expected output: 2",
+    "expected_output": "[('pen', 2), ('book', 7)]\n2"
+  },
+  {
+    "lab_id": 19,
+    "cell_id": "concept-2",
+    "code": "scores = [(3, \"x\"), (8, \"y\"), (5, \"z\")]\nscores.sort(reverse=True)\nprint(scores[:2])        # expected output: [(8, 'y'), (5, 'z')]\nprint(len(scores[:10]))  # expected output: 3",
+    "expected_output": "[(8, 'y'), (5, 'z')]\n3"
+  },
+  {
+    "lab_id": 19,
+    "cell_id": "concept-3",
+    "code": "notes = [\"tea\", \"toast\"]\nlines = \"\\n\".join(f\"- {n}\" for n in notes)\nprint(lines)  # expected output: two lines, each starting with \"- \"",
+    "expected_output": "- tea\n- toast"
   }
 ]

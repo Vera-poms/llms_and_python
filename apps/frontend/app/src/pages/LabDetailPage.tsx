@@ -10,7 +10,7 @@ import { ReviewModal, type ReviewTarget } from "../components/ReviewModal";
 import { HighlightToolbar } from "../components/HighlightToolbar";
 import { useBookmark } from "../hooks/useBookmark";
 import { useHighlights } from "../hooks/useHighlights";
-import { LABS } from "../data/labs";
+import { LABS, labWeek } from "../data/labs";
 import { Lab01Reading } from "../data/readings/Lab01Reading";
 import { Lab02Reading } from "../data/readings/Lab02Reading";
 import { Lab03Reading } from "../data/readings/Lab03Reading";
@@ -26,6 +26,10 @@ import { Lab12Reading } from "../data/readings/Lab12Reading";
 import { Lab13Reading } from "../data/readings/Lab13Reading";
 import { Lab14Reading } from "../data/readings/Lab14Reading";
 import { Lab15Reading } from "../data/readings/Lab15Reading";
+import { Lab16Reading } from "../data/readings/Lab16Reading";
+import { Lab17Reading } from "../data/readings/Lab17Reading";
+import { Lab18Reading } from "../data/readings/Lab18Reading";
+import { Lab19Reading } from "../data/readings/Lab19Reading";
 
 const READINGS: Record<number, () => JSX.Element> = {
   1: Lab01Reading,
@@ -43,6 +47,10 @@ const READINGS: Record<number, () => JSX.Element> = {
   13: Lab13Reading,
   14: Lab14Reading,
   15: Lab15Reading,
+  16: Lab16Reading,
+  17: Lab17Reading,
+  18: Lab18Reading,
+  19: Lab19Reading,
 };
 
 export function LabDetailPage() {
@@ -104,7 +112,7 @@ export function LabDetailPage() {
           <MobileNav title="Lab sections" hideFrom="lg">
             {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} bookmark={bookmark} highlights={highlights} />}
           </MobileNav>
-          <Link as={RouterLink} to="/labs" color="blue.500">
+          <Link as={RouterLink} to={labWeek(lab) === 1 ? "/labs" : `/labs?week=${labWeek(lab)}`} color="blue.500">
             &larr; All labs
           </Link>
         </HStack>

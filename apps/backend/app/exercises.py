@@ -21,14 +21,14 @@ from core.config import COURSE_DIR
 POINTS = {"python": 5, "llm": 10, "project": 20}
 NOTEBOOK_EXERCISE_ID = "nb-exercise"
 PROJECT_ID = "project"
-LAB_IDS = range(1, 16)
+LAB_IDS = range(1, 20)
 
 NOTEBOOKS_DIR = Path(COURSE_DIR) / "notebooks"
 PROJECTS_DIR = Path(COURSE_DIR) / "projects"
 PRACTICE_CELLS_FILE = Path(COURSE_DIR) / "exercises" / "practice_cells.json"
 
 # The dataset-loader cell is tagged "project" in the notebooks but is shared setup, not part of the solution.
-_LOADER_MARKER = "REVIEW_CSV"
+_LOADER_MARKERS = ("REVIEW_CSV", "# lab-data-loader")
 
 
 @dataclass(frozen=True)
@@ -70,7 +70,7 @@ def load_notebook_cells(lab_id: int) -> list[dict]:
 
 
 def is_project_loader(cell: dict) -> bool:
-    return cell["role"] == "project" and _LOADER_MARKER in cell["source"]
+    return cell["role"] == "project" and any(marker in cell["source"] for marker in _LOADER_MARKERS)
 
 
 def project_solution_cells(cells: list[dict]) -> list[dict]:

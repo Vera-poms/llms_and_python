@@ -1,5 +1,8 @@
 export interface LabMeta {
   id: number;
+  // Which week's tab the lab lives under (default 1) and the number shown for it within that week (default: id).
+  week?: number;
+  number?: number;
   title: string;
   summary: string;
   hasContent: boolean;
@@ -104,4 +107,39 @@ export const LABS: LabMeta[] = [
     hasContent: true,
     needsApiKey: true,
   },
+  {
+    id: 16,
+    week: 2,
+    number: 1,
+    title: "String Surgery: Teaching Your Digital Twin to Read",
+    summary: "Clean a messy document and cut it into overlapping chunks - the first step before any search.",
+    hasContent: true,
+  },
+  {
+    id: 17,
+    week: 2,
+    number: 2,
+    title: "Context Window Management: How Your Twin Manages Its Working Memory",
+    summary: "Keep the system message and the newest turns, and drop the oldest, so a long chat fits the token budget.",
+    hasContent: true,
+  },
+  {
+    id: 18,
+    week: 2,
+    number: 3,
+    title: "Embeddings Deep Dive: Teaching Your Twin to Understand Meaning",
+    summary: "Turn text into vectors and compare meaning with cosine similarity.",
+    hasContent: true,
+  },
+  {
+    id: 19,
+    week: 2,
+    number: 4,
+    title: "RAG 101: Your Digital Twin Finally Gets Its Memory",
+    summary: "Build a tiny vector store, retrieve the best chunks and paste them into the prompt.",
+    hasContent: true,
+  },
 ];
+
+export const labWeek = (lab: LabMeta): number => lab.week ?? 1;
+export const labNumber = (lab: LabMeta): number => lab.number ?? lab.id;

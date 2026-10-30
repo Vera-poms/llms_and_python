@@ -8,7 +8,7 @@ import { ResourceRenderer } from "../components/resources/ResourceRenderer";
 import { CourseNav, CourseSidebar } from "../components/CourseSidebar";
 import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { useAuth } from "../context/AuthContext";
-import { LABS } from "../data/labs";
+import { LABS, labNumber, labWeek } from "../data/labs";
 
 interface LabApiResult {
   id: number;
@@ -32,8 +32,8 @@ export function LabListPage() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Week 1 is the static lab list; later weeks exist only once an admin has released a resource.
-  const weeks = [1, ...new Set(resources.map((r) => r.week))].sort((a, b) => a - b);
+  // Weeks with built-in labs always show; other weeks exist once an admin has released a resource.
+  const weeks = [...new Set([1, ...LABS.map(labWeek), ...resources.map((r) => r.week)])].sort((a, b) => a - b);
   const doneIds = new Set(
     Object.entries(progressById)
       .filter(([, p]) => p.done)
@@ -41,6 +41,7 @@ export function LabListPage() {
   );
   const requestedWeek = Number(searchParams.get("week")) || 1;
   const week = weeks.includes(requestedWeek) ? requestedWeek : 1;
+  const weekLabs = LABS.filter((lab) => labWeek(lab) === week);
 
   useEffect(() => {
     api
@@ -109,25 +110,7 @@ export function LabListPage() {
         </Button>
       </StickyHeader>
 
-      {week !== 1 &&
-        resources
-          .filter((r) => r.week === week)
-          .map((r) => (
-            <Box key={r.id} mb={8}>
-              <Heading size={{ base: "sm", md: "md" }}>{r.title}</Heading>
-              {r.summary && (
-                <Text color="gray.600" _dark={{ color: "gray.300" }} mb={3}>
-                  {r.summary}
-                </Text>
-              )}
-              <ResourceRenderer
-                blocks={r.blocks}
-                run={(source) => api.post(`/resources/${r.id}/run`, { source }).then((res) => res.data)}
-              />
-            </Box>
-          ))}
-
-      {week === 1 && score && (
+      {weekLabs.length > 0 && score && (
         <Box mb={6} p={4} borderWidth="1px" borderRadius="md">
           <Text fontWeight="bold">
             Course score: {score.percent}% ({score.earned}/{score.possible} points)
@@ -138,16 +121,16 @@ export function LabListPage() {
         </Box>
       )}
 
-      {week === 1 && (
+      {weekLabs.length > 0 && (
       <VStack align="stretch" spacing={3}>
-        {LABS.map((lab) => {
+        {weekLabs.map((lab) => {
           const done = progressById[lab.id]?.done ?? false;
           const labScore = score?.labs.find((l) => l.lab_id === lab.id);
           const content = (
             <HStack justify="space-between" align="start" spacing={3}>
               <Box minW={0}>
                 <Text fontWeight="bold">
-                  {lab.id}. {lab.title}
+                  {labNumber(lab)}. {lab.title}
                 </Text>
                 <Text fontSize="sm" color="gray.600">
                   {lab.summary}
@@ -180,6 +163,23 @@ export function LabListPage() {
         })}
       </VStack>
       )}
+
+      {resources
+        .filter((r) => r.week === week)
+        .map((r) => (
+          <Box key={r.id} mt={8}>
+            <Heading size={{ base: "sm", md: "md" }}>{r.title}</Heading>
+            {r.summary && (
+              <Text color="gray.600" _dark={{ color: "gray.300" }} mb={3}>
+                {r.summary}
+              </Text>
+            )}
+            <ResourceRenderer
+              blocks={r.blocks}
+              run={(source) => api.post(`/resources/${r.id}/run`, { source }).then((res) => res.data)}
+            />
+          </Box>
+        ))}
       </Box>
     </Flex>
   );

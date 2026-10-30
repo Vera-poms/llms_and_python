@@ -1,7 +1,7 @@
 import { Box, Text, VStack } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
-import type { LabMeta } from "../data/labs";
+import { labNumber, labWeek, type LabMeta } from "../data/labs";
 
 interface CourseNavProps {
   weeks: number[];
@@ -13,12 +13,13 @@ interface CourseNavProps {
   onNavigate?: () => void;
 }
 
-// The nav entries themselves: one per week, with Week 1 expanding into its labs.
+// The nav entries themselves: one per week, with the active week expanding into its labs.
 export function CourseNav({ weeks, active, labs, doneIds, onSelectWeek, onNavigate }: CourseNavProps) {
   return (
     <VStack align="stretch" spacing={1}>
       {weeks.map((w) => {
         const isActive = w === active;
+        const weekLabs = labs.filter((lab) => labWeek(lab) === w);
         return (
           <Box key={w}>
             <Box
@@ -42,9 +43,9 @@ export function CourseNav({ weeks, active, labs, doneIds, onSelectWeek, onNaviga
             >
               Week {w}
             </Box>
-            {w === 1 && isActive && (
+            {weekLabs.length > 0 && isActive && (
               <VStack align="stretch" spacing={0} mt={1} ml={3} pl={2} borderLeftWidth="1px">
-                {labs.map((lab) =>
+                {weekLabs.map((lab) =>
                   lab.hasContent ? (
                     <Box
                       key={lab.id}
@@ -59,12 +60,12 @@ export function CourseNav({ weeks, active, labs, doneIds, onSelectWeek, onNaviga
                     >
                       <Text noOfLines={1}>
                         {doneIds.has(lab.id) ? "✓ " : ""}
-                        {lab.id}. {lab.title}
+                        {labNumber(lab)}. {lab.title}
                       </Text>
                     </Box>
                   ) : (
                     <Text key={lab.id} px={2} py={1} fontSize="sm" opacity={0.5} noOfLines={1}>
-                      {lab.id}. {lab.title}
+                      {labNumber(lab)}. {lab.title}
                     </Text>
                   ),
                 )}
