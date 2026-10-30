@@ -367,7 +367,7 @@ export function NotebookRunner({
       {needsApiKey && (
         <Box>
           <Text fontSize="sm" mb={1}>
-            Groq API key (get a free one at console.groq.com/keys - only kept in memory here)
+            Enter your Groq API key here before running the Setup cell (get a free one at console.groq.com/keys - only kept in memory here)
           </Text>
           <Input
             type="password"

@@ -460,10 +460,25 @@ def judge_cell_code(
 
 
 _HINT_STYLE = {
-    1: "Give ONE short nudge (max 2 sentences): name the concept or the question the student should ask themselves. Do not say which line is wrong.",
-    2: "Say which part of the student's code, or which missing step, needs attention, and why it matters (max 3 sentences). Describe it in words only.",
-    3: "Walk through the approach as numbered steps in plain English (max 5 steps). Each step says WHAT to do and WHY, never the code that does it.",
+    1: "Name the ONE function or step in the student's code that is still wrong or missing, and what it currently does instead of what it should (max 2 sentences). Skip anything they already got right.",
+    2: "Name the exact function and the exact variable or line in the student's code that is wrong, say what it does now versus what it must do, and why that gives the wrong result (max 3 sentences). Describe the fix in words only.",
+    3: "Start with one short line listing what the student already did correctly. Then give numbered steps (max 4) for ONLY what is still wrong or missing. Each step names the exact function and variable to change and says precisely what to change it to, in words, e.g. 'in parse_label, the check that tests reply_text should test the word negative instead'. Do not repeat steps the student has already done.",
 }
+
+_HINT_FOCUS = (
+    "HOW TO WRITE THE HINT:\n"
+    "- First compare the student's code and output against the reference, piece by piece (each "
+    "function, each TODO step). Work out which pieces already match and which do not.\n"
+    "- Be specific and go straight to the point: refer to the student's own function and variable "
+    "names, and say what is wrong with THEIR code. Never give a generic roadmap or restate the "
+    "exercise's TODO steps.\n"
+    "- Never re-explain a step the student has already done correctly; at most acknowledge it in a "
+    "few words.\n"
+    "- If the student's output shows an error or a failed check, explain what in their code caused it.\n"
+    "- You may name the words, labels or method names that the exercise text itself already mentions "
+    "(for example the words 'positive' and 'negative', or '.strip()'), because the student has seen "
+    "them. Do not reveal anything else from the reference."
+)
 
 # Hints are free, so the only thing stopping a student clicking straight to the answer is the hint
 # itself never containing it. The model is told, and then checked.
@@ -527,7 +542,7 @@ def _llm_hint(item: exercises.GradedItem, payload: CellHintRequest, level: int) 
         "reference solution only so your hint is accurate - the student must never be able to "
         "reconstruct it from what you write. If the student has not written anything yet, help them "
         "get started. If their code already looks correct, say so and suggest what to double-check.\n\n"
-        f"{_HINT_STYLE[level]}\n\n{_HINT_RULES}"
+        f"{_HINT_FOCUS}\n\n{_HINT_STYLE[level]}\n\n{_HINT_RULES}"
     )
     parts = []
     if item.kind == "project":

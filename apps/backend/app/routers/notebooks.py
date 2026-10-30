@@ -117,6 +117,14 @@ def run_cell(
         return RunCellResponse(**kernels.error_result("RateLimited", "Too many runs. Wait a few seconds and try again."))
     _run_limiter.record_failure(key)
     source = _substitute_groq_key(payload.source, payload.api_key)
+    if "getpass.getpass(" in source:
+        # There is no terminal here, so getpass could never show its "Enter your GROQ_API_KEY" prompt.
+        return RunCellResponse(
+            **kernels.error_result(
+                "MissingApiKey",
+                "Enter your Groq API key in the API key box (gsk_...) at the top of the notebook, then run this cell again.",
+            )
+        )
     try:
         result = kernels.run_cell(current_user.id, lab_id, source)
     except kernels.KernelBusy as exc:
