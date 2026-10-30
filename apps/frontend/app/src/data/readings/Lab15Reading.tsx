@@ -108,12 +108,130 @@ print(account.balance)  # expected output: 75`} expectedOutput={`75`} />
         before the print. You should see <Code>175</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: the history is read in order, by role</Heading>
+      <Text>
+        The model reads the messages list from top to bottom. Each message has a role, and the
+        order tells the model who said what.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The <Code>system</Code> message goes first. It holds the rules for the whole chat.
+        </ListItem>
+        <ListItem>
+          After that, a normal chat goes <Code>user</Code>, <Code>assistant</Code>,{" "}
+          <Code>user</Code>, <Code>assistant</Code>, and so on.
+        </ListItem>
+        <ListItem>
+          If the order is scrambled, the model can mix up who said what, and the answer gets worse.
+          An object that adds messages itself can keep the order right every time.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>make_history</Code> builds a messages list from a list of
+        role names. <Code>check_history</Code> loops over it and says if the roles alternate the
+        way a normal chat does.
+      </Text>
+      <RunnableExample labId={15} code={`def make_history(roles):
+    history = []
+    for role in roles:
+        history.append({"role": role, "content": "text"})
+    return history
+
+
+def check_history(messages):
+    expected = "user"
+    for message in messages[1:]:  # skip the system message
+        if message["role"] != expected:
+            return "problem: expected " + expected + " but got " + message["role"]
+        if expected == "user":
+            expected = "assistant"
+        else:
+            expected = "user"
+    return "ok"
+
+
+chats = [
+    ["system", "user", "assistant", "user", "assistant"],
+    ["system", "user", "user"],
+]
+for roles in chats:
+    print(len(roles), "messages ->", check_history(make_history(roles)))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>messages[1:]</Code> skips the first message, the system one. Then{" "}
+          <Code>expected</Code> starts as <Code>"user"</Code>.
+        </ListItem>
+        <ListItem>
+          In the first chat every role matches what was expected, and the expected role flips each
+          time, so the answer is <Code>ok</Code>.
+        </ListItem>
+        <ListItem>
+          In the second chat the model gets two user messages in a row. The loop stops at the
+          second one and reports that it expected <Code>assistant</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: the role is part of the meaning, so the order of the list matters.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on two new chats.
+      </Text>
+      <PracticeCell labId={15} cellId="topic-1" code={`def make_history(roles):
+    history = []
+    for role in roles:
+        history.append({"role": role, "content": "text"})
+    return history
+
+
+def check_history(messages):
+    expected = "user"
+    for message in messages[1:]:
+        if message["role"] != expected:
+            return "problem: expected " + expected + " but got " + message["role"]
+        if expected == "user":
+            expected = "assistant"
+        else:
+            expected = "user"
+    return "ok"
+
+
+chats = [
+    ["system", "user", "assistant", "user"],
+    ["system", "user", "assistant", "assistant"],
+]
+for roles in chats:
+    print(len(roles), "messages ->", check_history(make_history(roles)))`} expectedOutput={`4 messages -> ok
+4 messages -> problem: expected user but got assistant`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The first chat ends on a user message, which is fine. It is a question that still waits
+          for its answer.
+        </ListItem>
+        <ListItem>
+          In the second chat, the third message is an assistant message. After it the loop expects a{" "}
+          <Code>user</Code>, but the fourth message is another assistant message.
+        </ListItem>
+        <ListItem>
+          Both chats have 4 messages, but only the order tells them apart.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>4 messages -&gt; ok</Code>, then{" "}
+        <Code>4 messages -&gt; problem: expected user but got assistant</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         In lab 13, <Code>messages</Code> was a loose variable sitting outside any object, and you
         were responsible for appending to it correctly at each step. <Code>GroqClient</Code> moves
         that same list <i>inside</i> the object as <Code>self.messages</Code>, so the object is
-        responsible for its own history instead of you being responsible for it.
+        responsible for its own history instead of you being responsible for it. Because{" "}
+        <Code>send()</Code> always adds the user message first and the reply second, the roles stay
+        in the right order without you thinking about it.
       </Text>
       <Text>
         Here is the lab's constructor (the <Code>__init__</Code> method) with a real input. Say you
@@ -228,6 +346,128 @@ Queued: Song B (2 songs total)`} />
         <Code>(3 songs total)</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a long chat fills the window, so start fresh</Heading>
+      <Text>
+        Every <Code>send</Code> adds two messages to the history: the question and the reply. The
+        model can only take in a limited amount of text at once. That limit is its{" "}
+        <b>window</b>.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The history only grows, and all of it is sent each time. So a long chat eventually gets
+          too big for the window.
+        </ListItem>
+        <ListItem>
+          Old topics also stay in the history. They can pull a new, unrelated chat off track.
+        </ListItem>
+        <ListItem>
+          The simple fix is a <b>reset</b>: throw the history away and keep only the system
+          message, so the rules stay.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>add</Code> puts one message on the history,{" "}
+        <Code>count_words</Code> measures it (words stand in for tokens), and <Code>reset</Code>{" "}
+        starts a new history with only the system message. The window is 12 words.
+      </Text>
+      <RunnableExample labId={15} code={`def count_words(messages):
+    total = 0
+    for message in messages:
+        total = total + len(message["content"].split())
+    return total
+
+
+def add(history, role, text):
+    history.append({"role": role, "content": text})
+
+
+def reset(system_text):
+    return [{"role": "system", "content": system_text}]
+
+
+window = 12
+history = reset("Be brief.")
+for text in ["tell me about cats", "now tell me about dogs", "and about birds"]:
+    add(history, "user", text)
+    words = count_words(history)
+    print(len(history), "messages,", words, "words, fits:", words <= window)
+    add(history, "assistant", "ok ok ok")
+history = reset("Be brief.")
+print("after reset:", len(history), "message,", count_words(history), "words")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Each pass of the loop adds a question, measures the history, then adds a canned reply of
+          3 words. The first question gives 6 words in 2 messages, which fits.
+        </ListItem>
+        <ListItem>
+          By the second question the history is 14 words in 4 messages. That is over the window of
+          12. The third is 20 words in 6 messages.
+        </ListItem>
+        <ListItem>
+          <Code>reset</Code> builds a new list with only the system message: 1 message and 2 words.
+          The chat is small again, and the rules are still there.
+        </ListItem>
+        <ListItem>
+          Pattern: history only grows, so you reset (or trim) it when a chat ends or gets too long.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same three functions with a new system message, a new window and new
+        questions.
+      </Text>
+      <PracticeCell labId={15} cellId="topic-2" code={`def count_words(messages):
+    total = 0
+    for message in messages:
+        total = total + len(message["content"].split())
+    return total
+
+
+def add(history, role, text):
+    history.append({"role": role, "content": text})
+
+
+def reset(system_text):
+    return [{"role": "system", "content": system_text}]
+
+
+window = 10
+history = reset("Answer in one line.")
+for text in ["name a fruit", "name a colour please", "name a country in Africa"]:
+    add(history, "user", text)
+    words = count_words(history)
+    print(len(history), "messages,", words, "words, fits:", words <= window)
+    add(history, "assistant", "mango")
+history = reset("Answer in one line.")
+print("after reset:", len(history), "message,", count_words(history), "words")`} expectedOutput={`2 messages, 7 words, fits: True
+4 messages, 12 words, fits: False
+6 messages, 18 words, fits: False
+after reset: 1 message, 4 words`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The system message <Code>Answer in one line.</Code> has 4 words. The first question has 3
+          words, so 7 words in 2 messages. That fits the window of 10.
+        </ListItem>
+        <ListItem>
+          The reply <Code>mango</Code> adds 1 word. The second question adds 4: 7 + 1 + 4 = 12. That
+          is over the window.
+        </ListItem>
+        <ListItem>
+          The third question adds 1 + 5 more: 18 words in 6 messages.
+        </ListItem>
+        <ListItem>
+          <Code>reset</Code> keeps only the system message, so we are back to 1 message and 4
+          words.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> the sizes 7, 12 and 18 words, with <Code>fits: True</Code> only
+        for the first. After the reset the count is back to 1 message.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>GroqClient.add_user_message</Code> and <Code>add_assistant_message</Code> are exactly
@@ -235,7 +475,8 @@ Queued: Song B (2 songs total)`} />
         <Code>self.messages</Code>". <Code>send(user_text)</Code> then composes them into one
         higher-level step: add the user message, call the transport, add the reply, return it. You
         call <Code>client.send("hi")</Code> once instead of repeating three lines of bookkeeping at
-        every call site - the exact same win as lab 14's <Code>.post()</Code>, just one layer up.
+        every call site - the exact same win as lab 14's <Code>.post()</Code>, just one layer up.{" "}
+        <Code>reset()</Code> is the lab's fresh-start button for a chat that has grown too long.
       </Text>
       <Text>
         Here is the lab's real code. The client has a system prompt <Code>"You are helpful."</Code>{" "}
@@ -345,6 +586,124 @@ print(notifier.notify("Build complete"))  # expected output: [fake] would send: 
         <Code>Notifier</Code> class did not change at all.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: one chat loop, any model behind it</Heading>
+      <Text>
+        Real model calls need a key, cost money and give a different answer each time. That makes
+        them awkward to test. The fix is to keep the call in one small function that you can swap.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The chat loop only needs "give me the messages, get back a reply string".
+        </ListItem>
+        <ListItem>
+          A fake function gives the same reply every time, so you can check the loop's own work,
+          such as how long the history is, without a key or the internet.
+        </ListItem>
+        <ListItem>
+          Later you plug in the real function. The loop does not change. It can even be a different
+          provider.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>run_chat</Code> is one chat loop. We run it twice with two
+        different stand-in models. In this simple version, a transport takes only the messages.
+      </Text>
+      <RunnableExample labId={15} code={`def echo_transport(messages):
+    return "echo: " + messages[-1]["content"]
+
+
+def shout_transport(messages):
+    return messages[-1]["content"].upper() + "!"
+
+
+def run_chat(transport, questions):
+    messages = []
+    for question in questions:
+        messages.append({"role": "user", "content": question})
+        reply = transport(messages)
+        messages.append({"role": "assistant", "content": reply})
+        print(question, "->", reply)
+    return len(messages)
+
+
+questions = ["hello", "how are you"]
+for transport in [echo_transport, shout_transport]:
+    print("with", transport.__name__)
+    count = run_chat(transport, questions)
+    print("history size:", count)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>run_chat</Code> never says which model it uses. It just calls{" "}
+          <Code>transport(messages)</Code>, and the function in the list does the work.
+        </ListItem>
+        <ListItem>
+          The outer loop passes each function without brackets, so it is stored and called later.{" "}
+          <Code>transport.__name__</Code> is the function's name, used here for the printout.
+        </ListItem>
+        <ListItem>
+          Both runs give a history size of 4: 2 questions and 2 replies. The loop's bookkeeping is
+          the same, and only the replies change.
+        </ListItem>
+        <ListItem>
+          Pattern: keep the model call behind one function, and you can swap it without touching
+          the chat loop.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same loop with two new stand-in models.
+      </Text>
+      <PracticeCell labId={15} cellId="topic-3" code={`def reverse_transport(messages):
+    return messages[-1]["content"][::-1]
+
+
+def count_transport(messages):
+    return "I can see " + str(len(messages)) + " messages"
+
+
+def run_chat(transport, questions):
+    messages = []
+    for question in questions:
+        messages.append({"role": "user", "content": question})
+        reply = transport(messages)
+        messages.append({"role": "assistant", "content": reply})
+        print(question, "->", reply)
+    return len(messages)
+
+
+questions = ["abc", "xyz"]
+for transport in [reverse_transport, count_transport]:
+    print("with", transport.__name__)
+    count = run_chat(transport, questions)
+    print("history size:", count)`} expectedOutput={`with reverse_transport
+abc -> cba
+xyz -> zyx
+history size: 4
+with count_transport
+abc -> I can see 1 messages
+xyz -> I can see 3 messages
+history size: 4`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>[::-1]</Code> reads a string backwards, so <Code>abc</Code> becomes <Code>cba</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>count_transport</Code> reports how many messages it was given. On the first
+          question the list has 1 message. On the second it has 3: the first question, its reply
+          and the new question.
+        </ListItem>
+        <ListItem>
+          <Code>run_chat</Code> is exactly the same for both. Each run ends with a history of 4.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two blocks of three lines. In the second block the number of
+        messages seen grows from 1 to 3.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>GroqClient</Code>'s constructor takes a <Code>transport</Code> callable with the
@@ -355,7 +714,8 @@ print(notifier.notify("Build complete"))  # expected output: [fake] would send: 
         <Code>fake_transport</Code> - an office intern who instantly hands back a canned
         reply - so every assert runs with zero network access and no API key. The real-world
         project swaps in <Code>real_transport</Code>, which just calls <Code>call_groq</Code>
-        underneath, and nothing else about the class changes.
+        underneath, and nothing else about the class changes. That is why the notebook's check of 5
+        messages after two <Code>send</Code> calls works the same with the fake or the real one.
       </Text>
       <Text>
         One more small but deliberate detail: <Code>history</Code> is a property that returns{" "}

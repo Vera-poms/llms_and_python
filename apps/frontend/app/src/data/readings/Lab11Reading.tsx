@@ -124,15 +124,113 @@ tax=4.00, total=54.00`} />
         <Code>tax=6.40, total=86.40</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: why steps help a model</Heading>
+      <Text>
+        A model writes its reply one small piece at a time, and each piece it writes becomes part
+        of the text it reads next. That gives a simple reason why steps help.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          With a direct answer, the model must get a number right in its first few words, with no
+          working out in between.
+        </ListItem>
+        <ListItem>
+          With steps, each small result is written down first. The next step can read it, like
+          working on paper.
+        </ListItem>
+        <ListItem>
+          The price is a longer reply. That takes more time and uses more of the model's window.
+          Steps also help often, not always.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. The two replies are pretend replies, written by hand, because no
+        model is called. One function counts the words in a reply, as a simple measure of cost. The
+        other checks whether the reply ends with the right number.
+      </Text>
+      <RunnableExample labId={11} code={`def word_cost(reply):
+    return len(reply.split())
+
+
+def is_correct(reply, expected):
+    return reply.strip().endswith(expected)
+
+
+expected = "408"
+replies = [
+    ("direct", "406"),
+    ("step by step", "17*20=340. 17*4=68. 340+68=408. Answer: 408"),
+]
+for style, reply in replies:
+    print(style, "-> words:", word_cost(reply), "correct:", is_correct(reply, expected))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>word_cost</Code> splits the reply at the spaces and counts the pieces.{" "}
+          <Code>is_correct</Code> asks whether the reply ends with the expected text.
+        </ListItem>
+        <ListItem>
+          The direct reply is 1 word and it is wrong. The step-by-step reply is 5 words and it ends
+          with <Code>408</Code>, which is right.
+        </ListItem>
+        <ListItem>
+          Pattern: steps cost more words, and in return the answer is easier to get right and easy
+          to check.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new question, 17 * 23, which is 391.
+      </Text>
+      <PracticeCell labId={11} cellId="topic-1" code={`def word_cost(reply):
+    return len(reply.split())
+
+
+def is_correct(reply, expected):
+    return reply.strip().endswith(expected)
+
+
+expected = "391"
+replies = [
+    ("direct", "381"),
+    ("step by step", "17*20=340. 17*3=51. 340+51=391. Answer: 391"),
+]
+for style, reply in replies:
+    print(style, "-> words:", word_cost(reply), "correct:", is_correct(reply, expected))`} expectedOutput={`direct -> words: 1 correct: False
+step by step -> words: 5 correct: True`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>17 * 20 = 340</Code> and <Code>17 * 3 = 51</Code>, so the total is{" "}
+          <Code>340 + 51 = 391</Code>.
+        </ListItem>
+        <ListItem>
+          The direct reply <Code>381</Code> is 1 word and does not end with <Code>391</Code>. The
+          step reply has 5 words and does.
+        </ListItem>
+        <ListItem>
+          The loop prints one line per style, so the cost and the result sit side by side.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>direct -&gt; words: 1 correct: False</Code>, then{" "}
+        <Code>step by step -&gt; words: 5 correct: True</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>build_direct_prompt(question)</Code> asks for a short answer immediately
-        (the "guess directly" path), while <Code>build_cot_prompt(question)</Code> explicitly asks
-        the model to "think step by step, then end with a final line 'Answer: &lt;your
-        answer&gt;'" - the "show the work" path. The real-world project cell runs both prompts on
-        the same three reasoning questions (train speeds, discounts, ratios) and prints both
-        replies side by side, so you can see chain-of-thought's reasoning trace actually land on
-        the correct number more often than the rushed direct answer.
+        The lab has two prompt builders. <Code>build_direct_prompt(question)</Code> asks for a short
+        answer at once (the "guess directly" path). <Code>build_cot_prompt(question)</Code> asks the
+        model to "think step by step, then end with a final line 'Answer: &lt;your answer&gt;'" (the
+        "show the work" path).
+      </Text>
+      <Text>
+        The project keeps 3 word problems in <Code>QUESTIONS</Code>: a train speed (answer 80), a
+        discounted shirt (answer 50) and an apples ratio (answer 18). For each question it makes
+        exactly 2 live calls, one direct and one chain-of-thought. That is 3 x 2 = 6 calls. It prints
+        the expected answer, the direct answer and the chain-of-thought answer side by side. The
+        replies change from run to run, because the temperature is 0.7.
       </Text>
       <Text>
         Both functions return a list with one message in it. Here they are on the question{" "}
@@ -256,14 +354,139 @@ print(extract_high(forecast))  # expected output: 78F`} expectedOutput={`78F`} /
         so you should see <Code>sunny</Code>, a new line, then <Code>High: 78F</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a fixed last line makes the answer findable</Heading>
+      <Text>
+        A model's reasoning is free text. The wording changes on every run, so your code cannot
+        guess where the answer sits. The fix is to ask for a fixed last line.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The label, like <Code>Answer:</Code>, is a <b>marker</b>. It tells your code where the
+          final answer starts.
+        </ListItem>
+        <ListItem>
+          The model may still add extras, like a unit (<Code>80 mph</Code>), or forget the marker.
+          Your code has to cope with both.
+        </ListItem>
+        <ListItem>
+          Once the answer is pulled out, a program can compare it with the right answer and grade
+          the reply, with no person reading the steps.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. The three replies are pretend replies, written by hand. One
+        function finds the marker line. Another grades the reply against the expected answer. It
+        reads only the first word of the answer, so a unit is allowed.
+      </Text>
+      <RunnableExample labId={11} code={`def final_answer(reply):
+    answer = None
+    for line in reply.split("\\n"):
+        if line.startswith("Answer:"):
+            answer = line[len("Answer:"):].strip()
+    return answer
+
+
+def grade(reply, expected):
+    answer = final_answer(reply)
+    if answer is None:
+        return "no marker"
+    if answer.split()[0] == expected:
+        return "right"
+    return "wrong"
+
+
+replies = [
+    "45 minutes is 0.75 hours.\\n60 / 0.75 = 80.\\nAnswer: 80 mph",
+    "Maybe 60.\\nAnswer: 60",
+    "It is about 80",
+]
+for reply in replies:
+    print(grade(reply, "80"))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>final_answer</Code> loops over the lines of the reply. When a line starts with{" "}
+          <Code>Answer:</Code>, it keeps the text after the label. <Code>None</Code> means "nothing
+          found". Later marker lines replace earlier ones, so the last one wins.
+        </ListItem>
+        <ListItem>
+          <Code>grade</Code> returns <Code>no marker</Code> if nothing was found. Otherwise it
+          compares the first word of the answer with the expected text.
+        </ListItem>
+        <ListItem>
+          Reply 1 gives <Code>80 mph</Code>, and its first word is <Code>80</Code>, so it is right.
+          Reply 2 gives <Code>60</Code>, which is wrong. Reply 3 has no marker line at all.
+        </ListItem>
+        <ListItem>
+          Pattern: ask for a fixed last line, pull it out, then grade it. Handle a missing marker
+          on purpose.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on new replies, with the expected answer 50.
+      </Text>
+      <PracticeCell labId={11} cellId="topic-2" code={`def final_answer(reply):
+    answer = None
+    for line in reply.split("\\n"):
+        if line.startswith("Answer:"):
+            answer = line[len("Answer:"):].strip()
+    return answer
+
+
+def grade(reply, expected):
+    answer = final_answer(reply)
+    if answer is None:
+        return "no marker"
+    if answer.split()[0] == expected:
+        return "right"
+    return "wrong"
+
+
+replies = [
+    "40 / 0.8 = 50.\\nAnswer: 50 dollars",
+    "The shirt cost 50",
+    "40 + 20 = 60.\\nAnswer: 60",
+    "Answer: 50",
+]
+for reply in replies:
+    print(grade(reply, "50"))`} expectedOutput={`right
+no marker
+wrong
+right`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Reply 1 ends with <Code>Answer: 50 dollars</Code>. The first word is <Code>50</Code>, so
+          it is right, even with the unit.
+        </ListItem>
+        <ListItem>
+          Reply 2 has the right number but no <Code>Answer:</Code> line, so it is graded{" "}
+          <Code>no marker</Code>.
+        </ListItem>
+        <ListItem>
+          Reply 3 has the marker but the answer is <Code>60</Code>, so it is wrong. Reply 4 is only
+          the marker line and <Code>50</Code>, so it is right.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four lines: <Code>right</Code>, <Code>no marker</Code>,{" "}
+        <Code>wrong</Code>, <Code>right</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        <Code>extract_final_answer(reply_text, marker="Answer:")</Code> does precisely this on a
-        model's chain-of-thought reply: the model might write several paragraphs of reasoning, but
-        as long as it ends with a line like <Code>"Answer: 80"</Code>, splitting on the last{" "}
-        <Code>"Answer:"</Code> and stripping whitespace reliably recovers just <Code>"80"</Code> -
-        turning free-form reasoning text back into a value your code can compare, store, or grade
-        without a person having to read the whole paragraph.
+        <Code>extract_final_answer(reply_text, marker="Answer:")</Code> is the lab's version of{" "}
+        <Code>final_answer</Code>. It gives back the text after the last <Code>"Answer:"</Code>,
+        with the spaces removed. If the marker is missing, it gives back the whole reply, stripped.
+      </Text>
+      <Text>
+        In the project, <Code>cot_answer = extract_final_answer(cot_reply)</Code> keeps only the
+        short answer, and that is all the chain-of-thought line prints. The expected answers in{" "}
+        <Code>QUESTIONS</Code> are the strings <Code>"80"</Code>, <Code>"50"</Code> and{" "}
+        <Code>"18"</Code>. The model may add a unit, such as <Code>80 mph</Code>, and that is
+        allowed. The direct reply is cut with <Code>.strip()[:60]</Code> instead.
       </Text>
       <Text>
         Take this reply, where the line breaks are real new lines: "<Code>12 * 10 = 120</Code>", "<Code>12 * 3</Code> =

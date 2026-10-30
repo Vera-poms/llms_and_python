@@ -82,13 +82,106 @@ print(len(text) // 4 + 1)  # expected output: 9`} expectedOutput={`32
         what keeps it from being free.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: what the context window is</Heading>
+      <Text>
+        The model does not remember your chat. Each time you call it, it sees only the text you send in that one call. The size of that text is limited by the <b>context window</b>, counted in tokens.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Everything you send counts: the system message, the chat so far and the new question.
+        </ListItem>
+        <ListItem>
+          The reply counts too. The model needs room to write it.
+        </ListItem>
+        <ListItem>
+          So the window has to hold your input and the reply together. Text that does not fit is simply not there for the model.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Two small functions measure a chat. One guesses the cost of a text. The other adds up the cost of every message. A loop then checks the chat against two window sizes, and keeps 5 tokens free for the reply.
+      </Text>
+      <RunnableExample labId={17} code={`def count_tokens(text):
+    return len(text) // 4 + 1
+
+
+def total_tokens(messages):
+    total = 0
+    for message in messages:
+        total = total + count_tokens(message["content"])
+    return total
+
+
+chat = [
+    {"role": "system", "content": "You are Ada's digital twin."},
+    {"role": "user", "content": "What do you cook?"},
+    {"role": "assistant", "content": "Bread and spicy soup."},
+]
+reply_room = 5
+for window in (30, 12):
+    room = window - reply_room
+    used = total_tokens(chat)
+    print("window", window, "-> input room", room, "used", used, "fits:", used <= room)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>count_tokens</Code> is the rule of thumb from above: characters divided by 4, plus 1. <Code>total_tokens</Code> loops over the messages and adds up the cost of each <Code>message["content"]</Code>. This chat costs 18 tokens.
+        </ListItem>
+        <ListItem>
+          Window 30 minus 5 for the reply leaves 25 for the input. The chat is 18, so it fits.
+        </ListItem>
+        <ListItem>
+          Window 12 minus 5 leaves only 7. The chat is 18, so it does not fit. The same chat fits one model and not another, so measure before you send.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new chat, with windows of 40 and 20 tokens and 8 tokens kept for the reply.
+      </Text>
+      <PracticeCell labId={17} cellId="topic-1" code={`def count_tokens(text):
+    return len(text) // 4 + 1
+
+
+def total_tokens(messages):
+    total = 0
+    for message in messages:
+        total = total + count_tokens(message["content"])
+    return total
+
+
+chat = [
+    {"role": "system", "content": "You are Kofi's digital twin."},
+    {"role": "user", "content": "Where do you teach maths?"},
+    {"role": "assistant", "content": "At a school in Kumasi, on Fridays."},
+]
+reply_room = 8
+for window in (40, 20):
+    room = window - reply_room
+    used = total_tokens(chat)
+    print("window", window, "-> input room", room, "used", used, "fits:", used <= room)`} expectedOutput={`window 40 -> input room 32 used 24 fits: True
+window 20 -> input room 12 used 24 fits: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>total_tokens</Code> adds up the cost of the three messages. The chat costs 24 tokens.
+        </ListItem>
+        <ListItem>
+          Window 40 minus 8 leaves 32 for the input. 24 is within 32, so <Code>True</Code>.
+        </ListItem>
+        <ListItem>
+          Window 20 minus 8 leaves 12. 24 is over 12, so <Code>False</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>window 40 -&gt; input room 32 used 24 fits: True</Code>, then <Code>window 20 -&gt; input room 12 used 24 fits: False</Code>. The chat did not change. Only the window did.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>count_tokens</Code> is exactly this one line. A message in the chat is a dict
-        with a <Code>"content"</Code> text, so the cost of a message is{" "}
-        <Code>count_tokens(message["content"])</Code>. The cost of the whole history is the sum of
-        those costs. This is a guess, not the real count. Real apps use the model's own tokenizer
-        and keep a safety margin, but the planning logic is identical.
+        The lab's <Code>count_tokens</Code> is exactly this one line. A message in the chat is a dict with a <Code>"content"</Code> text, so the cost of a message is <Code>count_tokens(message["content"])</Code>. The cost of the whole history is the sum of those costs.
+      </Text>
+      <Text>
+        In the project, Step 1 adds this up for <Code>CHAT_HISTORY</Code>. Its 9 messages cost 101 tokens. That is the size you have to bring down. This is a guess, not the real count. Real apps use the model's own tokenizer and keep a safety margin, but the planning logic is identical.
       </Text>
 
       <Heading as="h3" size="sm">Idea 2: looping from the end, and stopping early</Heading>
@@ -151,27 +244,119 @@ print(used)  # expected output: 14`} expectedOutput={`14`} />
         loop adds 5, 9 and 3 (17) and then 5 more (22 is over 20), so you still get 17.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Up close: why the oldest turns are forgotten</Heading>
       <Text>
-        Which turns should the twin keep? The newest ones, because the last few messages are what
-        the question is about. So the lab walks the history from the end, adds each message while
-        it fits, and stops at the first one that does not.
+        Because the model sees only what you send, anything you leave out is gone for it. It does not forget on purpose. Your code decides what it still knows.
       </Text>
-      <Text>Why stop instead of skipping the big message and carrying on?</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          A chat is a story. If you drop turn 4 but keep turn 3 and turn 5, the twin sees an answer
-          with no question and gets confused.
+          When the chat is too long for the window, something has to be dropped.
         </ListItem>
         <ListItem>
-          Stopping at the first miss keeps the kept messages in one unbroken run, ending at the
-          newest.
+          The oldest turns go first. The newest turns are the ones the current question is about.
         </ListItem>
         <ListItem>
-          The system message is the exception. It says who the twin is, so it is always kept and
-          its cost is counted first.
+          If a dropped turn held a fact, such as the user's name, the model can no longer answer questions about it.
         </ListItem>
       </UnorderedList>
+      <Text>
+        Here is a worked example. A chat has four turns, and the first one tells the model the user's name. A small function walks from the newest turn and counts how many turns fit in a budget. A loop tries two budgets and checks if the name turn survived.
+      </Text>
+      <RunnableExample labId={17} code={`def count_tokens(text):
+    return len(text) // 4 + 1
+
+
+def count_kept(turns, budget):
+    used = 0
+    kept = 0
+    for turn in reversed(turns):
+        used = used + count_tokens(turn)
+        if used > budget:
+            break
+        kept = kept + 1
+    return kept
+
+
+turns = ["My name is Ada.", "I live in Accra.", "I bake bread on Sundays.", "What is my name?"]
+for budget in (30, 12):
+    kept = count_kept(turns, budget)
+    seen = turns[len(turns) - kept:]
+    print("budget", budget, "-> sees", kept, "turns, knows the name:", "My name is Ada." in seen)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The four turns cost 4, 5, 7 and 5 tokens, 21 in all. <Code>count_kept</Code> starts at the newest turn and adds costs until the budget is passed. Then <Code>break</Code> stops it.
+        </ListItem>
+        <ListItem>
+          With a budget of 30 all 4 turns fit, so the model still knows the name.
+        </ListItem>
+        <ListItem>
+          With a budget of 12, only the newest two fit (5 + 7 = 12). The name turn is cut, so <Code>What is my name?</Code> has no answer left in the prompt. Memory is whatever your code keeps.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new chat, with budgets of 22 and 10 tokens.
+      </Text>
+      <PracticeCell labId={17} cellId="topic-2" code={`def count_tokens(text):
+    return len(text) // 4 + 1
+
+
+def count_kept(turns, budget):
+    used = 0
+    kept = 0
+    for turn in reversed(turns):
+        used = used + count_tokens(turn)
+        if used > budget:
+            break
+        kept = kept + 1
+    return kept
+
+
+turns = ["I am Kofi.", "I teach maths in Kumasi.", "I code at night.", "Where do I teach?"]
+for budget in (22, 10):
+    kept = count_kept(turns, budget)
+    seen = turns[len(turns) - kept:]
+    print("budget", budget, "-> sees", kept, "turns, knows the town:", "I teach maths in Kumasi." in seen)`} expectedOutput={`budget 22 -> sees 4 turns, knows the town: True
+budget 10 -> sees 2 turns, knows the town: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The four turns cost 3, 7, 5 and 5 tokens.
+        </ListItem>
+        <ListItem>
+          Budget 22: from the newest, 5 + 5 + 7 + 3 = 20. Nothing goes over, so all 4 turns are seen and the town is known.
+        </ListItem>
+        <ListItem>
+          Budget 10: 5 + 5 = 10 fits. Adding 7 makes 17, over 10, so the loop breaks. Only 2 turns are seen, and the turn with the town is lost.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>budget 22 -&gt; sees 4 turns, knows the town: True</Code>, then <Code>budget 10 -&gt; sees 2 turns, knows the town: False</Code>.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Text>
+        Which turns should the twin keep? The newest ones, because the last few messages are what the question is about. So the lab walks the history from the end, adds each message while it fits, and stops at the first one that does not.
+      </Text>
+      <Text>
+        Why stop instead of skipping the big message and carrying on?
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A chat is a story. If you drop turn 4 but keep turn 3 and turn 5, the twin sees an answer with no question and gets confused.
+        </ListItem>
+        <ListItem>
+          Stopping at the first miss keeps the kept messages in one unbroken run, ending at the newest.
+        </ListItem>
+        <ListItem>
+          The system message is the exception. It says who the twin is, so it is always kept and its cost is counted first.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        With the budget of 60, the project keeps the system message and the newest 4 messages, 5 in all. The 4 oldest chat messages are dropped. The first kept chat message is <Code>And what does she do for fun?</Code>, a question, so the run still starts cleanly.
+      </Text>
 
       <Heading as="h3" size="sm">Idea 3: building a new list, leaving the old one alone</Heading>
 
@@ -232,30 +417,90 @@ print(history)  # expected output: ['system', 'hi', 'hello', 'bye']`} expectedOu
         <Code>rest[-1:]</Code>. You keep only <Code>bye</Code>.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Up close: leave room for the reply</Heading>
       <Text>
-        <Code>trim_messages</Code> must give back a new list. Your real chat history keeps growing
-        and may be saved for later, so trimming the copy you send must never delete from the
-        original. The function splits off the system message with a slice, collects the kept
-        messages in a fresh list, flips that list so the oldest kept message is first again, and
-        gives back <Code>system + kept</Code>.
+        The window holds the reply as well as your input. So the budget for your input is smaller than the window.
       </Text>
-      <Text>One more thing real apps do, which this lab does not build:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <b>Leave room for the reply.</b> If the window is 8,000 tokens and you want up to 1,000
-          tokens of answer, your budget for the input is 7,000.
+          If the window is 8,000 tokens and you want up to 1,000 tokens of answer, your budget for the input is 7,000.
         </ListItem>
         <ListItem>
-          <b>Summarize instead of dropping.</b> Before throwing away old turns, ask the model to
-          write a two-line summary of them and keep that. The twin remembers the gist for a few
-          tokens.
+          <b>Summarize instead of dropping.</b> Before throwing away old turns, ask the model to write a two-line summary of them and keep that. The twin remembers the gist for a few tokens.
         </ListItem>
         <ListItem>
-          <b>Watch the middle.</b> Models tend to use the start and the end of a long prompt better
-          than the middle, so put the most important text at those two places.
+          <b>Watch the middle.</b> Models tend to use the start and the end of a long prompt better than the middle, so put the most important text at those two places.
         </ListItem>
       </UnorderedList>
+      <Text>
+        Here is a worked example. A chat of 6,500 tokens is sent to a model with a window of 8,000. Two small functions work out the input budget and check the chat against it. A loop tries three sizes of reply.
+      </Text>
+      <RunnableExample labId={17} code={`def input_budget(window, reply):
+    return window - reply
+
+
+def fits(history_tokens, window, reply):
+    return history_tokens <= input_budget(window, reply)
+
+
+window = 8000
+history_tokens = 6500
+for reply in (500, 1000, 2000):
+    print("reply", reply, "-> input budget", input_budget(window, reply), "fits:", fits(history_tokens, window, reply))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>input_budget</Code> is the window minus the room kept for the reply. <Code>fits</Code> checks that the chat is within it.
+        </ListItem>
+        <ListItem>
+          A reply of 500 leaves 7,500, and one of 1,000 leaves 7,000. The chat of 6,500 fits both.
+        </ListItem>
+        <ListItem>
+          A reply of 2,000 leaves 6,000, and the same chat no longer fits. A longer answer means less room for the history.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions with a window of 4,000, a chat of 3,200 tokens and replies of 300, 800 and 1,200.
+      </Text>
+      <PracticeCell labId={17} cellId="topic-3" code={`def input_budget(window, reply):
+    return window - reply
+
+
+def fits(history_tokens, window, reply):
+    return history_tokens <= input_budget(window, reply)
+
+
+window = 4000
+history_tokens = 3200
+for reply in (300, 800, 1200):
+    print("reply", reply, "-> input budget", input_budget(window, reply), "fits:", fits(history_tokens, window, reply))`} expectedOutput={`reply 300 -> input budget 3700 fits: True
+reply 800 -> input budget 3200 fits: True
+reply 1200 -> input budget 2800 fits: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Reply 300: the input budget is 4,000 minus 300, which is 3,700. The chat of 3,200 fits.
+        </ListItem>
+        <ListItem>
+          Reply 800: the budget is 3,200. The chat is exactly 3,200, which is not over, so it still fits.
+        </ListItem>
+        <ListItem>
+          Reply 1,200: the budget is 2,800. The chat is over it, so it does not fit.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines. The first two end in <Code>fits: True</Code> and the third in <Code>fits: False</Code>. The history stayed the same, and only the reply allowance changed.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Text>
+        <Code>trim_messages</Code> must give back a new list. Your real chat history keeps growing and may be saved for later, so trimming the copy you send must never delete from the original. The function splits off the system message with a slice, collects the kept messages in a fresh list, flips that list so the oldest kept message is first again, and gives back <Code>system + kept</Code>.
+      </Text>
+      <Text>
+        In the project, <Code>CHAT_HISTORY</Code> still has 9 messages after the call, while <Code>trimmed</Code> has 5 and costs 59 tokens. This lab does not build the reply allowance. The budget of 60 is the whole budget for the input. A real app would subtract the reply room first, as in the example above.
+      </Text>
 
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>

@@ -131,9 +131,113 @@ print(data["language"])  # expected output: Python`} expectedOutput={`Python`} /
         <Code>requests</Code>, the name of the project.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: what a chat request holds</Heading>
+      <Text>
+        A chat model does not get one plain string. It gets a list of <b>messages</b>, and each message has a <b>role</b> that says who is speaking.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>system</Code> holds the rules for the model. <Code>user</Code> holds the question or the data. <Code>assistant</Code> holds an earlier answer from the model.
+        </ListItem>
+        <ListItem>
+          Zero-shot means the messages hold only the rules and the review. Worked examples (a sample review with its answer) would be extra <Code>user</Code> and <Code>assistant</Code> messages.
+        </ListItem>
+        <ListItem>
+          The body of the request also holds settings. <b>Temperature</b> says how much the answers may vary: 0 is steady, and higher is more varied.
+        </ListItem>
+        <ListItem>
+          The model sees only what is in this body.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Nothing is sent anywhere. We only build the body of a request, the way the lab does, with a made-up model name.
+      </Text>
+      <RunnableExample labId={9} code={`def build_messages(review):
+    return [
+        {"role": "system", "content": "Classify the sentiment as positive or negative."},
+        {"role": "user", "content": review},
+    ]
+
+
+def build_payload(messages, temperature):
+    return {"model": "toy-model", "messages": messages, "temperature": temperature}
+
+
+def count_examples(messages):
+    count = 0
+    for message in messages:
+        if message["role"] == "assistant":
+            count = count + 1
+    return count
+
+
+payload = build_payload(build_messages("I loved it"), 0.7)
+print("model:", payload["model"], "| temperature:", payload["temperature"])
+for message in payload["messages"]:
+    print(message["role"], "->", message["content"])
+print("examples shown:", count_examples(payload["messages"]))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>build_messages</Code> makes the two messages: a <Code>system</Code> rule and the <Code>user</Code> review.
+        </ListItem>
+        <ListItem>
+          <Code>build_payload</Code> puts the messages, the model name and the temperature into one dict. That dict is what a POST request would carry as its body.
+        </ListItem>
+        <ListItem>
+          <Code>count_examples</Code> loops over the messages and counts the <Code>assistant</Code> ones. There are 0, so this request is zero-shot.
+        </ListItem>
+        <ListItem>
+          Pattern: a request is a dict of model, messages and settings. Zero-shot means no example answers in it.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same three functions on two new reviews, with a temperature of 0.2.
+      </Text>
+      <PracticeCell labId={9} cellId="topic-1" code={`def build_messages(review):
+    return [
+        {"role": "system", "content": "Classify the sentiment as positive or negative."},
+        {"role": "user", "content": review},
+    ]
+
+
+def build_payload(messages, temperature):
+    return {"model": "toy-model", "messages": messages, "temperature": temperature}
+
+
+def count_examples(messages):
+    count = 0
+    for message in messages:
+        if message["role"] == "assistant":
+            count = count + 1
+    return count
+
+
+for review in ["Too slow", "Great acting"]:
+    payload = build_payload(build_messages(review), 0.2)
+    print(review, "->", len(payload["messages"]), "messages,", count_examples(payload["messages"]), "examples, temperature", payload["temperature"])`} expectedOutput={`Too slow -> 2 messages, 0 examples, temperature 0.2
+Great acting -> 2 messages, 0 examples, temperature 0.2`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Each review gets a payload. It holds 2 messages: one <Code>system</Code> and one <Code>user</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>count_examples</Code> finds no <Code>assistant</Code> message, so it says 0 examples.
+        </ListItem>
+        <ListItem>
+          The temperature is 0.2, which asks for steadier answers than the 0.7 above.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two lines, <Code>Too slow -&gt; 2 messages, 0 examples, temperature 0.2</Code> and the same for <Code>Great acting</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        For example, sending the actual conversation you want an LLM to reply to. In the notebook's{" "}
+        This is the POST step of the lab. In the notebook's{" "}
         <Code>call_groq</Code>, <Code>requests.post(GROQ_API_URL, headers=headers, json=payload)</Code>{" "}
         does exactly this: it sends <Code>payload</Code> (your model name, messages, and settings) as
         the request body, and Groq's server computes a reply and sends it back as the response. Every
@@ -250,9 +354,92 @@ print(token)  # expected output: demo-token-123`} expectedOutput={`demo-token-12
         note was never written.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: API keys and who pays</Heading>
+      <Text>
+        A hosted model runs on the provider's computers, and the provider counts how much you use. Your <b>API key</b> is how it knows a request is yours.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Usage is counted for each key, in tokens (lab 16).
+        </ListItem>
+        <ListItem>
+          Plans have limits, and some plans send a bill. Anyone who has your key spends from your allowance.
+        </ListItem>
+        <ListItem>
+          So a key never goes into code or a notebook that others can read. When it must appear in a log, show only a masked version.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. No request is sent. We pretend a provider keeps a running count of tokens for each key. The keys are made up.
+      </Text>
+      <RunnableExample labId={9} code={`def mask_key(key):
+    return key[:4] + "..." + key[-2:]
+
+
+def add_usage(usage, key, tokens):
+    usage[key] = usage.get(key, 0) + tokens
+
+
+usage = {}
+requests_made = [("gsk_abc123", 120), ("gsk_xyz789", 40), ("gsk_abc123", 80)]
+for key, tokens in requests_made:
+    add_usage(usage, key, tokens)
+for key, tokens in usage.items():
+    print(mask_key(key), "used", tokens, "tokens")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>add_usage</Code> adds tokens to a key's running total. <Code>usage.get(key, 0)</Code> gives 0 for a key not seen before.
+        </ListItem>
+        <ListItem>
+          The first loop goes over 3 requests. <Code>gsk_abc123</Code> made two of them, so it ends with <Code>120 + 80 = 200</Code> tokens. <Code>gsk_xyz789</Code> has 40.
+        </ListItem>
+        <ListItem>
+          <Code>mask_key</Code> keeps the first 4 and last 2 characters, like <Code>gsk_...23</Code>. A log can tell keys apart without showing them.
+        </ListItem>
+        <ListItem>
+          Pattern: usage is counted for each key, so sharing the key means sharing the bill.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on new requests. Pretend <Code>gsk_leak99</Code> is a key that ended up in a public file.
+      </Text>
+      <PracticeCell labId={9} cellId="topic-2" code={`def mask_key(key):
+    return key[:4] + "..." + key[-2:]
+
+
+def add_usage(usage, key, tokens):
+    usage[key] = usage.get(key, 0) + tokens
+
+
+usage = {}
+requests_made = [("gsk_mine01", 30), ("gsk_leak99", 500), ("gsk_mine01", 70), ("gsk_leak99", 250)]
+for key, tokens in requests_made:
+    add_usage(usage, key, tokens)
+for key, tokens in usage.items():
+    print(mask_key(key), "used", tokens, "tokens")`} expectedOutput={`gsk_...01 used 100 tokens
+gsk_...99 used 750 tokens`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>gsk_mine01</Code> makes two requests, <Code>30 + 70 = 100</Code> tokens.
+        </ListItem>
+        <ListItem>
+          <Code>gsk_leak99</Code> makes two as well, <Code>500 + 250 = 750</Code> tokens. If that was your key, the stranger used more than you.
+        </ListItem>
+        <ListItem>
+          <Code>mask_key</Code> shows only the ends of each key, so the output is safe to share.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two lines, <Code>gsk_...01 used 100 tokens</Code> and <Code>gsk_...99 used 750 tokens</Code>. Change a number in <Code>requests_made</Code> and the total changes with it.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        As this notebook does, the key can also be typed in interactively. The notebook's setup cell
+        Instead of reading the key from the environment, this notebook asks you to type it. Its setup cell
         uses <Code>getpass.getpass("Enter your GROQ_API_KEY: ")</Code>, which prompts for the key
         with a hidden input field (like a password prompt) and holds it only in memory for that
         session - it's never written into the <Code>.ipynb</Code> file, so it can't accidentally end
@@ -352,6 +539,102 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
         the end.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: the reply is free text</Heading>
+      <Text>
+        A model writes text. It does not hand you a label. You may ask for one word and still get <Code>Positive.</Code> or <Code>The sentiment is positive.</Code> or something else. Your code has to expect all of them.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          You cannot compare the reply to <Code>"positive"</Code> with <Code>==</Code>. A capital letter or a dot makes them different.
+        </ListItem>
+        <ListItem>
+          So the steps are: pull the reply out of the response, clean it, then look for the word you want.
+        </ListItem>
+        <ListItem>
+          If neither word is there, say so (for example <Code>unknown</Code>) instead of guessing.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Nothing is sent. <Code>fake_response</Code> builds a response in the same shape as the real one, with a made-up reply. <Code>pull_reply</Code> digs the text out. <Code>find_label</Code> cleans it and looks for a word.
+      </Text>
+      <RunnableExample labId={9} code={`def fake_response(text):
+    return {"choices": [{"message": {"content": text}}]}
+
+
+def pull_reply(response):
+    return response["choices"][0]["message"]["content"]
+
+
+def find_label(reply):
+    text = reply.lower()
+    for word in ("negative", "positive"):
+        if word in text:
+            return word
+    return "unknown"
+
+
+for text in ["Positive.", "The sentiment is negative", "Not sure"]:
+    reply = pull_reply(fake_response(text))
+    label = find_label(reply)
+    print(repr(reply), "->", label, "| reply equals label:", reply == label)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>pull_reply</Code> drills down: <Code>"choices"</Code>, then item 0, then <Code>"message"</Code>, then <Code>"content"</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>find_label</Code> makes the reply lowercase. Then it loops over <Code>negative</Code> and <Code>positive</Code> and gives back the first one found inside. If neither is there, it gives <Code>unknown</Code>.
+        </ListItem>
+        <ListItem>
+          All three <Code>==</Code> checks are <Code>False</Code>, even for <Code>Positive.</Code>, which does mean positive. After cleaning, the first two replies give the right labels, and <Code>Not sure</Code> gives <Code>unknown</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: pull, clean, look for the word. Never trust the exact wording of a reply.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same three functions on three new replies.
+      </Text>
+      <PracticeCell labId={9} cellId="topic-3" code={`def fake_response(text):
+    return {"choices": [{"message": {"content": text}}]}
+
+
+def pull_reply(response):
+    return response["choices"][0]["message"]["content"]
+
+
+def find_label(reply):
+    text = reply.lower()
+    for word in ("negative", "positive"):
+        if word in text:
+            return word
+    return "unknown"
+
+
+for text in ["NEGATIVE", "I think it is positive!", "Mixed feelings"]:
+    reply = pull_reply(fake_response(text))
+    label = find_label(reply)
+    print(repr(reply), "->", label, "| reply equals label:", reply == label)`} expectedOutput={`'NEGATIVE' -> negative | reply equals label: False
+'I think it is positive!' -> positive | reply equals label: False
+'Mixed feelings' -> unknown | reply equals label: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>NEGATIVE</Code> becomes <Code>negative</Code> once it is lowercase, so the label is <Code>negative</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>I think it is positive!</Code> has <Code>positive</Code> inside it, so the label is <Code>positive</Code>. The words around it do not matter.
+        </ListItem>
+        <ListItem>
+          <Code>Mixed feelings</Code> has neither word, so the label is <Code>unknown</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines. The first two end in <Code>reply equals label: False</Code> even though the labels are right, so the cleaning is what makes the match work. The third shows <Code>unknown</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>Groq's response is a JSON object shaped roughly like:</Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
@@ -381,8 +664,7 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
         </ListItem>
       </UnorderedList>
       <Text>
-        The model's reply is free text, so it may not be exactly the word you want. The lab's other
-        two functions handle that:
+        Two of your exercise functions sit on either side of <Code>extract_reply</Code>:
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -404,6 +686,12 @@ print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
           <Code>"Not sure"</Code>, you get the cleaned text <Code>"not sure"</Code> back.
         </ListItem>
       </UnorderedList>
+      <Text>
+        In the project, a loop runs these on the first 10 reviews (<Code>N_SAMPLES = 10</Code>),
+        compares each <Code>parse_label</Code> answer with the true label and prints the accuracy,
+        for example <Code>9/10 = 90%</Code>. The score can change from run to run, because the
+        temperature is 0.7.
+      </Text>
 
       <Heading as="h3" size="sm">Further reading</Heading>
       <Text>

@@ -88,19 +88,111 @@ twin
         the end", so you get <Code>twin</Code> again.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Up close: how a model sees text</Heading>
       <Text>
-        The lab slices a <b>list of words</b> instead of a string, but the rule is identical.{" "}
-        <Code>words[0:4]</Code> is the first four words, and <Code>words[3:7]</Code> is four words
-        starting from position 3. A chunk is nothing more than a slice of the words.
+        Slicing works on characters. A model does not read characters, and it does not read whole
+        words either. It reads <b>tokens</b>: small pieces of text.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A common word like <Code>cat</Code> is often one token.
+        </ListItem>
+        <ListItem>
+          A long or rare word is cut into a few tokens, so <Code>retrieval</Code> may become two or
+          three pieces.
+        </ListItem>
+        <ListItem>
+          On average a token is a bit shorter than a word, roughly 4 characters of English.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        This matters because a model can only take in a limited number of tokens at once. So the
+        size of a piece of text is counted in tokens, not in characters or words. You can see the
+        real split in the tokenizer link at the bottom of this page.
       </Text>
       <Text>
-        Before slicing, there is one more thing to know about how a model reads. A model does not
-        read characters or even whole words. It reads <b>tokens</b>: small pieces of text. A common
-        word like <Code>cat</Code> is often one token. A long or rare word is cut into a few
-        pieces. On average a token is a bit shorter than a word, roughly 4 characters of English.
-        This lab cuts by <b>words</b> because words are easy to count and easy to see. Real systems
-        often cut by tokens, and the idea is the same.
+        Here is a worked example. It builds two small functions, the way the lab does. One adds up
+        the token cost of a text, using a toy rule of 1 token for every 4 characters of a word. The
+        other asks if that text fits in the model's window. A real tokenizer is smarter, but it
+        behaves the same way.
+      </Text>
+      <RunnableExample labId={16} code={`def toy_token_count(text):
+    total = 0
+    for word in text.split():
+        total = total + (len(word) + 3) // 4  # a toy rule: about 4 characters per token
+    return total
+
+
+def fits(text, window):
+    return toy_token_count(text) <= window
+
+
+window = 6
+for text in ["cat sat", "retrieval makes tokenization costly"]:
+    print(text, "->", toy_token_count(text), "tokens, fits:", fits(text, window))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>toy_token_count</Code> loops over the words. Each word costs its length divided by 4,
+          rounded up. <Code>total</Code> grows by that cost, and the function gives back the total.
+        </ListItem>
+        <ListItem>
+          <Code>cat sat</Code> costs 1 + 1 = 2 tokens. <Code>retrieval makes tokenization costly</Code>{" "}
+          is only 4 words, but the long ones cost more: 3 + 2 + 3 + 2 = 10 tokens.
+        </ListItem>
+        <ListItem>
+          <Code>fits</Code> compares the cost to the window of 6. The first text fits and the second
+          does not. The model's limit is counted in tokens, so the number of words alone does not
+          tell you if a text fits.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on two new texts, with a window of 6 tokens.
+      </Text>
+      <PracticeCell labId={16} cellId="topic-1" code={`def toy_token_count(text):
+    total = 0
+    for word in text.split():
+        total = total + (len(word) + 3) // 4
+    return total
+
+
+def fits(text, window):
+    return toy_token_count(text) <= window
+
+
+window = 6
+for text in ["dog barks", "tokenization of weekends matters"]:
+    print(text, "->", toy_token_count(text), "tokens, fits:", fits(text, window))`} expectedOutput={`dog barks -> 3 tokens, fits: True
+tokenization of weekends matters -> 8 tokens, fits: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>dog barks</Code>: <Code>dog</Code> costs 1 and <Code>barks</Code> costs 2, so 3
+          tokens. That is within the window of 6.
+        </ListItem>
+        <ListItem>
+          <Code>tokenization of weekends matters</Code>: 3 + 1 + 2 + 2 = 8 tokens. That is over the
+          window of 6.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>dog barks -&gt; 3 tokens, fits: True</Code>, then{" "}
+        <Code>tokenization of weekends matters -&gt; 8 tokens, fits: False</Code>. The second text
+        has 4 words, just like the first example, and is still too big for the window.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Text>
+        This lab cuts by <b>words</b>, not tokens, because words are easy to count and easy to see.
+        Real systems often cut by tokens, and the idea is the same.
+      </Text>
+      <Text>
+        So the lab slices a <b>list of words</b> instead of a string, and the rule is identical.{" "}
+        <Code>words[0:4]</Code> is the first four words, and <Code>words[3:7]</Code> is four words
+        starting from position 3. In <Code>chunk_words</Code>, a chunk is nothing more than a slice
+        of the words: <Code>words[start:start + size]</Code>.
       </Text>
 
       <Heading as="h3" size="sm">Idea 2: split and join - text to words and back</Heading>
@@ -163,12 +255,112 @@ buy milk and eggs`} />
         capitals.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: why clean text first</Heading>
+      <Text>
+        Real documents come with mess: line breaks from a PDF, double spaces, a blank line between
+        paragraphs. A person does not notice any of it. The model does, because it all counts
+        toward its limit.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Extra spaces and line breaks use up space in the model's limited window without adding any
+          meaning.
+        </ListItem>
+        <ListItem>
+          If two gaps look different (one space or three), counting words or measuring size can give
+          a different answer for text that says the same thing.
+        </ListItem>
+        <ListItem>
+          So the first step in almost every system that reads documents is to make the spacing
+          the same everywhere. Cleaning like this is called <b>normalising</b> the text.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A pretend model has a window of only 8 tokens. This time the
+        token cost is the rule of thumb of 1 token for every 4 characters of the whole text, spaces
+        and line breaks included. Three small functions clean a note, estimate its cost and check if
+        it fits. Then a loop runs the same note before and after cleaning.
+      </Text>
+      <RunnableExample labId={16} code={`def clean_text(raw):
+    return " ".join(raw.split())
+
+
+def estimate_tokens(text):
+    return len(text) // 4  # rule of thumb: about 4 characters per token
+
+
+def fits(text, window):
+    return estimate_tokens(text) <= window
+
+
+window = 8
+raw = "Ada   writes\\n\\n\\nPython    code   daily"
+for name, text in [("raw", raw), ("clean", clean_text(raw))]:
+    print(name, estimate_tokens(text), "tokens, fits:", fits(text, window))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>raw</Code> is 37 characters, about 9 tokens. That is over the window of 8, so the
+          model could not take it in.
+        </ListItem>
+        <ListItem>
+          <Code>clean_text(raw)</Code> says exactly the same thing in 28 characters, about 7 tokens.
+          It fits.
+        </ListItem>
+        <ListItem>
+          The mess had no meaning, but it cost room. Cleaning gave that room back.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same three functions on a different note, with a window of 10 tokens.
+      </Text>
+      <PracticeCell labId={16} cellId="topic-2" code={`def clean_text(raw):
+    return " ".join(raw.split())
+
+
+def estimate_tokens(text):
+    return len(text) // 4
+
+
+def fits(text, window):
+    return estimate_tokens(text) <= window
+
+
+window = 10
+raw = "Kofi   teaches\\n\\nmaths    and   codes   at   night"
+for name, text in [("raw", raw), ("clean", clean_text(raw))]:
+    print(name, estimate_tokens(text), "tokens, fits:", fits(text, window))`} expectedOutput={`raw 12 tokens, fits: False
+clean 9 tokens, fits: True`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>raw</Code> is 49 characters, so about 12 tokens. That is more than the window of 10.
+        </ListItem>
+        <ListItem>
+          <Code>clean_text(raw)</Code> is 37 characters, about 9 tokens. It fits.
+        </ListItem>
+        <ListItem>
+          The loop runs the same line for each version, so the two answers are easy to compare.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>raw 12 tokens, fits: False</Code>, then{" "}
+        <Code>clean 9 tokens, fits: True</Code>. Cleaning decided whether the note could be used at
+        all.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The twin's document has line breaks, a blank line and a run of extra spaces. Before chunking,
-        the lab cleans it with <Code>{`" ".join(TWIN_DOC.split())`}</Code>: split into words, join
-        back with single spaces. After that every gap is exactly one space, so counting words and
-        cutting chunks gives the same answer every time.
+        This is Step 1 of the project. The twin's document has line breaks, a blank line and a run
+        of extra spaces in the middle, like text pasted from a real file. You clean it with{" "}
+        <Code>{`" ".join(TWIN_DOC.split())`}</Code> and call the result <Code>clean</Code>.
+      </Text>
+      <Text>
+        After that every gap is exactly one space, and <Code>clean</Code> has 59 words. Cutting it
+        into chunks gives the same answer every time you run it, and <Code>chunk_words</Code> never
+        has to deal with mess.
       </Text>
 
       <Heading as="h3" size="sm">Idea 3: stepping through a list, with overlap</Heading>
@@ -230,12 +422,12 @@ for start in range(0, len(numbers), 2):
         function stops as soon as a chunk reaches the end of the text.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Heading as="h4" size="xs" color="gray.600">Up close: chunking and overlap</Heading>
       <Text>
-        This loop is the whole of <Code>chunk_words</Code>. The only change is that the list holds
-        words and each slice is glued back into a string with <Code>" ".join(...)</Code>. The jump
-        is <Code>size - overlap</Code>, so with <Code>size=12</Code> and <Code>overlap=4</Code> you
-        move 8 words each time.
+        A model cannot take a whole book in one go, and searching one giant block of text is
+        useless. So long text is cut into <b>chunks</b>: pieces small enough to fit in the model's
+        window and focused enough to search. Later, the model is only shown the chunks that look
+        useful for the question. Whatever is not in those chunks, the model never sees.
       </Text>
       <Text>Why overlap at all? Picture this sentence sitting right on a cut:</Text>
       <UnorderedList spacing={1} pl={4}>
@@ -253,7 +445,108 @@ for start in range(0, len(numbers), 2):
         </ListItem>
       </UnorderedList>
       <Text>
-        The next labs search through these chunks, so good chunks make good answers later.
+        Here is a worked example. A fact the model should be able to find is{" "}
+        <Code>maths on Fridays</Code>. We cut the text into 4-word chunks twice, with no overlap and
+        with an overlap of 2, and count how many chunks hold the whole fact. Two functions do the
+        work: one cuts the words into chunks, and one counts the chunks that contain the fact.
+      </Text>
+      <RunnableExample labId={16} code={`def make_chunks(words, size, jump):
+    chunks = []
+    for start in range(0, len(words), jump):
+        chunks.append(" ".join(words[start:start + size]))
+    return chunks
+
+
+def count_with_fact(chunks, fact):
+    count = 0
+    for chunk in chunks:
+        if fact in chunk:
+            count = count + 1
+    return count
+
+
+words = "Kofi teaches maths on Fridays and codes at night".split()
+fact = "maths on Fridays"
+for jump in (4, 2):  # 4 = no overlap, 2 = overlap of 2
+    chunks = make_chunks(words, 4, jump)
+    print("jump", jump, "->", len(chunks), "chunks,", count_with_fact(chunks, fact), "hold the whole fact")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>make_chunks</Code> is a small version of the lab's <Code>chunk_words</Code>. It loops
+          from the start of the list in steps of <Code>jump</Code>, takes <Code>size</Code> words
+          each time and glues them into a string.
+        </ListItem>
+        <ListItem>
+          With a jump of 4 (no overlap) you get 3 chunks, and none holds the whole fact. It is cut
+          between <Code>Kofi teaches maths on</Code> and <Code>Fridays and codes at</Code>. If the
+          model only gets one chunk, it never sees the whole fact.
+        </ListItem>
+        <ListItem>
+          With a jump of 2 (an overlap of 2) you get 5 chunks, and one of them,{" "}
+          <Code>maths on Fridays and</Code>, holds the whole fact. It survived the cut. The price is
+          2 more chunks to store.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new sentence and a new fact.
+      </Text>
+      <PracticeCell labId={16} cellId="topic-3" code={`def make_chunks(words, size, jump):
+    chunks = []
+    for start in range(0, len(words), jump):
+        chunks.append(" ".join(words[start:start + size]))
+    return chunks
+
+
+def count_with_fact(chunks, fact):
+    count = 0
+    for chunk in chunks:
+        if fact in chunk:
+            count = count + 1
+    return count
+
+
+words = "Ada bakes bread on weekends and sells it".split()
+fact = "bread on weekends"
+for jump in (4, 2):
+    chunks = make_chunks(words, 4, jump)
+    print("jump", jump, "->", len(chunks), "chunks,", count_with_fact(chunks, fact), "hold the whole fact")`} expectedOutput={`jump 4 -> 2 chunks, 0 hold the whole fact
+jump 2 -> 4 chunks, 1 hold the whole fact`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The text has 8 words. With a jump of 4 you get 2 chunks, and the fact{" "}
+          <Code>bread on weekends</Code> is cut between them. The count is 0.
+        </ListItem>
+        <ListItem>
+          With a jump of 2 you get 4 chunks. The second one is <Code>bread on weekends and</Code>,
+          so it holds the whole fact. The count is 1.
+        </ListItem>
+        <ListItem>
+          <Code>fact in chunk</Code> is <Code>True</Code> when the fact is found inside the chunk.
+          Each time, <Code>count</Code> goes up by 1.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>0 hold the whole fact</Code> for jump 4, and{" "}
+        <Code>1 hold the whole fact</Code> for jump 2. Same text, same chunk size. Only the overlap
+        decides whether the model can ever find the fact. The next labs search through these chunks, so good chunks
+        make good answers later.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Text>
+        This loop is the whole of <Code>chunk_words</Code>. The list holds words, and each slice is
+        glued back into a string with <Code>" ".join(...)</Code>. The jump is{" "}
+        <Code>size - overlap</Code>, and the function stops as soon as a chunk reaches the end.
+      </Text>
+      <Text>
+        In the project you call it as <Code>chunk_words(clean, 12, 4)</Code>. Each chunk is 12 words
+        and shares 4 words with the next, so you move 8 words each time. The 59 clean words of the
+        twin's document come out as 7 chunks, and a sentence on a cut still shows up whole in at
+        least one of them.
       </Text>
 
       <Heading as="h3" size="sm">Further reading</Heading>

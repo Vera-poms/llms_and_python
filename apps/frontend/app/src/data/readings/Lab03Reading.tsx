@@ -129,13 +129,120 @@ print(zoo)
         <Code>("birds", "owl")</Code> to the list one more time. The owl count should become 2.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: context changes the next word</Heading>
+      <Text>
+        The next word depends on what came before it. After <Code>the</Code>, a noun like
+        <Code>cat</Code> is likely. After <Code>to</Code>, a verb is likely.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          One tally for the whole text throws that away. It only knows how often each word shows up
+          overall.
+        </ListItem>
+        <ListItem>
+          A table with one tally per previous word keeps it. The previous word is the
+          <b>context</b>.
+        </ListItem>
+        <ListItem>
+          A real LLM does the same with a much longer context: all the earlier words, not just one.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>add_pair</Code> puts one (previous word, next word) pair
+        into a table of tallies. <Code>global_counts</Code> ignores the context and only counts the
+        next words.
+      </Text>
+      <RunnableExample labId={3} code={`def add_pair(table, prev, nxt):
+    inner = table.setdefault(prev, {})
+    inner[nxt] = inner.get(nxt, 0) + 1
+
+
+def global_counts(pairs):
+    counts = {}
+    for prev, nxt in pairs:
+        counts[nxt] = counts.get(nxt, 0) + 1
+    return counts
+
+
+pairs = [("the", "cat"), ("the", "dog"), ("the", "cat"), ("a", "cat"), ("a", "bird")]
+table = {}
+for prev, nxt in pairs:
+    add_pair(table, prev, nxt)
+print("one tally:", global_counts(pairs))
+print("per context:", table)
+print("after the:", table["the"])`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          With one tally, <Code>cat</Code> is 3 of the 5 next words. You cannot tell which words
+          came before it.
+        </ListItem>
+        <ListItem>
+          In the table, after <Code>the</Code> the counts are <Code>cat</Code> 2 and
+          <Code>dog</Code> 1. After <Code>a</Code> they are <Code>cat</Code> 1 and <Code>bird</Code>
+          1.
+        </ListItem>
+        <ListItem>
+          So after <Code>the</Code>, <Code>cat</Code> is 2 of 3. That is a better guide than 3 of 5.
+        </ListItem>
+        <ListItem>
+          Pattern: use the context as the key, then count inside it.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on new pairs.
+      </Text>
+      <PracticeCell labId={3} cellId="topic-1" code={`def add_pair(table, prev, nxt):
+    inner = table.setdefault(prev, {})
+    inner[nxt] = inner.get(nxt, 0) + 1
+
+
+def global_counts(pairs):
+    counts = {}
+    for prev, nxt in pairs:
+        counts[nxt] = counts.get(nxt, 0) + 1
+    return counts
+
+
+pairs = [("i", "love"), ("you", "hate"), ("i", "love"), ("you", "hate"), ("i", "hate"), ("you", "love")]
+table = {}
+for prev, nxt in pairs:
+    add_pair(table, prev, nxt)
+print("one tally:", global_counts(pairs))
+print("per context:", table)
+print("after you:", table["you"])`} expectedOutput={`one tally: {'love': 3, 'hate': 3}
+per context: {'i': {'love': 2, 'hate': 1}, 'you': {'hate': 2, 'love': 1}}
+after you: {'hate': 2, 'love': 1}`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Six pairs: <Code>i</Code> is followed by <Code>love</Code> twice and <Code>hate</Code>
+          once. <Code>you</Code> is followed by <Code>hate</Code> twice and <Code>love</Code> once.
+        </ListItem>
+        <ListItem>
+          The one tally says <Code>love</Code> 3 and <Code>hate</Code> 3. That looks like a tie, but
+          the context tells a different story.
+        </ListItem>
+        <ListItem>
+          The last line shows the row for <Code>you</Code>: <Code>hate</Code> 2, <Code>love</Code>
+          1.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines: the one tally, the table, and the row after
+        <Code>you</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>bigram_counts</Code> uses precisely this pattern:{" "}
-        <Code>counts[prev_word][next_word]</Code> is "how many times did{" "}
-        <Code>next_word</Code> immediately follow <Code>prev_word</Code> anywhere in the corpus,"
-        built with <Code>counts.setdefault(prev, {})</Code> the same way the pantry example builds
-        per-shelf counts.
+        The lab's <Code>bigram_counts</Code> builds this table from all the sentences.
+        <Code>counts[prev_word][next_word]</Code> is "how many times did <Code>next_word</Code>
+        immediately follow <Code>prev_word</Code> anywhere in the corpus". It is built with
+        <Code>{"counts.setdefault(prev, {})"}</Code>, the same way the pantry example builds per-shelf
+        counts. In the project, <Code>sum(counts["the"].values())</Code> is 148, so 148 pairs start
+        with <Code>the</Code>, and <Code>len(counts)</Code> is 449 different previous words.
       </Text>
       <Text>
         Here is the lab's real code. The "shelf" is the previous word, and the "item" is the word
@@ -253,17 +360,110 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0
         becomes 8, so the biscuit chance drops to <Code>4 / 8 = 0.5</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: predicting the next word is P(next | previous)</Heading>
+      <Text>
+        Generating text is one guess after another. Each guess is a list of chances for the next
+        word, given the words before it. That is written <Code>P(next | previous)</Code>.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Different previous words give different lists. After <Code>the</Code>, <Code>movie</Code>
+          may be likely. After <Code>was</Code>, <Code>great</Code> may be.
+        </ListItem>
+        <ListItem>
+          Some words have no row at all, because nothing ever followed them. They are a <b>dead
+          end</b>.
+        </ListItem>
+        <ListItem>
+          A modern LLM does the same, but it looks at thousands of earlier tokens, not one word. A
+          later lab covers how, with attention.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>next_chances</Code> looks up the row for a previous word. If
+        there is no row, it gives back an empty dict. Otherwise it divides each count by the total
+        of that row.
+      </Text>
+      <RunnableExample labId={3} code={`def next_chances(table, prev):
+    inner = table.get(prev)
+    if not inner:
+        return {}
+    total = 0
+    for count in inner.values():
+        total = total + count
+    chances = {}
+    for word, count in inner.items():
+        chances[word] = round(count / total, 2)
+    return chances
+
+
+table = {"the": {"movie": 6, "food": 3, "end": 1}, "was": {"great": 2, "long": 1}}
+for prev in ["the", "was", "great"]:
+    print(prev, "->", next_chances(table, prev))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The row for <Code>the</Code> has a total of 10, so the chances are 0.6, 0.3 and 0.1.
+        </ListItem>
+        <ListItem>
+          The row for <Code>was</Code> has a total of 3, so <Code>great</Code> gets 0.67 and
+          <Code>long</Code> gets 0.33.
+        </ListItem>
+        <ListItem>
+          <Code>great</Code> has no row, so the answer is an empty dict. That is a dead end.
+        </ListItem>
+        <ListItem>
+          Pattern: each row is divided by its own total, and a missing row means a dead end.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on a new table.
+      </Text>
+      <PracticeCell labId={3} cellId="topic-2" code={`def next_chances(table, prev):
+    inner = table.get(prev)
+    if not inner:
+        return {}
+    total = 0
+    for count in inner.values():
+        total = total + count
+    chances = {}
+    for word, count in inner.items():
+        chances[word] = round(count / total, 2)
+    return chances
+
+
+table = {"good": {"food": 3, "price": 1}, "very": {"good": 2, "bad": 2, "long": 1}}
+for prev in ["good", "very", "price"]:
+    print(prev, "->", next_chances(table, prev))`} expectedOutput={`good -> {'food': 0.75, 'price': 0.25}
+very -> {'good': 0.4, 'bad': 0.4, 'long': 0.2}
+price -> {}`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The row for <Code>good</Code> has a total of 4, so <Code>food</Code> gets 0.75 and
+          <Code>price</Code> gets 0.25.
+        </ListItem>
+        <ListItem>
+          The row for <Code>very</Code> has a total of 5, so the chances are 0.4, 0.4 and 0.2.
+        </ListItem>
+        <ListItem>
+          <Code>price</Code> has no row, so you get an empty dict.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines, and the last one ends with an empty dict.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        That's exactly what <Code>conditional_probabilities</Code> computes, but per previous
-        word instead of per drink: for every <Code>prev_word</Code>, it takes that word's inner
-        count dictionary and divides each entry by the total count of words that ever followed{" "}
-        <Code>prev_word</Code>, so <Code>cond[prev_word]</Code> is a full probability distribution
-        that sums to 1 - one distribution per previous word, instead of lab 1's single global one.
-        Stacking one of these per-word distributions on top of another lets you generate whole
-        sentences: sample a next word, then treat it as the new "previous word" and sample again.
-        A modern LLM does the same generation loop, just conditioning each step on thousands of
-        prior tokens (via attention) instead of exactly one.
+        The lab's <Code>conditional_probabilities</Code> does this for every previous word at once.
+        It divides each inner dict by its own total, so each row <Code>cond[prev_word]</Code> adds
+        up to 1. In the project, <Code>cond["the"]["movie"]</Code> is about 0.027. Your
+        <Code>generate_sentence</Code> then uses the rows: it looks up
+        <Code>cond.get(current)</Code>, stops early at a dead end, and otherwise picks the next word
+        with <Code>random.choices</Code>.
       </Text>
       <Text>Here is the lab's real code:</Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
@@ -398,6 +598,108 @@ print(grid.shape)  # (2, 2)`} />
         colors on the whole chart shift to match the new range.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: seeing what a model has learned, and what it never saw</Heading>
+      <Text>
+        A heatmap turns a table of chances into a picture. A bright square means a high chance.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The picture shows what the model learned: which words tend to follow which.
+        </ListItem>
+        <ListItem>
+          It also shows the gaps. Most word pairs were never seen, so their chance is 0.
+        </ListItem>
+        <ListItem>
+          A model can only guess well where it has seen examples. That is one reason LLMs are
+          trained on so much text.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>shade</Code> turns a chance into one character:
+        <Code>.</Code> for 0, <Code>+</Code> for less than 0.3, and <Code>#</Code> for 0.3 or more.
+        <Code>show_grid</Code> loops over the rows and the columns and prints one line per row.
+      </Text>
+      <RunnableExample labId={3} code={`def shade(chance):
+    if chance == 0:
+        return "."
+    if chance < 0.3:
+        return "+"
+    return "#"
+
+
+def show_grid(cond, rows, columns):
+    for prev in rows:
+        line = ""
+        for nxt in columns:
+            line = line + shade(cond[prev].get(nxt, 0.0)) + " "
+        print(prev.ljust(5), line.rstrip())
+
+
+cond = {"the": {"movie": 0.5, "end": 0.25, "food": 0.25}, "was": {"great": 0.6, "long": 0.4}}
+columns = ["movie", "great", "end", "long"]
+show_grid(cond, ["the", "was"], columns)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>cond[prev].get(nxt, 0.0)</Code> gives 0.0 when a pair was never seen, so nothing
+          crashes.
+        </ListItem>
+        <ListItem>
+          In the <Code>the</Code> row: <Code>movie</Code> is 0.5 (<Code>#</Code>),
+          <Code>great</Code> is never seen (<Code>.</Code>), <Code>end</Code> is 0.25
+          (<Code>+</Code>) and <Code>long</Code> is never seen (<Code>.</Code>).
+        </ListItem>
+        <ListItem>
+          In the <Code>was</Code> row: <Code>great</Code> is 0.6 and <Code>long</Code> is 0.4, so
+          both are <Code>#</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: a few bright spots are what the model learned, and the dots are what it never
+          saw.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new table.
+      </Text>
+      <PracticeCell labId={3} cellId="topic-3" code={`def shade(chance):
+    if chance == 0:
+        return "."
+    if chance < 0.3:
+        return "+"
+    return "#"
+
+
+def show_grid(cond, rows, columns):
+    for prev in rows:
+        line = ""
+        for nxt in columns:
+            line = line + shade(cond[prev].get(nxt, 0.0)) + " "
+        print(prev.ljust(5), line.rstrip())
+
+
+cond = {"my": {"dog": 0.7, "cat": 0.2, "car": 0.1}, "i": {"love": 0.5, "like": 0.5}}
+columns = ["dog", "love", "cat", "like"]
+show_grid(cond, ["my", "i"], columns)`} expectedOutput={`my    # . + .
+i     . # . #`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          In the <Code>my</Code> row: <Code>dog</Code> 0.7 is <Code>#</Code>, <Code>love</Code> is
+          never seen (<Code>.</Code>), <Code>cat</Code> 0.2 is <Code>+</Code> and <Code>like</Code>
+          is never seen (<Code>.</Code>).
+        </ListItem>
+        <ListItem>
+          In the <Code>i</Code> row: <Code>love</Code> and <Code>like</Code> are both 0.5, so both
+          are <Code>#</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two rows of four symbols each. Half of the cells in each row are
+        dots.
+      </Text>
+
       <Text fontSize="sm" color="gray.500">
         Further reading: IBM Think -{" "}
         <Link href="https://www.ibm.com/think/topics/bayesian-statistics" isExternal color="blue.500">
@@ -412,14 +714,17 @@ print(grid.shape)  # (2, 2)`} />
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        <Code>project.py</Code> builds exactly this kind of grid from real conditional
-        probabilities: it picks the 12 most frequent previous words and the 12 most frequent next
-        words, fills a matrix where cell <Code>[i, j]</Code> is <Code>cond[prev_word].get(next_word,
-        0.0)</Code>, and calls <Code>plt.imshow(matrix, cmap="viridis", aspect="auto")</Code> with
-        the previous words labeling the rows and the next words labeling the columns. Bright cells
-        are word pairs that follow each other often - the conditional-probability analogue of lab
-        1's bar chart, except now every row is its own separate distribution instead of one global
-        one.
+        <Code>project.py</Code> builds this kind of grid from real conditional probabilities: it
+        picks the 12 most frequent previous words and the 12 most frequent next words, fills a
+        matrix where cell <Code>[i, j]</Code> is <Code>cond[prev_word].get(next_word, 0.0)</Code>,
+        and calls <Code>plt.imshow(matrix, cmap="viridis", aspect="auto")</Code> with the previous
+        words labeling the rows and the next words labeling the columns. Bright cells are word pairs
+        that follow each other often. It is the conditional-probability version of lab 1's bar
+        chart, except now every row is its own separate distribution.
+      </Text>
+      <Text>
+        In the real grid about 124 of the 144 cells are exactly 0. The brightest cell is about 0.24,
+        in the <Code>and</Code> row and the <Code>the</Code> column: <Code>P(the | and)</Code>.
       </Text>
       <Text>Here is how the matrix gets filled, on a tiny version with 2 previous words and 2 next words:</Text>
       <UnorderedList spacing={1} pl={4}>

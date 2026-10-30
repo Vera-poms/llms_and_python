@@ -129,6 +129,135 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
         <Code>print(request['body']['qty'])</Code> to see <Code>2</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: what a call to a language model looks like</Heading>
+      <Text>
+        A language model sits behind an API like any other service. You do not "run" the model.
+        You send a request and read the response.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The <b>body</b> holds what you want: the model's name, the list of messages, and settings
+          such as <Code>temperature</Code> (how random the answer is).
+        </ListItem>
+        <ListItem>
+          The <b>response</b> holds the model's answer deep inside it, in{" "}
+          <Code>choices</Code>, then the first choice, then its <Code>message</Code>.
+        </ListItem>
+        <ListItem>
+          The response usually also reports <Code>usage</Code>: how many tokens the call used.
+          Tokens are small pieces of text, and they are what you pay for.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. No network is used. <Code>missing_parts</Code> loops over the
+        parts a request needs and reports any that are not there. <Code>read_response</Code> digs
+        the reply and the token count out of a response dict that we typed by hand.
+      </Text>
+      <RunnableExample labId={14} code={`REQUIRED = ["endpoint", "method", "headers", "body"]
+
+
+def missing_parts(request):
+    missing = []
+    for part in REQUIRED:
+        if part not in request:
+            missing.append(part)
+    return missing
+
+
+def read_response(response):
+    reply = response["choices"][0]["message"]["content"]
+    tokens = response["usage"]["total_tokens"]
+    return reply, tokens
+
+
+body = {"model": "tiny-model", "messages": [{"role": "user", "content": "Hi"}]}
+good = {"endpoint": "https://api.example.com/v1/chat", "method": "POST",
+        "headers": {"Authorization": "Bearer abc123"}, "body": body}
+bad = {"endpoint": "https://api.example.com/v1/chat", "method": "POST", "body": body}
+for name, request in [("good", good), ("bad", bad)]:
+    print(name, "request is missing:", missing_parts(request))
+
+response = {"choices": [{"message": {"role": "assistant", "content": "Hello!"}}],
+            "usage": {"total_tokens": 12}}
+reply, tokens = read_response(response)
+print("reply:", reply, "| tokens used:", tokens)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>missing_parts</Code> checks each name in <Code>REQUIRED</Code> against the keys of
+          the request. <Code>good</Code> has all four parts, so the list is empty.
+        </ListItem>
+        <ListItem>
+          <Code>bad</Code> has no headers, so it would be sent with no key. The function reports{" "}
+          <Code>['headers']</Code>. A real service would answer 401.
+        </ListItem>
+        <ListItem>
+          <Code>read_response</Code> follows the path <Code>["choices"][0]["message"]["content"]</Code>{" "}
+          to get <Code>Hello!</Code>, and <Code>["usage"]["total_tokens"]</Code> to get 12.
+        </ListItem>
+        <ListItem>
+          Pattern: build the request from known parts, then walk down the response to the one value
+          you need.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new request and two new responses.
+      </Text>
+      <PracticeCell labId={14} cellId="topic-1" code={`REQUIRED = ["endpoint", "method", "headers", "body"]
+
+
+def missing_parts(request):
+    missing = []
+    for part in REQUIRED:
+        if part not in request:
+            missing.append(part)
+    return missing
+
+
+def read_response(response):
+    reply = response["choices"][0]["message"]["content"]
+    tokens = response["usage"]["total_tokens"]
+    return reply, tokens
+
+
+odd = {"endpoint": "https://api.example.com/v1/chat", "headers": {"Authorization": "Bearer xyz789"}}
+print("odd request is missing:", missing_parts(odd))
+
+responses = [
+    {"choices": [{"message": {"role": "assistant", "content": "Bonjour!"}}], "usage": {"total_tokens": 9}},
+    {"choices": [{"message": {"role": "assistant", "content": "Hola!"}}], "usage": {"total_tokens": 7}},
+]
+total = 0
+for response in responses:
+    reply, tokens = read_response(response)
+    total = total + tokens
+    print("reply:", reply, "| tokens used:", tokens)
+print("total tokens:", total)`} expectedOutput={`odd request is missing: ['method', 'body']
+reply: Bonjour! | tokens used: 9
+reply: Hola! | tokens used: 7
+total tokens: 16`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>odd</Code> has an endpoint and headers, but no method and no body. The loop in{" "}
+          <Code>missing_parts</Code> finds both, in the order of <Code>REQUIRED</Code>.
+        </ListItem>
+        <ListItem>
+          The second loop reads each response. Each pass takes out the reply and the token count,
+          and adds the tokens to <Code>total</Code>.
+        </ListItem>
+        <ListItem>
+          9 + 7 = 16. Adding up <Code>usage</Code> like this is how you can track what a whole
+          session costs.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four lines. The missing parts are <Code>['method', 'body']</Code>,
+        and the total is 16 tokens.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         Look back at <Code>call_groq</Code> from the earlier labs with that lens: the URL constant
@@ -164,7 +293,8 @@ print(f"{request['method']} {request['endpoint']}")  # expected output: POST htt
           means failure, such as 401. Otherwise <Code>response.json()</Code> turns the reply text
           into a dict. It looks like{" "}
           <Code>{'{"choices": [{"message": {"content": "Hello!"}}]}'}</Code> (the words are an
-          example, a real reply will differ).
+          example, a real reply will differ). A real reply also carries a <Code>usage</Code> part
+          with token counts.
         </ListItem>
         <ListItem>
           <Code>extract_reply</Code> follows the path <Code>["choices"][0]["message"]["content"]</Code>
@@ -269,6 +399,114 @@ print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
         is not touched.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a model's reply is free text, so clean it</Heading>
+      <Text>
+        A model writes words, not neat values. Your program often needs one fixed label, such as{" "}
+        <Code>positive</Code> or <Code>negative</Code>, so it must turn the reply into that label.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Even when you say "reply with one word", the model may add a dot, a capital letter or a
+          new line: <Code>Positive.</Code>
+        </ListItem>
+        <ListItem>
+          So you first clean the reply (strip spaces and dots, make it lowercase). Then you look
+          for the label inside it.
+        </ListItem>
+        <ListItem>
+          Order matters when one label sits inside another. <Code>not spam</Code> contains{" "}
+          <Code>spam</Code>, so check the longer one first.
+        </ListItem>
+        <ListItem>
+          If nothing matches, give back a clear "unknown" instead of a guess.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>clean</Code> tidies a reply, and <Code>to_label</Code> maps
+        it to <Code>spam</Code>, <Code>not spam</Code> or <Code>unknown</Code>. The replies are
+        typed by hand, as a model might write them.
+      </Text>
+      <RunnableExample labId={14} code={`def clean(reply):
+    return reply.strip().strip(".").lower()
+
+
+def to_label(reply):
+    text = clean(reply)
+    if "not spam" in text:
+        return "not spam"
+    if "spam" in text:
+        return "spam"
+    return "unknown"
+
+
+replies = ["Spam.", "  not spam \\n", "It is NOT spam, I think", "Hard to say"]
+for reply in replies:
+    print(reply.strip(), "->", to_label(reply))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>clean</Code> removes the spaces and the new line at the ends, removes a dot at the
+          end, and lowercases. <Code>Spam.</Code> becomes <Code>spam</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>It is NOT spam, I think</Code> becomes lowercase, and <Code>not spam</Code> is found
+          first. If <Code>spam</Code> were checked first, this reply would be labelled wrongly.
+        </ListItem>
+        <ListItem>
+          <Code>Hard to say</Code> holds neither label, so the result is <Code>unknown</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: clean first, check the longer label first, and always have a fallback.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same idea with the labels <Code>toxic</Code> and <Code>non-toxic</Code>.
+      </Text>
+      <PracticeCell labId={14} cellId="topic-2" code={`def clean(reply):
+    return reply.strip().strip(".").lower()
+
+
+def to_label(reply):
+    text = clean(reply)
+    if "non-toxic" in text:
+        return "non-toxic"
+    if "toxic" in text:
+        return "toxic"
+    return "unknown"
+
+
+replies = ["Toxic!", " Non-toxic.", "I would say it is non-toxic", "Not sure"]
+for reply in replies:
+    print(reply.strip(), "->", to_label(reply))`} expectedOutput={`Toxic! -> toxic
+Non-toxic. -> non-toxic
+I would say it is non-toxic -> non-toxic
+Not sure -> unknown`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>non-toxic</Code> contains <Code>toxic</Code>, so it is checked first, just like{" "}
+          <Code>not spam</Code> above.
+        </ListItem>
+        <ListItem>
+          <Code>Toxic!</Code> keeps its <Code>!</Code>, because <Code>.strip(".")</Code> only
+          removes dots. It still contains <Code>toxic</Code>, so the label is <Code>toxic</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>Not sure</Code> matches neither label, so it falls through to{" "}
+          <Code>unknown</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>reply.strip()</Code> in the print only trims the space in front of{" "}
+          <Code>Non-toxic.</Code> so the lines look tidy.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four lines, labelled <Code>toxic</Code>,{" "}
+        <Code>non-toxic</Code>, <Code>non-toxic</Code> and <Code>unknown</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>SimpleAPIClient</Code> is the same pattern applied to HTTP calls: its constructor
@@ -321,10 +559,13 @@ print(vm.dispense("soda"))  # expected output: 3`} expectedOutput={`4
         The project reuses the same class with a different base URL:{" "}
         <Code>https://api.groq.com/openai/v1</Code>. Calling <Code>post("/chat/completions", ...)</Code>{" "}
         builds the same address that <Code>call_groq</Code> used. Then{" "}
-        <Code>parse_label</Code> cleans the model's reply. For example <Code>" Negative."</Code> goes
-        through <Code>.strip()</Code> (removes spaces), <Code>.strip(".")</Code> (removes dots) and{" "}
-        <Code>.lower()</Code> to become <Code>"negative"</Code>. This part needs a Groq API key, and
-        the model's wording can change.
+        <Code>parse_label</Code> applies the same steps as above to the model's reply. For example{" "}
+        <Code>" Negative."</Code> goes through <Code>.strip()</Code> (removes spaces),{" "}
+        <Code>.strip(".")</Code> (removes dots) and <Code>.lower()</Code> to become{" "}
+        <Code>"negative"</Code>. It then checks for <Code>"negative"</Code> before{" "}
+        <Code>"positive"</Code>, so <Code>"It is not positive, rather negative"</Code> gives{" "}
+        <Code>"negative"</Code>, and a reply with neither word is returned as cleaned. This part
+        needs a Groq API key, and the model's wording can change.
       </Text>
 
       <Heading as="h3" size="sm">Further reading</Heading>

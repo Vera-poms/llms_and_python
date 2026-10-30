@@ -92,6 +92,87 @@ print(total_seats)  # 300`} expectedOutput={`300`} />
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: parameters decide memory
+      </Heading>
+      <Text>
+        A parameter is one number the model learned. A model with 124 million parameters stores 124 million numbers, and all of them must sit in the computer's memory while the model runs. So the parameter count tells you roughly how big a computer you need. Each number takes some <b>bytes</b>, which is how computer memory is measured. A number can be stored with 4, 2 or 1 bytes. Fewer bytes take less room but are less exact. Many LLMs are stored with 2 bytes or fewer to save room.
+      </Text>
+      <Text>
+        Here is a worked example. A model is a list of tables, each with a number of rows and columns. <Code>table_params</Code> counts the numbers in one table. <Code>total_params</Code> loops over the tables and adds them up. <Code>memory_bytes</Code> multiplies by the bytes per number. This is a simplified list of 3 tables, not the lab's full tiny model.
+      </Text>
+      <RunnableExample labId={6} code={`def table_params(rows, cols):
+    return rows * cols
+
+
+def total_params(shapes):
+    total = 0
+    for rows, cols in shapes:
+        total = total + table_params(rows, cols)
+    return total
+
+
+def memory_bytes(params, bytes_each):
+    return params * bytes_each
+
+
+shapes = [(1000, 64), (64, 64), (64, 1000)]
+params = total_params(shapes)
+print("parameters:", params)
+for bytes_each in [4, 2, 1]:
+    print("bytes per number:", bytes_each, "->", f"{memory_bytes(params, bytes_each):,}", "bytes")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>total_params</Code> adds <Code>1000 * 64</Code>, <Code>64 * 64</Code> and <Code>64 * 1000</Code>. That is <Code>64000 + 4096 + 64000 = 132096</Code> parameters.
+        </ListItem>
+        <ListItem>
+          At 4 bytes per number the model needs <Code>528,384</Code> bytes. At 2 bytes it needs <Code>264,192</Code>. At 1 byte it needs <Code>132,096</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: memory is the number of parameters times the bytes per number.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same functions on three smaller tables.
+      </Text>
+      <PracticeCell labId={6} cellId="topic-1" code={`def table_params(rows, cols):
+    return rows * cols
+
+
+def total_params(shapes):
+    total = 0
+    for rows, cols in shapes:
+        total = total + table_params(rows, cols)
+    return total
+
+
+def memory_bytes(params, bytes_each):
+    return params * bytes_each
+
+
+shapes = [(500, 32), (32, 32), (32, 500)]
+params = total_params(shapes)
+print("parameters:", params)
+for bytes_each in [4, 2, 1]:
+    print("bytes per number:", bytes_each, "->", f"{memory_bytes(params, bytes_each):,}", "bytes")`} expectedOutput={`parameters: 33024
+bytes per number: 4 -> 132,096 bytes
+bytes per number: 2 -> 66,048 bytes
+bytes per number: 1 -> 33,024 bytes`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>500 * 32 = 16000</Code>, <Code>32 * 32 = 1024</Code> and <Code>32 * 500 = 16000</Code>. The total is <Code>33024</Code>.
+        </ListItem>
+        <ListItem>
+          The loop then multiplies by 4, 2 and 1 bytes: <Code>132,096</Code>, <Code>66,048</Code> and <Code>33,024</Code> bytes.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>parameters: 33024</Code>, then three lines. Each time the bytes per number halve, the memory halves too.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -103,6 +184,9 @@ print(total_seats)  # 300`} expectedOutput={`300`} />
         for different-shaped matrices, then adding the pieces up. Multiply that out for GPT-2
         small's real dimensions and you land within about 1% of 124,439,808 - which is exactly why
         that model is nicknamed "124M."
+      </Text>
+      <Text>
+        Here is the same arithmetic on a real number. GPT-2 small's published total is 124,439,808 parameters. If each number takes 2 bytes, the model needs <Code>124,439,808 * 2 = 248,879,616</Code> bytes, about 249 MB, just for its numbers.
       </Text>
       <Text>
         Here are the lab's methods on a tiny model. A <b>parameter</b> is one number the model
@@ -238,6 +322,93 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: design numbers chosen before training
+      </Heading>
+      <Text>
+        Some numbers in a model are learned during training: the parameters. Others are chosen by people before training starts: the model's design. This lab's design numbers are <Code>vocab_size</Code>, <Code>d_model</Code>, <Code>n_layers</Code>, <Code>n_heads</Code> and <Code>d_ff</Code>. Each one changes the size in its own way. To make an LLM bigger, you make it deeper (more layers) or wider (a bigger <Code>d_model</Code>).
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          More layers means more blocks. Double the layers and the layer parts double.
+        </ListItem>
+        <ListItem>
+          The attention tables are <Code>d_model</Code> by <Code>d_model</Code>. Double <Code>d_model</Code> and each table gets 4 times bigger.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A small <Code>Config</Code> dataclass holds <Code>d_model</Code> and <Code>n_layers</Code>. Its <Code>attention_total</Code> method counts the attention numbers: 4 tables of <Code>d_model * d_model</Code> in each layer. The loop changes one design number at a time and shows how many times bigger the result is.
+      </Text>
+      <RunnableExample labId={6} code={`from dataclasses import dataclass
+
+
+@dataclass
+class Config:
+    d_model: int
+    n_layers: int
+
+    def attention_total(self):
+        return self.n_layers * 4 * self.d_model * self.d_model
+
+
+base = Config(d_model=64, n_layers=2)
+print("base", base.attention_total())
+for label, cfg in [("double d_model", Config(128, 2)), ("double n_layers", Config(64, 4))]:
+    print(label, cfg.attention_total(), "x", cfg.attention_total() // base.attention_total())`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The base is 64 wide with 2 layers: <Code>2 * 4 * 64 * 64 = 32768</Code>. This is the lab's tiny-model attention total.
+        </ListItem>
+        <ListItem>
+          Doubling <Code>d_model</Code> to 128 gives <Code>131072</Code>, which is 4 times bigger.
+        </ListItem>
+        <ListItem>
+          Doubling <Code>n_layers</Code> to 4 gives <Code>65536</Code>, which is only 2 times bigger. (<Code>//</Code> is division that keeps the whole number.)
+        </ListItem>
+        <ListItem>
+          Pattern: depth grows the size in a straight line, and width grows it much faster.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same class and loop on a new base, and one more change.
+      </Text>
+      <PracticeCell labId={6} cellId="topic-2" code={`from dataclasses import dataclass
+
+
+@dataclass
+class Config:
+    d_model: int
+    n_layers: int
+
+    def attention_total(self):
+        return self.n_layers * 4 * self.d_model * self.d_model
+
+
+base = Config(d_model=32, n_layers=3)
+print("base", base.attention_total())
+for label, cfg in [("double d_model", Config(64, 3)), ("double n_layers", Config(32, 6)), ("triple d_model", Config(96, 3))]:
+    print(label, cfg.attention_total(), "x", cfg.attention_total() // base.attention_total())`} expectedOutput={`base 12288
+double d_model 49152 x 4
+double n_layers 24576 x 2
+triple d_model 110592 x 9`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The base is 32 wide with 3 layers: <Code>3 * 4 * 32 * 32 = 12288</Code>.
+        </ListItem>
+        <ListItem>
+          Doubling <Code>d_model</Code> to 64 gives <Code>49152</Code>, 4 times. Doubling <Code>n_layers</Code> to 6 gives <Code>24576</Code>, 2 times.
+        </ListItem>
+        <ListItem>
+          Tripling <Code>d_model</Code> to 96 gives <Code>110592</Code>. That is 9 times, because 3 * 3 = 9.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four lines, ending with <Code>triple d_model 110592 x 9</Code>.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -246,6 +417,9 @@ print(c.range_miles())  # 360.0`} expectedOutput={`360.0`} />
         <Code>n_heads</Code>, and <Code>d_ff</Code> are just named numbers bundled together, with
         methods (like <Code>count_parameters</Code>) that compute things from them - a config
         object playing the same "bundle of data plus behavior" role a class always does.
+      </Text>
+      <Text>
+        <Code>ModelConfig</Code> keeps the same five design numbers, and each count method reads them from <Code>self</Code>. You can see the effect in the project. GPT-2 medium has <Code>d_model=1024</Code> and <Code>n_layers=24</Code>, while GPT-2 small has <Code>d_model=768</Code> and <Code>n_layers=12</Code>. The computed total for medium is 353,551,360, against 123,568,896 for small.
       </Text>
       <Text>Here it is on the tiny model from before:</Text>
       <UnorderedList spacing={1} pl={4}>
@@ -346,15 +520,92 @@ print(server_config["workers"])  # 4`} expectedOutput={`4`} />
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: reading a model's shape from its config
+      </Heading>
+      <Text>
+        A model's weights can be many gigabytes. So tools read its <b>config</b> first, a small file of design numbers, before they download anything. The numbers have to fit together, or the model cannot be built. For example, a model splits its <Code>d_model</Code> numbers evenly among its <Code>n_heads</Code> attention heads (a head is one of several parts that each look at the input in their own way, as you will see in lab 7). So <Code>d_model</Code> must divide evenly by <Code>n_heads</Code>. A quick check on the config catches mistakes early.
+      </Text>
+      <Text>
+        Here is a worked example. <Code>head_size</Code> works out how many numbers each head gets. <Code>is_valid</Code> checks that there is no remainder. The loop reads each config from a dict. (<Code>//</Code> keeps the whole number of a division, and <Code>%</Code> gives the remainder.)
+      </Text>
+      <RunnableExample labId={6} code={`def head_size(cfg):
+    return cfg["d_model"] // cfg["n_heads"]
+
+
+def is_valid(cfg):
+    return cfg["d_model"] % cfg["n_heads"] == 0
+
+
+configs = {
+    "gpt2-small": {"d_model": 768, "n_heads": 12},
+    "gpt2-medium": {"d_model": 1024, "n_heads": 16},
+    "typo": {"d_model": 770, "n_heads": 12},
+}
+for name, cfg in configs.items():
+    if is_valid(cfg):
+        print(name, "ok, each head gets", head_size(cfg), "numbers")
+    else:
+        print(name, "invalid:", cfg["d_model"], "does not split evenly into", cfg["n_heads"], "heads")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>gpt2-small</Code> has <Code>768 // 12 = 64</Code>. <Code>gpt2-medium</Code> has <Code>1024 // 16 = 64</Code>. Both give each head 64 numbers.
+        </ListItem>
+        <ListItem>
+          <Code>typo</Code> has <Code>770 % 12 = 2</Code>. There is a remainder, so the config is invalid.
+        </ListItem>
+        <ListItem>
+          <Code>cfg["d_model"]</Code> reads one value from a config dict by its key.
+        </ListItem>
+        <ListItem>
+          Pattern: a config is plain data, so small functions can check it before you run anything.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same functions on three new configs.
+      </Text>
+      <PracticeCell labId={6} cellId="topic-3" code={`def head_size(cfg):
+    return cfg["d_model"] // cfg["n_heads"]
+
+
+def is_valid(cfg):
+    return cfg["d_model"] % cfg["n_heads"] == 0
+
+
+configs = {
+    "tiny": {"d_model": 64, "n_heads": 4},
+    "wide": {"d_model": 256, "n_heads": 8},
+    "broken": {"d_model": 100, "n_heads": 8},
+}
+for name, cfg in configs.items():
+    if is_valid(cfg):
+        print(name, "ok, each head gets", head_size(cfg), "numbers")
+    else:
+        print(name, "invalid:", cfg["d_model"], "does not split evenly into", cfg["n_heads"], "heads")`} expectedOutput={`tiny ok, each head gets 16 numbers
+wide ok, each head gets 32 numbers
+broken invalid: 100 does not split evenly into 8 heads`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>tiny</Code>: <Code>64 // 4 = 16</Code>, with no remainder.
+        </ListItem>
+        <ListItem>
+          <Code>wide</Code>: <Code>256 // 8 = 32</Code>, with no remainder.
+        </ListItem>
+        <ListItem>
+          <Code>broken</Code>: <Code>100 % 8 = 4</Code>, so it is invalid.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>tiny ok, each head gets 16 numbers</Code>, <Code>wide ok, each head gets 32 numbers</Code> and <Code>broken invalid: 100 does not split evenly into 8 heads</Code>.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
-        This is exactly what gets loaded from a Hugging Face <Code>config.json</Code> before a
-        model's weights are even downloaded - it's how tools know how much memory a model will
-        need, how many layers to expect, and how to shape every matrix correctly, all before
-        running a single line of the model itself. The <Code>REAL_CONFIGS</Code> dictionary in
-        this lab's project cell is the same structure: real published numbers, not made up ones,
-        driving the same <Code>count_parameters</Code> math you implemented in the exercise.
+        In this lab's project cell, <Code>REAL_CONFIGS</Code> is the same kind of data: a dict of real published numbers, like <Code>d_model=768</Code> and <Code>n_layers=12</Code> for GPT-2 small. It is the same shape as a Hugging Face <Code>config.json</Code>, which tools read before a model's weights are even downloaded. These numbers drive the <Code>count_parameters</Code> math you implemented in the exercise.
       </Text>
       <Text>
         In the notebook, <Code>REAL_CONFIGS</Code> is a dict whose keys are model names. Each value
@@ -494,6 +745,76 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
         actual from 90 to 150. In the saved chart that bar would be taller than its budget bar.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">
+        Up close: is the estimate close enough?
+      </Heading>
+      <Text>
+        A formula that estimates a model's size is only useful if it matches the real number. How close is close enough? Look at the gap as a percentage of the real size: <Code>gap / published * 100</Code>. A gap of 1 million is tiny for a model with 124 million parameters, but huge for one with 2 million.
+      </Text>
+      <Text>
+        Here is a worked example. <Code>percent_off</Code> turns the gap into a percentage. <Code>verdict</Code> says "good" if the percentage is within a limit of 1. The loop checks three made-up models. <Code>round(pct, 2)</Code> keeps 2 decimals.
+      </Text>
+      <RunnableExample labId={6} code={`def percent_off(computed, published):
+    return abs(computed - published) / published * 100
+
+
+def verdict(pct, limit):
+    return "good" if pct <= limit else "too far"
+
+
+models = [("A", 990000, 1000000), ("B", 4970000, 5000000), ("C", 3000000, 3300000)]
+for name, computed, published in models:
+    pct = percent_off(computed, published)
+    print(name, "off by", f"{abs(computed - published):,}", "=", round(pct, 2), "%", verdict(pct, 1))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>A</Code> is off by 10,000 out of 1,000,000. That is <Code>1.0</Code> percent, which is within the limit.
+        </ListItem>
+        <ListItem>
+          <Code>B</Code> is off by 30,000, a bigger gap than A's. But it is out of 5,000,000, so it is only <Code>0.6</Code> percent.
+        </ListItem>
+        <ListItem>
+          <Code>C</Code> is off by 300,000 out of 3,300,000. That is <Code>9.09</Code> percent, too far.
+        </ListItem>
+        <ListItem>
+          Pattern: judge a gap as a percent of the size, not as a raw number.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same functions on three new models.
+      </Text>
+      <PracticeCell labId={6} cellId="topic-4" code={`def percent_off(computed, published):
+    return abs(computed - published) / published * 100
+
+
+def verdict(pct, limit):
+    return "good" if pct <= limit else "too far"
+
+
+models = [("D", 19900, 20000), ("E", 480000, 500000), ("F", 60000000, 60500000)]
+for name, computed, published in models:
+    pct = percent_off(computed, published)
+    print(name, "off by", f"{abs(computed - published):,}", "=", round(pct, 2), "%", verdict(pct, 1))`} expectedOutput={`D off by 100 = 0.5 % good
+E off by 20,000 = 4.0 % too far
+F off by 500,000 = 0.83 % good`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>D</Code>: a gap of 100 out of 20,000 is <Code>0.5</Code> percent. Good.
+        </ListItem>
+        <ListItem>
+          <Code>E</Code>: a gap of 20,000 out of 500,000 is <Code>4.0</Code> percent. Too far.
+        </ListItem>
+        <ListItem>
+          <Code>F</Code>: a gap of 500,000 out of 60,500,000 is <Code>0.83</Code> percent. Good, even though it is the biggest gap in raw numbers.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>D off by 100 = 0.5 % good</Code>, <Code>E off by 20,000 = 4.0 % too far</Code> and <Code>F off by 500,000 = 0.83 % good</Code>.
+      </Text>
+
       <Text>
         Further reading:{" "}
         <Link href="https://www.ibm.com/think/topics/llm-parameters" isExternal color="blue.500">
@@ -517,6 +838,9 @@ print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar ch
         (with the tied embedding/output-head duplicate subtracted out) and the model's real
         published parameter count. Bars nearly the same height is the chart's way of showing that
         the formulas you implemented in the exercise actually match reality.
+      </Text>
+      <Text>
+        In the project, the printed <Code>diff</Code> is the gap, <Code>abs(tied_total - real_total)</Code>. For GPT-2 small it is 870,912 out of 124,439,808, about 0.7%. For GPT-2 medium it is 1,271,808 out of 354,823,168, about 0.36%. Both are under 1%, like <Code>A</Code> and <Code>B</Code> above, so your formulas capture nearly everything about the model's size.
       </Text>
       <Text>
         Here is how it lines up with the numbers. The loop first fills three lists:{" "}

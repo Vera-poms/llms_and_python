@@ -117,15 +117,80 @@ print(total_sixes)  # 2`} expectedOutput={`2`} />
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: many small passes
+      </Heading>
+      <Text>
+        A model is not trained in one step. Training makes many small adjustments, and it goes over the same data again and again. One full pass over the data is an <b>epoch</b>. One nudge moves the model only a little, so a single pass is rarely enough. LLMs are trained the same way, on a much bigger scale. After each pass you can measure how far off the model still is. If that number shrinks, training works.
+      </Text>
+      <Text>
+        Here is a worked example. It is a pretend model with just one number, its guess. The right answer is 10. <Code>one_pass</Code> loops over the data and, for each value, moves the guess part of the way toward it. <Code>rate</Code> is how big that part is. This is not the perceptron rule. It is a stand-in that shows the shape of training. The outer loop runs 3 epochs and prints how far off the guess is.
+      </Text>
+      <RunnableExample labId={5} code={`def one_pass(guess, data, rate):
+    for value in data:
+        guess = guess + rate * (value - guess)
+    return guess
+
+
+target = 10
+data = [10, 10]
+guess = 0.0
+for epoch in range(1, 4):
+    guess = one_pass(guess, data, 0.5)
+    print("epoch", epoch, "guess", guess, "off by", target - guess)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The data has 2 values, so <Code>one_pass</Code> nudges twice in each epoch. With a rate of 0.5, each nudge covers half of the gap.
+        </ListItem>
+        <ListItem>
+          Epoch 1: the guess goes <Code>0.0 -&gt; 5.0 -&gt; 7.5</Code>. It is off by <Code>2.5</Code>. Epoch 2 ends at <Code>9.375</Code> and epoch 3 at <Code>9.84375</Code>.
+        </ListItem>
+        <ListItem>
+          The gap shrinks every epoch: <Code>2.5</Code>, <Code>0.625</Code>, <Code>0.15625</Code>. It gets close but never closes in one go.
+        </ListItem>
+        <ListItem>
+          Pattern: training is many small nudges, and the error falls epoch by epoch.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same function on a new answer, 8, with the same rate of 0.5.
+      </Text>
+      <PracticeCell labId={5} cellId="topic-1" code={`def one_pass(guess, data, rate):
+    for value in data:
+        guess = guess + rate * (value - guess)
+    return guess
+
+
+target = 8
+data = [8, 8]
+guess = 0.0
+for epoch in range(1, 4):
+    guess = one_pass(guess, data, 0.5)
+    print("epoch", epoch, "guess", guess, "off by", target - guess)`} expectedOutput={`epoch 1 guess 6.0 off by 2.0
+epoch 2 guess 7.5 off by 0.5
+epoch 3 guess 7.875 off by 0.125`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Epoch 1: <Code>0.0 -&gt; 4.0 -&gt; 6.0</Code>. It is off by <Code>2.0</Code>.
+        </ListItem>
+        <ListItem>
+          Epoch 2: <Code>6.0 -&gt; 7.0 -&gt; 7.5</Code>. It is off by <Code>0.5</Code>.
+        </ListItem>
+        <ListItem>
+          Epoch 3: <Code>7.5 -&gt; 7.75 -&gt; 7.875</Code>. It is off by <Code>0.125</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines, with the guess <Code>6.0</Code>, <Code>7.5</Code> and <Code>7.875</Code>. The gap is a quarter of the one before each time: <Code>2.0</Code>, <Code>0.5</Code>, <Code>0.125</Code>.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
-        <Code>train.py</Code>'s <Code>train</Code> function nests exactly this shape two levels
-        deep: an outer loop over <Code>epochs</Code> (how many times to walk through the whole
-        dataset), and an inner loop over <Code>zip(X, y)</Code> (every training example, once per
-        epoch). Nothing about the loop itself is special to machine learning - it's the same
-        "repeat this for every item" pattern as the coin-flip counter, just repeated for a fixed
-        number of passes over the data instead of stopping after one pass.
+        <Code>train.py</Code>'s <Code>train</Code> function nests exactly this shape two levels deep: an outer loop over <Code>epochs</Code> (how many times to walk through the whole dataset), and an inner loop over <Code>zip(X, y)</Code> (every training example, once per epoch). The only difference from the pretend model is what happens inside the inner loop. <Code>train</Code> changes the model only when it is wrong, using the learning rule in the next section. In the project, <Code>train</Code> runs for 60 epochs on 136 training sentences, so the inner loop runs <Code>60 * 136 = 8,160</Code> times. <Code>errors_per_epoch</Code> is the lab's version of the "off by" number you printed above.
       </Text>
       <Text>
         Here is the real shape of the loop in the lab. An <b>epoch</b> is one full walk through
@@ -236,6 +301,80 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: the learning rate, the size of each nudge
+      </Heading>
+      <Text>
+        How big should each nudge be? That number is the <b>learning rate</b>. If it is too small, the model needs many passes to get anywhere. If it is too big, the model jumps past the answer and swings back and forth. Choosing it is an important decision when training any model, LLMs included.
+      </Text>
+      <Text>
+        Here is a worked example. It uses the same pretend model, with one guess and the right answer 10. <Code>run</Code> moves the guess a fraction <Code>rate</Code> of the way toward the answer once per epoch, and saves each guess in a list. The loop tries three rates.
+      </Text>
+      <RunnableExample labId={5} code={`def run(rate, epochs):
+    target = 10.0
+    guess = 0.0
+    seen = []
+    for _ in range(epochs):
+        guess = guess + rate * (target - guess)
+        seen.append(guess)
+    return seen
+
+
+for rate in [0.1, 0.5, 1.5]:
+    print("rate", rate, "->", run(rate, 3))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Rate <Code>0.1</Code> gives <Code>[1.0, 1.9, 2.71]</Code>. It is safe but slow.
+        </ListItem>
+        <ListItem>
+          Rate <Code>0.5</Code> gives <Code>[5.0, 7.5, 8.75]</Code>. It closes in steadily.
+        </ListItem>
+        <ListItem>
+          Rate <Code>1.5</Code> gives <Code>[15.0, 7.5, 11.25]</Code>. The first nudge jumps past 10 to 15, then the guess swings back under 10, then over again.
+        </ListItem>
+        <ListItem>
+          Pattern: a small rate is slow and steady. A big rate is fast but wild.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same function on a new answer, 20, and four rates.
+      </Text>
+      <PracticeCell labId={5} cellId="topic-2" code={`def run(rate, epochs):
+    target = 20.0
+    guess = 0.0
+    seen = []
+    for _ in range(epochs):
+        guess = guess + rate * (target - guess)
+        seen.append(guess)
+    return seen
+
+
+for rate in [0.25, 0.5, 1.0, 1.5]:
+    print("rate", rate, "->", run(rate, 3))`} expectedOutput={`rate 0.25 -> [5.0, 8.75, 11.5625]
+rate 0.5 -> [10.0, 15.0, 17.5]
+rate 1.0 -> [20.0, 20.0, 20.0]
+rate 1.5 -> [30.0, 15.0, 22.5]`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Rate <Code>0.25</Code> creeps up: <Code>5.0</Code>, <Code>8.75</Code>, <Code>11.5625</Code>.
+        </ListItem>
+        <ListItem>
+          Rate <Code>0.5</Code> goes <Code>10.0</Code>, <Code>15.0</Code>, <Code>17.5</Code>.
+        </ListItem>
+        <ListItem>
+          Rate <Code>1.0</Code> reaches <Code>20.0</Code> at once and stays there. That only works because this pretend problem has one fixed answer. Real data is not so tidy.
+        </ListItem>
+        <ListItem>
+          Rate <Code>1.5</Code> overshoots: <Code>30.0</Code>, <Code>15.0</Code>, <Code>22.5</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four lines, one for each rate. Only rate <Code>1.5</Code> goes past the answer and back.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
@@ -246,6 +385,9 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
         zero feature contributed nothing to the wrong prediction in the first place. If the true
         label is <Code>+1</Code> but the perceptron said <Code>-1</Code>, that's a strong signal to
         push the weights toward predicting <Code>+1</Code> for inputs like this one.
+      </Text>
+      <Text>
+        The size of each nudge in <Code>update = learning_rate * target</Code> is set by <Code>learning_rate</Code>. The toy run in this lab uses <Code>0.1</Code>, which gives the small steps in the numbers above. The project calls <Code>train</Code> with <Code>learning_rate=1.0</Code>.
       </Text>
       <Text>
         Here is one real update from the lab's toy data. A <b>weight</b> is a number that says how
@@ -352,17 +494,96 @@ print(score)  # 35 - remembers every point scored before it`} expectedOutput={`3
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: loss, measuring how wrong
+      </Heading>
+      <Text>
+        Counting mistakes says that a model was wrong, but not by how much. Two models can both get 2 answers wrong, while one is nearly right and the other is far off. Bigger models use a <b>loss</b> instead: one number that is small when the model is close and large when it is far. Training then tries to make the loss go down. An LLM's loss measures how much probability it gave to the right next word. You do not need the details. The idea is a number for "how wrong".
+      </Text>
+      <Text>
+        Here is a worked example. <Code>count_wrong</Code> counts the mistakes, like this lab's <Code>errors</Code>. <Code>total_loss</Code> adds up the squared gap between each score and the right answer. Squaring a number (<Code>** 2</Code>) multiplies it by itself, so a big gap counts a lot. We compare two models on the same four answers.
+      </Text>
+      <RunnableExample labId={5} code={`def count_wrong(scores, targets):
+    wrong = 0
+    for score, target in zip(scores, targets):
+        guess = 1 if score >= 0 else -1
+        if guess != target:
+            wrong = wrong + 1
+    return wrong
+
+
+def total_loss(scores, targets):
+    loss = 0.0
+    for score, target in zip(scores, targets):
+        loss = loss + (target - score) ** 2
+    return loss
+
+
+targets = [1, -1, 1, -1]
+models = [("A", [0.5, -0.5, -0.5, 0.5]), ("B", [0.5, -0.5, -4.0, 4.0])]
+for name, scores in models:
+    print(name, "wrong:", count_wrong(scores, targets), "loss:", total_loss(scores, targets))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Both models get exactly 2 answers wrong: the third and the fourth. <Code>count_wrong</Code> says it is a tie.
+        </ListItem>
+        <ListItem>
+          <Code>A</Code> has a loss of <Code>5.0</Code>. Its wrong answers are only a little off, so each costs <Code>2.25</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>B</Code> has a loss of <Code>50.5</Code>. Its wrong answers are far off, so each costs <Code>25.0</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: counting says if the model was wrong. The loss says by how much.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same two functions on three new models and three new answers.
+      </Text>
+      <PracticeCell labId={5} cellId="topic-3" code={`def count_wrong(scores, targets):
+    wrong = 0
+    for score, target in zip(scores, targets):
+        guess = 1 if score >= 0 else -1
+        if guess != target:
+            wrong = wrong + 1
+    return wrong
+
+
+def total_loss(scores, targets):
+    loss = 0.0
+    for score, target in zip(scores, targets):
+        loss = loss + (target - score) ** 2
+    return loss
+
+
+targets = [-1, 1, 1]
+models = [("C", [0.25, 0.75, -0.25]), ("D", [3.0, 0.5, -3.0]), ("E", [-0.5, 1.0, 1.0])]
+for name, scores in models:
+    print(name, "wrong:", count_wrong(scores, targets), "loss:", total_loss(scores, targets))`} expectedOutput={`C wrong: 2 loss: 3.1875
+D wrong: 2 loss: 32.25
+E wrong: 0 loss: 0.25`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The right answers are <Code>[-1, 1, 1]</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>C</Code> and <Code>D</Code> are both wrong on the first and the third answer. That is 2 mistakes each. <Code>C</Code> has a loss of <Code>3.1875</Code>, while <Code>D</Code>, whose scores are far off, has <Code>32.25</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>E</Code> gets all three right, so it has 0 mistakes. Its loss is <Code>0.25</Code>, not 0, because its first score is not exactly on target.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>C wrong: 2 loss: 3.1875</Code>, <Code>D wrong: 2 loss: 32.25</Code> and <Code>E wrong: 0 loss: 0.25</Code>. The mistake count cannot tell C from D. The loss can.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
-        <Code>model.weights += update * xi</Code> changes the same <Code>Perceptron</Code> object
-        across every iteration of the loop, the same way <Code>balance</Code> kept accumulating
-        deposits above. The model doesn't get rebuilt from scratch each epoch; it remembers what it
-        learned in every previous epoch and keeps adjusting from there. Bigger neural networks
-        (including every transformer) replace this simple mistake-count with a "loss function" - a
-        number that measures not just whether a prediction was wrong, but by how much, so that
-        gradient-descent-based training can make smoother, more informed updates - but the
-        underlying pattern of state that persists and improves over time is identical.
+        In this lab, "error" is the simple count: <Code>train</Code> adds 1 to <Code>errors</Code> for each wrong answer, and saves the number after each epoch. It says that a mistake happened, but not how big it was. The loss in the section above is what bigger models use instead. The other half of this idea is state. <Code>model.weights += update * xi</Code> changes the same <Code>Perceptron</Code> object across every iteration of the loop, the same way <Code>balance</Code> kept accumulating deposits above. The model is not rebuilt from scratch each epoch. It remembers what it learned in every earlier epoch and keeps adjusting from there.
       </Text>
       <Text>
         Here is the lab's toy run, with 4 examples, from zero weights. The examples are{" "}
@@ -485,6 +706,103 @@ print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side chart
         would then be shorter than the tea bar.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">
+        Up close: how do we know it really learned?
+      </Heading>
+      <Text>
+        A model can score well on the examples it trained on just by remembering them. What counts is how it does on new examples. So we hide some data, the <b>test set</b>, and use it only at the end. A rising training score shows that learning is happening. The test score shows whether it is real. LLMs are judged the same way, on text they were not trained on.
+      </Text>
+      <Text>
+        Here is a worked example. <Code>accuracy</Code> loops over some data and returns the share of right answers. Two pretend models are tested on the same data. <Code>memorizer</Code> stores the answer for each training sentence in a dict and says +1 for anything new. <Code>rule</Code> looks for the word <Code>great</Code>. The rule is written by hand here, as a stand-in for a trained model.
+      </Text>
+      <RunnableExample labId={5} code={`def accuracy(predict, data):
+    right = 0
+    for sentence, label in data:
+        if predict(sentence) == label:
+            right = right + 1
+    return right / len(data)
+
+
+train = [("great film", 1), ("boring plot", -1), ("great cast", 1), ("dull plot", -1)]
+test = [("great plot", 1), ("dull film", -1), ("boring cast", -1)]
+
+memory = {}
+for sentence, label in train:
+    memory[sentence] = label
+
+
+def memorizer(sentence):
+    return memory.get(sentence, 1)
+
+
+def rule(sentence):
+    return 1 if "great" in sentence.split() else -1
+
+
+for name, predict in [("memorizer", memorizer), ("rule", rule)]:
+    print(name, "train:", accuracy(predict, train), "test:", round(accuracy(predict, test), 2))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          On the training data, both models score <Code>1.0</Code>. The memorizer has seen every sentence.
+        </ListItem>
+        <ListItem>
+          On the 3 test sentences the memorizer gets only 1 right: <Code>0.33</Code>. It has never seen them, so it just guesses +1.
+        </ListItem>
+        <ListItem>
+          The rule gets <Code>1.0</Code> on both, because it picked up something real about the words.
+        </ListItem>
+        <ListItem>
+          Pattern: judge a model on data it has not seen. A good training score alone can fool you.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same functions on new data, 4 training and 4 test sentences, and the word <Code>fun</Code>.
+      </Text>
+      <PracticeCell labId={5} cellId="topic-4" code={`def accuracy(predict, data):
+    right = 0
+    for sentence, label in data:
+        if predict(sentence) == label:
+            right = right + 1
+    return right / len(data)
+
+
+train = [("fun show", 1), ("dull show", -1), ("fun cast", 1), ("slow cast", -1)]
+test = [("fun end", 1), ("slow end", -1), ("dull cast", -1), ("fun plot", 1)]
+
+memory = {}
+for sentence, label in train:
+    memory[sentence] = label
+
+
+def memorizer(sentence):
+    return memory.get(sentence, 1)
+
+
+def rule(sentence):
+    return 1 if "fun" in sentence.split() else -1
+
+
+for name, predict in [("memorizer", memorizer), ("rule", rule)]:
+    print(name, "train:", accuracy(predict, train), "test:", accuracy(predict, test))`} expectedOutput={`memorizer train: 1.0 test: 0.5
+rule train: 1.0 test: 1.0`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The memorizer has seen the 4 training sentences, so it scores <Code>1.0</Code>. So does the rule.
+        </ListItem>
+        <ListItem>
+          On the test sentences the memorizer gets 2 of 4 right: <Code>fun end</Code> and <Code>fun plot</Code>, because +1 is the right answer by luck. It misses <Code>slow end</Code> and <Code>dull cast</Code>. That is <Code>0.5</Code>.
+        </ListItem>
+        <ListItem>
+          The rule gets all 4 right: <Code>1.0</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>memorizer train: 1.0 test: 0.5</Code> and <Code>rule train: 1.0 test: 1.0</Code>.
+      </Text>
+
       <Text>
         Further reading:{" "}
         <Link href="https://www.ibm.com/think/topics/loss-function" isExternal color="blue.500">
@@ -508,6 +826,9 @@ print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side chart
         questions in one glance - "did training actually improve things over time?" on the left,
         and "where, geometrically, does the trained model still get confused?" on the right - saved
         together to <Code>training_results.png</Code>.
+      </Text>
+      <Text>
+        The project hides 34 of the 170 sentences (<Code>TEST_FRACTION = 0.2</Code>) and trains on the other 136. So the blue circles and black X's in the right panel are test points the model never trained on. The left panel is the training score and the right panel is the test result. The expected held-out test accuracy is 73.53%.
       </Text>
       <Text>Here is how each panel is built, with small numbers:</Text>
       <UnorderedList spacing={1} pl={4}>

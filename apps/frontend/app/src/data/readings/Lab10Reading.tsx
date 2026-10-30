@@ -115,15 +115,144 @@ print(apply_pattern(query))  # expected output: YES!`} expectedOutput={`YES!`} /
         to <Code>"thanks"</Code>. You should see <Code>THANKS!</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: why examples steer a model</Heading>
+      <Text>
+        A model works by continuing text. It looks at everything in the messages list and writes
+        what would most likely come next. If the list already holds replies in a clear shape, the
+        most likely next reply has that same shape.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          An instruction like "reply with JSON" is easy to read in more than one way. An example
+          reply shows the exact keys and the exact style.
+        </ListItem>
+        <ListItem>
+          A <b>shot</b> is one worked example, written as a pair of messages: the user's input, then
+          the assistant's reply. Zero-shot means no examples. Few-shot means a few.
+        </ListItem>
+        <ListItem>
+          Every shot costs space in the model's limited window, so use only as many as you need.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. The messages are written out by hand, so nothing is sent
+        anywhere. Two small functions look inside a messages list. One counts the shots. The other
+        finds the keys of the last example reply, which is the shape the model will copy.
+      </Text>
+      <RunnableExample labId={10} code={`import json
+
+
+def count_shots(messages):
+    shots = 0
+    for message in messages:
+        if message["role"] == "assistant":
+            shots = shots + 1
+    return shots
+
+
+def shape_to_copy(messages):
+    shape = "unknown"
+    for message in messages:
+        if message["role"] == "assistant":
+            shape = sorted(json.loads(message["content"]).keys())
+    return shape
+
+
+zero = [{"role": "user", "content": "Great phone!"}]
+few = [
+    {"role": "user", "content": "Great phone!"},
+    {"role": "assistant", "content": '{"topic": "phone", "mood": "happy"}'},
+    {"role": "user", "content": "Slow delivery."},
+    {"role": "assistant", "content": '{"topic": "delivery", "mood": "upset"}'},
+    {"role": "user", "content": "Nice shoes!"},
+]
+for name, messages in [("zero-shot", zero), ("few-shot", few)]:
+    print(name, "-> messages:", len(messages), "shots:", count_shots(messages), "shape:", shape_to_copy(messages))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>count_shots</Code> loops over the messages and adds 1 for each{" "}
+          <Code>assistant</Code> message, because each one is a worked answer.
+        </ListItem>
+        <ListItem>
+          <Code>shape_to_copy</Code> turns the text of each assistant reply back into a dict with{" "}
+          <Code>json.loads</Code> and keeps its keys. <Code>sorted</Code> puts them in a fixed
+          order. The last example wins.
+        </ListItem>
+        <ListItem>
+          The zero-shot list has 1 message and 0 shots, so the shape is <Code>unknown</Code>. The
+          few-shot list has 5 messages and 2 shots, and the shape is{" "}
+          <Code>{"['mood', 'topic']"}</Code>. The model has seen those keys twice.
+        </ListItem>
+        <ListItem>
+          Pattern: each shot adds two messages, and the examples show the shape you want back.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on new messages that ask for a city and a temperature.
+      </Text>
+      <PracticeCell labId={10} cellId="topic-1" code={`import json
+
+
+def count_shots(messages):
+    shots = 0
+    for message in messages:
+        if message["role"] == "assistant":
+            shots = shots + 1
+    return shots
+
+
+def shape_to_copy(messages):
+    shape = "unknown"
+    for message in messages:
+        if message["role"] == "assistant":
+            shape = sorted(json.loads(message["content"]).keys())
+    return shape
+
+
+one = [
+    {"role": "user", "content": "Weather in Accra?"},
+    {"role": "assistant", "content": '{"city": "Accra", "temp": 31}'},
+    {"role": "user", "content": "Weather in Kumasi?"},
+]
+none = [{"role": "user", "content": "Weather in Kumasi?"}]
+for name, messages in [("no shots", none), ("one shot", one)]:
+    print(name, "-> messages:", len(messages), "shots:", count_shots(messages), "shape:", shape_to_copy(messages))`} expectedOutput={`no shots -> messages: 1 shots: 0 shape: unknown
+one shot -> messages: 3 shots: 1 shape: ['city', 'temp']`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>none</Code> is only the question. It has 1 message and 0 shots, so the model has no
+          shape to copy.
+        </ListItem>
+        <ListItem>
+          <Code>one</Code> has an example pair, then the real question. That is 3 messages and 1
+          shot.
+        </ListItem>
+        <ListItem>
+          The example reply has the keys <Code>city</Code> and <Code>temp</Code>, so a model reading
+          this list would answer Kumasi in the same shape.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>no shots -&gt; messages: 1 shots: 0 shape: unknown</Code>,
+        then <Code>{"one shot -> messages: 3 shots: 1 shape: ['city', 'temp']"}</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        In this lab, <Code>build_few_shot_messages(examples, query)</Code> does exactly this for
-        the API's messages list: it takes a list of <Code>(review, result_dict)</Code> pairs and
-        replays each one as a fake prior conversation turn - a <Code>user</Code> message with the
-        review text, followed by an <Code>assistant</Code> message with{" "}
-        <Code>json.dumps(result_dict)</Code> - before appending the real question. By the time the
-        model sees the actual query, it has already "seen" two examples of exactly the JSON shape
-        you want back, which is far more reliable than just telling it "reply with JSON."
+        In this lab, <Code>build_few_shot_messages(examples, query)</Code> builds the messages list
+        for you. It takes a list of <Code>(review, result_dict)</Code> pairs and replays each one as
+        a fake earlier turn: a <Code>user</Code> message with the review text, then an{" "}
+        <Code>assistant</Code> message with <Code>json.dumps(result_dict)</Code>. The real question
+        goes last.
+      </Text>
+      <Text>
+        In the project, <Code>FEW_SHOT_EXAMPLES</Code> holds exactly 2 pairs. One review is
+        positive with confidence 0.97 and one is negative with confidence 0.95. So each call sends 6
+        messages: 1 system, 2 for each example, and the real review.
       </Text>
       <Text>
         Here is the function on one tiny example. Say{" "}
@@ -277,19 +406,147 @@ except ValueError as e:
         should see <Code>parsed but incomplete: missing price</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a reply is text, so check it</Heading>
+      <Text>
+        A model never hands your program a dict. It sends back a string, and it is a string that
+        looks like JSON. Your code cannot trust it until it has checked it.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The reply may be wrapped in a code fence, or be plain words instead of JSON.
+        </ListItem>
+        <ListItem>
+          The reply may be valid JSON that is missing a key you need.
+        </ListItem>
+        <ListItem>
+          Asking for JSON, even with the API's JSON mode, makes these problems rarer but not
+          impossible. So the safe plan is: expect a few bad replies, and handle each one.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Four replies are pretend model replies, written as plain strings.
+        One function sorts each reply into <Code>ok</Code>, <Code>not JSON</Code> or a missing key,
+        and a loop counts the usable ones.
+      </Text>
+      <RunnableExample labId={10} code={`import json
+
+
+def check_reply(text, needed):
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return "not JSON"
+    for key in needed:
+        if key not in data:
+            return "missing " + key
+    return "ok"
+
+
+replies = [
+    '{"sentiment": "positive", "confidence": 0.9}',
+    '{"sentiment": "negative"}',
+    "I think it is negative",
+    '{"sentiment": "positive", "confidence": 0.8}',
+]
+usable = 0
+for reply in replies:
+    result = check_reply(reply, ["sentiment", "confidence"])
+    if result == "ok":
+        usable = usable + 1
+    print(result)
+print(usable, "of", len(replies), "replies usable")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>check_reply</Code> first tries <Code>json.loads</Code>. If the text is not JSON, the{" "}
+          <Code>except</Code> branch returns <Code>not JSON</Code> straight away.
+        </ListItem>
+        <ListItem>
+          If it parsed, a loop checks each needed key. The first one that is absent gives{" "}
+          <Code>missing confidence</Code>, for example. If none is absent, the answer is{" "}
+          <Code>ok</Code>.
+        </ListItem>
+        <ListItem>
+          The four replies give <Code>ok</Code>, <Code>missing confidence</Code>,{" "}
+          <Code>not JSON</Code> and <Code>ok</Code>. Only 2 of 4 are usable.
+        </ListItem>
+        <ListItem>
+          Pattern: parse, then check the keys, and turn each failure into a plain label instead of
+          a crash.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on five new replies that should hold a city and a temp.
+      </Text>
+      <PracticeCell labId={10} cellId="topic-2" code={`import json
+
+
+def check_reply(text, needed):
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return "not JSON"
+    for key in needed:
+        if key not in data:
+            return "missing " + key
+    return "ok"
+
+
+replies = [
+    '{"city": "Accra", "temp": 31}',
+    "It is sunny in Accra",
+    '{"city": "Kumasi"}',
+    '{"city": "Tamale", "temp": 35}',
+    '{"temp": 29}',
+]
+usable = 0
+for reply in replies:
+    result = check_reply(reply, ["city", "temp"])
+    if result == "ok":
+        usable = usable + 1
+    print(result)
+print(usable, "of", len(replies), "replies usable")`} expectedOutput={`ok
+not JSON
+missing temp
+ok
+missing city
+2 of 5 replies usable`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Reply 1 and reply 4 have both keys, so they are <Code>ok</Code>.
+        </ListItem>
+        <ListItem>
+          Reply 2 is plain words, so <Code>json.loads</Code> fails and the answer is{" "}
+          <Code>not JSON</Code>.
+        </ListItem>
+        <ListItem>
+          Reply 3 has <Code>city</Code> but no <Code>temp</Code>. Reply 5 has <Code>temp</Code> but
+          no <Code>city</Code>. The loop checks <Code>city</Code> first, so reply 5 says{" "}
+          <Code>missing city</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> five labels, then <Code>2 of 5 replies usable</Code>. Notice that
+        a program that trusted every reply would have failed on 3 of the 5.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        This is exactly the situation with a model's reply: it's just text, and even when you ask
-        nicely for JSON, models sometimes wrap it in <Code>```json ... ```</Code> fences or drop a
-        key. <Code>parse_json_response(text)</Code> strips a leading/trailing code fence, then
-        calls <Code>json.loads</Code>, then explicitly checks that <Code>"sentiment"</Code> and{" "}
-        <Code>"confidence"</Code> are both present - raising <Code>ValueError</Code> if not. The
-        real-world project cell wraps each call in a{" "}
-        <Code>try/except (json.JSONDecodeError, ValueError)</Code> so one malformed reply gets
-        logged as a <Code>PARSE ERROR</Code> row instead of crashing the whole loop. This
-        parse-then-validate step is literally how you'd wire a model's output into a real
-        application - a database write, a UI update, a downstream API call - all of which need
-        actual structured data, not a paragraph of prose.
+        <Code>parse_json_response(text)</Code> is the lab's version of <Code>check_reply</Code>. It
+        strips a code fence from the start and end, calls <Code>json.loads</Code>, then checks that{" "}
+        <Code>"sentiment"</Code> and <Code>"confidence"</Code> are both there. If one is missing it
+        raises <Code>ValueError</Code>.
+      </Text>
+      <Text>
+        In the project, the call asks for JSON mode with{" "}
+        <Code>{"response_format={\"type\": \"json_object\"}"}</Code>. Each of the 8 reviews
+        (<Code>N_SAMPLES = 8</Code>) is wrapped in{" "}
+        <Code>try/except (json.JSONDecodeError, ValueError)</Code>. A bad reply becomes a row with{" "}
+        <Code>PARSE ERROR: ...</Code> and a confidence of <Code>None</Code>, so{" "}
+        <Code>len(results)</Code> is still 8 and one bad reply cannot crash the loop.
       </Text>
       <Text>
         Here is <Code>parse_json_response</Code> on a reply wrapped in a code fence. A{" "}

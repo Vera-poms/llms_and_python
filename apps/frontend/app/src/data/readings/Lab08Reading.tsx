@@ -120,13 +120,97 @@ You ordered 5 pen(s).`} />
         <Code>qty=12</Code> and run it again. Only the number in the second line changes.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a prompt is just text</Heading>
+      <Text>
+        A model never sees your Python variables. It only gets one finished piece of text, the <b>prompt</b>. Whatever you want it to do, and whatever it should look at, must be inside that text.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A good prompt has an <b>instruction</b> (what to do) and some <b>data</b> (what to do it on).
+        </ListItem>
+        <ListItem>
+          A blank line between the two keeps the instruction apart from the data. This also helps the model.
+        </ListItem>
+        <ListItem>
+          The prompt counts toward the model's limit, in tokens (lab 16). So the longer it is, the more room it uses.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. One function builds the prompt from an instruction and a review with an f-string. A loop builds a prompt for each of two reviews and prints it with its length.
+      </Text>
+      <RunnableExample labId={8} code={`def build_prompt(instruction, review):
+    return f"{instruction}\\n\\nReview: {review}"
+
+
+instruction = "Summarize this review in one short sentence."
+for review in ["I loved it", "Too slow"]:
+    prompt = build_prompt(instruction, review)
+    print(prompt)
+    print("characters:", len(prompt))
+    print("---")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>build_prompt</Code> glues three parts: the instruction, a blank line (<Code>\n\n</Code>) and <Code>Review:</Code> plus the review.
+        </ListItem>
+        <ListItem>
+          The prompt for <Code>I loved it</Code> is 64 characters. The one for <Code>Too slow</Code> is 62. The model gets exactly this text and nothing more.
+        </ListItem>
+        <ListItem>
+          The instruction is the same in both. Only the last line changes.
+        </ListItem>
+        <ListItem>
+          Pattern: prompt = instruction + blank line + data, and the model only sees the finished string.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function with a new instruction and two new reviews.
+      </Text>
+      <PracticeCell labId={8} cellId="topic-1" code={`def build_prompt(instruction, review):
+    return f"{instruction}\\n\\nReview: {review}"
+
+
+instruction = "Translate this review into French."
+for review in ["Great film", "Boring plot"]:
+    prompt = build_prompt(instruction, review)
+    print(prompt)
+    print("characters:", len(prompt))
+    print("---")`} expectedOutput={`Translate this review into French.
+
+Review: Great film
+characters: 54
+---
+Translate this review into French.
+
+Review: Boring plot
+characters: 55
+---`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The instruction <Code>Translate this review into French.</Code> has 34 characters.
+        </ListItem>
+        <ListItem>
+          <Code>Great film</Code> adds 2 for the blank line, 8 for <Code>Review: </Code> and 10 for the review. So <Code>34 + 2 + 8 + 10 = 54</Code> characters.
+        </ListItem>
+        <ListItem>
+          <Code>Boring plot</Code> has 11 characters, so that prompt is 55.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two prompts, each with its instruction, a blank line, a review line and a length line, then <Code>---</Code>. The lengths are 54 and 55.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        That distinction matters: an f-string bakes in its values immediately, but a{" "}
-        <Code>.format()</Code> template can be written once, stored, and filled in later with
-        different data every time you call it - which is exactly what <Code>PromptTemplate</Code>{" "}
-        needs, since the same template (e.g. "classify this review") gets reused across hundreds of
-        different reviews.
+        In this lab, every finished prompt has the same layout: an instruction, a blank line, then{" "}
+        <Code>Review:</Code> and the review. The instruction never changes, so it is written once as
+        a template. An f-string bakes in its values the moment it is written, but a{" "}
+        <Code>.format()</Code> template can be stored and filled in later with different data every
+        time you call it. That is exactly what <Code>PromptTemplate</Code> needs, since the same
+        template (e.g. "classify this review") gets reused across many different reviews.
       </Text>
       <Text>
         Think of the template as a form with an empty line on it. You print the form once, and you
@@ -238,6 +322,103 @@ Invoice for Sam: $17`} />
         Mia without touching the template.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: one template, many prompts</Heading>
+      <Text>
+        Working with a model means asking the same thing again and again, for many inputs. If you typed each prompt by hand, small differences would creep in. Then the answers could change for reasons you never planned.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A template fixes the instruction. Only the data changes, so a difference in the answers comes from the data.
+        </ListItem>
+        <ListItem>
+          You can test and improve the template once. Every prompt then gets the improvement.
+        </ListItem>
+        <ListItem>
+          To change the task, swap the template. The same reviews get a new instruction.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A dict holds two templates. One function fills a template with each review in a list. A loop runs both templates over the same two reviews.
+      </Text>
+      <RunnableExample labId={8} code={`def make_prompts(template, reviews):
+    prompts = []
+    for review in reviews:
+        prompts.append(template.format(review=review))
+    return prompts
+
+
+templates = {
+    "classify": "Classify this review as positive or negative.\\n\\nReview: {review}",
+    "summarize": "Summarize this review in one short sentence.\\n\\nReview: {review}",
+}
+reviews = ["I loved it", "Too slow"]
+for name, template in templates.items():
+    prompts = make_prompts(template, reviews)
+    print(name, "->", len(prompts), "prompts")
+    for prompt in prompts:
+        task, data = prompt.split("\\n\\n")
+        print("  ", task, "|", data)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>make_prompts</Code> loops over the reviews and fills the blank each time. Two reviews give two prompts.
+        </ListItem>
+        <ListItem>
+          Each prompt is cut at its blank line into the task part and the data part. For one template the task part is the same in both prompts, and only the data differs.
+        </ListItem>
+        <ListItem>
+          Switching from <Code>classify</Code> to <Code>summarize</Code> changes the task for the same reviews. 2 templates times 2 reviews makes 4 prompts, and only 2 instructions were written.
+        </ListItem>
+        <ListItem>
+          Pattern: write the instruction once, then make as many prompts as you have data.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function with two new templates and three reviews.
+      </Text>
+      <PracticeCell labId={8} cellId="topic-2" code={`def make_prompts(template, reviews):
+    prompts = []
+    for review in reviews:
+        prompts.append(template.format(review=review))
+    return prompts
+
+
+templates = {
+    "shout": "Rewrite this review in capital letters.\\n\\nReview: {review}",
+    "title": "Give this review a short title.\\n\\nReview: {review}",
+}
+reviews = ["Nice acting", "Too long", "Loved the music"]
+for name, template in templates.items():
+    prompts = make_prompts(template, reviews)
+    print(name, "->", len(prompts), "prompts")
+    for prompt in prompts:
+        task, data = prompt.split("\\n\\n")
+        print("  ", task, "|", data)`} expectedOutput={`shout -> 3 prompts
+   Rewrite this review in capital letters. | Review: Nice acting
+   Rewrite this review in capital letters. | Review: Too long
+   Rewrite this review in capital letters. | Review: Loved the music
+title -> 3 prompts
+   Give this review a short title. | Review: Nice acting
+   Give this review a short title. | Review: Too long
+   Give this review a short title. | Review: Loved the music`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>make_prompts</Code> gives 3 prompts for each template, one for each review.
+        </ListItem>
+        <ListItem>
+          <Code>prompt.split("\n\n")</Code> cuts at the blank line into two parts. <Code>task, data = ...</Code> gives each part a name.
+        </ListItem>
+        <ListItem>
+          In all that is 6 prompts, from only 2 instructions.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two groups. <Code>shout -&gt; 3 prompts</Code> and <Code>title -&gt; 3 prompts</Code>, each with three lines. In each group the task is the same on every line, and only the review changes.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         In this lab's <Code>PromptTemplate</Code>, the template is the string passed into{" "}
@@ -250,7 +431,8 @@ Invoice for Sam: $17`} />
       <Text>
         The notebook builds a <Code>TEMPLATES</Code> dict with two entries,{" "}
         <Code>"classify_sentiment"</Code> and <Code>"summarize"</Code>. Then it loops over the
-        first two review sentences and prints each template filled in with each review. Here is
+        first two review sentences and prints each template filled in with each review. That makes 2
+        headers and 4 prompts in all. Here is
         what that does with one tiny review, <Code>"the plot was engaging"</Code>:
       </Text>
       <UnorderedList spacing={1} pl={4}>
@@ -371,6 +553,100 @@ print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
         <Code>n=1</Code> is used, so you should see 3.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: check the prompt before it is sent</Heading>
+      <Text>
+        A real model will try to answer almost anything you send. It does not tell you that your prompt is broken. A call to a model also takes time and can cost money. So it pays to check a prompt before you send it.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Say a template needs <Code>topic</Code> and <Code>style</Code>, but only <Code>topic</Code> arrives. The prompt is then not what you meant to send.
+        </ListItem>
+        <ListItem>
+          Python's own <Code>.format()</Code> would stop, but only with a bare <Code>KeyError</Code> naming the first missing name.
+        </ListItem>
+        <ListItem>
+          A check made first can list every missing name and say it clearly. This is called failing early.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. One function loops over the names a template needs and collects the ones the data does not have. A second function uses it: if anything is missing, the prompt is not built. Nothing is sent to a real model here.
+      </Text>
+      <RunnableExample labId={8} code={`def find_missing(required, given):
+    missing = []
+    for name in required:
+        if name not in given:
+            missing.append(name)
+    return missing
+
+
+def safe_render(template, required, data):
+    missing = find_missing(required, data)
+    if missing:
+        return "NOT SENT, missing: " + ", ".join(missing)
+    return template.format(**data)
+
+
+template = "Tell me about {topic} in {style} style"
+required = ["topic", "style"]
+for data in [{"topic": "cats", "style": "funny"}, {"topic": "cats"}, {}]:
+    print(safe_render(template, required, data))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The first data has both names, so the prompt is built: <Code>Tell me about cats in funny style</Code>.
+        </ListItem>
+        <ListItem>
+          The second data has no <Code>style</Code>, so you get <Code>NOT SENT, missing: style</Code>.
+        </ListItem>
+        <ListItem>
+          The third data is empty, so both names are listed at once: <Code>topic, style</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: check first, build second, so a bad prompt never leaves your code.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new template.
+      </Text>
+      <PracticeCell labId={8} cellId="topic-3" code={`def find_missing(required, given):
+    missing = []
+    for name in required:
+        if name not in given:
+            missing.append(name)
+    return missing
+
+
+def safe_render(template, required, data):
+    missing = find_missing(required, data)
+    if missing:
+        return "NOT SENT, missing: " + ", ".join(missing)
+    return template.format(**data)
+
+
+template = "Write a {length} poem about {topic}"
+required = ["length", "topic"]
+for data in [{"length": "short", "topic": "rain"}, {"topic": "rain"}, {"length": "long"}]:
+    print(safe_render(template, required, data))`} expectedOutput={`Write a short poem about rain
+NOT SENT, missing: length
+NOT SENT, missing: topic`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The template <Code>{"Write a {length} poem about {topic}"}</Code> needs two names, in the order <Code>length</Code>, <Code>topic</Code>.
+        </ListItem>
+        <ListItem>
+          The first data has both, so the prompt is built.
+        </ListItem>
+        <ListItem>
+          The second data lacks <Code>length</Code> and the third lacks <Code>topic</Code>, so each one gives a <Code>NOT SENT</Code> line with the missing name.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>Write a short poem about rain</Code>, then <Code>NOT SENT, missing: length</Code>, then <Code>NOT SENT, missing: topic</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         <Code>PromptTemplate</Code> follows the exact same shape. Its <Code>__init__</Code> stores{" "}
@@ -381,8 +657,8 @@ print(t.bump(3))  # expected output: 5`} expectedOutput={`5`} />
         (raising <Code>ValueError</Code> listing anything missing), then calls{" "}
         <Code>self.template.format(**kwargs)</Code> to produce the final string. Storing the
         template once and validating on every render means a typo in your data (a missing{" "}
-        <Code>review=</Code> argument) fails loudly and immediately, instead of silently sending a
-        broken prompt to an LLM.
+        <Code>review=</Code> argument) fails loudly and immediately, with a clear message that lists
+        every missing name, before any prompt is built.
       </Text>
       <Text>
         Here is the lab's class on a tiny template with two blanks,{" "}

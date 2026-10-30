@@ -110,13 +110,106 @@ print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
         printing <Code>grid[0][1]</Code>. You should see <Code>20</Code>. That is row 0, item 1.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: words as lists of numbers</Heading>
+      <Text>
+        A model cannot do math on words. So the first thing it does is swap each word for a list of numbers. That list is called an <b>embedding</b>.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Words that are used in similar ways get lists that look alike. For example, <Code>cat</Code> and <Code>dog</Code> get close numbers.
+        </ListItem>
+        <ListItem>
+          A sentence then becomes a grid: one row for each word, and each row is that word's list.
+        </ListItem>
+        <ListItem>
+          Every row has the same length, so the grid has a <b>shape</b>: (number of words, numbers per word).
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A tiny table gives each word 3 numbers. The numbers are made up, so they mean nothing yet. Two small functions turn a sentence into a grid: one looks up each word's row, and one reports the shape of the grid.
+      </Text>
+      <RunnableExample labId={7} code={`def embed_sentence(words, table):
+    rows = []
+    for word in words:
+        rows.append(table[word])
+    return rows
+
+
+def shape(matrix):
+    return (len(matrix), len(matrix[0]))
+
+
+table = {"the": [1.0, 0.0, 2.0], "acting": [0.0, 1.0, 1.0], "was": [0.5, 0.5, 0.5]}
+words = ["the", "acting", "was", "the"]
+X = embed_sentence(words, table)
+for word, row in zip(words, X):
+    print(word, row)
+print("shape:", shape(X))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>embed_sentence</Code> loops over the words and collects each word's row from the table. A sentence of 4 words gives 4 rows.
+        </ListItem>
+        <ListItem>
+          <Code>the</Code> appears twice, so its row <Code>[1.0, 0.0, 2.0]</Code> appears twice. The same word always gets the same row, wherever it sits in the sentence.
+        </ListItem>
+        <ListItem>
+          <Code>shape</Code> gives <Code>(4, 3)</Code>: 4 words, 3 numbers each.
+        </ListItem>
+        <ListItem>
+          Pattern: one row for each word, so a sentence is a grid of numbers.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new table and a new sentence. Each word has 2 numbers this time.
+      </Text>
+      <PracticeCell labId={7} cellId="topic-1" code={`def embed_sentence(words, table):
+    rows = []
+    for word in words:
+        rows.append(table[word])
+    return rows
+
+
+def shape(matrix):
+    return (len(matrix), len(matrix[0]))
+
+
+table = {"dog": [2.0, 1.0], "ran": [0.0, 3.0], "a": [1.0, 1.0]}
+words = ["a", "dog", "ran", "a", "dog"]
+X = embed_sentence(words, table)
+for word, row in zip(words, X):
+    print(word, row)
+print("shape:", shape(X))`} expectedOutput={`a [1.0, 1.0]
+dog [2.0, 1.0]
+ran [0.0, 3.0]
+a [1.0, 1.0]
+dog [2.0, 1.0]
+shape: (5, 2)`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The sentence has 5 words, so the grid has 5 rows. Each print line shows one word and its row.
+        </ListItem>
+        <ListItem>
+          <Code>a</Code> and <Code>dog</Code> each appear twice, and they get the same row both times.
+        </ListItem>
+        <ListItem>
+          <Code>shape</Code> uses <Code>len(matrix)</Code>, the number of rows (5), and <Code>len(matrix[0])</Code>, the length of the first row (2). So the shape is <Code>(5, 2)</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> five lines, each with a word and its two numbers, then <Code>shape: (5, 2)</Code>. Try adding <Code>"ran"</Code> to the end of the sentence. The shape becomes <Code>(6, 2)</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        In this lab, every word in a sentence gets turned into a vector (its "embedding" - a list of
-        numbers that's supposed to capture something about the word's meaning or usage). Stack all of
-        a sentence's word-vectors into one matrix and you have <Code>X</Code>, with one row per word.
-        <b> Q</b>, <b>K</b>, and <b>V</b> in the code are exactly this: matrices where each row is one
-        word's query/key/value vector.
+        In this lab the embeddings are not made by hand like the table above. The project builds them
+        from real review text. <Code>build_cooccurrence_embeddings</Code> gives each of the 523
+        different words a list of 16 numbers. Then the rows of one sentence are stacked into{" "}
+        <Code>X</Code>, with one row per word. <b>Q</b>, <b>K</b> and <b>V</b> in the code are
+        matrices like this: each row is one word's query, key or value list.
       </Text>
       <Text>
         Here is a tiny picture. Say a sentence has two words, and each word is described by three
@@ -127,7 +220,7 @@ print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
         In the notebook's project, the sentence is "the acting was superb and the story was
         touching". It has 9 words, and each word gets 16 numbers. So <Code>X</Code> has shape (9,
         16), built with <Code>np.stack([embeddings[w] for w in words])</Code>. That line looks up
-        each word's 16 numbers and stacks the 9 rows into one grid. Later, <Code>X</Code> is passed
+        each word's 16 numbers and stacks the 9 rows into one grid. The word <Code>the</Code> appears twice, so rows 0 and 5 of <Code>X</Code> are the same. Later, <Code>X</Code> is passed
         in as <Code>Q</Code>, <Code>K</Code> and <Code>V</Code> at the same time. That is a
         simplification, and a real model learns a different version for each.
       </Text>
@@ -210,9 +303,102 @@ print(total)  # expected output: 20`} expectedOutput={`20`} />
         should see <Code>16</Code>, because the 4 from the last pair disappears.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: scoring how well two words match</Heading>
+      <Text>
+        Attention starts with one question: how much does word A matter to word B? The model answers with a number for every pair of words. That number is a <b>score</b>.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Each word makes a <b>query</b>: a list of numbers that says what it is looking for.
+        </ListItem>
+        <ListItem>
+          Each word also makes a <b>key</b>: a list of numbers that says what it offers.
+        </ListItem>
+        <ListItem>
+          The score for a pair is the dot product of a query and a key. A big score means a good match.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Three words have made-up lists of 3 numbers. To keep it small, each word is used as both the query and the key. One function does a dot product, one scores a query against every key, and a loop does it for each word.
+      </Text>
+      <RunnableExample labId={7} code={`def dot(a, b):
+    total = 0
+    for x, y in zip(a, b):
+        total = total + x * y
+    return total
+
+
+def scores_for(query, keys):
+    scores = []
+    for key in keys:
+        scores.append(dot(query, key))
+    return scores
+
+
+words = ["cat", "dog", "car"]
+vectors = [[3, 1, 0], [2, 2, 0], [0, 1, 3]]
+for word, query in zip(words, vectors):
+    print(word, scores_for(query, vectors))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>dot</Code> multiplies matching numbers and adds them up, like the shopping bill above.
+        </ListItem>
+        <ListItem>
+          <Code>scores_for</Code> scores one query against all the keys and gives back one score for each word.
+        </ListItem>
+        <ListItem>
+          <Code>cat</Code> scores <Code>[10, 8, 1]</Code>. It matches itself best (10) and <Code>dog</Code> almost as well (8). It hardly matches <Code>car</Code> at all (1), because their numbers are not alike.
+        </ListItem>
+        <ListItem>
+          Pattern: lists that look alike give big scores, and lists that differ give small scores. The 3 lines together make a table of 3 by 3 scores.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on three new words. Each word has 2 numbers.
+      </Text>
+      <PracticeCell labId={7} cellId="topic-2" code={`def dot(a, b):
+    total = 0
+    for x, y in zip(a, b):
+        total = total + x * y
+    return total
+
+
+def scores_for(query, keys):
+    scores = []
+    for key in keys:
+        scores.append(dot(query, key))
+    return scores
+
+
+words = ["tea", "coffee", "bus"]
+vectors = [[3, 1], [2, 2], [0, 4]]
+for word, query in zip(words, vectors):
+    print(word, scores_for(query, vectors))`} expectedOutput={`tea [10, 8, 4]
+coffee [8, 8, 8]
+bus [4, 8, 16]`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>tea</Code> is <Code>[3, 1]</Code>. Against itself: <Code>3 * 3 + 1 * 1 = 10</Code>. Against <Code>coffee</Code> <Code>[2, 2]</Code>: <Code>3 * 2 + 1 * 2 = 8</Code>. Against <Code>bus</Code> <Code>[0, 4]</Code>: <Code>3 * 0 + 1 * 4 = 4</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>coffee</Code> scores 8 against every word, so it matches everything equally.
+        </ListItem>
+        <ListItem>
+          <Code>bus</Code> matches itself best (16) and tea worst (4).
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines: <Code>tea [10, 8, 4]</Code>, <Code>coffee [8, 8, 8]</Code> and <Code>bus [4, 8, 16]</Code>. Each word scores highest against itself, or ties for it.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        This is exactly what <Code>scores = Q @ K.T</Code> does in{" "}
+        This is the same job as <Code>scores_for</Code>, done for every word at once by{" "}
+        <Code>scores = Q @ K.T</Code> in{" "}
         <Code>scaled_dot_product_attention</Code>. <Code>K.T</Code> ("K transposed") flips the key
         matrix so its rows become columns. The result: for every query row and every key row, one
         dot-product score describing how relevant that key is to that query - computed for the entire
@@ -239,6 +425,11 @@ print(total)  # expected output: 20`} expectedOutput={`20`} />
         </ListItem>
         <ListItem>
           Divide by <Code>sqrt(2)</Code>, about 1.414: the scores become about 0.707 and 0.
+        </ListItem>
+        <ListItem>
+          In the project, <Code>X</Code> is passed as both <Code>Q</Code> and <Code>K</Code>. So{" "}
+          <Code>Q @ K.T</Code> is a 9 by 9 table: one score for every pair of the 9 words. Each is
+          divided by <Code>sqrt(16)</Code>, which is 4.
         </ListItem>
       </UnorderedList>
 
@@ -331,18 +522,120 @@ print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} expectedOutput=
         <Code>[0.42 0.42 0.16]</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: attention weights are shares</Heading>
+      <Text>
+        Raw scores are hard to use. They can be any size, and they do not add up to anything. So the model turns each row of scores into <b>attention weights</b>: positive shares that add up to 1.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A weight of 0.67 means "give about two thirds of my attention to this word".
+        </ListItem>
+        <ListItem>
+          A word has only 1 whole of attention to give. A bigger share for one word means smaller shares for the others.
+        </ListItem>
+        <ListItem>
+          The biggest score always gets the biggest share. Softmax also stretches the gaps: scores of 3 and 2 become shares of 0.67 and 0.24.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A word is looking at 3 words. One function turns scores into shares, and a loop runs two cases: one clear favourite, and one with all scores equal.
+      </Text>
+      <RunnableExample labId={7} code={`import math
+
+
+def softmax(scores):
+    exps = []
+    for s in scores:
+        exps.append(math.exp(s))
+    total = sum(exps)
+    shares = []
+    for e in exps:
+        shares.append(e / total)
+    return shares
+
+
+words = ["the", "cat", "sat"]
+for scores in ([1.0, 3.0, 2.0], [1.0, 1.0, 1.0]):
+    weights = softmax(scores)
+    print("scores", scores)
+    for word, weight in zip(words, weights):
+        print("  ", word, round(weight, 2))
+    print("  total", round(sum(weights), 2))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>softmax</Code> has two loops. The first makes each score positive with <Code>math.exp</Code> and adds them up. The second divides each one by the total.
+        </ListItem>
+        <ListItem>
+          Scores <Code>[1.0, 3.0, 2.0]</Code> give 0.09, 0.67 and 0.24. <Code>cat</Code> has the biggest score, so it gets about two thirds of the attention.
+        </ListItem>
+        <ListItem>
+          Equal scores give 0.33 each. Nothing stands out, so the attention is spread evenly.
+        </ListItem>
+        <ListItem>
+          In both cases the total is 1.0. Pattern: scores go in, shares come out, and the shares always add up to 1.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on two new sets of scores.
+      </Text>
+      <PracticeCell labId={7} cellId="topic-3" code={`import math
+
+
+def softmax(scores):
+    exps = []
+    for s in scores:
+        exps.append(math.exp(s))
+    total = sum(exps)
+    shares = []
+    for e in exps:
+        shares.append(e / total)
+    return shares
+
+
+words = ["a", "dog", "barked"]
+for scores in ([0.0, 2.0, 1.0], [2.0, 2.0, 0.0]):
+    weights = softmax(scores)
+    print("scores", scores)
+    for word, weight in zip(words, weights):
+        print("  ", word, round(weight, 2))
+    print("  total", round(sum(weights), 2))`} expectedOutput={`scores [0.0, 2.0, 1.0]
+   a 0.09
+   dog 0.67
+   barked 0.24
+  total 1.0
+scores [2.0, 2.0, 0.0]
+   a 0.47
+   dog 0.47
+   barked 0.06
+  total 1.0`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>[0.0, 2.0, 1.0]</Code> is the first example's scores with 1 taken off each. The gaps are the same, so the shares are the same: 0.09, 0.67 and 0.24. This is why the lab can subtract the biggest score from each row without changing the answer.
+        </ListItem>
+        <ListItem>
+          <Code>[2.0, 2.0, 0.0]</Code> has two scores tied at the top. <Code>a</Code> and <Code>dog</Code> get 0.47 each, and <Code>barked</Code> gets 0.06.
+        </ListItem>
+        <ListItem>
+          <Code>round(weight, 2)</Code> cuts each share to 2 digits, and the totals still show 1.0.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two groups of lines, each with three words and a total of <Code>1.0</Code>. The first group matches the worked example. In the second group two words share most of the attention.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        This is the same operation from lab 1's <Code>word_probabilities</Code>, just applied to
-        attention scores instead of word counts, and vectorized with numpy so it works on a whole row
-        (or a whole matrix of rows) at once via <Code>axis=-1</Code>. In the notebook's{" "}
-        <Code>softmax</Code>, subtracting the row max before exponentiating is a stability trick - it
-        doesn't change the final probabilities (since it cancels out in the division), but it keeps{" "}
-        <Code>exp()</Code> from overflowing on large scores. In attention, softmax is what turns raw{" "}
-        <Code>Q @ K.T</Code> scores into <Code>attention_weights</Code>: for each word (each row), a
-        distribution over "how much should I listen to every other word," always summing to 1. That's
-        why the notebook's assertion <Code>weights.sum(axis=-1) == 1.0</Code> has to hold - it's the
-        defining property of softmax.
+        This is the same operation as lab 1's <Code>word_probabilities</Code>, applied to attention
+        scores instead of word counts. The lab's <Code>softmax</Code> uses numpy, so it works on a
+        whole matrix of rows at once via <Code>axis=-1</Code>. It subtracts the row max before
+        exponentiating. That does not change the final probabilities, because it cancels out in the
+        division, but it keeps <Code>exp()</Code> from overflowing on large scores. The output is{" "}
+        <Code>attention_weights</Code>, one row of shares for each word. Every row adds up to 1, so
+        the notebook's assertion <Code>weights.sum(axis=-1) == 1.0</Code> has to hold.
       </Text>
       <Text>
         Here is the lab's <Code>softmax</Code> on the tiny input <Code>[0.0, 1.0]</Code>:
@@ -465,7 +758,101 @@ print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} 
         2, 4 and 6.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: why attention gets expensive</Heading>
+      <Text>
+        In attention, every word is scored against every other word. So the work does not grow in step with the length of the text. It grows much faster.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A sentence of n words makes n times n scores.
+        </ListItem>
+        <ListItem>
+          Each score is a dot product, which uses one multiplication for each number in the word's list.
+        </ListItem>
+        <ListItem>
+          Double the length and you get 4 times as many scores. This is one reason a model's window is limited, and why models run on chips that do many multiplications at the same time.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Two small functions count the work with loops. Each word has 16 numbers, the size the lab uses.
+      </Text>
+      <RunnableExample labId={7} code={`def count_pairs(n_words):
+    pairs = 0
+    for i in range(n_words):
+        for j in range(n_words):
+            pairs = pairs + 1
+    return pairs
+
+
+def count_multiplications(n_words, dim):
+    return count_pairs(n_words) * dim
+
+
+dim = 16
+for n_words in (9, 50, 200):
+    print(n_words, "words ->", count_pairs(n_words), "scores,", count_multiplications(n_words, dim), "multiplications")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>count_pairs</Code> has two loops, one inside the other. It counts every pair of (word i, word j), which gives n times n.
+        </ListItem>
+        <ListItem>
+          <Code>count_multiplications</Code> multiplies the pairs by <Code>dim</Code>, because each score needs one multiplication for each of the 16 numbers.
+        </ListItem>
+        <ListItem>
+          9 words give 81 scores and 1296 multiplications. That is the size of the lab's own sentence.
+        </ListItem>
+        <ListItem>
+          50 words give 2500 scores. 200 words give 40000. Going from 50 to 200 words is 4 times longer, but the scores go up 16 times.
+        </ListItem>
+        <ListItem>
+          Pattern: a longer text costs much more than a proportion of the extra length.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions with 8 numbers per word and three new lengths.
+      </Text>
+      <PracticeCell labId={7} cellId="topic-4" code={`def count_pairs(n_words):
+    pairs = 0
+    for i in range(n_words):
+        for j in range(n_words):
+            pairs = pairs + 1
+    return pairs
+
+
+def count_multiplications(n_words, dim):
+    return count_pairs(n_words) * dim
+
+
+dim = 8
+for n_words in (5, 20, 40):
+    print(n_words, "words ->", count_pairs(n_words), "scores,", count_multiplications(n_words, dim), "multiplications")`} expectedOutput={`5 words -> 25 scores, 200 multiplications
+20 words -> 400 scores, 3200 multiplications
+40 words -> 1600 scores, 12800 multiplications`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          5 words give <Code>5 * 5 = 25</Code> scores, and <Code>25 * 8 = 200</Code> multiplications.
+        </ListItem>
+        <ListItem>
+          20 words give 400 scores and 3200 multiplications. That is 4 times the words and 16 times the scores.
+        </ListItem>
+        <ListItem>
+          40 words give 1600 scores and 12800 multiplications.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines, from <Code>5 words -&gt; 25 scores, 200 multiplications</Code> to <Code>40 words -&gt; 1600 scores, 12800 multiplications</Code>. Try a length of 80 words. The scores are 6400.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      <Text>
+        In the lab, this is why <Code>Q @ K.T</Code> is a single line. For the 9-word sentence with 16
+        numbers per word it makes 81 scores and 1296 multiplications, as in the worked example. A
+        Python loop would do them one by one. numpy does them all at once, in fast compiled code.
+      </Text>
       <Text>
         <Code>softmax</Code> and <Code>scaled_dot_product_attention</Code> lean on exactly those two
         things:
@@ -602,6 +989,111 @@ print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall 
         <b>What you should see:</b> a small blue grid with a color strip, and then the line{" "}
         <Code>plotted a 2x3 rainfall grid</Code>. Try changing the 9 to 0. That square should turn
         the palest, and the darkest one should become CityA's 8 in March.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">Up close: reading an attention picture</Heading>
+      <Text>
+        A model holds millions of numbers, and it is hard to see what it is doing. Attention weights are one of the few things you can look at. Draw them as a grid and you can see which words a word is looking at.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Row <Code>i</Code> is the word that is looking. Column <Code>j</Code> is the word being looked at.
+        </ListItem>
+        <ListItem>
+          A bright cell is a big weight: a strong link between the two words.
+        </ListItem>
+        <ListItem>
+          Be careful. The picture shows where the attention goes, but it does not prove why the model gave its answer. It is a clue.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. There is no picture library here. Two small functions turn weights into text symbols: <Code>#</Code> for a big weight, <Code>+</Code> for a medium one and <Code>.</Code> for a small one. A loop prints one row for each word.
+      </Text>
+      <RunnableExample labId={7} code={`def shade(weight):
+    if weight >= 0.5:
+        return "#"
+    if weight >= 0.25:
+        return "+"
+    return "."
+
+
+def brightest(words, row):
+    best = 0
+    for j in range(len(row)):
+        if row[j] > row[best]:
+            best = j
+    return words[best]
+
+
+words = ["the", "dog", "barked"]
+weights = [[0.6, 0.3, 0.1], [0.2, 0.5, 0.3], [0.1, 0.6, 0.3]]
+for word, row in zip(words, weights):
+    picture = ""
+    for w in row:
+        picture = picture + shade(w)
+    print(word.ljust(7), picture, "looks most at", brightest(words, row))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>shade</Code> turns a number into a symbol. 0.5 or more is <Code>#</Code>, 0.25 or more is <Code>+</Code>, and anything less is <Code>.</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>brightest</Code> loops along a row to find the biggest weight and gives back that word.
+        </ListItem>
+        <ListItem>
+          The row for <Code>the</Code> is <Code>#+.</Code>, so it looks mostly at itself. The row for <Code>barked</Code> is <Code>.#+</Code>, so it looks most at <Code>dog</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: turn numbers into a picture, and the strongest links show up at a glance.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on new words and new weights.
+      </Text>
+      <PracticeCell labId={7} cellId="topic-5" code={`def shade(weight):
+    if weight >= 0.5:
+        return "#"
+    if weight >= 0.25:
+        return "+"
+    return "."
+
+
+def brightest(words, row):
+    best = 0
+    for j in range(len(row)):
+        if row[j] > row[best]:
+            best = j
+    return words[best]
+
+
+words = ["she", "read", "books"]
+weights = [[0.7, 0.2, 0.1], [0.6, 0.1, 0.3], [0.1, 0.3, 0.6]]
+for word, row in zip(words, weights):
+    picture = ""
+    for w in row:
+        picture = picture + shade(w)
+    print(word.ljust(7), picture, "looks most at", brightest(words, row))`} expectedOutput={`she     #.. looks most at she
+read    #.+ looks most at she
+books   .+# looks most at books`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>she</Code> has weights <Code>[0.7, 0.2, 0.1]</Code>. 0.7 is big, so <Code>#</Code>. 0.2 and 0.1 are under 0.25, so both are <Code>.</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>read</Code> has <Code>[0.6, 0.1, 0.3]</Code>, which is <Code>#.+</Code>. Its biggest weight is on <Code>she</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>books</Code> has <Code>[0.1, 0.3, 0.6]</Code>, which is <Code>.+#</Code>. It looks most at itself.
+        </ListItem>
+        <ListItem>
+          <Code>word.ljust(7)</Code> pads the word with spaces to 7 characters, so the pictures line up.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines, one for each word, each with a three-symbol picture and the word it looks at most. Try changing one weight in a row to make a different symbol.
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>

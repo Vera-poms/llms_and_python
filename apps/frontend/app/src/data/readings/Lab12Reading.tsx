@@ -120,13 +120,110 @@ Bot: Let me check that for you.`} />
         should get a fourth line without changing the loop.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: the list is all the model knows</Heading>
+      <Text>
+        A model has no memory between calls. Each time you call it, it reads the messages list you
+        send, from the top, and nothing else.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          If a fact is in the list, the model can use it. If it is not in the list, the model cannot
+          know it.
+        </ListItem>
+        <ListItem>
+          Each dict has a <Code>role</Code>: <Code>"user"</Code> for the person,{" "}
+          <Code>"assistant"</Code> for the model's earlier replies. The role tells the model who
+          said what.
+        </ListItem>
+        <ListItem>
+          A longer list means more for the model to read, and it uses up more of its window.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. The chat is written by hand, and nothing is sent anywhere. One
+        function checks whether a fact appears in any message. A loop tries it on the full list and
+        on only the last turn.
+      </Text>
+      <RunnableExample labId={12} code={`def model_can_see(messages, fact):
+    for message in messages:
+        if fact in message["content"]:
+            return True
+    return False
+
+
+history = [
+    {"role": "user", "content": "My name is Ama."},
+    {"role": "assistant", "content": "Nice to meet you, Ama!"},
+    {"role": "user", "content": "What is my name?"},
+]
+for name, messages in [("full list", history), ("last turn only", history[-1:])]:
+    print(name, "->", len(messages), "messages, can see the name:", model_can_see(messages, "Ama"))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>model_can_see</Code> loops over the dicts and looks for the fact inside each{" "}
+          <Code>content</Code>. It gives back <Code>True</Code> as soon as it finds one.
+        </ListItem>
+        <ListItem>
+          <Code>history[-1:]</Code> is a slice with only the last dict. With the full list of 3
+          messages the name <Code>Ama</Code> is visible. With only the last turn it is not, so the
+          model could not answer "What is my name?".
+        </ListItem>
+        <ListItem>
+          Pattern: what you put in the list is what the model knows.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on a new chat, where the fact is a city.
+      </Text>
+      <PracticeCell labId={12} cellId="topic-1" code={`def model_can_see(messages, fact):
+    for message in messages:
+        if fact in message["content"]:
+            return True
+    return False
+
+
+history = [
+    {"role": "user", "content": "I live in Tamale."},
+    {"role": "assistant", "content": "Tamale is a lovely city!"},
+    {"role": "user", "content": "Which city do I live in?"},
+]
+for name, messages in [("full list", history), ("last turn only", history[-1:])]:
+    print(name, "->", len(messages), "messages, can see the city:", model_can_see(messages, "Tamale"))`} expectedOutput={`full list -> 3 messages, can see the city: True
+last turn only -> 1 messages, can see the city: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The word <Code>Tamale</Code> is in the first two messages, but not in the last one.
+        </ListItem>
+        <ListItem>
+          On the full list, the loop finds it in the first message and returns <Code>True</Code>.
+        </ListItem>
+        <ListItem>
+          On the last turn only, there is 1 message and no <Code>Tamale</Code>, so the loop ends and
+          returns <Code>False</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b>{" "}
+        <Code>full list -&gt; 3 messages, can see the city: True</Code>, then{" "}
+        <Code>last turn only -&gt; 1 messages, can see the city: False</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The API's <Code>messages</Code> list works exactly the same way, except each dict has a{" "}
         <Code>"role"</Code> key (instead of <Code>"speaker"</Code>) and a <Code>"content"</Code>{" "}
         key (instead of <Code>"text"</Code>): <Code>{'{"role": "user", "content": "..."}'}</Code>,{" "}
         <Code>{'{"role": "assistant", "content": "..."}'}</Code>, and so on. Every lab in this
-        course that talks to Groq is, underneath, just building one of these lists.
+        course that talks to Groq builds one of these lists.
+      </Text>
+      <Text>
+        In the project, every call gets a fresh list of exactly 2 dicts: a{" "}
+        <Code>system</Code> dict, then a <Code>user</Code> dict. That is why{" "}
+        <Code>len(messages) == 2</Code> on every pass.
       </Text>
       <Text>A tiny messages list, with two turns, looks like this:</Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
@@ -229,10 +326,121 @@ print(standing_rule)  # expected output: Keep answers under two sentences.`} exp
         because the third dict holds the helper's answer.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: what a system message is for</Heading>
+      <Text>
+        A system message is where you, the builder, speak to the model. It is not part of the
+        chat. It is the standing brief for the whole chat.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          It states who the assistant is (its <b>persona</b>: a name, a role and a tone) and the
+          rules it must follow.
+        </ListItem>
+        <ListItem>
+          It goes first, at position 0, so it frames everything that follows. There should be one
+          of them.
+        </ListItem>
+        <ListItem>
+          It guides the model, but it does not force it. A user can still tempt the model to break a
+          rule, so you check the replies.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A small function audits a messages list: is the system message
+        first, and is there only one? Two lists are written by hand, one tidy and one not.
+      </Text>
+      <RunnableExample labId={12} code={`def audit(messages):
+    problems = []
+    if messages[0]["role"] != "system":
+        problems.append("system message is not first")
+    for i in range(1, len(messages)):
+        if messages[i]["role"] == "system":
+            problems.append("extra system message at position " + str(i))
+    return problems
+
+
+good = [
+    {"role": "system", "content": "You are Rae."},
+    {"role": "user", "content": "Hi"},
+]
+late = [
+    {"role": "user", "content": "Hi"},
+    {"role": "system", "content": "You are Rae."},
+]
+for name, messages in [("good", good), ("late", late)]:
+    print(name, "->", audit(messages))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>audit</Code> keeps a list of <Code>problems</Code>. It first checks position 0, then
+          loops over the other positions with <Code>range(1, len(messages))</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>good</Code> has the system dict first and no other, so the answer is an empty list,{" "}
+          <Code>[]</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>late</Code> starts with the user, so it has 2 problems: the system message is not
+          first, and there is a system message at position 1.
+        </ListItem>
+        <ListItem>
+          Pattern: the system message is first and only one, and a check can prove it.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on two new lists.
+      </Text>
+      <PracticeCell labId={12} cellId="topic-2" code={`def audit(messages):
+    problems = []
+    if messages[0]["role"] != "system":
+        problems.append("system message is not first")
+    for i in range(1, len(messages)):
+        if messages[i]["role"] == "system":
+            problems.append("extra system message at position " + str(i))
+    return problems
+
+
+tidy = [
+    {"role": "system", "content": "You are Kofi."},
+    {"role": "user", "content": "Hello"},
+    {"role": "assistant", "content": "Hi there!"},
+]
+doubled = [
+    {"role": "system", "content": "You are Kofi."},
+    {"role": "user", "content": "Hello"},
+    {"role": "system", "content": "Be funny."},
+]
+for name, messages in [("tidy", tidy), ("doubled", doubled)]:
+    print(name, "->", audit(messages))`} expectedOutput={`tidy -> []
+doubled -> ['extra system message at position 2']`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>tidy</Code> has the system dict first, then a user and an assistant. No problems.
+        </ListItem>
+        <ListItem>
+          <Code>doubled</Code> has the system dict first, so the first check passes. But it has a
+          second system dict at position 2.
+        </ListItem>
+        <ListItem>
+          The loop starts at position 1, so it finds that one and adds a note with the position
+          number. <Code>str(i)</Code> turns the number 2 into the text <Code>"2"</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>tidy -&gt; []</Code>, then{" "}
+        <Code>{"doubled -> ['extra system message at position 2']"}</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This lab's <Code>build_system_message(persona)</Code> builds exactly that pinned,
-        standing message: given a dict like{" "}
+        standing message. The project's <Code>persona</Code> is Rae, a friendly customer support
+        agent for a coffee subscription service, with a warm and concise tone and 2 constraints:
+        never mention competitors, and always ask if there is anything else before ending. Given a
+        dict like{" "}
         <Code>{'{"name": "Rae", "role": "...", "tone": "...", "constraints": [...]}'}</Code>, it
         returns one string stating the assistant's name, role, and tone, plus each constraint as
         its own bullet line - a single block of text meant to sit at{" "}
@@ -355,6 +563,109 @@ Applying SAVE10 to $100`} />
         variable.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: keep the rules fixed, then spot-check</Heading>
+      <Text>
+        A persona only works if the model sees it on every call. Since the model keeps no memory,
+        the same system message is sent again each time, unchanged. The persona is not remembered.
+        It is resent.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Build the system message once, then reuse it. That way every call gets exactly the same
+          rules.
+        </ListItem>
+        <ListItem>
+          Rules can still slip, most of all when the question tempts the model. So test with
+          different questions, including a trap question.
+        </ListItem>
+        <ListItem>
+          A rule that is easy to state, like "never mention a name", can also be checked by code.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. The two replies are pretend replies, written by hand. One
+        function checks a reply against two rules: a banned word, and a closing question. A loop
+        runs it on each question and reply.
+      </Text>
+      <RunnableExample labId={12} code={`def check_rules(reply, banned, closing):
+    broken = []
+    for word in banned:
+        if word in reply.lower():
+            broken.append("mentions " + word)
+    if not reply.strip().lower().endswith(closing):
+        broken.append("no closing question")
+    return broken
+
+
+closing = "anything else?"
+replies = [
+    ("Do you sell dark roast?", "Yes, we do. Is there anything else?"),
+    ("What about Acme Coffee?", "Acme Coffee is great, but we are better. Thanks!"),
+]
+for question, reply in replies:
+    print(question, "->", check_rules(reply, ["acme"], closing))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>check_rules</Code> loops over the banned words and notes each one it finds. Then it
+          checks that the reply ends with the closing question. <Code>.lower()</Code> makes the
+          check ignore capital letters.
+        </ListItem>
+        <ListItem>
+          The first reply keeps both rules, so the answer is <Code>[]</Code>.
+        </ListItem>
+        <ListItem>
+          The second reply, to the trap question, names the competitor and forgets the closing
+          question. It breaks 2 rules.
+        </ListItem>
+        <ListItem>
+          Pattern: one fixed set of rules, many different questions, and a check on each reply.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on three new replies, with a new banned word.
+      </Text>
+      <PracticeCell labId={12} cellId="topic-3" code={`def check_rules(reply, banned, closing):
+    broken = []
+    for word in banned:
+        if word in reply.lower():
+            broken.append("mentions " + word)
+    if not reply.strip().lower().endswith(closing):
+        broken.append("no closing question")
+    return broken
+
+
+closing = "anything else?"
+replies = [
+    ("How do I clean my grinder?", "Brush it weekly. Is there anything else?"),
+    ("Is BrewCo cheaper?", "BrewCo has lower prices, I hear."),
+    ("Can I pause my plan?", "Yes, from your account page. Is there anything else?"),
+]
+for question, reply in replies:
+    print(question, "->", check_rules(reply, ["brewco"], closing))`} expectedOutput={`How do I clean my grinder? -> []
+Is BrewCo cheaper? -> ['mentions brewco', 'no closing question']
+Can I pause my plan? -> []`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The banned word is <Code>brewco</Code> in small letters. The check lowers the reply first,
+          so <Code>BrewCo</Code> still matches.
+        </ListItem>
+        <ListItem>
+          Replies 1 and 3 do not name the brand and end with <Code>anything else?</Code>, so both
+          give <Code>[]</Code>.
+        </ListItem>
+        <ListItem>
+          Reply 2 names the brand and has no closing question. That is 2 broken rules, in the order
+          the function checks them.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> three lines. Only the middle one lists broken rules.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         The real-world project cell builds <Code>system_message</Code> from the persona{" "}
@@ -375,9 +686,8 @@ for question in QUESTIONS:                       # varies every iteration
         <Code>system_message</Code> never changes across the loop, while <Code>question</Code>{" "}
         changes every time - that's why the model keeps calling itself "Rae," keeps a warm and
         concise tone, and never mentions a competitor, no matter which of the four unrelated
-        questions it's answering. This is the same idea as a chatbot "remembering" its persona
-        across an entire conversation: the persistent piece isn't memory in any deep sense, it's
-        just the same system message being resent, unchanged, on every single call.
+        questions it's answering. The fourth question is the trap, because it tempts the model to
+        talk about a competitor. The loop makes 4 calls, one per question.
       </Text>
       <Text>
         Walk through the loop with just 2 questions, <Code>"Do you sell dark roast?"</Code> and{" "}
@@ -407,6 +717,8 @@ for question in QUESTIONS:                       # varies every iteration
       <Text>
         You need a Groq API key to run this part. The replies are written by the model, so they
         will not be exactly the same each time. Check the tone and the rules, not the exact words.
+        For each reply, ask the same two things <Code>check_rules</Code> asks: did it keep the
+        persona's rules, and did it end by asking if there is anything else?
       </Text>
 
       <Heading as="h3" size="sm">Further reading</Heading>

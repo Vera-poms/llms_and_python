@@ -7,9 +7,21 @@
   },
   {
     "lab_id": 1,
+    "cell_id": "topic-1",
+    "code": "from collections import Counter\n\n\ndef count_by_hand(tokens):\n    counts = {}\n    for token in tokens:\n        counts[token] = counts.get(token, 0) + 1\n    return counts\n\n\ndef count_with_library(tokens):\n    return dict(Counter(tokens))\n\n\nfor text in [\"to be or not to be\", \"go go go stop\"]:\n    tokens = text.split()\n    print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))",
+    "expected_output": "True {'to': 2, 'be': 2, 'or': 1, 'not': 1}\nTrue {'go': 3, 'stop': 1}"
+  },
+  {
+    "lab_id": 1,
     "cell_id": "concept-2",
     "code": "import re\n\npost = \"Loved the #SunsetHike, best #hiking trip of the #Summer2024!\"\nhashtags = re.findall(r\"#[A-Za-z0-9]+\", post)\nprint(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']",
     "expected_output": "['#SunsetHike', '#hiking', '#Summer2024']"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "topic-2",
+    "code": "import re\n\n\ndef tokens_of(text, clean):\n    if clean:\n        return re.findall(r\"[a-z]+\", text.lower())\n    return text.split()\n\n\ndef vocab_size(texts, clean):\n    seen = []\n    for text in texts:\n        for token in tokens_of(text, clean):\n            if token not in seen:\n                seen.append(token)\n    return len(seen)\n\n\ntexts = [\"Good food, good price!\", \"GOOD price.\", \"Food was good\"]\nfor clean in (False, True):\n    print(\"clean =\", clean, \"->\", vocab_size(texts, clean), \"different tokens\")",
+    "expected_output": "clean = False -> 8 different tokens\nclean = True -> 4 different tokens"
   },
   {
     "lab_id": 1,
@@ -19,9 +31,21 @@
   },
   {
     "lab_id": 1,
+    "cell_id": "topic-3",
+    "code": "def count_tokens(tokens):\n    counts = {}\n    for token in tokens:\n        counts[token] = counts.get(token, 0) + 1\n    return counts\n\n\ndef top_share(tokens):\n    counts = count_tokens(tokens)\n    biggest = 0\n    for count in counts.values():\n        if count > biggest:\n            biggest = count\n    return biggest / len(tokens)\n\n\nfor text in [\"a a a a b c\", \"one two three four five six\"]:\n    tokens = text.split()\n    print(len(tokens), \"tokens, top share:\", round(top_share(tokens), 2))",
+    "expected_output": "6 tokens, top share: 0.67\n6 tokens, top share: 0.17"
+  },
+  {
+    "lab_id": 1,
     "cell_id": "concept-4",
     "code": "poll_counts = {\"pizza\": 12, \"tacos\": 18, \"sushi\": 10}\ntotal = sum(poll_counts.values())  # 40\ndistribution = {food: c / total for food, c in poll_counts.items()}\nprint(distribution[\"tacos\"])          # 0.45\nprint(sum(distribution.values()))     # 1.0",
     "expected_output": "0.45\n1.0"
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "topic-4",
+    "code": "def normalize(scores):\n    total = 0\n    for score in scores.values():\n        total = total + score\n    chances = {}\n    for word, score in scores.items():\n        chances[word] = score / total\n    return chances\n\n\ndef add_up(chances):\n    total = 0\n    for chance in chances.values():\n        total = total + chance\n    return round(total, 6)\n\n\nfor scores in [{\"sunny\": 7, \"rainy\": 2, \"cloudy\": 1}, {\"a\": 2, \"b\": 2, \"c\": 4}]:\n    chances = normalize(scores)\n    print(chances, \"sum:\", add_up(chances))",
+    "expected_output": "{'sunny': 0.7, 'rainy': 0.2, 'cloudy': 0.1} sum: 1.0\n{'a': 0.25, 'b': 0.25, 'c': 0.5} sum: 1.0"
   },
   {
     "lab_id": 1,
@@ -31,9 +55,21 @@
   },
   {
     "lab_id": 1,
+    "cell_id": "topic-5",
+    "code": "def greedy_pick(dist):\n    best_word = None\n    best_chance = -1\n    for word, chance in dist.items():\n        if chance > best_chance:\n            best_word = word\n            best_chance = chance\n    return best_word\n\n\ndef shortlist(dist, min_chance):\n    keep = []\n    for word, chance in dist.items():\n        if chance >= min_chance:\n            keep.append(word)\n    return keep\n\n\ndist = {\"sunny\": 0.1, \"rainy\": 0.6, \"cloudy\": 0.25, \"snowy\": 0.05}\nprint(\"greedy:\", greedy_pick(dist))\nfor min_chance in (0.5, 0.2):\n    print(\"min\", min_chance, \"->\", shortlist(dist, min_chance))",
+    "expected_output": "greedy: rainy\nmin 0.5 -> ['rainy']\nmin 0.2 -> ['rainy', 'cloudy']"
+  },
+  {
+    "lab_id": 1,
     "cell_id": "concept-6",
     "code": "import matplotlib.pyplot as plt\n\ntopics = [\"regex\", \"dicts\", \"sorting\"]\nvotes = [6, 9, 4]\n\nplt.bar(topics, votes, color=\"salmon\")\nplt.ylabel(\"votes\")\nplt.title(\"Favorite practice topic\")\nplt.show()\nprint(topics[votes.index(max(votes))])  # dicts",
     "expected_output": null
+  },
+  {
+    "lab_id": 1,
+    "cell_id": "topic-6",
+    "code": "def bar_row(word, chance):\n    return word.ljust(7) + \"#\" * round(chance * 20) + \" \" + str(chance)\n\n\ndist = {\"and\": 0.3, \"film\": 0.25, \"is\": 0.2, \"long\": 0.15, \"tense\": 0.1}\nfor word, chance in dist.items():\n    print(bar_row(word, chance))",
+    "expected_output": "and    ###### 0.3\nfilm   ##### 0.25\nis     #### 0.2\nlong   ### 0.15\ntense  ## 0.1"
   },
   {
     "lab_id": 2,
@@ -43,9 +79,21 @@
   },
   {
     "lab_id": 2,
+    "cell_id": "topic-1",
+    "code": "def accuracy(predictions, labels):\n    correct = 0\n    for guess, truth in zip(predictions, labels):\n        if guess == truth:\n            correct = correct + 1\n    return correct / len(labels)\n\n\ndef baseline_accuracy(labels):\n    counts = {}\n    for label in labels:\n        counts[label] = counts.get(label, 0) + 1\n    return max(counts.values()) / len(labels)\n\n\nlabels = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]\nmodel = [1, 1, 1, 1, 1, 1, 1, 1, 0, 0]\nprint(\"model:\", accuracy(model, labels))\nprint(\"baseline:\", baseline_accuracy(labels))\nprint(\"model beats baseline:\", accuracy(model, labels) > baseline_accuracy(labels))",
+    "expected_output": "model: 0.9\nbaseline: 0.9\nmodel beats baseline: False"
+  },
+  {
+    "lab_id": 2,
     "cell_id": "concept-2",
     "code": "hours =  [1, 2, 3, 4, 5]\nscores = [52, 58, 65, 71, 78]\n\nn = len(hours)\nx_mean = sum(hours) / n\ny_mean = sum(scores) / n\n\nnumerator = sum((x - x_mean) * (y - y_mean) for x, y in zip(hours, scores))\ndenominator = sum((x - x_mean) ** 2 for x in hours)\n\nslope = numerator / denominator\nintercept = y_mean - slope * x_mean\nprint(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3",
     "expected_output": "6.5 45.3"
+  },
+  {
+    "lab_id": 2,
+    "cell_id": "topic-2",
+    "code": "def line_value(x, slope, intercept):\n    return slope * x + intercept\n\n\ndef total_error(points, slope, intercept):\n    total = 0\n    for x, y in points:\n        total = total + (y - line_value(x, slope, intercept)) ** 2\n    return total\n\n\npoints = [(1, 3), (2, 6), (3, 9)]\nfor slope in (1, 3, 4):\n    print(\"slope\", slope, \"-> error\", total_error(points, slope, 0))",
+    "expected_output": "slope 1 -> error 56\nslope 3 -> error 0\nslope 4 -> error 14"
   },
   {
     "lab_id": 2,
@@ -55,9 +103,21 @@
   },
   {
     "lab_id": 2,
+    "cell_id": "topic-3",
+    "code": "def average_miss(truth, guesses):\n    total = 0\n    for t, g in zip(truth, guesses):\n        total = total + abs(t - g)\n    return total / len(truth)\n\n\ndef squared_loss(truth, guesses):\n    total = 0\n    for t, g in zip(truth, guesses):\n        total = total + (t - g) ** 2\n    return total / len(truth)\n\n\ntruth = [5, 5, 5, 5, 5]\nmodels = {\"small misses\": [6, 4, 6, 4, 5], \"one big miss\": [5, 5, 5, 5, 9]}\nfor name, guesses in models.items():\n    print(name, \"-> average miss:\", average_miss(truth, guesses), \"squared loss:\", squared_loss(truth, guesses))",
+    "expected_output": "small misses -> average miss: 0.8 squared loss: 0.8\none big miss -> average miss: 0.8 squared loss: 3.2"
+  },
+  {
+    "lab_id": 2,
     "cell_id": "concept-4",
     "code": "import matplotlib.pyplot as plt\n\nxs = [1, 2, 3, 4, 5]\nys = [52, 58, 65, 71, 78]\n\nplt.scatter(xs, ys, label=\"real points\")\nplt.plot(xs, [6.5 * x + 45.3 for x in xs], color=\"crimson\", label=\"fit line\")\nplt.legend()\nplt.show()\nprint(\"plotted\", len(xs), \"points with a fit line\")  # plotted 5 points with a fit line",
     "expected_output": null
+  },
+  {
+    "lab_id": 2,
+    "cell_id": "topic-4",
+    "code": "def line_value(x, slope, intercept):\n    return slope * x + intercept\n\n\ndef show_misses(points, slope, intercept):\n    for x, y in points:\n        guess = line_value(x, slope, intercept)\n        miss = abs(y - guess)\n        marks = \"#\" * round(miss)\n        line = str(x).rjust(3) + \" real \" + str(y) + \" guess \" + str(round(guess, 1)) + \" miss \" + str(round(miss, 1)) + \" \" + marks\n        print(line.rstrip())\n\n\npoints = [(35, 8), (45, 11), (55, 9), (65, 5)]\nshow_misses(points, 0.1, 4)",
+    "expected_output": " 35 real 8 guess 7.5 miss 0.5\n 45 real 11 guess 8.5 miss 2.5 ##\n 55 real 9 guess 9.5 miss 0.5\n 65 real 5 guess 10.5 miss 5.5 ######"
   },
   {
     "lab_id": 3,
@@ -67,15 +127,33 @@
   },
   {
     "lab_id": 3,
+    "cell_id": "topic-1",
+    "code": "def add_pair(table, prev, nxt):\n    inner = table.setdefault(prev, {})\n    inner[nxt] = inner.get(nxt, 0) + 1\n\n\ndef global_counts(pairs):\n    counts = {}\n    for prev, nxt in pairs:\n        counts[nxt] = counts.get(nxt, 0) + 1\n    return counts\n\n\npairs = [(\"i\", \"love\"), (\"you\", \"hate\"), (\"i\", \"love\"), (\"you\", \"hate\"), (\"i\", \"hate\"), (\"you\", \"love\")]\ntable = {}\nfor prev, nxt in pairs:\n    add_pair(table, prev, nxt)\nprint(\"one tally:\", global_counts(pairs))\nprint(\"per context:\", table)\nprint(\"after you:\", table[\"you\"])",
+    "expected_output": "one tally: {'love': 3, 'hate': 3}\nper context: {'i': {'love': 2, 'hate': 1}, 'you': {'hate': 2, 'love': 1}}\nafter you: {'hate': 2, 'love': 1}"
+  },
+  {
+    "lab_id": 3,
     "cell_id": "concept-2",
     "code": "after_tea = {\"biscuit\": 4, \"scone\": 1}\ntotal = sum(after_tea.values())  # 5\np_biscuit_given_tea = after_tea[\"biscuit\"] / total\nprint(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8",
     "expected_output": "0.8"
   },
   {
     "lab_id": 3,
+    "cell_id": "topic-2",
+    "code": "def next_chances(table, prev):\n    inner = table.get(prev)\n    if not inner:\n        return {}\n    total = 0\n    for count in inner.values():\n        total = total + count\n    chances = {}\n    for word, count in inner.items():\n        chances[word] = round(count / total, 2)\n    return chances\n\n\ntable = {\"good\": {\"food\": 3, \"price\": 1}, \"very\": {\"good\": 2, \"bad\": 2, \"long\": 1}}\nfor prev in [\"good\", \"very\", \"price\"]:\n    print(prev, \"->\", next_chances(table, prev))",
+    "expected_output": "good -> {'food': 0.75, 'price': 0.25}\nvery -> {'good': 0.4, 'bad': 0.4, 'long': 0.2}\nprice -> {}"
+  },
+  {
+    "lab_id": 3,
     "cell_id": "concept-3",
     "code": "import matplotlib.pyplot as plt\nimport numpy as np\n\ngrid = np.array([[0.2, 0.8], [0.6, 0.4]])\n\nplt.imshow(grid, cmap=\"viridis\")\nplt.colorbar(label=\"score\")\nplt.xticks([0, 1], [\"team A\", \"team B\"])\nplt.yticks([0, 1], [\"round 1\", \"round 2\"])\nplt.show()\nprint(grid.shape)  # (2, 2)",
     "expected_output": null
+  },
+  {
+    "lab_id": 3,
+    "cell_id": "topic-3",
+    "code": "def shade(chance):\n    if chance == 0:\n        return \".\"\n    if chance < 0.3:\n        return \"+\"\n    return \"#\"\n\n\ndef show_grid(cond, rows, columns):\n    for prev in rows:\n        line = \"\"\n        for nxt in columns:\n            line = line + shade(cond[prev].get(nxt, 0.0)) + \" \"\n        print(prev.ljust(5), line.rstrip())\n\n\ncond = {\"my\": {\"dog\": 0.7, \"cat\": 0.2, \"car\": 0.1}, \"i\": {\"love\": 0.5, \"like\": 0.5}}\ncolumns = [\"dog\", \"love\", \"cat\", \"like\"]\nshow_grid(cond, [\"my\", \"i\"], columns)",
+    "expected_output": "my    # . + .\ni     . # . #"
   },
   {
     "lab_id": 4,
@@ -85,9 +163,21 @@
   },
   {
     "lab_id": 4,
+    "cell_id": "topic-1",
+    "code": "class Scorer:\n    def __init__(self, weights, bias):\n        self.weights = weights\n        self.bias = bias\n\n    def score(self, x):\n        total = self.bias\n        for w, value in zip(self.weights, x):\n            total = total + w * value\n        return total\n\n    def decide(self, x):\n        return 1 if self.score(x) >= 0 else -1\n\n\nx = [0.0, 2.0]\nmodels = [(\"fan\", Scorer([1.0, -1.0], 0.5)), (\"blank\", Scorer([0.0, 0.0], 0.0)), (\"critic\", Scorer([-1.0, 1.0], -0.5))]\nfor name, model in models:\n    print(name, model.score(x), model.decide(x))",
+    "expected_output": "fan -1.5 -1\nblank 0.0 1\ncritic 1.5 1"
+  },
+  {
+    "lab_id": 4,
     "cell_id": "concept-2",
     "code": "scores = [90, 80, 70]\nweights = [0.5, 0.3, 0.2]\nfinal_grade = sum(s * w for s, w in zip(scores, weights))\nprint(final_grade)  # 83.0",
     "expected_output": "83.0"
+  },
+  {
+    "lab_id": 4,
+    "cell_id": "topic-2",
+    "code": "def dot(x, weights):\n    total = 0.0\n    for a, b in zip(x, weights):\n        total = total + a * b\n    return total\n\n\ndef explain(words, x, weights):\n    for word, a, b in zip(words, x, weights):\n        if a == 1:\n            print(word, \"adds\", b)\n    print(\"score\", dot(x, weights))\n\n\nwords = [\"fun\", \"dull\", \"long\"]\nweights = [1.5, -2.0, -0.5]\nexplain(words, [1, 1, 0], weights)",
+    "expected_output": "fun adds 1.5\ndull adds -2.0\nscore -0.5"
   },
   {
     "lab_id": 4,
@@ -97,9 +187,21 @@
   },
   {
     "lab_id": 4,
+    "cell_id": "topic-3",
+    "code": "import math\n\n\ndef step(z):\n    return 1 if z >= 0 else -1\n\n\ndef squash(z):\n    return 1 / (1 + math.exp(-z))\n\n\nfor z in [-4, -1, 0.1, 2, 5]:\n    print(z, step(z), round(squash(z), 2))",
+    "expected_output": "-4 -1 0.02\n-1 -1 0.27\n0.1 1 0.52\n2 1 0.88\n5 1 0.99"
+  },
+  {
+    "lab_id": 4,
     "cell_id": "concept-4",
     "code": "import matplotlib.pyplot as plt\n\ncity_temp = [30, 45, 60, 75, 90]\nice_cream_sales = [10, 25, 40, 70, 95]\nplt.scatter(city_temp, ice_cream_sales)\nplt.xlabel(\"temperature (F)\")\nplt.ylabel(\"ice cream sales\")\nplt.savefig(\"ice_cream.png\")\nprint(\"Saved scatter plot to ice_cream.png\")  # Saved scatter plot to ice_cream.png",
     "expected_output": null
+  },
+  {
+    "lab_id": 4,
+    "cell_id": "topic-4",
+    "code": "def vectorize(sentence, vocab):\n    words = sentence.lower().split()\n    row = []\n    for word in vocab:\n        row.append(1 if word in words else 0)\n    return row\n\n\ndef count_empty(rows):\n    count = 0\n    for row in rows:\n        if sum(row) == 0:\n            count = count + 1\n    return count\n\n\nvocab = [\"fun\", \"dull\", \"long\"]\nsentences = [\"a fun and long show\", \"dull dull dull\", \"we sat down\", \"the end\"]\nrows = []\nfor sentence in sentences:\n    row = vectorize(sentence, vocab)\n    rows.append(row)\n    print(row, sentence)\nprint(\"all-zero rows:\", count_empty(rows), \"of\", len(rows))",
+    "expected_output": "[1, 0, 1] a fun and long show\n[0, 1, 0] dull dull dull\n[0, 0, 0] we sat down\n[0, 0, 0] the end\nall-zero rows: 2 of 4"
   },
   {
     "lab_id": 5,
@@ -109,9 +211,21 @@
   },
   {
     "lab_id": 5,
+    "cell_id": "topic-1",
+    "code": "def one_pass(guess, data, rate):\n    for value in data:\n        guess = guess + rate * (value - guess)\n    return guess\n\n\ntarget = 8\ndata = [8, 8]\nguess = 0.0\nfor epoch in range(1, 4):\n    guess = one_pass(guess, data, 0.5)\n    print(\"epoch\", epoch, \"guess\", guess, \"off by\", target - guess)",
+    "expected_output": "epoch 1 guess 6.0 off by 2.0\nepoch 2 guess 7.5 off by 0.5\nepoch 3 guess 7.875 off by 0.125"
+  },
+  {
+    "lab_id": 5,
     "cell_id": "concept-2",
     "code": "brew_minutes = 5.0  # minutes used in the too-bitter batch\ntoo_bitter = -1     # -1 means \"too bitter\", +1 would mean \"too weak\"\nlearning_rate = 0.2\n\nadjustment = learning_rate * too_bitter * brew_minutes\nbrew_minutes += adjustment\nprint(brew_minutes)  # 4.0 - a little less brew time next time",
     "expected_output": "4.0"
+  },
+  {
+    "lab_id": 5,
+    "cell_id": "topic-2",
+    "code": "def run(rate, epochs):\n    target = 20.0\n    guess = 0.0\n    seen = []\n    for _ in range(epochs):\n        guess = guess + rate * (target - guess)\n        seen.append(guess)\n    return seen\n\n\nfor rate in [0.25, 0.5, 1.0, 1.5]:\n    print(\"rate\", rate, \"->\", run(rate, 3))",
+    "expected_output": "rate 0.25 -> [5.0, 8.75, 11.5625]\nrate 0.5 -> [10.0, 15.0, 17.5]\nrate 1.0 -> [20.0, 20.0, 20.0]\nrate 1.5 -> [30.0, 15.0, 22.5]"
   },
   {
     "lab_id": 5,
@@ -121,9 +235,21 @@
   },
   {
     "lab_id": 5,
+    "cell_id": "topic-3",
+    "code": "def count_wrong(scores, targets):\n    wrong = 0\n    for score, target in zip(scores, targets):\n        guess = 1 if score >= 0 else -1\n        if guess != target:\n            wrong = wrong + 1\n    return wrong\n\n\ndef total_loss(scores, targets):\n    loss = 0.0\n    for score, target in zip(scores, targets):\n        loss = loss + (target - score) ** 2\n    return loss\n\n\ntargets = [-1, 1, 1]\nmodels = [(\"C\", [0.25, 0.75, -0.25]), (\"D\", [3.0, 0.5, -3.0]), (\"E\", [-0.5, 1.0, 1.0])]\nfor name, scores in models:\n    print(name, \"wrong:\", count_wrong(scores, targets), \"loss:\", total_loss(scores, targets))",
+    "expected_output": "C wrong: 2 loss: 3.1875\nD wrong: 2 loss: 32.25\nE wrong: 0 loss: 0.25"
+  },
+  {
+    "lab_id": 5,
     "cell_id": "concept-4",
     "code": "import matplotlib.pyplot as plt\n\nfig, axes = plt.subplots(1, 2, figsize=(8, 3))\naxes[0].plot([1, 2, 3], [10, 20, 15])\naxes[0].set_title(\"daily steps\")\naxes[1].bar([\"tea\", \"coffee\"], [5, 9])\naxes[1].set_title(\"drink orders\")\nplt.tight_layout()\nplt.savefig(\"two_panels.png\")\nprint(\"Saved side-by-side charts to two_panels.png\")  # Saved side-by-side charts to two_panels.png",
     "expected_output": null
+  },
+  {
+    "lab_id": 5,
+    "cell_id": "topic-4",
+    "code": "def accuracy(predict, data):\n    right = 0\n    for sentence, label in data:\n        if predict(sentence) == label:\n            right = right + 1\n    return right / len(data)\n\n\ntrain = [(\"fun show\", 1), (\"dull show\", -1), (\"fun cast\", 1), (\"slow cast\", -1)]\ntest = [(\"fun end\", 1), (\"slow end\", -1), (\"dull cast\", -1), (\"fun plot\", 1)]\n\nmemory = {}\nfor sentence, label in train:\n    memory[sentence] = label\n\n\ndef memorizer(sentence):\n    return memory.get(sentence, 1)\n\n\ndef rule(sentence):\n    return 1 if \"fun\" in sentence.split() else -1\n\n\nfor name, predict in [(\"memorizer\", memorizer), (\"rule\", rule)]:\n    print(name, \"train:\", accuracy(predict, train), \"test:\", accuracy(predict, test))",
+    "expected_output": "memorizer train: 1.0 test: 0.5\nrule train: 1.0 test: 1.0"
   },
   {
     "lab_id": 6,
@@ -133,9 +259,21 @@
   },
   {
     "lab_id": 6,
+    "cell_id": "topic-1",
+    "code": "def table_params(rows, cols):\n    return rows * cols\n\n\ndef total_params(shapes):\n    total = 0\n    for rows, cols in shapes:\n        total = total + table_params(rows, cols)\n    return total\n\n\ndef memory_bytes(params, bytes_each):\n    return params * bytes_each\n\n\nshapes = [(500, 32), (32, 32), (32, 500)]\nparams = total_params(shapes)\nprint(\"parameters:\", params)\nfor bytes_each in [4, 2, 1]:\n    print(\"bytes per number:\", bytes_each, \"->\", f\"{memory_bytes(params, bytes_each):,}\", \"bytes\")",
+    "expected_output": "parameters: 33024\nbytes per number: 4 -> 132,096 bytes\nbytes per number: 2 -> 66,048 bytes\nbytes per number: 1 -> 33,024 bytes"
+  },
+  {
+    "lab_id": 6,
     "cell_id": "concept-2",
     "code": "from dataclasses import dataclass\n\n@dataclass\nclass Car:\n    mpg: float\n    tank_gallons: float\n\n    def range_miles(self) -> float:\n        return self.mpg * self.tank_gallons\n\nc = Car(mpg=30.0, tank_gallons=12.0)\nprint(c.range_miles())  # 360.0",
     "expected_output": "360.0"
+  },
+  {
+    "lab_id": 6,
+    "cell_id": "topic-2",
+    "code": "from dataclasses import dataclass\n\n\n@dataclass\nclass Config:\n    d_model: int\n    n_layers: int\n\n    def attention_total(self):\n        return self.n_layers * 4 * self.d_model * self.d_model\n\n\nbase = Config(d_model=32, n_layers=3)\nprint(\"base\", base.attention_total())\nfor label, cfg in [(\"double d_model\", Config(64, 3)), (\"double n_layers\", Config(32, 6)), (\"triple d_model\", Config(96, 3))]:\n    print(label, cfg.attention_total(), \"x\", cfg.attention_total() // base.attention_total())",
+    "expected_output": "base 12288\ndouble d_model 49152 x 4\ndouble n_layers 24576 x 2\ntriple d_model 110592 x 9"
   },
   {
     "lab_id": 6,
@@ -145,9 +283,21 @@
   },
   {
     "lab_id": 6,
+    "cell_id": "topic-3",
+    "code": "def head_size(cfg):\n    return cfg[\"d_model\"] // cfg[\"n_heads\"]\n\n\ndef is_valid(cfg):\n    return cfg[\"d_model\"] % cfg[\"n_heads\"] == 0\n\n\nconfigs = {\n    \"tiny\": {\"d_model\": 64, \"n_heads\": 4},\n    \"wide\": {\"d_model\": 256, \"n_heads\": 8},\n    \"broken\": {\"d_model\": 100, \"n_heads\": 8},\n}\nfor name, cfg in configs.items():\n    if is_valid(cfg):\n        print(name, \"ok, each head gets\", head_size(cfg), \"numbers\")\n    else:\n        print(name, \"invalid:\", cfg[\"d_model\"], \"does not split evenly into\", cfg[\"n_heads\"], \"heads\")",
+    "expected_output": "tiny ok, each head gets 16 numbers\nwide ok, each head gets 32 numbers\nbroken invalid: 100 does not split evenly into 8 heads"
+  },
+  {
+    "lab_id": 6,
     "cell_id": "concept-4",
     "code": "import matplotlib.pyplot as plt\n\nquarters = [\"Q1\", \"Q2\"]\nbudget = [100, 120]\nactual = [90, 130]\nx = range(len(quarters))\n\nplt.bar([i - 0.2 for i in x], budget, width=0.4, label=\"budget\")\nplt.bar([i + 0.2 for i in x], actual, width=0.4, label=\"actual\")\nplt.xticks(list(x), quarters)\nplt.ylabel(\"$ thousands\")\nplt.legend()\nplt.savefig(\"budget_vs_actual.png\")\nprint(\"Saved grouped bar chart to budget_vs_actual.png\")  # Saved grouped bar chart to budget_vs_actual.png",
     "expected_output": null
+  },
+  {
+    "lab_id": 6,
+    "cell_id": "topic-4",
+    "code": "def percent_off(computed, published):\n    return abs(computed - published) / published * 100\n\n\ndef verdict(pct, limit):\n    return \"good\" if pct <= limit else \"too far\"\n\n\nmodels = [(\"D\", 19900, 20000), (\"E\", 480000, 500000), (\"F\", 60000000, 60500000)]\nfor name, computed, published in models:\n    pct = percent_off(computed, published)\n    print(name, \"off by\", f\"{abs(computed - published):,}\", \"=\", round(pct, 2), \"%\", verdict(pct, 1))",
+    "expected_output": "D off by 100 = 0.5 % good\nE off by 20,000 = 4.0 % too far\nF off by 500,000 = 0.83 % good"
   },
   {
     "lab_id": 7,
@@ -157,9 +307,21 @@
   },
   {
     "lab_id": 7,
+    "cell_id": "topic-1",
+    "code": "def embed_sentence(words, table):\n    rows = []\n    for word in words:\n        rows.append(table[word])\n    return rows\n\n\ndef shape(matrix):\n    return (len(matrix), len(matrix[0]))\n\n\ntable = {\"dog\": [2.0, 1.0], \"ran\": [0.0, 3.0], \"a\": [1.0, 1.0]}\nwords = [\"a\", \"dog\", \"ran\", \"a\", \"dog\"]\nX = embed_sentence(words, table)\nfor word, row in zip(words, X):\n    print(word, row)\nprint(\"shape:\", shape(X))",
+    "expected_output": "a [1.0, 1.0]\ndog [2.0, 1.0]\nran [0.0, 3.0]\na [1.0, 1.0]\ndog [2.0, 1.0]\nshape: (5, 2)"
+  },
+  {
+    "lab_id": 7,
     "cell_id": "concept-2",
     "code": "prices = [2, 5, 1]\nquantities = [3, 2, 4]\ntotal = sum(p * q for p, q in zip(prices, quantities))\nprint(total)  # expected output: 20",
     "expected_output": "20"
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "topic-2",
+    "code": "def dot(a, b):\n    total = 0\n    for x, y in zip(a, b):\n        total = total + x * y\n    return total\n\n\ndef scores_for(query, keys):\n    scores = []\n    for key in keys:\n        scores.append(dot(query, key))\n    return scores\n\n\nwords = [\"tea\", \"coffee\", \"bus\"]\nvectors = [[3, 1], [2, 2], [0, 4]]\nfor word, query in zip(words, vectors):\n    print(word, scores_for(query, vectors))",
+    "expected_output": "tea [10, 8, 4]\ncoffee [8, 8, 8]\nbus [4, 8, 16]"
   },
   {
     "lab_id": 7,
@@ -169,15 +331,33 @@
   },
   {
     "lab_id": 7,
+    "cell_id": "topic-3",
+    "code": "import math\n\n\ndef softmax(scores):\n    exps = []\n    for s in scores:\n        exps.append(math.exp(s))\n    total = sum(exps)\n    shares = []\n    for e in exps:\n        shares.append(e / total)\n    return shares\n\n\nwords = [\"a\", \"dog\", \"barked\"]\nfor scores in ([0.0, 2.0, 1.0], [2.0, 2.0, 0.0]):\n    weights = softmax(scores)\n    print(\"scores\", scores)\n    for word, weight in zip(words, weights):\n        print(\"  \", word, round(weight, 2))\n    print(\"  total\", round(sum(weights), 2))",
+    "expected_output": "scores [0.0, 2.0, 1.0]\n   a 0.09\n   dog 0.67\n   barked 0.24\n  total 1.0\nscores [2.0, 2.0, 0.0]\n   a 0.47\n   dog 0.47\n   barked 0.06\n  total 1.0"
+  },
+  {
+    "lab_id": 7,
     "cell_id": "concept-4",
     "code": "import numpy as np\n\na = [1, 2, 3]\nb = [10, 20, 30]\n\n# manual loop, element by element\nmanual = [a[i] + b[i] for i in range(len(a))]\n\n# numpy: no loop needed\nvectorized = np.array(a) + np.array(b)\nprint(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]",
     "expected_output": "[11, 22, 33] [np.int64(11), np.int64(22), np.int64(33)]"
   },
   {
     "lab_id": 7,
+    "cell_id": "topic-4",
+    "code": "def count_pairs(n_words):\n    pairs = 0\n    for i in range(n_words):\n        for j in range(n_words):\n            pairs = pairs + 1\n    return pairs\n\n\ndef count_multiplications(n_words, dim):\n    return count_pairs(n_words) * dim\n\n\ndim = 8\nfor n_words in (5, 20, 40):\n    print(n_words, \"words ->\", count_pairs(n_words), \"scores,\", count_multiplications(n_words, dim), \"multiplications\")",
+    "expected_output": "5 words -> 25 scores, 200 multiplications\n20 words -> 400 scores, 3200 multiplications\n40 words -> 1600 scores, 12800 multiplications"
+  },
+  {
+    "lab_id": 7,
     "cell_id": "concept-5",
     "code": "rainfall = [[5, 2, 8], [1, 9, 3]]\nplt.imshow(rainfall, cmap=\"Blues\")\nplt.colorbar(label=\"mm\")\nplt.xticks(range(3), [\"Jan\", \"Feb\", \"Mar\"])\nplt.yticks(range(2), [\"CityA\", \"CityB\"])\nplt.title(\"Monthly rainfall\")\nplt.show()\nprint(\"plotted a 2x3 rainfall grid\")  # expected output: plotted a 2x3 rainfall grid",
     "expected_output": null
+  },
+  {
+    "lab_id": 7,
+    "cell_id": "topic-5",
+    "code": "def shade(weight):\n    if weight >= 0.5:\n        return \"#\"\n    if weight >= 0.25:\n        return \"+\"\n    return \".\"\n\n\ndef brightest(words, row):\n    best = 0\n    for j in range(len(row)):\n        if row[j] > row[best]:\n            best = j\n    return words[best]\n\n\nwords = [\"she\", \"read\", \"books\"]\nweights = [[0.7, 0.2, 0.1], [0.6, 0.1, 0.3], [0.1, 0.3, 0.6]]\nfor word, row in zip(words, weights):\n    picture = \"\"\n    for w in row:\n        picture = picture + shade(w)\n    print(word.ljust(7), picture, \"looks most at\", brightest(words, row))",
+    "expected_output": "she     #.. looks most at she\nread    #.+ looks most at she\nbooks   .+# looks most at books"
   },
   {
     "lab_id": 8,
@@ -187,15 +367,33 @@
   },
   {
     "lab_id": 8,
+    "cell_id": "topic-1",
+    "code": "def build_prompt(instruction, review):\n    return f\"{instruction}\\n\\nReview: {review}\"\n\n\ninstruction = \"Translate this review into French.\"\nfor review in [\"Great film\", \"Boring plot\"]:\n    prompt = build_prompt(instruction, review)\n    print(prompt)\n    print(\"characters:\", len(prompt))\n    print(\"---\")",
+    "expected_output": "Translate this review into French.\n\nReview: Great film\ncharacters: 54\n---\nTranslate this review into French.\n\nReview: Boring plot\ncharacters: 55\n---"
+  },
+  {
+    "lab_id": 8,
     "cell_id": "concept-2",
     "code": "def render(template, **data):\n    return template.format(**data)\n\ninvoice_template = \"Invoice for {customer}: ${amount}\"\nprint(render(invoice_template, customer=\"Alex\", amount=42))  # expected output: Invoice for Alex: $42\nprint(render(invoice_template, customer=\"Sam\", amount=17))  # expected output: Invoice for Sam: $17",
     "expected_output": "Invoice for Alex: $42\nInvoice for Sam: $17"
   },
   {
     "lab_id": 8,
+    "cell_id": "topic-2",
+    "code": "def make_prompts(template, reviews):\n    prompts = []\n    for review in reviews:\n        prompts.append(template.format(review=review))\n    return prompts\n\n\ntemplates = {\n    \"shout\": \"Rewrite this review in capital letters.\\n\\nReview: {review}\",\n    \"title\": \"Give this review a short title.\\n\\nReview: {review}\",\n}\nreviews = [\"Nice acting\", \"Too long\", \"Loved the music\"]\nfor name, template in templates.items():\n    prompts = make_prompts(template, reviews)\n    print(name, \"->\", len(prompts), \"prompts\")\n    for prompt in prompts:\n        task, data = prompt.split(\"\\n\\n\")\n        print(\"  \", task, \"|\", data)",
+    "expected_output": "shout -> 3 prompts\n   Rewrite this review in capital letters. | Review: Nice acting\n   Rewrite this review in capital letters. | Review: Too long\n   Rewrite this review in capital letters. | Review: Loved the music\ntitle -> 3 prompts\n   Give this review a short title. | Review: Nice acting\n   Give this review a short title. | Review: Too long\n   Give this review a short title. | Review: Loved the music"
+  },
+  {
+    "lab_id": 8,
     "cell_id": "concept-3",
     "code": "class Tally:\n    def __init__(self, start=0):\n        self.count = start  # state stored on the instance\n\n    def bump(self, n=1):\n        self.count += n\n        return self.count\n\nt = Tally()\nt.bump(2)\nprint(t.bump(3))  # expected output: 5",
     "expected_output": "5"
+  },
+  {
+    "lab_id": 8,
+    "cell_id": "topic-3",
+    "code": "def find_missing(required, given):\n    missing = []\n    for name in required:\n        if name not in given:\n            missing.append(name)\n    return missing\n\n\ndef safe_render(template, required, data):\n    missing = find_missing(required, data)\n    if missing:\n        return \"NOT SENT, missing: \" + \", \".join(missing)\n    return template.format(**data)\n\n\ntemplate = \"Write a {length} poem about {topic}\"\nrequired = [\"length\", \"topic\"]\nfor data in [{\"length\": \"short\", \"topic\": \"rain\"}, {\"topic\": \"rain\"}, {\"length\": \"long\"}]:\n    print(safe_render(template, required, data))",
+    "expected_output": "Write a short poem about rain\nNOT SENT, missing: length\nNOT SENT, missing: topic"
   },
   {
     "lab_id": 9,
@@ -205,15 +403,33 @@
   },
   {
     "lab_id": 9,
+    "cell_id": "topic-1",
+    "code": "def build_messages(review):\n    return [\n        {\"role\": \"system\", \"content\": \"Classify the sentiment as positive or negative.\"},\n        {\"role\": \"user\", \"content\": review},\n    ]\n\n\ndef build_payload(messages, temperature):\n    return {\"model\": \"toy-model\", \"messages\": messages, \"temperature\": temperature}\n\n\ndef count_examples(messages):\n    count = 0\n    for message in messages:\n        if message[\"role\"] == \"assistant\":\n            count = count + 1\n    return count\n\n\nfor review in [\"Too slow\", \"Great acting\"]:\n    payload = build_payload(build_messages(review), 0.2)\n    print(review, \"->\", len(payload[\"messages\"]), \"messages,\", count_examples(payload[\"messages\"]), \"examples, temperature\", payload[\"temperature\"])",
+    "expected_output": "Too slow -> 2 messages, 0 examples, temperature 0.2\nGreat acting -> 2 messages, 0 examples, temperature 0.2"
+  },
+  {
+    "lab_id": 9,
     "cell_id": "concept-2",
     "code": "import os\n\nos.environ[\"MY_APP_TOKEN\"] = \"demo-token-123\"  # normally set outside your code, not like this\ntoken = os.environ[\"MY_APP_TOKEN\"]\nprint(token)  # expected output: demo-token-123",
     "expected_output": "demo-token-123"
   },
   {
     "lab_id": 9,
+    "cell_id": "topic-2",
+    "code": "def mask_key(key):\n    return key[:4] + \"...\" + key[-2:]\n\n\ndef add_usage(usage, key, tokens):\n    usage[key] = usage.get(key, 0) + tokens\n\n\nusage = {}\nrequests_made = [(\"gsk_mine01\", 30), (\"gsk_leak99\", 500), (\"gsk_mine01\", 70), (\"gsk_leak99\", 250)]\nfor key, tokens in requests_made:\n    add_usage(usage, key, tokens)\nfor key, tokens in usage.items():\n    print(mask_key(key), \"used\", tokens, \"tokens\")",
+    "expected_output": "gsk_...01 used 100 tokens\ngsk_...99 used 750 tokens"
+  },
+  {
+    "lab_id": 9,
     "cell_id": "concept-3",
     "code": "data = {\"user\": \"Vera\", \"orders\": [101, 102, 103]}\nprint(data[\"user\"])  # expected output: Vera\nprint(data[\"orders\"][-1])  # expected output: 103",
     "expected_output": "Vera\n103"
+  },
+  {
+    "lab_id": 9,
+    "cell_id": "topic-3",
+    "code": "def fake_response(text):\n    return {\"choices\": [{\"message\": {\"content\": text}}]}\n\n\ndef pull_reply(response):\n    return response[\"choices\"][0][\"message\"][\"content\"]\n\n\ndef find_label(reply):\n    text = reply.lower()\n    for word in (\"negative\", \"positive\"):\n        if word in text:\n            return word\n    return \"unknown\"\n\n\nfor text in [\"NEGATIVE\", \"I think it is positive!\", \"Mixed feelings\"]:\n    reply = pull_reply(fake_response(text))\n    label = find_label(reply)\n    print(repr(reply), \"->\", label, \"| reply equals label:\", reply == label)",
+    "expected_output": "'NEGATIVE' -> negative | reply equals label: False\n'I think it is positive!' -> positive | reply equals label: False\n'Mixed feelings' -> unknown | reply equals label: False"
   },
   {
     "lab_id": 10,
@@ -223,9 +439,21 @@
   },
   {
     "lab_id": 10,
+    "cell_id": "topic-1",
+    "code": "import json\n\n\ndef count_shots(messages):\n    shots = 0\n    for message in messages:\n        if message[\"role\"] == \"assistant\":\n            shots = shots + 1\n    return shots\n\n\ndef shape_to_copy(messages):\n    shape = \"unknown\"\n    for message in messages:\n        if message[\"role\"] == \"assistant\":\n            shape = sorted(json.loads(message[\"content\"]).keys())\n    return shape\n\n\none = [\n    {\"role\": \"user\", \"content\": \"Weather in Accra?\"},\n    {\"role\": \"assistant\", \"content\": '{\"city\": \"Accra\", \"temp\": 31}'},\n    {\"role\": \"user\", \"content\": \"Weather in Kumasi?\"},\n]\nnone = [{\"role\": \"user\", \"content\": \"Weather in Kumasi?\"}]\nfor name, messages in [(\"no shots\", none), (\"one shot\", one)]:\n    print(name, \"-> messages:\", len(messages), \"shots:\", count_shots(messages), \"shape:\", shape_to_copy(messages))",
+    "expected_output": "no shots -> messages: 1 shots: 0 shape: unknown\none shot -> messages: 3 shots: 1 shape: ['city', 'temp']"
+  },
+  {
+    "lab_id": 10,
     "cell_id": "concept-2",
     "code": "import json\n\nraw = '{\"item\": \"Mug\", \"price\": 9.99}'\n\ntry:\n    product = json.loads(raw)\n    if \"price\" not in product:\n        raise ValueError(\"missing price\")\n    print(product[\"item\"], product[\"price\"])  # expected output: Mug 9.99\nexcept json.JSONDecodeError:\n    print(\"not valid JSON\")\nexcept ValueError as e:\n    print(f\"parsed but incomplete: {e}\")",
     "expected_output": "Mug 9.99"
+  },
+  {
+    "lab_id": 10,
+    "cell_id": "topic-2",
+    "code": "import json\n\n\ndef check_reply(text, needed):\n    try:\n        data = json.loads(text)\n    except json.JSONDecodeError:\n        return \"not JSON\"\n    for key in needed:\n        if key not in data:\n            return \"missing \" + key\n    return \"ok\"\n\n\nreplies = [\n    '{\"city\": \"Accra\", \"temp\": 31}',\n    \"It is sunny in Accra\",\n    '{\"city\": \"Kumasi\"}',\n    '{\"city\": \"Tamale\", \"temp\": 35}',\n    '{\"temp\": 29}',\n]\nusable = 0\nfor reply in replies:\n    result = check_reply(reply, [\"city\", \"temp\"])\n    if result == \"ok\":\n        usable = usable + 1\n    print(result)\nprint(usable, \"of\", len(replies), \"replies usable\")",
+    "expected_output": "ok\nnot JSON\nmissing temp\nok\nmissing city\n2 of 5 replies usable"
   },
   {
     "lab_id": 11,
@@ -235,9 +463,21 @@
   },
   {
     "lab_id": 11,
+    "cell_id": "topic-1",
+    "code": "def word_cost(reply):\n    return len(reply.split())\n\n\ndef is_correct(reply, expected):\n    return reply.strip().endswith(expected)\n\n\nexpected = \"391\"\nreplies = [\n    (\"direct\", \"381\"),\n    (\"step by step\", \"17*20=340. 17*3=51. 340+51=391. Answer: 391\"),\n]\nfor style, reply in replies:\n    print(style, \"-> words:\", word_cost(reply), \"correct:\", is_correct(reply, expected))",
+    "expected_output": "direct -> words: 1 correct: False\nstep by step -> words: 5 correct: True"
+  },
+  {
+    "lab_id": 11,
     "cell_id": "concept-2",
     "code": "forecast = \"Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F\"\n\ndef extract_high(text: str, marker: str = \"High:\") -> str:\n    if marker not in text:\n        return text.strip()\n    return text.rsplit(marker, 1)[1].strip()\n\nprint(extract_high(forecast))  # expected output: 78F",
     "expected_output": "78F"
+  },
+  {
+    "lab_id": 11,
+    "cell_id": "topic-2",
+    "code": "def final_answer(reply):\n    answer = None\n    for line in reply.split(\"\\n\"):\n        if line.startswith(\"Answer:\"):\n            answer = line[len(\"Answer:\"):].strip()\n    return answer\n\n\ndef grade(reply, expected):\n    answer = final_answer(reply)\n    if answer is None:\n        return \"no marker\"\n    if answer.split()[0] == expected:\n        return \"right\"\n    return \"wrong\"\n\n\nreplies = [\n    \"40 / 0.8 = 50.\\nAnswer: 50 dollars\",\n    \"The shirt cost 50\",\n    \"40 + 20 = 60.\\nAnswer: 60\",\n    \"Answer: 50\",\n]\nfor reply in replies:\n    print(grade(reply, \"50\"))",
+    "expected_output": "right\nno marker\nwrong\nright"
   },
   {
     "lab_id": 12,
@@ -247,15 +487,33 @@
   },
   {
     "lab_id": 12,
+    "cell_id": "topic-1",
+    "code": "def model_can_see(messages, fact):\n    for message in messages:\n        if fact in message[\"content\"]:\n            return True\n    return False\n\n\nhistory = [\n    {\"role\": \"user\", \"content\": \"I live in Tamale.\"},\n    {\"role\": \"assistant\", \"content\": \"Tamale is a lovely city!\"},\n    {\"role\": \"user\", \"content\": \"Which city do I live in?\"},\n]\nfor name, messages in [(\"full list\", history), (\"last turn only\", history[-1:])]:\n    print(name, \"->\", len(messages), \"messages, can see the city:\", model_can_see(messages, \"Tamale\"))",
+    "expected_output": "full list -> 3 messages, can see the city: True\nlast turn only -> 1 messages, can see the city: False"
+  },
+  {
+    "lab_id": 12,
     "cell_id": "concept-2",
     "code": "classroom_log = [\n    {\"role\": \"teacher_note\", \"text\": \"Keep answers under two sentences.\"},\n    {\"role\": \"student\", \"text\": \"What's the capital of France?\"},\n    {\"role\": \"helper\", \"text\": \"Paris.\"},\n]\n\nstanding_rule = classroom_log[0][\"text\"]\nprint(standing_rule)  # expected output: Keep answers under two sentences.",
     "expected_output": "Keep answers under two sentences."
   },
   {
     "lab_id": 12,
+    "cell_id": "topic-2",
+    "code": "def audit(messages):\n    problems = []\n    if messages[0][\"role\"] != \"system\":\n        problems.append(\"system message is not first\")\n    for i in range(1, len(messages)):\n        if messages[i][\"role\"] == \"system\":\n            problems.append(\"extra system message at position \" + str(i))\n    return problems\n\n\ntidy = [\n    {\"role\": \"system\", \"content\": \"You are Kofi.\"},\n    {\"role\": \"user\", \"content\": \"Hello\"},\n    {\"role\": \"assistant\", \"content\": \"Hi there!\"},\n]\ndoubled = [\n    {\"role\": \"system\", \"content\": \"You are Kofi.\"},\n    {\"role\": \"user\", \"content\": \"Hello\"},\n    {\"role\": \"system\", \"content\": \"Be funny.\"},\n]\nfor name, messages in [(\"tidy\", tidy), (\"doubled\", doubled)]:\n    print(name, \"->\", audit(messages))",
+    "expected_output": "tidy -> []\ndoubled -> ['extra system message at position 2']"
+  },
+  {
+    "lab_id": 12,
     "cell_id": "concept-3",
     "code": "discount = \"SAVE10\"                      # built once\nfor cart_total in [25, 40, 100]:          # varies every iteration\n    print(f\"Applying {discount} to ${cart_total}\")\n# expected output:\n# Applying SAVE10 to $25\n# Applying SAVE10 to $40\n# Applying SAVE10 to $100",
     "expected_output": "Applying SAVE10 to $25\nApplying SAVE10 to $40\nApplying SAVE10 to $100"
+  },
+  {
+    "lab_id": 12,
+    "cell_id": "topic-3",
+    "code": "def check_rules(reply, banned, closing):\n    broken = []\n    for word in banned:\n        if word in reply.lower():\n            broken.append(\"mentions \" + word)\n    if not reply.strip().lower().endswith(closing):\n        broken.append(\"no closing question\")\n    return broken\n\n\nclosing = \"anything else?\"\nreplies = [\n    (\"How do I clean my grinder?\", \"Brush it weekly. Is there anything else?\"),\n    (\"Is BrewCo cheaper?\", \"BrewCo has lower prices, I hear.\"),\n    (\"Can I pause my plan?\", \"Yes, from your account page. Is there anything else?\"),\n]\nfor question, reply in replies:\n    print(question, \"->\", check_rules(reply, [\"brewco\"], closing))",
+    "expected_output": "How do I clean my grinder? -> []\nIs BrewCo cheaper? -> ['mentions brewco', 'no closing question']\nCan I pause my plan? -> []"
   },
   {
     "lab_id": 13,
@@ -265,15 +523,33 @@
   },
   {
     "lab_id": 13,
+    "cell_id": "topic-1",
+    "code": "PREFIX = \"My name is \"\n\n\ndef fake_model(messages):\n    name = None\n    for message in messages:\n        if message[\"content\"].startswith(PREFIX):\n            name = message[\"content\"][len(PREFIX):]\n    if messages[-1][\"content\"] == \"What is my name?\":\n        if name is None:\n            return \"I do not know your name.\"\n        return \"Your name is \" + name + \".\"\n    return \"Nice to meet you.\"\n\n\ndef ask(history, question):\n    history.append({\"role\": \"user\", \"content\": question})\n    reply = fake_model(history)\n    history.append({\"role\": \"assistant\", \"content\": reply})\n    return reply\n\n\nquestions = [\"My name is Kwame\", \"I like football\", \"What is my name?\"]\nhistory = []\nfor question in questions:\n    print(\"kept list  ->\", ask(history, question))\nfor question in questions:\n    print(\"fresh list ->\", ask([], question))",
+    "expected_output": "kept list  -> Nice to meet you.\nkept list  -> Nice to meet you.\nkept list  -> Your name is Kwame.\nfresh list -> Nice to meet you.\nfresh list -> Nice to meet you.\nfresh list -> I do not know your name."
+  },
+  {
+    "lab_id": 13,
     "cell_id": "concept-2",
     "code": "deliveries = []\nfor package in [\"P100\", \"P101\"]:\n    deliveries.append(f\"{package} delivered\")\nprint(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']",
     "expected_output": "['P100 delivered', 'P101 delivered']"
   },
   {
     "lab_id": 13,
+    "cell_id": "topic-2",
+    "code": "def count_words(messages):\n    total = 0\n    for message in messages:\n        total = total + len(message[\"content\"].split())\n    return total\n\n\nhistory = [{\"role\": \"system\", \"content\": \"Answer briefly.\"}]\nquestions = [\"Hello\", \"What is two plus two\", \"Thanks a lot\"]\nreplies = [\"Hi!\", \"Four\", \"You are welcome\"]\nfor i in range(len(questions)):\n    history.append({\"role\": \"user\", \"content\": questions[i]})\n    print(\"turn\", i + 1, \"sends\", len(history), \"messages,\", count_words(history), \"words\")\n    history.append({\"role\": \"assistant\", \"content\": replies[i]})",
+    "expected_output": "turn 1 sends 2 messages, 3 words\nturn 2 sends 4 messages, 9 words\nturn 3 sends 6 messages, 13 words"
+  },
+  {
+    "lab_id": 13,
     "cell_id": "concept-3",
     "code": "person = {\"name\": \"Sam\", \"occasion\": \"graduation\"}\ncard = f\"Congrats {person['name']} on your {person['occasion']}!\"\nprint(card)  # expected output: Congrats Sam on your graduation!",
     "expected_output": "Congrats Sam on your graduation!"
+  },
+  {
+    "lab_id": 13,
+    "cell_id": "topic-3",
+    "code": "def make_system(name, facts):\n    lines = [\"You are \" + name + \".\"]\n    for fact in facts:\n        lines.append(\"- \" + fact)\n    return \"\\n\".join(lines)\n\n\ndef fake_twin(messages):\n    question = messages[-1][\"content\"].lower()\n    for line in messages[0][\"content\"].split(\"\\n\"):\n        if line.startswith(\"- \"):\n            for word in question.strip(\"?\").split():\n                if len(word) >= 5 and word in line:\n                    return \"From my facts: \" + line[2:]\n    return \"I was not given a fact about that.\"\n\n\nsystem = make_system(\"Kofi\", [\"bakes bread daily\", \"runs every morning\"])\nfor question in [\"Do you bake bread?\", \"Do you run every morning?\", \"Do you swim?\"]:\n    messages = [{\"role\": \"system\", \"content\": system}, {\"role\": \"user\", \"content\": question}]\n    print(question, \"->\", fake_twin(messages))",
+    "expected_output": "Do you bake bread? -> From my facts: bakes bread daily\nDo you run every morning? -> From my facts: runs every morning\nDo you swim? -> I was not given a fact about that."
   },
   {
     "lab_id": 14,
@@ -283,9 +559,21 @@
   },
   {
     "lab_id": 14,
+    "cell_id": "topic-1",
+    "code": "REQUIRED = [\"endpoint\", \"method\", \"headers\", \"body\"]\n\n\ndef missing_parts(request):\n    missing = []\n    for part in REQUIRED:\n        if part not in request:\n            missing.append(part)\n    return missing\n\n\ndef read_response(response):\n    reply = response[\"choices\"][0][\"message\"][\"content\"]\n    tokens = response[\"usage\"][\"total_tokens\"]\n    return reply, tokens\n\n\nodd = {\"endpoint\": \"https://api.example.com/v1/chat\", \"headers\": {\"Authorization\": \"Bearer xyz789\"}}\nprint(\"odd request is missing:\", missing_parts(odd))\n\nresponses = [\n    {\"choices\": [{\"message\": {\"role\": \"assistant\", \"content\": \"Bonjour!\"}}], \"usage\": {\"total_tokens\": 9}},\n    {\"choices\": [{\"message\": {\"role\": \"assistant\", \"content\": \"Hola!\"}}], \"usage\": {\"total_tokens\": 7}},\n]\ntotal = 0\nfor response in responses:\n    reply, tokens = read_response(response)\n    total = total + tokens\n    print(\"reply:\", reply, \"| tokens used:\", tokens)\nprint(\"total tokens:\", total)",
+    "expected_output": "odd request is missing: ['method', 'body']\nreply: Bonjour! | tokens used: 9\nreply: Hola! | tokens used: 7\ntotal tokens: 16"
+  },
+  {
+    "lab_id": 14,
     "cell_id": "concept-2",
     "code": "class VendingMachine:\n    def __init__(self, stock):\n        self.stock = stock  # state the object remembers\n\n    def dispense(self, item):\n        self.stock[item] -= 1  # the repeated logic, written once\n        return self.stock[item]\n\nvm = VendingMachine({\"soda\": 5})\nprint(vm.dispense(\"soda\"))  # expected output: 4\nprint(vm.dispense(\"soda\"))  # expected output: 3",
     "expected_output": "4\n3"
+  },
+  {
+    "lab_id": 14,
+    "cell_id": "topic-2",
+    "code": "def clean(reply):\n    return reply.strip().strip(\".\").lower()\n\n\ndef to_label(reply):\n    text = clean(reply)\n    if \"non-toxic\" in text:\n        return \"non-toxic\"\n    if \"toxic\" in text:\n        return \"toxic\"\n    return \"unknown\"\n\n\nreplies = [\"Toxic!\", \" Non-toxic.\", \"I would say it is non-toxic\", \"Not sure\"]\nfor reply in replies:\n    print(reply.strip(), \"->\", to_label(reply))",
+    "expected_output": "Toxic! -> toxic\nNon-toxic. -> non-toxic\nI would say it is non-toxic -> non-toxic\nNot sure -> unknown"
   },
   {
     "lab_id": 15,
@@ -295,15 +583,33 @@
   },
   {
     "lab_id": 15,
+    "cell_id": "topic-1",
+    "code": "def make_history(roles):\n    history = []\n    for role in roles:\n        history.append({\"role\": role, \"content\": \"text\"})\n    return history\n\n\ndef check_history(messages):\n    expected = \"user\"\n    for message in messages[1:]:\n        if message[\"role\"] != expected:\n            return \"problem: expected \" + expected + \" but got \" + message[\"role\"]\n        if expected == \"user\":\n            expected = \"assistant\"\n        else:\n            expected = \"user\"\n    return \"ok\"\n\n\nchats = [\n    [\"system\", \"user\", \"assistant\", \"user\"],\n    [\"system\", \"user\", \"assistant\", \"assistant\"],\n]\nfor roles in chats:\n    print(len(roles), \"messages ->\", check_history(make_history(roles)))",
+    "expected_output": "4 messages -> ok\n4 messages -> problem: expected user but got assistant"
+  },
+  {
+    "lab_id": 15,
     "cell_id": "concept-2",
     "code": "class Playlist:\n    def __init__(self):\n        self.songs = []\n\n    def add(self, song):\n        self.songs.append(song)\n        print(f\"Queued: {song} ({len(self.songs)} songs total)\")\n\nplaylist = Playlist()\nplaylist.add(\"Song A\")\nplaylist.add(\"Song B\")\n# expected output:\n# Queued: Song A (1 songs total)\n# Queued: Song B (2 songs total)",
     "expected_output": "Queued: Song A (1 songs total)\nQueued: Song B (2 songs total)"
   },
   {
     "lab_id": 15,
+    "cell_id": "topic-2",
+    "code": "def count_words(messages):\n    total = 0\n    for message in messages:\n        total = total + len(message[\"content\"].split())\n    return total\n\n\ndef add(history, role, text):\n    history.append({\"role\": role, \"content\": text})\n\n\ndef reset(system_text):\n    return [{\"role\": \"system\", \"content\": system_text}]\n\n\nwindow = 10\nhistory = reset(\"Answer in one line.\")\nfor text in [\"name a fruit\", \"name a colour please\", \"name a country in Africa\"]:\n    add(history, \"user\", text)\n    words = count_words(history)\n    print(len(history), \"messages,\", words, \"words, fits:\", words <= window)\n    add(history, \"assistant\", \"mango\")\nhistory = reset(\"Answer in one line.\")\nprint(\"after reset:\", len(history), \"message,\", count_words(history), \"words\")",
+    "expected_output": "2 messages, 7 words, fits: True\n4 messages, 12 words, fits: False\n6 messages, 18 words, fits: False\nafter reset: 1 message, 4 words"
+  },
+  {
+    "lab_id": 15,
     "cell_id": "concept-3",
     "code": "def fake_sender(message):\n    return f\"[fake] would send: {message}\"\n\nclass Notifier:\n    def __init__(self, sender):\n        self.sender = sender\n\n    def notify(self, message):\n        return self.sender(message)\n\nnotifier = Notifier(sender=fake_sender)\nprint(notifier.notify(\"Build complete\"))  # expected output: [fake] would send: Build complete",
     "expected_output": "[fake] would send: Build complete"
+  },
+  {
+    "lab_id": 15,
+    "cell_id": "topic-3",
+    "code": "def reverse_transport(messages):\n    return messages[-1][\"content\"][::-1]\n\n\ndef count_transport(messages):\n    return \"I can see \" + str(len(messages)) + \" messages\"\n\n\ndef run_chat(transport, questions):\n    messages = []\n    for question in questions:\n        messages.append({\"role\": \"user\", \"content\": question})\n        reply = transport(messages)\n        messages.append({\"role\": \"assistant\", \"content\": reply})\n        print(question, \"->\", reply)\n    return len(messages)\n\n\nquestions = [\"abc\", \"xyz\"]\nfor transport in [reverse_transport, count_transport]:\n    print(\"with\", transport.__name__)\n    count = run_chat(transport, questions)\n    print(\"history size:\", count)",
+    "expected_output": "with reverse_transport\nabc -> cba\nxyz -> zyx\nhistory size: 4\nwith count_transport\nabc -> I can see 1 messages\nxyz -> I can see 3 messages\nhistory size: 4"
   },
   {
     "lab_id": 16,
@@ -313,15 +619,33 @@
   },
   {
     "lab_id": 16,
+    "cell_id": "topic-1",
+    "code": "def toy_token_count(text):\n    total = 0\n    for word in text.split():\n        total = total + (len(word) + 3) // 4\n    return total\n\n\ndef fits(text, window):\n    return toy_token_count(text) <= window\n\n\nwindow = 6\nfor text in [\"dog barks\", \"tokenization of weekends matters\"]:\n    print(text, \"->\", toy_token_count(text), \"tokens, fits:\", fits(text, window))",
+    "expected_output": "dog barks -> 3 tokens, fits: True\ntokenization of weekends matters -> 8 tokens, fits: False"
+  },
+  {
+    "lab_id": 16,
     "cell_id": "concept-2",
     "code": "note = \"  buy   MILK  and   eggs \\n\"\nwords = note.lower().split()\nprint(words)            # expected output: ['buy', 'milk', 'and', 'eggs']\nprint(\" \".join(words))  # expected output: buy milk and eggs",
     "expected_output": "['buy', 'milk', 'and', 'eggs']\nbuy milk and eggs"
   },
   {
     "lab_id": 16,
+    "cell_id": "topic-2",
+    "code": "def clean_text(raw):\n    return \" \".join(raw.split())\n\n\ndef estimate_tokens(text):\n    return len(text) // 4\n\n\ndef fits(text, window):\n    return estimate_tokens(text) <= window\n\n\nwindow = 10\nraw = \"Kofi   teaches\\n\\nmaths    and   codes   at   night\"\nfor name, text in [(\"raw\", raw), (\"clean\", clean_text(raw))]:\n    print(name, estimate_tokens(text), \"tokens, fits:\", fits(text, window))",
+    "expected_output": "raw 12 tokens, fits: False\nclean 9 tokens, fits: True"
+  },
+  {
+    "lab_id": 16,
     "cell_id": "concept-3",
     "code": "numbers = [1, 2, 3, 4, 5, 6, 7, 8]\nfor start in range(0, len(numbers), 2):\n    print(numbers[start:start + 4])\n# expected output: four lines, each 4 long except the last",
     "expected_output": "[1, 2, 3, 4]\n[3, 4, 5, 6]\n[5, 6, 7, 8]\n[7, 8]"
+  },
+  {
+    "lab_id": 16,
+    "cell_id": "topic-3",
+    "code": "def make_chunks(words, size, jump):\n    chunks = []\n    for start in range(0, len(words), jump):\n        chunks.append(\" \".join(words[start:start + size]))\n    return chunks\n\n\ndef count_with_fact(chunks, fact):\n    count = 0\n    for chunk in chunks:\n        if fact in chunk:\n            count = count + 1\n    return count\n\n\nwords = \"Ada bakes bread on weekends and sells it\".split()\nfact = \"bread on weekends\"\nfor jump in (4, 2):\n    chunks = make_chunks(words, 4, jump)\n    print(\"jump\", jump, \"->\", len(chunks), \"chunks,\", count_with_fact(chunks, fact), \"hold the whole fact\")",
+    "expected_output": "jump 4 -> 2 chunks, 0 hold the whole fact\njump 2 -> 4 chunks, 1 hold the whole fact"
   },
   {
     "lab_id": 17,
@@ -331,15 +655,33 @@
   },
   {
     "lab_id": 17,
+    "cell_id": "topic-1",
+    "code": "def count_tokens(text):\n    return len(text) // 4 + 1\n\n\ndef total_tokens(messages):\n    total = 0\n    for message in messages:\n        total = total + count_tokens(message[\"content\"])\n    return total\n\n\nchat = [\n    {\"role\": \"system\", \"content\": \"You are Kofi's digital twin.\"},\n    {\"role\": \"user\", \"content\": \"Where do you teach maths?\"},\n    {\"role\": \"assistant\", \"content\": \"At a school in Kumasi, on Fridays.\"},\n]\nreply_room = 8\nfor window in (40, 20):\n    room = window - reply_room\n    used = total_tokens(chat)\n    print(\"window\", window, \"-> input room\", room, \"used\", used, \"fits:\", used <= room)",
+    "expected_output": "window 40 -> input room 32 used 24 fits: True\nwindow 20 -> input room 12 used 24 fits: False"
+  },
+  {
+    "lab_id": 17,
     "cell_id": "concept-2",
     "code": "costs = [5, 3, 9, 5]\nbudget = 15\nused = 0\nfor cost in reversed(costs):\n    if used + cost > budget:\n        break\n    used += cost\nprint(used)  # expected output: 14",
     "expected_output": "14"
   },
   {
     "lab_id": 17,
+    "cell_id": "topic-2",
+    "code": "def count_tokens(text):\n    return len(text) // 4 + 1\n\n\ndef count_kept(turns, budget):\n    used = 0\n    kept = 0\n    for turn in reversed(turns):\n        used = used + count_tokens(turn)\n        if used > budget:\n            break\n        kept = kept + 1\n    return kept\n\n\nturns = [\"I am Kofi.\", \"I teach maths in Kumasi.\", \"I code at night.\", \"Where do I teach?\"]\nfor budget in (22, 10):\n    kept = count_kept(turns, budget)\n    seen = turns[len(turns) - kept:]\n    print(\"budget\", budget, \"-> sees\", kept, \"turns, knows the town:\", \"I teach maths in Kumasi.\" in seen)",
+    "expected_output": "budget 22 -> sees 4 turns, knows the town: True\nbudget 10 -> sees 2 turns, knows the town: False"
+  },
+  {
+    "lab_id": 17,
     "cell_id": "concept-3",
     "code": "history = [\"system\", \"hi\", \"hello\", \"bye\"]\nsystem = history[:1]\nrest = history[1:]\ntrimmed = system + rest[-2:]\nprint(trimmed)  # expected output: ['system', 'hello', 'bye']\nprint(history)  # expected output: ['system', 'hi', 'hello', 'bye']",
     "expected_output": "['system', 'hello', 'bye']\n['system', 'hi', 'hello', 'bye']"
+  },
+  {
+    "lab_id": 17,
+    "cell_id": "topic-3",
+    "code": "def input_budget(window, reply):\n    return window - reply\n\n\ndef fits(history_tokens, window, reply):\n    return history_tokens <= input_budget(window, reply)\n\n\nwindow = 4000\nhistory_tokens = 3200\nfor reply in (300, 800, 1200):\n    print(\"reply\", reply, \"-> input budget\", input_budget(window, reply), \"fits:\", fits(history_tokens, window, reply))",
+    "expected_output": "reply 300 -> input budget 3700 fits: True\nreply 800 -> input budget 3200 fits: True\nreply 1200 -> input budget 2800 fits: False"
   },
   {
     "lab_id": 18,
@@ -349,15 +691,33 @@
   },
   {
     "lab_id": 18,
+    "cell_id": "topic-1",
+    "code": "def dot(a, b):\n    total = 0\n    for x, y in zip(a, b):\n        total = total + x * y\n    return total\n\n\nWORDS = {\"tea\": [0.8, 0.2], \"goal\": [0.1, 0.9], \"jog\": [0.0, 1.0]}\nquery = WORDS[\"jog\"]\nfor word in WORDS:\n    print(word, \"->\", round(dot(query, WORDS[word]), 2))",
+    "expected_output": "tea -> 0.2\ngoal -> 0.9\njog -> 1.0"
+  },
+  {
+    "lab_id": 18,
     "cell_id": "concept-2",
     "code": "import math\nv = [6, 8]\nprint(math.sqrt(sum(x * x for x in v)))  # expected output: 10.0",
     "expected_output": "10.0"
   },
   {
     "lab_id": 18,
+    "cell_id": "topic-2",
+    "code": "import math\n\n\ndef length(v):\n    return math.sqrt(sum(x * x for x in v))\n\n\ndef dot(a, b):\n    return sum(x * y for x, y in zip(a, b))\n\n\nquery = [0.0, 1.0]  # a question about sport\ndocs = {\"short sport note\": [0.2, 0.8], \"long food essay\": [5.0, 3.0]}\nfor name in docs:\n    d = docs[name]\n    direction = dot(query, d) / (length(query) * length(d))\n    print(name, \"-> raw dot:\", round(dot(query, d), 2), \"direction only:\", round(direction, 3))",
+    "expected_output": "short sport note -> raw dot: 0.8 direction only: 0.97\nlong food essay -> raw dot: 3.0 direction only: 0.514"
+  },
+  {
+    "lab_id": 18,
     "cell_id": "concept-3",
     "code": "vectors = [[2, 4], [4, 0], [0, 2]]\nprint([sum(c) / len(vectors) for c in zip(*vectors)])  # expected output: [2.0, 2.0]\nscores = [0.1, 0.7, 0.3]\nprint(scores.index(max(scores)))                       # expected output: 1",
     "expected_output": "[2.0, 2.0]\n1"
+  },
+  {
+    "lab_id": 18,
+    "cell_id": "topic-3",
+    "code": "import math\n\nWORDS = {\"food\": [1.0, 0.0], \"cook\": [0.9, 0.1], \"bread\": [1.0, 0.0], \"soup\": [0.9, 0.0], \"run\": [0.0, 1.0], \"park\": [0.1, 0.9]}\n\n\ndef embed(text):\n    total = [0.0, 0.0]\n    count = 0\n    for word in text.lower().split():\n        if word in WORDS:\n            for i in range(2):\n                total[i] = total[i] + WORDS[word][i]\n            count = count + 1\n    return [x / count for x in total]\n\n\ndef cosine(a, b):\n    dot = sum(x * y for x, y in zip(a, b))\n    return dot / (math.sqrt(sum(x * x for x in a)) * math.sqrt(sum(y * y for y in b)))\n\n\ndef shared_words(a, b):\n    count = 0\n    for word in a.lower().split():\n        if word in b.lower().split():\n            count = count + 1\n    return count\n\n\nquestion = \"jog in the park\"\nfor fact in [\"soup for lunch\", \"run fast\"]:\n    score = cosine(embed(question), embed(fact))\n    print(fact, \"-> shared words:\", shared_words(question, fact), \"meaning score:\", round(score, 2))",
+    "expected_output": "soup for lunch -> shared words: 0 meaning score: 0.11\nrun fast -> shared words: 0 meaning score: 0.99"
   },
   {
     "lab_id": 19,
@@ -367,14 +727,32 @@
   },
   {
     "lab_id": 19,
+    "cell_id": "topic-1",
+    "code": "class TinyStore:\n    def __init__(self):\n        self.items = []\n\n    def add(self, text, vector):\n        self.items.append((text, vector))\n\n\ndef fill(store, table):\n    for text, vector in table:\n        store.add(text, vector)\n\n\ntable = [(\"Kofi teaches maths.\", [0.0, 0.2, 1.0]), (\"Kofi codes at night.\", [0.1, 1.0, 0.0]), (\"Kofi cooks rice.\", [1.0, 0.0, 0.0])]\nstore = TinyStore()\nfill(store, table)\nprint(len(store.items), \"items stored\")\nfor text, vector in store.items:\n    print(len(vector), \"numbers ->\", text)",
+    "expected_output": "3 items stored\n3 numbers -> Kofi teaches maths.\n3 numbers -> Kofi codes at night.\n3 numbers -> Kofi cooks rice."
+  },
+  {
+    "lab_id": 19,
     "cell_id": "concept-2",
     "code": "scores = [(3, \"x\"), (8, \"y\"), (5, \"z\")]\nscores.sort(reverse=True)\nprint(scores[:2])        # expected output: [(8, 'y'), (5, 'z')]\nprint(len(scores[:10]))  # expected output: 3",
     "expected_output": "[(8, 'y'), (5, 'z')]\n3"
   },
   {
     "lab_id": 19,
+    "cell_id": "topic-2",
+    "code": "def count_tokens(text):\n    return len(text) // 4 + 1\n\n\ndef top_k(scored, k):\n    ranked = sorted(scored, reverse=True)\n    return ranked[:k]\n\n\nscored = [\n    (0.22, \"Kofi codes at night.\"),\n    (0.88, \"Kofi teaches maths at a school in Kumasi.\"),\n    (0.64, \"Kofi grades tests on Friday evenings.\"),\n    (0.05, \"Kofi cooks rice on Sundays.\"),\n]\nbudget = 24\nfor k in (1, 2, 3):\n    chosen = top_k(scored, k)\n    cost = 0\n    for score, text in chosen:\n        cost = cost + count_tokens(text)\n    print(\"k\", k, \"-> best score\", chosen[0][0], \"tokens\", cost, \"fits:\", cost <= budget)",
+    "expected_output": "k 1 -> best score 0.88 tokens 11 fits: True\nk 2 -> best score 0.88 tokens 21 fits: True\nk 3 -> best score 0.88 tokens 27 fits: False"
+  },
+  {
+    "lab_id": 19,
     "cell_id": "concept-3",
     "code": "notes = [\"tea\", \"toast\"]\nlines = \"\\n\".join(f\"- {n}\" for n in notes)\nprint(lines)  # expected output: two lines, each starting with \"- \"",
     "expected_output": "- tea\n- toast"
+  },
+  {
+    "lab_id": 19,
+    "cell_id": "topic-3",
+    "code": "def build_prompt(question, chunks):\n    lines = \"\\n\".join(f\"- {c}\" for c in chunks)\n    return f\"Answer using only this context.\\n\\nContext:\\n{lines}\\n\\nQuestion: {question}\"\n\n\ndef can_answer(chunks, keyword):\n    for chunk in chunks:\n        if keyword in chunk.lower():\n            return True\n    return False\n\n\ncases = [\n    [\"Kofi teaches maths.\", \"Kofi codes at night.\"],\n    [\"Kofi cooks rice.\", \"Kofi codes at night.\"],\n]\nfor chunks in cases:\n    print(build_prompt(\"What does Kofi teach?\", chunks))\n    print(\"answer is in the context:\", can_answer(chunks, \"maths\"))\n    print(\"-\" * 10)",
+    "expected_output": "Answer using only this context.\n\nContext:\n- Kofi teaches maths.\n- Kofi codes at night.\n\nQuestion: What does Kofi teach?\nanswer is in the context: True\n----------\nAnswer using only this context.\n\nContext:\n- Kofi cooks rice.\n- Kofi codes at night.\n\nQuestion: What does Kofi teach?\nanswer is in the context: False\n----------"
   }
 ]

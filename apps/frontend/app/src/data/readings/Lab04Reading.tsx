@@ -136,15 +136,105 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: a model is code plus learned numbers
+      </Heading>
+      <Text>
+        An LLM is a lot of code, but the code is the same for every model of its kind. What makes one model different from another is a big bag of numbers it learned. These numbers are called <b>parameters</b>. Same code, different numbers, different behaviour.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The code says how to turn an input into a score: multiply, add up, decide.
+        </ListItem>
+        <ListItem>
+          The numbers hold everything the model "knows". In this lab they are the weights and the bias.
+        </ListItem>
+        <ListItem>
+          Training changes the numbers and never the code. Saving a model means saving its numbers.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A <Code>Scorer</Code> class holds a list of <b>weights</b> (how much each input matters) and a <b>bias</b> (a number added at the end). Its <Code>score</Code> method loops over the input and adds up weight times value, starting from the bias. <Code>decide</Code> turns the score into +1 or -1. We build three models from the same class and give them the same input.
+      </Text>
+      <RunnableExample labId={4} code={`class Scorer:
+    def __init__(self, weights, bias):
+        self.weights = weights
+        self.bias = bias
+
+    def score(self, x):
+        total = self.bias
+        for w, value in zip(self.weights, x):
+            total = total + w * value
+        return total
+
+    def decide(self, x):
+        return 1 if self.score(x) >= 0 else -1
+
+
+x = [1.0, 0.0]
+models = [("fan", Scorer([1.0, -1.0], 0.5)), ("blank", Scorer([0.0, 0.0], 0.0)), ("critic", Scorer([-1.0, 1.0], -0.5))]
+for name, model in models:
+    print(name, model.score(x), model.decide(x))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>fan</Code> has weights <Code>[1.0, -1.0]</Code> and bias <Code>0.5</Code>. On <Code>[1.0, 0.0]</Code> the loop gives <Code>0.5 + 1.0 * 1.0 + (-1.0) * 0.0 = 1.5</Code>, so <Code>decide</Code> says +1.
+        </ListItem>
+        <ListItem>
+          <Code>blank</Code> has only zeros. Its score is <Code>0.0</Code>, and <Code>decide</Code> still says +1, because 0 counts as "zero or more". A model that knows nothing still gives an answer.
+        </ListItem>
+        <ListItem>
+          <Code>critic</Code> has the opposite numbers. Its score is <Code>-1.5</Code> and its answer is -1. Same class, same input, opposite answer.
+        </ListItem>
+        <ListItem>
+          Pattern: same code, different numbers, different behaviour.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same class on a new input, <Code>[0.0, 2.0]</Code>.
+      </Text>
+      <PracticeCell labId={4} cellId="topic-1" code={`class Scorer:
+    def __init__(self, weights, bias):
+        self.weights = weights
+        self.bias = bias
+
+    def score(self, x):
+        total = self.bias
+        for w, value in zip(self.weights, x):
+            total = total + w * value
+        return total
+
+    def decide(self, x):
+        return 1 if self.score(x) >= 0 else -1
+
+
+x = [0.0, 2.0]
+models = [("fan", Scorer([1.0, -1.0], 0.5)), ("blank", Scorer([0.0, 0.0], 0.0)), ("critic", Scorer([-1.0, 1.0], -0.5))]
+for name, model in models:
+    print(name, model.score(x), model.decide(x))`} expectedOutput={`fan -1.5 -1
+blank 0.0 1
+critic 1.5 1`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>fan</Code>: <Code>0.5 + 1.0 * 0.0 + (-1.0) * 2.0 = -1.5</Code>, so the answer is -1.
+        </ListItem>
+        <ListItem>
+          <Code>blank</Code>: still <Code>0.0</Code>, so still +1.
+        </ListItem>
+        <ListItem>
+          <Code>critic</Code>: <Code>-0.5 + (-1.0) * 0.0 + 1.0 * 2.0 = 1.5</Code>, so the answer is +1.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>fan -1.5 -1</Code>, <Code>blank 0.0 1</Code> and <Code>critic 1.5 1</Code>. The classes did not change. Only the input did, and two answers flipped.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
-        The <Code>Perceptron</Code> class in this lab is the exact same pattern.{" "}
-        <Code>self.weights</Code> and <Code>self.bias</Code> are instance attributes - the
-        perceptron's entire "memory" of what it has learned - and <Code>net_input</Code>,{" "}
-        <Code>activation</Code>, and <Code>predict</Code> are methods that read those attributes
-        to make a decision. A bank account bundles an owner and a balance; a perceptron bundles
-        weights and a bias. Same idea, different data.
+        The <Code>Perceptron</Code> class in this lab is that same pattern. <Code>self.weights</Code> and <Code>self.bias</Code> are its parameters, the perceptron's entire "memory" of what it has learned. <Code>net_input</Code>, <Code>activation</Code> and <Code>predict</Code> are the code that reads them. A new <Code>Perceptron(n_features=2)</Code> starts with weights <Code>[0.0, 0.0]</Code> and bias <Code>0.0</Code>, like <Code>blank</Code> above. Lab 5 will change only those numbers.
       </Text>
       <Text>Here is the lab's real class, in short:</Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
@@ -256,14 +346,101 @@ print(final_grade)  # 83.0`} expectedOutput={`83.0`} />
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: how a model weighs evidence
+      </Heading>
+      <Text>
+        A model cannot read a review the way you do. It is given a list of numbers called <b>features</b>, and each feature says something about the input. For example: 1 if the review contains the word <Code>great</Code>, and 0 if it does not. Each feature has a weight that says how much it counts. The model multiplies each feature by its weight and adds the results up. That sum is the <b>score</b>.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A positive weight pushes the score up. A negative weight pushes it down.
+        </ListItem>
+        <ListItem>
+          A weight of 0 means "ignore this feature".
+        </ListItem>
+        <ListItem>
+          Every layer inside an LLM is built from weighted sums like this one, just with millions of weights.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. Three words are the features. A review is a list of 1s and 0s that says which of the words it contains. <Code>dot</Code> adds up feature times weight. <Code>explain</Code> loops over the words and prints what each word that is present adds.
+      </Text>
+      <RunnableExample labId={4} code={`def dot(x, weights):
+    total = 0.0
+    for a, b in zip(x, weights):
+        total = total + a * b
+    return total
+
+
+def explain(words, x, weights):
+    for word, a, b in zip(words, x, weights):
+        if a == 1:
+            print(word, "adds", b)
+    print("score", dot(x, weights))
+
+
+words = ["great", "boring", "slow"]
+weights = [2.0, -2.0, -1.0]
+explain(words, [1, 0, 1], weights)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The review <Code>[1, 0, 1]</Code> contains <Code>great</Code> and <Code>slow</Code>, and does not contain <Code>boring</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>great</Code> adds <Code>2.0</Code> and <Code>slow</Code> adds <Code>-1.0</Code>. <Code>boring</Code> is absent, so it adds nothing and is not printed.
+        </ListItem>
+        <ListItem>
+          The score is <Code>2.0 + (-1.0) = 1.0</Code>. It is positive, so this review leans positive.
+        </ListItem>
+        <ListItem>
+          Pattern: a score is a sum of small pieces of evidence, and each piece is a feature times its weight.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same two functions on new words, new weights and a new review.
+      </Text>
+      <PracticeCell labId={4} cellId="topic-2" code={`def dot(x, weights):
+    total = 0.0
+    for a, b in zip(x, weights):
+        total = total + a * b
+    return total
+
+
+def explain(words, x, weights):
+    for word, a, b in zip(words, x, weights):
+        if a == 1:
+            print(word, "adds", b)
+    print("score", dot(x, weights))
+
+
+words = ["fun", "dull", "long"]
+weights = [1.5, -2.0, -0.5]
+explain(words, [1, 1, 0], weights)`} expectedOutput={`fun adds 1.5
+dull adds -2.0
+score -0.5`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The words are <Code>fun</Code>, <Code>dull</Code> and <Code>long</Code>. The review <Code>[1, 1, 0]</Code> contains <Code>fun</Code> and <Code>dull</Code> only.
+        </ListItem>
+        <ListItem>
+          <Code>fun</Code> adds <Code>1.5</Code> and <Code>dull</Code> adds <Code>-2.0</Code>. <Code>long</Code> is absent, so it is skipped.
+        </ListItem>
+        <ListItem>
+          The score is <Code>1.5 + (-2.0) = -0.5</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>fun adds 1.5</Code>, <Code>dull adds -2.0</Code> and <Code>score -0.5</Code>. The strong negative word outweighs the positive one, so the score is below 0.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
-        <Code>np.dot(x, self.weights)</Code> in <Code>net_input</Code> does exactly this: it
-        multiplies each input feature by its learned weight and adds them all up, then{" "}
-        <Code>+ self.bias</Code> adds one more constant on top. Instead of "quantities times
-        prices," a perceptron computes "features times how much the model cares about each
-        feature" - the weighted sum is the entire computation that decides which class wins.
+        <Code>np.dot(x, self.weights)</Code> in <Code>net_input</Code> does exactly this: it multiplies each input feature by its learned weight and adds them all up, then <Code>+ self.bias</Code> adds one more constant on top. In the project, <Code>vectorize</Code> turns each sentence into a row of 22 zeros and ones, one for each word in the vocabulary from <Code>build_vocab</Code>. That is the same kind of row as <Code>[1, 0, 1]</Code> above. <Code>pca_2d</Code> then squashes each row to 2 numbers, and the <Code>Perceptron(n_features=2)</Code> scores those.
       </Text>
       <Text>
         Take the lab's perceptron with <Code>weights = [1.0, -1.0]</Code>, <Code>bias = 0.5</Code>{" "}
@@ -373,14 +550,92 @@ print(freeze_alert(10))  # -1`} expectedOutput={`1
       </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
+        Up close: from a score to a decision
+      </Heading>
+      <Text>
+        A score is just a number. To act on it, the model needs a decision. The step function is the hardest kind: it answers +1 or -1 and nothing in between. An LLM needs more than that, because it must say how sure it is. So an LLM turns its scores into <b>probabilities</b>: numbers between 0 and 1. This is lab 1's <Code>word_probabilities</Code> idea again.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A smooth "squash" function does this for two choices. A big positive score gives a number near 1. A big negative score gives a number near 0. A score of 0 gives exactly 0.5.
+        </ListItem>
+        <ListItem>
+          Modern transformers use smooth functions (like GELU) inside their layers for a similar reason, and they matter for training with gradient descent. The idea is the same one this lab starts with: squash a raw number into something more useful for the next step.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>step</Code> is the lab's hard cutoff. <Code>squash</Code> is a smooth version that uses <Code>math.exp</Code> from Python's standard library. You do not need its formula. Only its shape matters. The loop prints the score, the step answer and the squashed number, rounded to 2 decimals.
+      </Text>
+      <RunnableExample labId={4} code={`import math
+
+
+def step(z):
+    return 1 if z >= 0 else -1
+
+
+def squash(z):
+    return 1 / (1 + math.exp(-z))
+
+
+for z in [-3, -0.5, 0, 0.5, 3]:
+    print(z, step(z), round(squash(z), 2))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>step</Code> gives <Code>1</Code> for both <Code>0.5</Code> and <Code>3</Code>. It cannot say that 3 is a much stronger yes.
+        </ListItem>
+        <ListItem>
+          <Code>squash</Code> gives <Code>0.62</Code> for 0.5 and <Code>0.95</Code> for 3. The bigger score is clearly more sure.
+        </ListItem>
+        <ListItem>
+          At <Code>0</Code>, <Code>squash</Code> gives <Code>0.5</Code>, a coin flip. At <Code>-3</Code> it gives <Code>0.05</Code>, which is almost a sure no.
+        </ListItem>
+        <ListItem>
+          Pattern: a step gives only the side. A smooth squash also gives the confidence.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same two functions on five new scores.
+      </Text>
+      <PracticeCell labId={4} cellId="topic-3" code={`import math
+
+
+def step(z):
+    return 1 if z >= 0 else -1
+
+
+def squash(z):
+    return 1 / (1 + math.exp(-z))
+
+
+for z in [-4, -1, 0.1, 2, 5]:
+    print(z, step(z), round(squash(z), 2))`} expectedOutput={`-4 -1 0.02
+-1 -1 0.27
+0.1 1 0.52
+2 1 0.88
+5 1 0.99`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>-4</Code> and <Code>-1</Code> are both -1 for <Code>step</Code>, but <Code>squash</Code> says <Code>0.02</Code> (very sure) and <Code>0.27</Code> (less sure).
+        </ListItem>
+        <ListItem>
+          <Code>0.1</Code> is just above 0. <Code>step</Code> says 1, but <Code>squash</Code> gives <Code>0.52</Code>, barely better than a coin flip.
+        </ListItem>
+        <ListItem>
+          <Code>2</Code> gives <Code>0.88</Code> and <Code>5</Code> gives <Code>0.99</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> five lines. The <Code>step</Code> column only ever shows <Code>-1</Code> or <Code>1</Code>. The <Code>squash</Code> column rises smoothly from <Code>0.02</Code> to <Code>0.99</Code>.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
       </Heading>
       <Text>
-        This lab's <Code>activation</Code> method is exactly that <Code>step</Code> function:{" "}
-        <Code>+1</Code> if <Code>z &gt;= 0</Code>, <Code>-1</Code> otherwise. Modern transformers
-        replace this hard step with smoother activation functions (like GELU), which matter for
-        training with gradient descent, but the underlying idea - squash a raw number into
-        something more meaningful for the next step - is exactly the same one this lab introduces.
+        This lab's <Code>activation</Code> method is exactly that <Code>step</Code> function: <Code>+1</Code> if <Code>z &gt;= 0</Code>, <Code>-1</Code> otherwise. That is why <Code>predict</Code> always answers with 1 or -1, and never says how sure it is.
       </Text>
       <Text>
         Finish the example from the dot product section. The score <Code>z</Code> was 1.5 for{" "}
@@ -500,6 +755,110 @@ print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.
         95 to 5. The last dot drops to the bottom right.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">
+        Up close: turning text into numbers you can plot
+      </Heading>
+      <Text>
+        A perceptron cannot read words. Before any model sees a review, the text has to become numbers. The lab does it in the simplest way. First pick a short list of useful words, the <b>vocabulary</b>. Then write each sentence as a row of numbers: 1 if it contains the word, 0 if not. Word order and repeats are thrown away. LLMs also start by turning text into numbers, in a much richer way.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A row with 22 numbers is a point in 22 directions. You cannot draw that, so the lab squashes it to 2 numbers just for the chart.
+        </ListItem>
+        <ListItem>
+          The chart is only for looking. The model itself does not need it.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>vectorize</Code> loops over the vocabulary and writes a 1 for each word found in the sentence. <Code>count_empty</Code> counts the rows that are all zeros.
+      </Text>
+      <RunnableExample labId={4} code={`def vectorize(sentence, vocab):
+    words = sentence.lower().split()
+    row = []
+    for word in vocab:
+        row.append(1 if word in words else 0)
+    return row
+
+
+def count_empty(rows):
+    count = 0
+    for row in rows:
+        if sum(row) == 0:
+            count = count + 1
+    return count
+
+
+vocab = ["great", "boring", "slow"]
+sentences = ["a great film", "boring and slow", "i went home", "it was fine"]
+rows = []
+for sentence in sentences:
+    row = vectorize(sentence, vocab)
+    rows.append(row)
+    print(row, sentence)
+print("all-zero rows:", count_empty(rows), "of", len(rows))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>a great film</Code> becomes <Code>[1, 0, 0]</Code>. <Code>boring and slow</Code> becomes <Code>[0, 1, 1]</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>i went home</Code> and <Code>it was fine</Code> contain none of the three words, so both become <Code>[0, 0, 0]</Code>. <Code>count_empty</Code> finds 2 of 4.
+        </ListItem>
+        <ListItem>
+          Identical rows land on the same point in a chart, and they look the same to the model.
+        </ListItem>
+        <ListItem>
+          Pattern: a sentence becomes a row of 0/1 flags, and sentences with no vocabulary word all look the same.
+        </ListItem>
+      </UnorderedList>
+      <Text color="gray.600">
+        Try it: use the same two functions on a new vocabulary and new sentences.
+      </Text>
+      <PracticeCell labId={4} cellId="topic-4" code={`def vectorize(sentence, vocab):
+    words = sentence.lower().split()
+    row = []
+    for word in vocab:
+        row.append(1 if word in words else 0)
+    return row
+
+
+def count_empty(rows):
+    count = 0
+    for row in rows:
+        if sum(row) == 0:
+            count = count + 1
+    return count
+
+
+vocab = ["fun", "dull", "long"]
+sentences = ["a fun and long show", "dull dull dull", "we sat down", "the end"]
+rows = []
+for sentence in sentences:
+    row = vectorize(sentence, vocab)
+    rows.append(row)
+    print(row, sentence)
+print("all-zero rows:", count_empty(rows), "of", len(rows))`} expectedOutput={`[1, 0, 1] a fun and long show
+[0, 1, 0] dull dull dull
+[0, 0, 0] we sat down
+[0, 0, 0] the end
+all-zero rows: 2 of 4`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>a fun and long show</Code> contains <Code>fun</Code> and <Code>long</Code>, so the row is <Code>[1, 0, 1]</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>dull dull dull</Code> has one word, repeated. Repeats do not count extra, so the row is <Code>[0, 1, 0]</Code>.
+        </ListItem>
+        <ListItem>
+          The last two sentences have no vocabulary word, so both rows are <Code>[0, 0, 0]</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four rows, then <Code>all-zero rows: 2 of 4</Code>.
+      </Text>
+
       <Text>
         Further reading:{" "}
         <Link href="https://www.ibm.com/think/topics/neural-networks" isExternal color="blue.500">
@@ -513,16 +872,7 @@ print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.
         Applied to this lab
       </Heading>
       <Text>
-        <Code>project.py</Code>'s <Code>plot_boundary</Code> function does the same
-        <Code>scatter</Code> call twice - once per class, colored <Code>"seagreen"</Code> for
-        positive reviews and <Code>"crimson"</Code> for negative ones - then overlays a dashed line
-        computed from <Code>model.weights</Code> and <Code>model.bias</Code>: the perceptron's
-        decision boundary. The x and y axes are the two PCA components from earlier in the file,
-        not real features, so the plot is a 2D shadow of a much higher-dimensional bag-of-words
-        space. Because the perceptron here is untrained (all weights zero), the boundary line
-        can't actually separate the two colors - the picture, saved to{" "}
-        <Code>untrained_boundary.png</Code>, is a visual version of "50% accuracy, no better than
-        guessing."
+        <Code>project.py</Code>'s <Code>plot_boundary</Code> function draws the 2 squashed numbers from <Code>pca_2d</Code>. It calls <Code>scatter</Code> twice, once per class: <Code>"seagreen"</Code> for positive reviews and <Code>"crimson"</Code> for negative ones. Then it overlays a dashed line computed from <Code>model.weights</Code> and <Code>model.bias</Code>: the perceptron's decision boundary. The x and y axes are the two PCA components, not real features, so the plot is a 2D shadow of the 22-word space. In the real data, 100 of the 170 sentences contain none of the 22 vocabulary words, like the all-zero rows above, so their dots sit on top of each other. The perceptron here is untrained (all weights zero), so the boundary line can't separate the colors. The picture, saved to <Code>untrained_boundary.png</Code>, is a visual version of "50% accuracy, no better than guessing."
       </Text>
       <Text>Here is how to read that plot:</Text>
       <UnorderedList spacing={1} pl={4}>

@@ -101,11 +101,116 @@ print(best_guess)  # 'sunny'`} expectedOutput={`sunny`} />
         <Code>rainy</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: why every model needs a baseline</Heading>
+      <Text>
+        A score on its own means little. "90% right" sounds great, but compared to what?
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A <b>baseline</b> gives the score a meaning. It is the lazy guess a model must beat. If
+          the model cannot beat it, it has learned nothing.
+        </ListItem>
+        <ListItem>
+          This matters most when one answer is very common. If 9 reviews out of 10 are positive,
+          always saying "positive" is already 90% right.
+        </ListItem>
+        <ListItem>
+          People test LLMs the same way: the score is compared with a simple baseline.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>accuracy</Code> loops over the guesses and counts how many
+        match the true labels. <Code>baseline_accuracy</Code> finds how often the most common label
+        shows up, which is the score of always guessing that label.
+      </Text>
+      <RunnableExample labId={2} code={`def accuracy(predictions, labels):
+    correct = 0
+    for guess, truth in zip(predictions, labels):
+        if guess == truth:
+            correct = correct + 1
+    return correct / len(labels)
+
+
+def baseline_accuracy(labels):
+    counts = {}
+    for label in labels:
+        counts[label] = counts.get(label, 0) + 1
+    return max(counts.values()) / len(labels)
+
+
+labels = [1, 1, 1, 0, 1, 0, 1, 1]
+model = [1, 1, 0, 0, 1, 0, 1, 1]
+print("model:", accuracy(model, labels))
+print("baseline:", baseline_accuracy(labels))
+print("model beats baseline:", accuracy(model, labels) > baseline_accuracy(labels))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          There are 8 labels: six 1s and two 0s. The baseline always says 1, so it is right 6 times
+          out of 8, which is 0.75.
+        </ListItem>
+        <ListItem>
+          The model gets 7 right out of 8, which is 0.875.
+        </ListItem>
+        <ListItem>
+          <Code>0.875 &gt; 0.75</Code>, so the model beats the baseline.
+        </ListItem>
+        <ListItem>
+          Pattern: judge a model against the baseline, not against 100%.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same functions on labels where one answer is very common.
+      </Text>
+      <PracticeCell labId={2} cellId="topic-1" code={`def accuracy(predictions, labels):
+    correct = 0
+    for guess, truth in zip(predictions, labels):
+        if guess == truth:
+            correct = correct + 1
+    return correct / len(labels)
+
+
+def baseline_accuracy(labels):
+    counts = {}
+    for label in labels:
+        counts[label] = counts.get(label, 0) + 1
+    return max(counts.values()) / len(labels)
+
+
+labels = [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]
+model = [1, 1, 1, 1, 1, 1, 1, 1, 0, 0]
+print("model:", accuracy(model, labels))
+print("baseline:", baseline_accuracy(labels))
+print("model beats baseline:", accuracy(model, labels) > baseline_accuracy(labels))`} expectedOutput={`model: 0.9
+baseline: 0.9
+model beats baseline: False`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          There are 10 labels: nine 1s and one 0. The baseline is right 9 times out of 10, so 0.9.
+        </ListItem>
+        <ListItem>
+          The model gets 9 right out of 10 too, so 0.9. It looks good, but it is no better than the
+          lazy guess.
+        </ListItem>
+        <ListItem>
+          <Code>0.9 &gt; 0.9</Code> is <Code>False</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>model: 0.9</Code>, <Code>baseline: 0.9</Code>, then
+        <Code>model beats baseline: False</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>most_common_label</Code> is this exact pattern applied to a list of <Code>0/1</Code>
-        labels: it's the "dumbest possible baseline" you always compare a smarter model against, to
-        make sure the smarter model is actually earning its complexity.
+        The lab's <Code>most_common_label</Code> is the baseline for a list of <Code>0/1</Code>
+        labels: it gives back the label that shows up most. This project does not use it, but it
+        uses the same idea for numbers. The baseline always predicts the average word count,
+        <Code>mean_baseline</Code> (about 8.66), and its error is a <Code>baseline_mse</Code> of
+        about 1.589. The regression line has to beat that.
       </Text>
       <Text>
         Here is the lab's real code. It is the same as the weather cell, but the keys are the
@@ -260,15 +365,112 @@ print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*
         score from 78 to 90 and run it again. The slope should go up.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a model is a rule with numbers learned from data</Heading>
+      <Text>
+        A line, <Code>y = slope * x + intercept</Code>, is a tiny model. It is a rule with two
+        numbers in it.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The numbers inside a model are called <b>parameters</b>. A big LLM is the same kind of
+          thing, but with billions of them.
+        </ListItem>
+        <ListItem>
+          <b>Learning</b> means choosing the numbers that make the error small on the data.
+        </ListItem>
+        <ListItem>
+          This lab finds the two numbers with a formula. Later labs find them with a loop that
+          nudges the numbers a little at a time.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>line_value</Code> is the rule. <Code>total_error</Code>
+        loops over the points and adds up the squared miss of each one. Then a loop tries three
+        slopes and prints the error of each.
+      </Text>
+      <RunnableExample labId={2} code={`def line_value(x, slope, intercept):
+    return slope * x + intercept
+
+
+def total_error(points, slope, intercept):
+    total = 0
+    for x, y in points:
+        total = total + (y - line_value(x, slope, intercept)) ** 2
+    return total
+
+
+points = [(1, 3), (2, 5), (3, 7)]
+for slope in (1, 2, 3):
+    print("slope", slope, "-> error", total_error(points, slope, 1))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The three points sit exactly on the line <Code>y = 2x + 1</Code>.
+        </ListItem>
+        <ListItem>
+          With slope 1 the line gives 2, 3 and 4. The misses are 1, 2 and 3, squared 1, 4 and 9, so
+          the error is 14.
+        </ListItem>
+        <ListItem>
+          With slope 2 the line gives 3, 5 and 7. Every miss is 0, so the error is 0.
+        </ListItem>
+        <ListItem>
+          With slope 3 the error is 14 again. Pattern: learning is a search for the numbers with the
+          smallest error.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same functions on new points, with an intercept of 0.
+      </Text>
+      <PracticeCell labId={2} cellId="topic-2" code={`def line_value(x, slope, intercept):
+    return slope * x + intercept
+
+
+def total_error(points, slope, intercept):
+    total = 0
+    for x, y in points:
+        total = total + (y - line_value(x, slope, intercept)) ** 2
+    return total
+
+
+points = [(1, 3), (2, 6), (3, 9)]
+for slope in (1, 3, 4):
+    print("slope", slope, "-> error", total_error(points, slope, 0))`} expectedOutput={`slope 1 -> error 56
+slope 3 -> error 0
+slope 4 -> error 14`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The points sit on <Code>y = 3x</Code>. We try slopes 1, 3 and 4.
+        </ListItem>
+        <ListItem>
+          Slope 1 gives 1, 2 and 3. The misses are 2, 4 and 6, squared 4, 16 and 36, so the error is
+          56.
+        </ListItem>
+        <ListItem>
+          Slope 3 hits every point, so the error is 0. Slope 4 gives 4, 8 and 12. The misses are 1,
+          2 and 3, so the error is 14.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>slope 1 -&gt; error 56</Code>, <Code>slope 3 -&gt; error
+        0</Code> and <Code>slope 4 -&gt; error 14</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        This closed-form formula is exactly what the lab's <Code>linear_regression_fit</Code>{" "}
-        implements. Once you have <Code>slope</Code> and <Code>intercept</Code>,{" "}
-        <Code>predict(x, slope, intercept)</Code> just plugs a new x into the line equation - no
-        training loop, no iteration, just algebra. This closed form only works because the model is
-        a single straight line. Later labs (4-5) predict things a straight line can't capture, so
-        they switch to iterative training loops instead - but the goal is identical: minimize the
-        error between predictions and reality.
+        The lab's <Code>linear_regression_fit(x, y)</Code> does not search. It uses the formula once
+        and gives back <Code>(slope, intercept)</Code>. Then <Code>predict(x, slope,
+        intercept)</Code> plugs a new x into the line. In the project, the fit on the 170 review
+        sentences gives a slope of about 0.108 and an intercept of about 3.380. So a 60-character
+        sentence is predicted at about 9.9 words.
+      </Text>
+      <Text>
+        The formula only works because the model is one straight line. Later labs (4-5) predict
+        things a straight line can't capture, so they switch to iterative training loops. The goal
+        is the same: make the error between predictions and reality small.
       </Text>
       <Text>
         Here is the lab's real function on a tiny input:{" "}
@@ -375,12 +577,111 @@ print(mse)  # 14.33`} expectedOutput={`14.333333333333334`} />
         last gap is now 0, so MSE drops to <Code>(9 + 9 + 0) / 3 = 6.0</Code>.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: loss, the one number training tries to shrink</Heading>
+      <Text>
+        Training needs one number that says how wrong the model is. That number is called the
+        <b>loss</b>. Training means making it smaller.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          How you add up the misses matters. Squaring each miss makes one big miss count much more
+          than a few small ones.
+        </ListItem>
+        <ListItem>
+          LLMs use a different loss, based on how much chance the model gave to the true next word.
+          The use is the same: lower loss means a better model.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>average_miss</Code> adds up the plain size of each miss.
+        <Code>squared_loss</Code> adds up the squared misses. Both divide by the number of values.
+        Two pretend models guess the same four true values.
+      </Text>
+      <RunnableExample labId={2} code={`def average_miss(truth, guesses):
+    total = 0
+    for t, g in zip(truth, guesses):
+        total = total + abs(t - g)
+    return total / len(truth)
+
+
+def squared_loss(truth, guesses):
+    total = 0
+    for t, g in zip(truth, guesses):
+        total = total + (t - g) ** 2
+    return total / len(truth)
+
+
+truth = [10, 10, 10, 10]
+models = {"small misses": [11, 9, 11, 9], "one big miss": [10, 10, 10, 14]}
+for name, guesses in models.items():
+    print(name, "-> average miss:", average_miss(truth, guesses), "squared loss:", squared_loss(truth, guesses))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The true values are all 10. The first model is off by 1 every time. The second is exact
+          three times, then off by 4.
+        </ListItem>
+        <ListItem>
+          Both have an average miss of 1.0, so that number cannot tell them apart.
+        </ListItem>
+        <ListItem>
+          Squared loss is 1.0 for the first model and <Code>16 / 4 = 4.0</Code> for the second. It
+          punishes the one big miss.
+        </ListItem>
+        <ListItem>
+          Pattern: squaring makes a big miss stand out.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on five new values.
+      </Text>
+      <PracticeCell labId={2} cellId="topic-3" code={`def average_miss(truth, guesses):
+    total = 0
+    for t, g in zip(truth, guesses):
+        total = total + abs(t - g)
+    return total / len(truth)
+
+
+def squared_loss(truth, guesses):
+    total = 0
+    for t, g in zip(truth, guesses):
+        total = total + (t - g) ** 2
+    return total / len(truth)
+
+
+truth = [5, 5, 5, 5, 5]
+models = {"small misses": [6, 4, 6, 4, 5], "one big miss": [5, 5, 5, 5, 9]}
+for name, guesses in models.items():
+    print(name, "-> average miss:", average_miss(truth, guesses), "squared loss:", squared_loss(truth, guesses))`} expectedOutput={`small misses -> average miss: 0.8 squared loss: 0.8
+one big miss -> average miss: 0.8 squared loss: 3.2`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The true values are all 5. The first model is off by 1, 1, 1, 1 and 0. The average miss is
+          <Code>4 / 5 = 0.8</Code>, and so is the squared loss.
+        </ListItem>
+        <ListItem>
+          The second model is exact four times and off by 4 once. The average miss is also 0.8, but
+          the squared loss is <Code>16 / 5 = 3.2</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>small misses</Code> with <Code>0.8</Code> and
+        <Code>0.8</Code>, then <Code>one big miss</Code> with <Code>0.8</Code> and <Code>3.2</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        <Code>mean_squared_error</Code> is precisely this computation, applied to whatever
-        predictions and true values you hand it. This is exactly how the project compares the
-        naive mean-baseline against the regression fit - same metric, two different prediction
-        strategies.
+        The lab's <Code>mean_squared_error(y_true, y_pred)</Code> is the loss you use here. The
+        project uses it twice, on the same true values. The mean baseline (always about 8.66 words)
+        scores an MSE of 1.589. The regression line scores 1.143. The lower number wins. The project
+        prints both:
+      </Text>
+      <Text>
+        <Code>Naive baseline (always predict mean=8.66): MSE=1.589</Code> and <Code>Linear
+        regression (word_count = 0.108 * char_len + 3.380): MSE=1.143</Code>.
       </Text>
       <Text>
         Take true values <Code>[2, 4]</Code> and two strategies:
@@ -499,6 +800,102 @@ print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a f
         <Code>plotted 5 points with a fit line</Code>. Try changing the line to{" "}
         <Code>3 * x + 60</Code>. The red line moves away from the dots, because it is a worse
         fit.
+      </Text>
+
+      <Heading as="h4" size="xs" color="gray.600">Up close: look at the misses, not only the score</Heading>
+      <Text>
+        One number like the loss can hide things. Two models can have the same score and fail in
+        different places.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          So people also look at single examples, row by row, or at a chart.
+        </ListItem>
+        <ListItem>
+          The points where the model is far off show where it is weak.
+        </ListItem>
+        <ListItem>
+          With an LLM it is the same: read some of its answers, do not trust one score alone.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>show_misses</Code> loops over the points. For each one it
+        prints the real value, the line's guess, the miss, and one <Code>#</Code> mark for each
+        whole word of miss. The line is the fit from the project, and the points are pretend
+        (characters, words) pairs.
+      </Text>
+      <RunnableExample labId={2} code={`def line_value(x, slope, intercept):
+    return slope * x + intercept
+
+
+def show_misses(points, slope, intercept):
+    for x, y in points:
+        guess = line_value(x, slope, intercept)
+        miss = abs(y - guess)
+        marks = "#" * round(miss)
+        line = str(x).rjust(3) + " real " + str(y) + " guess " + str(round(guess, 1)) + " miss " + str(round(miss, 1)) + " " + marks
+        print(line.rstrip())
+
+
+points = [(33, 7), (40, 8), (50, 6), (60, 10)]
+show_misses(points, 0.108, 3.38)`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The guess is <Code>0.108 * x + 3.38</Code>. For 33 characters that is about 6.9 words, and
+          the real value is 7.
+        </ListItem>
+        <ListItem>
+          Three of the points miss by less than half a word, so they get no marks.
+        </ListItem>
+        <ListItem>
+          The 50-character sentence has 6 words, but the line guesses 8.8. The miss is 2.8, so it
+          gets 3 marks. That point stands out.
+        </ListItem>
+        <ListItem>
+          Pattern: look for the points far from the line.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same function on new points with a different line.
+      </Text>
+      <PracticeCell labId={2} cellId="topic-4" code={`def line_value(x, slope, intercept):
+    return slope * x + intercept
+
+
+def show_misses(points, slope, intercept):
+    for x, y in points:
+        guess = line_value(x, slope, intercept)
+        miss = abs(y - guess)
+        marks = "#" * round(miss)
+        line = str(x).rjust(3) + " real " + str(y) + " guess " + str(round(guess, 1)) + " miss " + str(round(miss, 1)) + " " + marks
+        print(line.rstrip())
+
+
+points = [(35, 8), (45, 11), (55, 9), (65, 5)]
+show_misses(points, 0.1, 4)`} expectedOutput={` 35 real 8 guess 7.5 miss 0.5
+ 45 real 11 guess 8.5 miss 2.5 ##
+ 55 real 9 guess 9.5 miss 0.5
+ 65 real 5 guess 10.5 miss 5.5 ######`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The line is <Code>0.1 * x + 4</Code>. The points at 35 and 55 characters miss by 0.5,
+          which rounds to 0 marks.
+        </ListItem>
+        <ListItem>
+          The point at 45 characters misses by 2.5. That gets 2 marks, because Python rounds an
+          exact half to the nearest even number.
+        </ListItem>
+        <ListItem>
+          The point at 65 characters has 5 words, but the line guesses 10.5. The miss is 5.5, so it
+          gets 6 marks. That is the worst point.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> four lines. The last one has the longest row of marks.
       </Text>
 
       <Text fontSize="sm" color="gray.500">

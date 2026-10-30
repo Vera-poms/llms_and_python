@@ -129,6 +129,107 @@ print(statistics.mean(nums))      # 18 - same answer, from the standard library`
         answers should change together.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: borrowing tested tools</Heading>
+      <Text>
+        LLM code is mostly built from tools other people wrote. Very little of it starts from zero.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          A tokenizer, a file reader and a web client all come from libraries. Each one has already
+          been tested on millions of texts.
+        </ListItem>
+        <ListItem>
+          Your own version may work, but one small slip can quietly change every count after it.
+        </ListItem>
+        <ListItem>
+          A good habit: run your hand-made version and the library version on the same input. If
+          they agree, you can trust your code.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. It counts tokens two ways: by hand with a loop, and with
+        <Code>Counter</Code>, a ready-made tool from the standard library that counts items for you.
+        Then it checks that both give the same answer.
+      </Text>
+      <RunnableExample labId={1} code={`from collections import Counter
+
+
+def count_by_hand(tokens):
+    counts = {}
+    for token in tokens:
+        counts[token] = counts.get(token, 0) + 1
+    return counts
+
+
+def count_with_library(tokens):
+    return dict(Counter(tokens))
+
+
+for text in ["the cat saw the dog", "a b a b a"]:
+    tokens = text.split()
+    print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>count_by_hand</Code> is a loop that adds 1 to a dict for every token. You will meet
+          the same loop in Concept 3.
+        </ListItem>
+        <ListItem>
+          <Code>count_with_library</Code> does the same job in one line.
+          <Code>Counter(tokens)</Code> counts, and <Code>dict(...)</Code> turns the result into a
+          normal dict.
+        </ListItem>
+        <ListItem>
+          The first text gives <Code>the</Code> 2 and every other word 1. The second gives
+          <Code>a</Code> 3 and <Code>b</Code> 2. Both versions agree each time, so each line starts
+          with <Code>True</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: build it by hand once so you understand it, then use the library, and use your
+          own version as a check.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on two new texts.
+      </Text>
+      <PracticeCell labId={1} cellId="topic-1" code={`from collections import Counter
+
+
+def count_by_hand(tokens):
+    counts = {}
+    for token in tokens:
+        counts[token] = counts.get(token, 0) + 1
+    return counts
+
+
+def count_with_library(tokens):
+    return dict(Counter(tokens))
+
+
+for text in ["to be or not to be", "go go go stop"]:
+    tokens = text.split()
+    print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))`} expectedOutput={`True {'to': 2, 'be': 2, 'or': 1, 'not': 1}
+True {'go': 3, 'stop': 1}`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>to be or not to be</Code> has 6 tokens: <Code>to</Code> 2, <Code>be</Code> 2,
+          <Code>or</Code> 1 and <Code>not</Code> 1.
+        </ListItem>
+        <ListItem>
+          <Code>go go go stop</Code> has 4 tokens: <Code>go</Code> 3 and <Code>stop</Code> 1.
+        </ListItem>
+        <ListItem>
+          The loop runs the same two lines for each text, so you get one line per text.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> two lines. Each one starts with <Code>True</Code> and then shows
+        the counts.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
         This lab's notebook opens with exactly three imports: <Code>import random</Code>,{" "}
@@ -241,15 +342,130 @@ print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`
         <Code>#</Code> signs and digits are gone.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: tokens, the pieces a model counts</Heading>
+      <Text>
+        Before a model reads any text, the text is cut into <b>tokens</b>: small pieces, like
+        <Code>movie</Code> or <Code>great</Code>. The model only knows a fixed list of tokens,
+        called its <b>vocabulary</b>.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Real tokenizers often cut a word into smaller pieces. This lab cuts into whole words,
+          which is easier to see.
+        </ListItem>
+        <ListItem>
+          If the cutting is sloppy, one word turns into many tokens. <Code>Movie,</Code> and
+          <Code>movie</Code> would count as two different tokens.
+        </ListItem>
+        <ListItem>
+          Each extra token takes room in the list, and it splits the counts between look-alikes.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>tokens_of</Code> cuts a text in one of two ways. With
+        <Code>clean</Code> off it only uses <Code>split()</Code>. With <Code>clean</Code> on it
+        makes everything lowercase and keeps only letters. <Code>vocab_size</Code> loops over all
+        the texts and counts the different tokens it meets.
+      </Text>
+      <RunnableExample labId={1} code={`import re
+
+
+def tokens_of(text, clean):
+    if clean:
+        return re.findall(r"[a-z]+", text.lower())
+    return text.split()
+
+
+def vocab_size(texts, clean):
+    seen = []
+    for text in texts:
+        for token in tokens_of(text, clean):
+            if token not in seen:
+                seen.append(token)
+    return len(seen)
+
+
+texts = ["The Movie, was great!", "the movie was Great", "Great movie, the end."]
+for clean in (False, True):
+    print("clean =", clean, "->", vocab_size(texts, clean), "different tokens")`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The three texts say almost the same thing, only with different capitals and punctuation.
+        </ListItem>
+        <ListItem>
+          With clean off there are 9 different tokens, because <Code>The</Code>, <Code>the</Code>,
+          <Code>Movie,</Code>, <Code>movie</Code>, <Code>movie,</Code>, <Code>great!</Code> and
+          <Code>Great</Code> all count as separate tokens.
+        </ListItem>
+        <ListItem>
+          With clean on there are only 5: <Code>the</Code>, <Code>movie</Code>, <Code>was</Code>,
+          <Code>great</Code> and <Code>end</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: cut the text the same way every time before you count, or the counts get split
+          between look-alikes.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on three new texts.
+      </Text>
+      <PracticeCell labId={1} cellId="topic-2" code={`import re
+
+
+def tokens_of(text, clean):
+    if clean:
+        return re.findall(r"[a-z]+", text.lower())
+    return text.split()
+
+
+def vocab_size(texts, clean):
+    seen = []
+    for text in texts:
+        for token in tokens_of(text, clean):
+            if token not in seen:
+                seen.append(token)
+    return len(seen)
+
+
+texts = ["Good food, good price!", "GOOD price.", "Food was good"]
+for clean in (False, True):
+    print("clean =", clean, "->", vocab_size(texts, clean), "different tokens")`} expectedOutput={`clean = False -> 8 different tokens
+clean = True -> 4 different tokens`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The texts are <Code>Good food, good price!</Code>, <Code>GOOD price.</Code> and <Code>Food
+          was good</Code>.
+        </ListItem>
+        <ListItem>
+          With clean off there are 8 different tokens. The single word <Code>good</Code> shows up as
+          <Code>Good</Code>, <Code>good</Code> and <Code>GOOD</Code>, and <Code>price</Code> shows
+          up as <Code>price!</Code> and <Code>price.</Code>.
+        </ListItem>
+        <ListItem>
+          With clean on there are 4: <Code>good</Code>, <Code>food</Code>, <Code>price</Code> and
+          <Code>was</Code>.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>clean = False -&gt; 8 different tokens</Code>, then
+        <Code>clean = True -&gt; 4 different tokens</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>tokenize</Code> function does the same trick, but with letters instead of
-        digits: <Code>re.findall(r"[a-z]+", sentence.lower())</Code>. Lowercasing first means{" "}
-        <Code>"Movie"</Code> and <Code>"movie"</Code> become identical strings, and{" "}
-        <Code>[a-z]+</Code> grabs runs of letters while silently dropping commas, periods, and
-        exclamation marks. This is the same job a real LLM's tokenizer does (just with a much
-        richer vocabulary of sub-word pieces instead of whole words) - splitting free-form text
-        into the discrete units the model actually counts and predicts over.
+        The lab's <Code>tokenize</Code> does this cleaning: <Code>re.findall(r"[a-z]+",
+        sentence.lower())</Code>. Lowercasing first means <Code>"Movie"</Code> and
+        <Code>"movie"</Code> become identical strings, and <Code>[a-z]+</Code> grabs runs of letters
+        while silently dropping commas, periods, and exclamation marks.
+      </Text>
+      <Text>
+        The project depends on it. With a good <Code>tokenize</Code>, the 170 review sentences give
+        1473 words in all and 523 different words. If your number is different, your
+        <Code>tokenize</Code> is probably keeping punctuation, digits or capital letters.
       </Text>
       <Text>Here is <Code>tokenize</Code> on one sentence, one step at a time:</Text>
       <UnorderedList spacing={1} pl={4}>
@@ -359,13 +575,111 @@ print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m'
         <Code>"banana"</Code>, and check the counts by hand.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: counting is where a model's knowledge starts</Heading>
+      <Text>
+        A model's first knowledge is a tally of what it has read. Words seen often get a big count.
+        Words seen rarely get a small one.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Counts show how lopsided text is. A few words, like <Code>the</Code> and <Code>and</Code>,
+          are very common. Most words are rare.
+        </ListItem>
+        <ListItem>
+          A model has plenty of examples of common words, so it guesses them well.
+        </ListItem>
+        <ListItem>
+          A rare word has only a few examples, so the model guesses it worse.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>count_tokens</Code> is the loop from Concept 3.
+        <Code>top_share</Code> finds the biggest count with a loop, then divides it by the number of
+        tokens. That gives the share of the text that the most common token takes up.
+      </Text>
+      <RunnableExample labId={1} code={`def count_tokens(tokens):
+    counts = {}
+    for token in tokens:
+        counts[token] = counts.get(token, 0) + 1
+    return counts
+
+
+def top_share(tokens):
+    counts = count_tokens(tokens)
+    biggest = 0
+    for count in counts.values():
+        if count > biggest:
+            biggest = count
+    return biggest / len(tokens)
+
+
+for text in ["the cat and the dog and the bird", "red green blue pink"]:
+    tokens = text.split()
+    print(len(tokens), "tokens, top share:", round(top_share(tokens), 2))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>biggest</Code> starts at 0 and goes up each time the loop sees a bigger count.
+        </ListItem>
+        <ListItem>
+          The first text has 8 tokens, and <Code>the</Code> shows up 3 times. So the share is
+          <Code>3 / 8 = 0.375</Code>, which prints as 0.38.
+        </ListItem>
+        <ListItem>
+          The second text has 4 different words, each once. The share is <Code>1 / 4 = 0.25</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: counts tell you what a model sees a lot and what it barely sees.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on two new texts.
+      </Text>
+      <PracticeCell labId={1} cellId="topic-3" code={`def count_tokens(tokens):
+    counts = {}
+    for token in tokens:
+        counts[token] = counts.get(token, 0) + 1
+    return counts
+
+
+def top_share(tokens):
+    counts = count_tokens(tokens)
+    biggest = 0
+    for count in counts.values():
+        if count > biggest:
+            biggest = count
+    return biggest / len(tokens)
+
+
+for text in ["a a a a b c", "one two three four five six"]:
+    tokens = text.split()
+    print(len(tokens), "tokens, top share:", round(top_share(tokens), 2))`} expectedOutput={`6 tokens, top share: 0.67
+6 tokens, top share: 0.17`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>a a a a b c</Code> has 6 tokens, and <Code>a</Code> takes 4 of them. <Code>4 /
+          6</Code> is about 0.67.
+        </ListItem>
+        <ListItem>
+          <Code>one two three four five six</Code> has 6 different tokens, each once. <Code>1 /
+          6</Code> is about 0.17.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>6 tokens, top share: 0.67</Code>, then <Code>6 tokens, top
+        share: 0.17</Code>. Same number of tokens, very different shape.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        The lab's <Code>word_counts</Code> function is precisely this loop, just counting tokens
-        instead of fruit: it tokenizes every sentence and tallies each word into a{" "}
-        <Code>dict[str, int]</Code>. Every large language model starts its training the same
-        way - a giant tally of how often each token appears across billions of words - before
-        anything resembling "intelligence" enters the picture.
+        The lab's <Code>word_counts</Code> is this loop with one extra loop around it. It tokenizes
+        every sentence and tallies each word into one <Code>dict[str, int]</Code>. In the project,
+        <Code>counts = word_counts(sentences)</Code> covers all 170 sentences.
+        <Code>sum(counts.values())</Code> is 1473 words in all, and <Code>len(counts)</Code> is 523
+        different words.
       </Text>
       <Text>
         The lab version has one more loop than the fruit example, because it starts with a list of
@@ -455,14 +769,118 @@ print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
         line is not 1.0, check that you divided by the <b>total</b> and not by one of the counts.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: a model's answer is a list of chances</Heading>
+      <Text>
+        At each step a model does not give one word. It gives a chance for every word it knows, and
+        all the chances add up to 1.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Inside, the model first makes a raw score for each word. A score can be any size, so it is
+          not a chance yet.
+        </ListItem>
+        <ListItem>
+          Dividing each score by the total of all scores turns them into chances that add up to 1.
+        </ListItem>
+        <ListItem>
+          Real models use a smoother recipe called <b>softmax</b>, which also turns any scores into
+          chances that add up to 1. The aim is the same.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. A pretend model gave raw scores to three words that could come
+        after <Code>The movie was</Code>. <Code>normalize</Code> divides each score by the total.
+        <Code>add_up</Code> adds the chances so you can check they make 1.
+      </Text>
+      <RunnableExample labId={1} code={`def normalize(scores):
+    total = 0
+    for score in scores.values():
+        total = total + score
+    chances = {}
+    for word, score in scores.items():
+        chances[word] = score / total
+    return chances
+
+
+def add_up(chances):
+    total = 0
+    for chance in chances.values():
+        total = total + chance
+    return round(total, 6)
+
+
+for scores in [{"great": 6, "long": 3, "boring": 1}, {"yes": 1, "no": 1}]:
+    chances = normalize(scores)
+    print(chances, "sum:", add_up(chances))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          The first scores are 6, 3 and 1. The total is 10, so the chances are 0.6, 0.3 and 0.1.
+        </ListItem>
+        <ListItem>
+          The second dict gives <Code>yes</Code> and <Code>no</Code> a score of 1 each. The total is
+          2, so each gets 0.5.
+        </ListItem>
+        <ListItem>
+          <Code>add_up</Code> rounds to 6 places so a tiny decimal error does not spoil the check.
+          Both sums are 1.0.
+        </ListItem>
+        <ListItem>
+          Pattern: divide by the total, then check that the chances add up to 1.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on two new score dicts.
+      </Text>
+      <PracticeCell labId={1} cellId="topic-4" code={`def normalize(scores):
+    total = 0
+    for score in scores.values():
+        total = total + score
+    chances = {}
+    for word, score in scores.items():
+        chances[word] = score / total
+    return chances
+
+
+def add_up(chances):
+    total = 0
+    for chance in chances.values():
+        total = total + chance
+    return round(total, 6)
+
+
+for scores in [{"sunny": 7, "rainy": 2, "cloudy": 1}, {"a": 2, "b": 2, "c": 4}]:
+    chances = normalize(scores)
+    print(chances, "sum:", add_up(chances))`} expectedOutput={`{'sunny': 0.7, 'rainy': 0.2, 'cloudy': 0.1} sum: 1.0
+{'a': 0.25, 'b': 0.25, 'c': 0.5} sum: 1.0`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>sunny</Code> 7, <Code>rainy</Code> 2 and <Code>cloudy</Code> 1 have a total of 10.
+          The chances are 0.7, 0.2 and 0.1.
+        </ListItem>
+        <ListItem>
+          <Code>a</Code> 2, <Code>b</Code> 2 and <Code>c</Code> 4 have a total of 8. The chances are
+          0.25, 0.25 and 0.5.
+        </ListItem>
+        <ListItem>
+          Both sums come out as 1.0.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> the two dicts of chances, each followed by <Code>sum:
+        1.0</Code>.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        <Code>word_probabilities</Code> applies exactly this normalization to word counts: divide
-        every count by the sum of all counts, and the raw frequencies become a valid distribution
-        over your vocabulary. This is precisely what sits behind an LLM's output layer at every
-        single generation step - a distribution over every possible next token, produced (in a
-        real model) by a "softmax" function instead of simple division, but conceptually the same
-        normalize-so-it-sums-to-1 idea.
+        The lab's <Code>word_probabilities</Code> divides every count by the sum of all counts, so
+        the counts become chances that add up to 1. In the project,
+        <Code>sum(counts.values())</Code> is 1473 and the word <Code>the</Code> shows up 148 times.
+        So <Code>dist["the"]</Code> is <Code>148 / 1473</Code>, about 0.1005. The project checks the
+        sum with <Code>abs(sum(dist.values()) - 1.0) &lt; 1e-9</Code>.
       </Text>
       <Text>
         Take the counts <Code>{"{'a': 1, 'b': 3}"}</Code> from the lab:
@@ -542,12 +960,121 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('lev
         <Code>reverse=True</Code> and run it again. Now you get the two slowest levels.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: choosing one word from the chances</Heading>
+      <Text>
+        Once a model has its list of chances, it has to choose one word. There is more than one way
+        to choose.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <b>Greedy</b>: always take the word with the highest chance. You get the same answer every
+          run, but it can be dull.
+        </ListItem>
+        <ListItem>
+          <b>Shortlist</b>: keep only the words that are likely enough, then choose from those. This
+          cuts off the long tail of odd words. Real systems do this too. One kind is called
+          <b>top-k</b>: keep the k best words.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>greedy_pick</Code> loops through the chances and remembers
+        the best word so far. <Code>shortlist</Code> loops again and keeps every word whose chance
+        is at least <Code>min_chance</Code>.
+      </Text>
+      <RunnableExample labId={1} code={`def greedy_pick(dist):
+    best_word = None
+    best_chance = -1
+    for word, chance in dist.items():
+        if chance > best_chance:
+            best_word = word
+            best_chance = chance
+    return best_word
+
+
+def shortlist(dist, min_chance):
+    keep = []
+    for word, chance in dist.items():
+        if chance >= min_chance:
+            keep.append(word)
+    return keep
+
+
+dist = {"great": 0.5, "long": 0.3, "boring": 0.15, "odd": 0.05}
+print("greedy:", greedy_pick(dist))
+for min_chance in (0.4, 0.1):
+    print("min", min_chance, "->", shortlist(dist, min_chance))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>greedy_pick</Code> gives <Code>great</Code>, the word with 0.5. A tie would keep the
+          first word it saw.
+        </ListItem>
+        <ListItem>
+          With a bar of 0.4, only <Code>great</Code> is left on the shortlist.
+        </ListItem>
+        <ListItem>
+          With a bar of 0.1, the list is <Code>great</Code>, <Code>long</Code> and
+          <Code>boring</Code>. <Code>odd</Code> has only 0.05, so it is cut.
+        </ListItem>
+        <ListItem>
+          Pattern: a higher bar leaves fewer choices, so the output is more predictable.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: use the same two functions on a new dist.
+      </Text>
+      <PracticeCell labId={1} cellId="topic-5" code={`def greedy_pick(dist):
+    best_word = None
+    best_chance = -1
+    for word, chance in dist.items():
+        if chance > best_chance:
+            best_word = word
+            best_chance = chance
+    return best_word
+
+
+def shortlist(dist, min_chance):
+    keep = []
+    for word, chance in dist.items():
+        if chance >= min_chance:
+            keep.append(word)
+    return keep
+
+
+dist = {"sunny": 0.1, "rainy": 0.6, "cloudy": 0.25, "snowy": 0.05}
+print("greedy:", greedy_pick(dist))
+for min_chance in (0.5, 0.2):
+    print("min", min_chance, "->", shortlist(dist, min_chance))`} expectedOutput={`greedy: rainy
+min 0.5 -> ['rainy']
+min 0.2 -> ['rainy', 'cloudy']`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>rainy</Code> has the highest chance, 0.6, so greedy picks it.
+        </ListItem>
+        <ListItem>
+          With a bar of 0.5, only <Code>rainy</Code> stays.
+        </ListItem>
+        <ListItem>
+          With a bar of 0.2, both <Code>rainy</Code> (0.6) and <Code>cloudy</Code> (0.25) stay.
+          <Code>sunny</Code> (0.1) and <Code>snowy</Code> (0.05) are cut.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> <Code>greedy: rainy</Code>, then two shortlist lines. The lower
+        the bar, the longer the list.
+      </Text>
+
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        <Code>top_k</Code> sorts a <Code>(word, probability)</Code> distribution the same way and
-        slices the first <Code>k</Code> entries. "Greedy decoding" - one of the two ways an LLM
-        turns a distribution into an actual word - is just <Code>top_k(distribution, 1)</Code>:
-        always take the single most probable next token.
+        The lab's <Code>top_k(distribution, k)</Code> sorts a <Code>(word, probability)</Code>
+        distribution and slices the first <Code>k</Code> entries. In the project, <Code>top15 =
+        top_k(dist, 15)</Code> gives the 15 most likely words, and each one is printed with its
+        chance, for example <Code>the          P=0.1005</Code>. Greedy decoding is just
+        <Code>top_k(dist, 1)</Code>: the project prints the first word of that list,
+        <Code>the</Code>.
       </Text>
       <Text>
         Take <Code>{"{'a': 0.25, 'b': 0.25, 'c': 0.5}"}</Code> with <Code>k=2</Code>:
@@ -666,6 +1193,85 @@ print(topics[votes.index(max(votes))])  # dicts`} />
         and the printed name should both change.
       </Text>
 
+      <Heading as="h4" size="xs" color="gray.600">Up close: reading a distribution and sampling from it</Heading>
+      <Text>
+        A distribution looks like a row of bars. A few bars are tall and many are short.
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Greedy always takes the tallest bar. <b>Sampling</b> picks at random, weighted by the
+          bars. Tall bars come up often, but short bars still come up sometimes.
+        </ListItem>
+        <ListItem>
+          That is why the same question can get different answers from a model.
+        </ListItem>
+        <ListItem>
+          A setting called <b>temperature</b> makes the bars flatter or more peaked. A flatter chart
+          means more surprises.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        Here is a worked example. <Code>bar_row</Code> turns one word and its chance into a line of
+        text: the word, a row of <Code>#</Code> marks, and the chance. It uses one mark for every
+        0.05.
+      </Text>
+      <RunnableExample labId={1} code={`def bar_row(word, chance):
+    return word.ljust(7) + "#" * round(chance * 20) + " " + str(chance)
+
+
+dist = {"the": 0.4, "was": 0.25, "great": 0.2, "odd": 0.1, "zany": 0.05}
+for word, chance in dist.items():
+    print(bar_row(word, chance))`} />
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>round(chance * 20)</Code> counts the marks. <Code>the</Code> has 0.4, so 8 marks.
+          <Code>zany</Code> has 0.05, so 1 mark.
+        </ListItem>
+        <ListItem>
+          <Code>ljust(7)</Code> pads each word to 7 characters, so the bars start in the same
+          column.
+        </ListItem>
+        <ListItem>
+          Greedy would pick <Code>the</Code> every time. Sampling 100 words would give about 40
+          <Code>the</Code> and about 5 <Code>zany</Code>.
+        </ListItem>
+        <ListItem>
+          Pattern: a tall bar is likely, and a short bar is still possible.
+        </ListItem>
+      </UnorderedList>
+
+      <Text color="gray.600">
+        Try it: draw a new dist with the same function.
+      </Text>
+      <PracticeCell labId={1} cellId="topic-6" code={`def bar_row(word, chance):
+    return word.ljust(7) + "#" * round(chance * 20) + " " + str(chance)
+
+
+dist = {"and": 0.3, "film": 0.25, "is": 0.2, "long": 0.15, "tense": 0.1}
+for word, chance in dist.items():
+    print(bar_row(word, chance))`} expectedOutput={`and    ###### 0.3
+film   ##### 0.25
+is     #### 0.2
+long   ### 0.15
+tense  ## 0.1`} />
+      <Text>
+        <b>What this cell does, step by step:</b>
+      </Text>
+      <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>and</Code> has 0.3, so 6 marks. <Code>film</Code> 0.25 gives 5, <Code>is</Code> 0.2
+          gives 4, <Code>long</Code> 0.15 gives 3 and <Code>tense</Code> 0.1 gives 2.
+        </ListItem>
+        <ListItem>
+          These bars are close in height. Greedy still picks <Code>and</Code>, but sampling would
+          give a lot of variety.
+        </ListItem>
+      </UnorderedList>
+      <Text>
+        <b>What you should see:</b> five lines, with the bars getting shorter from top to bottom.
+        The top bar is not much taller than the rest.
+      </Text>
+
       <Text fontSize="sm" color="gray.500">
         Further reading: IBM Think -{" "}
         <Link href="https://www.ibm.com/think/topics/llm-temperature" isExternal color="blue.500">
@@ -677,14 +1283,15 @@ print(topics[votes.index(max(votes))])  # dicts`} />
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
-        <Code>project.py</Code> does the same thing with real numbers: it takes the top 15{" "}
-        <Code>(word, probability)</Code> pairs from <Code>top_k(dist, 15)</Code> and calls{" "}
-        <Code>plt.bar(words, probs, color="steelblue")</Code>, rotates the word labels on the
-        x-axis so long ones don't overlap, and saves the result to{" "}
-        <Code>word_distribution.png</Code>. The chart turns "the model's output distribution" from
-        an abstract phrase into a literal picture: the tallest bar is exactly what greedy decoding
-        would pick, and every bar's height is exactly the weight <Code>sample_next_word</Code> uses
-        to sample a word at random.
+        <Code>project.py</Code> draws the real version. It takes the top 15 <Code>(word,
+        probability)</Code> pairs from <Code>top_k(dist, 15)</Code> and calls <Code>plt.bar(words,
+        probs, color="steelblue")</Code>, with the word labels tilted so long ones do not overlap.
+        In the chart you should see 15 blue bars: the tallest on the left is <Code>the</Code> (about
+        0.10) and the shortest on the right is about 0.0075.
+      </Text>
+      <Text>
+        The tallest bar is exactly what greedy decoding picks. Every bar's height is the weight that
+        <Code>sample_next_word</Code> uses when it picks a word at random.
       </Text>
       <Text>The lab's chart code is the same four steps as the color survey:</Text>
       <UnorderedList spacing={1} pl={4}>
