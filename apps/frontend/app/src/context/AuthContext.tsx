@@ -1,6 +1,11 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 import { api } from "../api/client";
+
+const LAST_ACTIVITY_KEY = "last-activity";
+const IDLE_TIMEOUT_MS = 60 * 60 * 1000;
+const CHECK_INTERVAL_MS = 30 * 1000;
+const ACTIVITY_WRITE_INTERVAL_MS = 10 * 1000;
 
 // Reads the user id ("sub" claim) from the JWT. Not verified here; only used to namespace client-side storage.
 function userIdFromToken(token: string | null): string | null {
@@ -55,9 +60,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   function logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
     clearDrafts();
     setToken(null);
   }
+
+  // Expiring only drops the token; unlike logout(), it keeps drafts so work is there after logging back in.
+  function expireSession() {
+    localStorage.removeItem("token");
+    localStorage.removeItem(LAST_ACTIVITY_KEY);
+    setToken(null);
+  }
+
+  // Expire the session after an hour without activity. The last-activity time lives in localStorage so it
+  // also covers closed tabs and other open tabs.
+  useEffect(() => {
+    if (!token) return;
+
+    function lastActivity(): number {
+      return Number(localStorage.getItem(LAST_ACTIVITY_KEY)) || Date.now();
+    }
+
+    function checkIdle() {
+      if (Date.now() - lastActivity() >= IDLE_TIMEOUT_MS) expireSession();
+    }
+
+    function recordActivity() {
+      const now = Date.now();
+      if (now - lastActivity() > ACTIVITY_WRITE_INTERVAL_MS) {
+        localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
+      }
+    }
+
+    if (localStorage.getItem(LAST_ACTIVITY_KEY) === null) {
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
+    }
+    checkIdle();
+
+    const events = ["mousemove", "mousedown", "keydown", "scroll", "touchstart"];
+    events.forEach((name) => window.addEventListener(name, recordActivity, { passive: true }));
+    const timer = window.setInterval(checkIdle, CHECK_INTERVAL_MS);
+    return () => {
+      events.forEach((name) => window.removeEventListener(name, recordActivity));
+      window.clearInterval(timer);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   return (
     <AuthContext.Provider
