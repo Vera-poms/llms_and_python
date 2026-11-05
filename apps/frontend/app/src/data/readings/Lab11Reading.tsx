@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -178,10 +178,31 @@ for style, reply in replies:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new question, 17 * 23, which is 391.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit. The new question is 17 * 23, which is 391:
       </Text>
-      <PracticeCell labId={11} cellId="topic-1" code={`def word_cost(reply):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>word_cost</Code> and <Code>is_correct</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>expected = "391"</Code>.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>replies</Code> with two pairs:{" "}
+          <Code>{`("direct", "381")`}</Code> and{" "}
+          <Code>{`("step by step", "17*20=340. 17*3=51. 340+51=391. Answer: 391")`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for style, reply in replies</Code> and print <Code>style</Code>, then{" "}
+          <Code>"-&gt; words:"</Code>, then <Code>word_cost(reply)</Code>, then{" "}
+          <Code>"correct:"</Code>, then <Code>is_correct(reply, expected)</Code>, in one{" "}
+          <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={11} cellId="topic-1" withHint code={`def word_cost(reply):
     return len(reply.split())
 
 
@@ -198,7 +219,15 @@ for style, reply in replies:
     print(style, "-> words:", word_cost(reply), "correct:", is_correct(reply, expected))`} expectedOutput={`direct -> words: 1 correct: False
 step by step -> words: 5 correct: True`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the two reply
+        texts, the expected answer and the print layout.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`direct -> words: 1 correct: False
+step by step -> words: 5 correct: True`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -206,17 +235,16 @@ step by step -> words: 5 correct: True`} />
           <Code>340 + 51 = 391</Code>.
         </ListItem>
         <ListItem>
-          The direct reply <Code>381</Code> is 1 word and does not end with <Code>391</Code>. The
-          step reply has 5 words and does.
+          The direct reply <Code>381</Code> is 1 word and does not end with <Code>391</Code>, so{" "}
+          <Code>correct</Code> is <Code>False</Code>.
         </ListItem>
         <ListItem>
-          The loop prints one line per style, so the cost and the result sit side by side.
+          The step reply splits at the spaces into 5 pieces: <Code>17*20=340.</Code>,{" "}
+          <Code>17*3=51.</Code>, <Code>340+51=391.</Code>, <Code>Answer:</Code> and{" "}
+          <Code>391</Code>. It ends with <Code>391</Code>, so <Code>correct</Code> is{" "}
+          <Code>True</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>direct -&gt; words: 1 correct: False</Code>, then{" "}
-        <Code>step by step -&gt; words: 5 correct: True</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -422,10 +450,28 @@ for reply in replies:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on new replies, with the expected answer 50.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={11} cellId="topic-2" code={`def final_answer(reply):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>final_answer</Code> and <Code>grade</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>replies</Code> with four strings, in this order:{" "}
+          <Code>{`"40 / 0.8 = 50.\\nAnswer: 50 dollars"`}</Code>,{" "}
+          <Code>{`"The shirt cost 50"`}</Code>, <Code>{`"40 + 20 = 60.\\nAnswer: 60"`}</Code> and{" "}
+          <Code>{`"Answer: 50"`}</Code>. Write the line break inside a string as{" "}
+          <Code>{`\\n`}</Code>, the same way the worked example does.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for reply in replies</Code> and print{" "}
+          <Code>grade(reply, "50")</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={11} cellId="topic-2" withHint code={`def final_answer(reply):
     answer = None
     for line in reply.split("\\n"):
         if line.startswith("Answer:"):
@@ -454,26 +500,36 @@ no marker
 wrong
 right`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these four lines. If yours differ, check the four reply
+        texts, including the <Code>Answer:</Code> lines, and the expected answer.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`right
+no marker
+wrong
+right`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          Reply 1 ends with <Code>Answer: 50 dollars</Code>. The first word is <Code>50</Code>, so
-          it is right, even with the unit.
+          Reply 1 has the line <Code>Answer: 50 dollars</Code>. The text after the marker is{" "}
+          <Code>50 dollars</Code>, its first word is <Code>50</Code>, so it is <Code>right</Code>,
+          even with the unit.
         </ListItem>
         <ListItem>
-          Reply 2 has the right number but no <Code>Answer:</Code> line, so it is graded{" "}
+          Reply 2 has the right number but no <Code>Answer:</Code> line, so{" "}
+          <Code>final_answer</Code> gives <Code>None</Code> and it is graded{" "}
           <Code>no marker</Code>.
         </ListItem>
         <ListItem>
-          Reply 3 has the marker but the answer is <Code>60</Code>, so it is wrong. Reply 4 is only
-          the marker line and <Code>50</Code>, so it is right.
+          Reply 3 has the marker but the answer is <Code>60</Code>, so it is <Code>wrong</Code>.
+        </ListItem>
+        <ListItem>
+          Reply 4 is only the marker line and <Code>50</Code>, so it is <Code>right</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four lines: <Code>right</Code>, <Code>no marker</Code>,{" "}
-        <Code>wrong</Code>, <Code>right</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

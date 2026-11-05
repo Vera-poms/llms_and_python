@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -151,10 +151,25 @@ for epoch in range(1, 4):
           Pattern: training is many small nudges, and the error falls epoch by epoch.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same function on a new answer, 8, with the same rate of 0.5.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={5} cellId="topic-1" code={`def one_pass(guess, data, rate):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>one_pass</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Set <Code>target = 8</Code>, <Code>data = [8, 8]</Code> and <Code>guess = 0.0</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for epoch in range(1, 4)</Code>. Inside the loop, set{" "}
+          <Code>guess = one_pass(guess, data, 0.5)</Code>, then print{" "}
+          <Code>{`"epoch", epoch, "guess", guess, "off by", target - guess`}</Code>. Use the same{" "}
+          <Code>print(...)</Code> layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={5} cellId="topic-1" withHint code={`def one_pass(guess, data, rate):
     for value in data:
         guess = guess + rate * (value - guess)
     return guess
@@ -169,22 +184,32 @@ for epoch in range(1, 4):
 epoch 2 guess 7.5 off by 0.5
 epoch 3 guess 7.875 off by 0.125`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the target,
+        the data list and the rate.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`epoch 1 guess 6.0 off by 2.0
+epoch 2 guess 7.5 off by 0.5
+epoch 3 guess 7.875 off by 0.125`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          Epoch 1: <Code>0.0 -&gt; 4.0 -&gt; 6.0</Code>. It is off by <Code>2.0</Code>.
+          Each epoch nudges twice, because <Code>data</Code> has 2 values. Each nudge covers half of
+          the gap to 8. Epoch 1: <Code>0.0 -&gt; 4.0 -&gt; 6.0</Code>, so it is off by{" "}
+          <Code>2.0</Code>.
         </ListItem>
         <ListItem>
-          Epoch 2: <Code>6.0 -&gt; 7.0 -&gt; 7.5</Code>. It is off by <Code>0.5</Code>.
+          Epoch 2: <Code>6.0 -&gt; 7.0 -&gt; 7.5</Code>, off by <Code>0.5</Code>. Epoch 3:{" "}
+          <Code>7.5 -&gt; 7.75 -&gt; 7.875</Code>, off by <Code>0.125</Code>.
         </ListItem>
         <ListItem>
-          Epoch 3: <Code>7.5 -&gt; 7.75 -&gt; 7.875</Code>. It is off by <Code>0.125</Code>.
+          The gap is a quarter of the one before each time: <Code>2.0</Code>, <Code>0.5</Code>,{" "}
+          <Code>0.125</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines, with the guess <Code>6.0</Code>, <Code>7.5</Code> and <Code>7.875</Code>. The gap is a quarter of the one before each time: <Code>2.0</Code>, <Code>0.5</Code>, <Code>0.125</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -335,10 +360,22 @@ for rate in [0.1, 0.5, 1.5]:
           Pattern: a small rate is slow and steady. A big rate is fast but wild.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same function on a new answer, 20, and four rates.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={5} cellId="topic-2" code={`def run(rate, epochs):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>run</Code> from the worked example above, but change the line{" "}
+          <Code>target = 10.0</Code> to <Code>target = 20.0</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for rate in [0.25, 0.5, 1.0, 1.5]</Code> and, for each rate, print{" "}
+          <Code>{`"rate", rate, "->", run(rate, 3)`}</Code>. Use the same <Code>print(...)</Code>{" "}
+          layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={5} cellId="topic-2" withHint code={`def run(rate, epochs):
     target = 20.0
     guess = 0.0
     seen = []
@@ -354,7 +391,17 @@ rate 0.5 -> [10.0, 15.0, 17.5]
 rate 1.0 -> [20.0, 20.0, 20.0]
 rate 1.5 -> [30.0, 15.0, 22.5]`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these four lines. If yours differ, check the target and
+        the list of rates.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`rate 0.25 -> [5.0, 8.75, 11.5625]
+rate 0.5 -> [10.0, 15.0, 17.5]
+rate 1.0 -> [20.0, 20.0, 20.0]
+rate 1.5 -> [30.0, 15.0, 22.5]`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -369,10 +416,10 @@ rate 1.5 -> [30.0, 15.0, 22.5]`} />
         <ListItem>
           Rate <Code>1.5</Code> overshoots: <Code>30.0</Code>, <Code>15.0</Code>, <Code>22.5</Code>.
         </ListItem>
+        <ListItem>
+          Only rate <Code>1.5</Code> goes past the answer and back.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four lines, one for each rate. Only rate <Code>1.5</Code> goes past the answer and back.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -536,10 +583,31 @@ for name, scores in models:
           Pattern: counting says if the model was wrong. The loss says by how much.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same two functions on three new models and three new answers.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={5} cellId="topic-3" code={`def count_wrong(scores, targets):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_wrong</Code> and <Code>total_loss</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>targets = [-1, 1, 1]</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>models</Code> to a list of three pairs:{" "}
+          <Code>{`("C", [0.25, 0.75, -0.25])`}</Code>, <Code>{`("D", [3.0, 0.5, -3.0])`}</Code> and{" "}
+          <Code>{`("E", [-0.5, 1.0, 1.0])`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for name, scores in models</Code> and print the name, then{" "}
+          <Code>"wrong:"</Code> and <Code>count_wrong(scores, targets)</Code>, then{" "}
+          <Code>"loss:"</Code> and <Code>total_loss(scores, targets)</Code>. Use the same{" "}
+          <Code>print(...)</Code> layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={5} cellId="topic-3" withHint code={`def count_wrong(scores, targets):
     wrong = 0
     for score, target in zip(scores, targets):
         guess = 1 if score >= 0 else -1
@@ -562,7 +630,16 @@ for name, scores in models:
 D wrong: 2 loss: 32.25
 E wrong: 0 loss: 0.25`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the targets
+        and the scores in each model.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`C wrong: 2 loss: 3.1875
+D wrong: 2 loss: 32.25
+E wrong: 0 loss: 0.25`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -574,10 +651,10 @@ E wrong: 0 loss: 0.25`} />
         <ListItem>
           <Code>E</Code> gets all three right, so it has 0 mistakes. Its loss is <Code>0.25</Code>, not 0, because its first score is not exactly on target.
         </ListItem>
+        <ListItem>
+          The mistake count cannot tell C from D. The loss can.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>C wrong: 2 loss: 3.1875</Code>, <Code>D wrong: 2 loss: 32.25</Code> and <Code>E wrong: 0 loss: 0.25</Code>. The mistake count cannot tell C from D. The loss can.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -755,10 +832,37 @@ for name, predict in [("memorizer", memorizer), ("rule", rule)]:
           Pattern: judge a model on data it has not seen. A good training score alone can fool you.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same functions on new data, 4 training and 4 test sentences, and the word <Code>fun</Code>.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={5} cellId="topic-4" code={`def accuracy(predict, data):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>accuracy</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Set <Code>train</Code> to the pairs <Code>{`("fun show", 1)`}</Code>,{" "}
+          <Code>{`("dull show", -1)`}</Code>, <Code>{`("fun cast", 1)`}</Code> and{" "}
+          <Code>{`("slow cast", -1)`}</Code>, in that order.
+        </ListItem>
+        <ListItem>
+          Set <Code>test</Code> to the pairs <Code>{`("fun end", 1)`}</Code>,{" "}
+          <Code>{`("slow end", -1)`}</Code>, <Code>{`("dull cast", -1)`}</Code> and{" "}
+          <Code>{`("fun plot", 1)`}</Code>, in that order.
+        </ListItem>
+        <ListItem>
+          Copy the <Code>memory = {"{}"}</Code> loop, <Code>memorizer</Code> and <Code>rule</Code>{" "}
+          from the worked example, but in <Code>rule</Code> look for the word <Code>"fun"</Code>{" "}
+          instead of <Code>"great"</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>{`[("memorizer", memorizer), ("rule", rule)]`}</Code> and print the
+          name, then <Code>"train:"</Code> and <Code>accuracy(predict, train)</Code>, then{" "}
+          <Code>"test:"</Code> and <Code>accuracy(predict, test)</Code>. This time do not use{" "}
+          <Code>round</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={5} cellId="topic-4" withHint code={`def accuracy(predict, data):
     right = 0
     for sentence, label in data:
         if predict(sentence) == label:
@@ -786,7 +890,15 @@ for name, predict in [("memorizer", memorizer), ("rule", rule)]:
     print(name, "train:", accuracy(predict, train), "test:", accuracy(predict, test))`} expectedOutput={`memorizer train: 1.0 test: 0.5
 rule train: 1.0 test: 1.0`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the sentences,
+        the labels and the word in <Code>rule</Code>.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`memorizer train: 1.0 test: 0.5
+rule train: 1.0 test: 1.0`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -799,9 +911,6 @@ rule train: 1.0 test: 1.0`} />
           The rule gets all 4 right: <Code>1.0</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>memorizer train: 1.0 test: 0.5</Code> and <Code>rule train: 1.0 test: 1.0</Code>.
-      </Text>
 
       <Text>
         Further reading:{" "}

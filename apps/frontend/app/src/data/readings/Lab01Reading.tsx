@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -189,10 +189,26 @@ for text in ["the cat saw the dog", "a b a b a"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on two new texts.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={1} cellId="topic-1" code={`from collections import Counter
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>from collections import Counter</Code>, <Code>count_by_hand</Code> and{" "}
+          <Code>count_with_library</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Loop over the two texts <Code>"to be or not to be"</Code> and <Code>"go go go stop"</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, make <Code>tokens = text.split()</Code>, then print whether{" "}
+          <Code>count_by_hand(tokens) == count_with_library(tokens)</Code> and then{" "}
+          <Code>count_with_library(tokens)</Code>, in one <Code>print(...)</Code> call with the two
+          values separated by a comma, like the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={1} cellId="topic-1" withHint code={`from collections import Counter
 
 
 def count_by_hand(tokens):
@@ -211,24 +227,30 @@ for text in ["to be or not to be", "go go go stop"]:
     print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))`} expectedOutput={`True {'to': 2, 'be': 2, 'or': 1, 'not': 1}
 True {'go': 3, 'stop': 1}`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the two texts
+        and that the print has the comparison first, then the counts.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`True {'to': 2, 'be': 2, 'or': 1, 'not': 1}
+True {'go': 3, 'stop': 1}`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>to be or not to be</Code> has 6 tokens: <Code>to</Code> 2, <Code>be</Code> 2,
-          <Code>or</Code> 1 and <Code>not</Code> 1.
+          <Code>to be or not to be</Code> has 6 tokens: <Code>to</Code> 2, <Code>be</Code> 2,{" "}
+          <Code>or</Code> 1 and <Code>not</Code> 1. A dict keeps words in the order they first
+          appear.
         </ListItem>
         <ListItem>
           <Code>go go go stop</Code> has 4 tokens: <Code>go</Code> 3 and <Code>stop</Code> 1.
         </ListItem>
         <ListItem>
-          The loop runs the same two lines for each text, so you get one line per text.
+          The by-hand loop and <Code>Counter</Code> give the same counts, so each line starts with{" "}
+          <Code>True</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two lines. Each one starts with <Code>True</Code> and then shows
-        the counts.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -407,10 +429,28 @@ for clean in (False, True):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on three new texts.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={1} cellId="topic-2" code={`import re
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import re</Code>, <Code>tokens_of</Code> and <Code>vocab_size</Code> from the
+          worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>texts</Code> with three strings, in this order:{" "}
+          <Code>"Good food, good price!"</Code>, <Code>"GOOD price."</Code> and{" "}
+          <Code>"Food was good"</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for clean in (False, True):</Code> and print{" "}
+          <Code>"clean ="</Code>, <Code>clean</Code>, <Code>"-&gt;"</Code>,{" "}
+          <Code>vocab_size(texts, clean)</Code> and <Code>"different tokens"</Code> in one{" "}
+          <Code>print(...)</Code> call, the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={1} cellId="topic-2" withHint code={`import re
 
 
 def tokens_of(text, clean):
@@ -433,27 +473,32 @@ for clean in (False, True):
     print("clean =", clean, "->", vocab_size(texts, clean), "different tokens")`} expectedOutput={`clean = False -> 8 different tokens
 clean = True -> 4 different tokens`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the three texts
+        and the order of the values in the print.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`clean = False -> 8 different tokens
+clean = True -> 4 different tokens`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          The texts are <Code>Good food, good price!</Code>, <Code>GOOD price.</Code> and <Code>Food
-          was good</Code>.
+          With clean off, <Code>split()</Code> keeps capitals and punctuation. The 8 different
+          tokens are <Code>Good</Code>, <Code>food,</Code>, <Code>good</Code>, <Code>price!</Code>,{" "}
+          <Code>GOOD</Code>, <Code>price.</Code>, <Code>Food</Code> and <Code>was</Code>. The last{" "}
+          <Code>good</Code> is a repeat.
         </ListItem>
         <ListItem>
-          With clean off there are 8 different tokens. The single word <Code>good</Code> shows up as
-          <Code>Good</Code>, <Code>good</Code> and <Code>GOOD</Code>, and <Code>price</Code> shows
-          up as <Code>price!</Code> and <Code>price.</Code>.
+          With clean on, everything is lowercased and only letters are kept, so there are 4:{" "}
+          <Code>good</Code>, <Code>food</Code>, <Code>price</Code> and <Code>was</Code>.
         </ListItem>
         <ListItem>
-          With clean on there are 4: <Code>good</Code>, <Code>food</Code>, <Code>price</Code> and
-          <Code>was</Code>.
+          The loop runs the same print twice, once for <Code>False</Code> and once for{" "}
+          <Code>True</Code>, so you get one line each.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>clean = False -&gt; 8 different tokens</Code>, then
-        <Code>clean = True -&gt; 4 different tokens</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -632,10 +677,27 @@ for text in ["the cat and the dog and the bird", "red green blue pink"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on two new texts.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={1} cellId="topic-3" code={`def count_tokens(tokens):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_tokens</Code> and <Code>top_share</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Loop over the two texts <Code>"a a a a b c"</Code> and{" "}
+          <Code>"one two three four five six"</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, make <Code>tokens = text.split()</Code>, then print{" "}
+          <Code>len(tokens)</Code>, <Code>"tokens, top share:"</Code> and{" "}
+          <Code>round(top_share(tokens), 2)</Code> in one <Code>print(...)</Code> call, the same
+          layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={1} cellId="topic-3" withHint code={`def count_tokens(tokens):
     counts = {}
     for token in tokens:
         counts[token] = counts.get(token, 0) + 1
@@ -656,22 +718,29 @@ for text in ["a a a a b c", "one two three four five six"]:
     print(len(tokens), "tokens, top share:", round(top_share(tokens), 2))`} expectedOutput={`6 tokens, top share: 0.67
 6 tokens, top share: 0.17`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the two texts
+        and the <Code>round(..., 2)</Code>.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`6 tokens, top share: 0.67
+6 tokens, top share: 0.17`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>a a a a b c</Code> has 6 tokens, and <Code>a</Code> takes 4 of them. <Code>4 /
-          6</Code> is about 0.67.
+          <Code>a a a a b c</Code> has 6 tokens, and <Code>a</Code> takes 4 of them. The share is{" "}
+          <Code>4 / 6 = 0.666...</Code>, which <Code>round(..., 2)</Code> prints as 0.67.
         </ListItem>
         <ListItem>
-          <Code>one two three four five six</Code> has 6 different tokens, each once. <Code>1 /
-          6</Code> is about 0.17.
+          <Code>one two three four five six</Code> has 6 different tokens, each once. The share is{" "}
+          <Code>1 / 6 = 0.1666...</Code>, which prints as 0.17.
+        </ListItem>
+        <ListItem>
+          Both texts have 6 tokens, but the first has one very common token and the second has none.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>6 tokens, top share: 0.67</Code>, then <Code>6 tokens, top
-        share: 0.17</Code>. Same number of tokens, very different shape.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -829,10 +898,26 @@ for scores in [{"great": 6, "long": 3, "boring": 1}, {"yes": 1, "no": 1}]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on two new score dicts.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={1} cellId="topic-4" code={`def normalize(scores):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>normalize</Code> and <Code>add_up</Code> from the worked example above, exactly
+          as they are.
+        </ListItem>
+        <ListItem>
+          Loop over a list of two dicts: <Code>{`{"sunny": 7, "rainy": 2, "cloudy": 1}`}</Code> first,
+          then <Code>{`{"a": 2, "b": 2, "c": 4}`}</Code>. Call the loop variable <Code>scores</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, set <Code>chances = normalize(scores)</Code>, then print{" "}
+          <Code>chances</Code>, <Code>"sum:"</Code> and <Code>add_up(chances)</Code> in one{" "}
+          <Code>print(...)</Code> call, the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={1} cellId="topic-4" withHint code={`def normalize(scores):
     total = 0
     for score in scores.values():
         total = total + score
@@ -854,25 +939,29 @@ for scores in [{"sunny": 7, "rainy": 2, "cloudy": 1}, {"a": 2, "b": 2, "c": 4}]:
     print(chances, "sum:", add_up(chances))`} expectedOutput={`{'sunny': 0.7, 'rainy': 0.2, 'cloudy': 0.1} sum: 1.0
 {'a': 0.25, 'b': 0.25, 'c': 0.5} sum: 1.0`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the dict
+        contents and the order inside the print.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`{'sunny': 0.7, 'rainy': 0.2, 'cloudy': 0.1} sum: 1.0
+{'a': 0.25, 'b': 0.25, 'c': 0.5} sum: 1.0`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>sunny</Code> 7, <Code>rainy</Code> 2 and <Code>cloudy</Code> 1 have a total of 10.
-          The chances are 0.7, 0.2 and 0.1.
+          Dividing each by 10 gives 0.7, 0.2 and 0.1.
         </ListItem>
         <ListItem>
-          <Code>a</Code> 2, <Code>b</Code> 2 and <Code>c</Code> 4 have a total of 8. The chances are
-          0.25, 0.25 and 0.5.
+          <Code>a</Code> 2, <Code>b</Code> 2 and <Code>c</Code> 4 have a total of 8. Dividing each by
+          8 gives 0.25, 0.25 and 0.5.
         </ListItem>
         <ListItem>
-          Both sums come out as 1.0.
+          <Code>add_up</Code> adds the chances and rounds to 6 places, so both sums come out as 1.0.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> the two dicts of chances, each followed by <Code>sum:
-        1.0</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -1020,10 +1109,30 @@ for min_chance in (0.4, 0.1):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new dist.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={1} cellId="topic-5" code={`def greedy_pick(dist):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>greedy_pick</Code> and <Code>shortlist</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>dist</Code> with these four entries, in this order:{" "}
+          <Code>"sunny": 0.1</Code>, <Code>"rainy": 0.6</Code>, <Code>"cloudy": 0.25</Code> and{" "}
+          <Code>"snowy": 0.05</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>"greedy:"</Code> and <Code>greedy_pick(dist)</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for min_chance in (0.5, 0.2):</Code> and print <Code>"min"</Code>,{" "}
+          <Code>min_chance</Code>, <Code>"-&gt;"</Code> and <Code>shortlist(dist, min_chance)</Code>{" "}
+          in one <Code>print(...)</Code> call, the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={1} cellId="topic-5" withHint code={`def greedy_pick(dist):
     best_word = None
     best_chance = -1
     for word, chance in dist.items():
@@ -1048,24 +1157,31 @@ for min_chance in (0.5, 0.2):
 min 0.5 -> ['rainy']
 min 0.2 -> ['rainy', 'cloudy']`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the dict
+        entries and the two bar values.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`greedy: rainy
+min 0.5 -> ['rainy']
+min 0.2 -> ['rainy', 'cloudy']`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>rainy</Code> has the highest chance, 0.6, so greedy picks it.
         </ListItem>
         <ListItem>
-          With a bar of 0.5, only <Code>rainy</Code> stays.
+          With a bar of 0.5, only <Code>rainy</Code> (0.6) is at least 0.5, so it is the only word
+          kept.
         </ListItem>
         <ListItem>
-          With a bar of 0.2, both <Code>rainy</Code> (0.6) and <Code>cloudy</Code> (0.25) stay.
-          <Code>sunny</Code> (0.1) and <Code>snowy</Code> (0.05) are cut.
+          With a bar of 0.2, both <Code>rainy</Code> (0.6) and <Code>cloudy</Code> (0.25) stay.{" "}
+          <Code>sunny</Code> (0.1) and <Code>snowy</Code> (0.05) are cut. The words keep the order of
+          the dict.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>greedy: rainy</Code>, then two shortlist lines. The lower
-        the bar, the longer the list.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -1240,10 +1356,25 @@ for word, chance in dist.items():
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: draw a new dist with the same function.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={1} cellId="topic-6" code={`def bar_row(word, chance):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>bar_row</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>dist</Code> with these five entries, in this order:{" "}
+          <Code>"and": 0.3</Code>, <Code>"film": 0.25</Code>, <Code>"is": 0.2</Code>,{" "}
+          <Code>"long": 0.15</Code> and <Code>"tense": 0.1</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>dist.items()</Code> with <Code>word, chance</Code> and print{" "}
+          <Code>bar_row(word, chance)</Code>, as in the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={1} cellId="topic-6" withHint code={`def bar_row(word, chance):
     return word.ljust(7) + "#" * round(chance * 20) + " " + str(chance)
 
 
@@ -1255,22 +1386,34 @@ is     #### 0.2
 long   ### 0.15
 tense  ## 0.1`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these five lines. If yours differ, check the chances in{" "}
+        <Code>dist</Code>. The spaces after each word matter too.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`and    ###### 0.3
+film   ##### 0.25
+is     #### 0.2
+long   ### 0.15
+tense  ## 0.1`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>and</Code> has 0.3, so 6 marks. <Code>film</Code> 0.25 gives 5, <Code>is</Code> 0.2
-          gives 4, <Code>long</Code> 0.15 gives 3 and <Code>tense</Code> 0.1 gives 2.
+          <Code>round(chance * 20)</Code> sets the number of marks: <Code>and</Code> 0.3 gives 6,{" "}
+          <Code>film</Code> 0.25 gives 5, <Code>is</Code> 0.2 gives 4, <Code>long</Code> 0.15 gives 3
+          and <Code>tense</Code> 0.1 gives 2.
+        </ListItem>
+        <ListItem>
+          <Code>ljust(7)</Code> pads each word with spaces to 7 characters, so the marks start in the
+          same column.
         </ListItem>
         <ListItem>
           These bars are close in height. Greedy still picks <Code>and</Code>, but sampling would
           give a lot of variety.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> five lines, with the bars getting shorter from top to bottom.
-        The top bar is not much taller than the rest.
-      </Text>
 
       <Text fontSize="sm" color="gray.500">
         Further reading: IBM Think -{" "}

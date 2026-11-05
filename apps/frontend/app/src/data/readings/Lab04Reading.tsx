@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -188,10 +188,24 @@ for name, model in models:
           Pattern: same code, different numbers, different behaviour.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same class on a new input, <Code>[0.0, 2.0]</Code>.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={4} cellId="topic-1" code={`class Scorer:
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy the whole <Code>Scorer</Code> class from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make <Code>x = [0.0, 2.0]</Code>.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>models</Code> with three pairs, in this order: <Code>("fan", Scorer([1.0, -1.0], 0.5))</Code>, <Code>("blank", Scorer([0.0, 0.0], 0.0))</Code> and <Code>("critic", Scorer([-1.0, 1.0], -0.5))</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>models</Code> with <Code>name, model</Code> and print <Code>name</Code>, <Code>model.score(x)</Code> and <Code>model.decide(x)</Code> in one <Code>print(...)</Code> call, the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={4} cellId="topic-1" withHint code={`class Scorer:
     def __init__(self, weights, bias):
         self.weights = weights
         self.bias = bias
@@ -213,22 +227,30 @@ for name, model in models:
 blank 0.0 1
 critic 1.5 1`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the input and the weights and bias of each model.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`fan -1.5 -1
+blank 0.0 1
+critic 1.5 1`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>fan</Code>: <Code>0.5 + 1.0 * 0.0 + (-1.0) * 2.0 = -1.5</Code>, so the answer is -1.
         </ListItem>
         <ListItem>
-          <Code>blank</Code>: still <Code>0.0</Code>, so still +1.
+          <Code>blank</Code>: all weights and the bias are zero, so the score is <Code>0.0</Code> and the answer is +1, because 0 counts as "zero or more".
         </ListItem>
         <ListItem>
           <Code>critic</Code>: <Code>-0.5 + (-1.0) * 0.0 + 1.0 * 2.0 = 1.5</Code>, so the answer is +1.
         </ListItem>
+        <ListItem>
+          The class did not change. Only the input did, so <Code>fan</Code> and <Code>critic</Code> swapped their answers compared with the worked example.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>fan -1.5 -1</Code>, <Code>blank 0.0 1</Code> and <Code>critic 1.5 1</Code>. The classes did not change. Only the input did, and two answers flipped.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -396,10 +418,21 @@ explain(words, [1, 0, 1], weights)`} />
           Pattern: a score is a sum of small pieces of evidence, and each piece is a feature times its weight.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same two functions on new words, new weights and a new review.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={4} cellId="topic-2" code={`def dot(x, weights):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>dot</Code> and <Code>explain</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make <Code>words = ["fun", "dull", "long"]</Code> and <Code>weights = [1.5, -2.0, -0.5]</Code>.
+        </ListItem>
+        <ListItem>
+          Call <Code>explain(words, [1, 1, 0], weights)</Code>. The review is <Code>[1, 1, 0]</Code>. The function does the printing, so you do not need a <Code>print</Code> of your own.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={4} cellId="topic-2" withHint code={`def dot(x, weights):
     total = 0.0
     for a, b in zip(x, weights):
         total = total + a * b
@@ -419,22 +452,27 @@ explain(words, [1, 1, 0], weights)`} expectedOutput={`fun adds 1.5
 dull adds -2.0
 score -0.5`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the words, the weights and the review list.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`fun adds 1.5
+dull adds -2.0
+score -0.5`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The words are <Code>fun</Code>, <Code>dull</Code> and <Code>long</Code>. The review <Code>[1, 1, 0]</Code> contains <Code>fun</Code> and <Code>dull</Code> only.
         </ListItem>
         <ListItem>
-          <Code>fun</Code> adds <Code>1.5</Code> and <Code>dull</Code> adds <Code>-2.0</Code>. <Code>long</Code> is absent, so it is skipped.
+          <Code>fun</Code> adds <Code>1.5</Code> and <Code>dull</Code> adds <Code>-2.0</Code>, so those two lines are printed. <Code>long</Code> is absent, so it is skipped.
         </ListItem>
         <ListItem>
-          The score is <Code>1.5 + (-2.0) = -0.5</Code>.
+          The last line is the score: <Code>1.5 + (-2.0) = -0.5</Code>. The strong negative word outweighs the positive one, so the score is below 0.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>fun adds 1.5</Code>, <Code>dull adds -2.0</Code> and <Code>score -0.5</Code>. The strong negative word outweighs the positive one, so the score is below 0.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -593,10 +631,21 @@ for z in [-3, -0.5, 0, 0.5, 3]:
           Pattern: a step gives only the side. A smooth squash also gives the confidence.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same two functions on five new scores.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={4} cellId="topic-3" code={`import math
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import math</Code>, <Code>step</Code> and <Code>squash</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for z in [-4, -1, 0.1, 2, 5]:</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, print <Code>z</Code>, <Code>step(z)</Code> and <Code>round(squash(z), 2)</Code> in one <Code>print(...)</Code> call, the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={4} cellId="topic-3" withHint code={`import math
 
 
 def step(z):
@@ -614,22 +663,32 @@ for z in [-4, -1, 0.1, 2, 5]:
 2 1 0.88
 5 1 0.99`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these five lines. If yours differ, check the five scores and the order of the three values in the print.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`-4 -1 0.02
+-1 -1 0.27
+0.1 1 0.52
+2 1 0.88
+5 1 0.99`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>-4</Code> and <Code>-1</Code> are both -1 for <Code>step</Code>, but <Code>squash</Code> says <Code>0.02</Code> (very sure) and <Code>0.27</Code> (less sure).
+          Each line is the score, then the <Code>step</Code> answer, then the squashed number. <Code>step</Code> only ever gives <Code>-1</Code> or <Code>1</Code>.
+        </ListItem>
+        <ListItem>
+          <Code>-4</Code> and <Code>-1</Code> are both -1 for <Code>step</Code>, but <Code>squash</Code> says <Code>0.02</Code> (very sure of a no) and <Code>0.27</Code> (less sure).
         </ListItem>
         <ListItem>
           <Code>0.1</Code> is just above 0. <Code>step</Code> says 1, but <Code>squash</Code> gives <Code>0.52</Code>, barely better than a coin flip.
         </ListItem>
         <ListItem>
-          <Code>2</Code> gives <Code>0.88</Code> and <Code>5</Code> gives <Code>0.99</Code>.
+          <Code>2</Code> gives <Code>0.88</Code> and <Code>5</Code> gives <Code>0.99</Code>, so the squashed number rises smoothly as the score grows.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> five lines. The <Code>step</Code> column only ever shows <Code>-1</Code> or <Code>1</Code>. The <Code>squash</Code> column rises smoothly from <Code>0.02</Code> to <Code>0.99</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -810,10 +869,27 @@ print("all-zero rows:", count_empty(rows), "of", len(rows))`} />
           Pattern: a sentence becomes a row of 0/1 flags, and sentences with no vocabulary word all look the same.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same two functions on a new vocabulary and new sentences.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={4} cellId="topic-4" code={`def vectorize(sentence, vocab):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>vectorize</Code> and <Code>count_empty</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make <Code>vocab = ["fun", "dull", "long"]</Code>.
+        </ListItem>
+        <ListItem>
+          Make <Code>sentences</Code> a list of four strings, in this order: <Code>"a fun and long show"</Code>, <Code>"dull dull dull"</Code>, <Code>"we sat down"</Code> and <Code>"the end"</Code>.
+        </ListItem>
+        <ListItem>
+          Make an empty list <Code>rows = []</Code>. Loop over <Code>sentences</Code>. Inside the loop, set <Code>row = vectorize(sentence, vocab)</Code>, add it with <Code>rows.append(row)</Code>, and print <Code>row</Code> and <Code>sentence</Code> in one <Code>print(...)</Code> call.
+        </ListItem>
+        <ListItem>
+          After the loop, print <Code>"all-zero rows:"</Code>, <Code>count_empty(rows)</Code>, <Code>"of"</Code> and <Code>len(rows)</Code> in one <Code>print(...)</Code> call.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={4} cellId="topic-4" withHint code={`def vectorize(sentence, vocab):
     words = sentence.lower().split()
     row = []
     for word in vocab:
@@ -842,9 +918,22 @@ print("all-zero rows:", count_empty(rows), "of", len(rows))`} expectedOutput={`[
 [0, 0, 0] the end
 all-zero rows: 2 of 4`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these five lines. If yours differ, check the vocabulary order and the four sentences.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`[1, 0, 1] a fun and long show
+[0, 1, 0] dull dull dull
+[0, 0, 0] we sat down
+[0, 0, 0] the end
+all-zero rows: 2 of 4`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          Each row has one flag per vocabulary word, in the order <Code>fun</Code>, <Code>dull</Code>, <Code>long</Code>.
+        </ListItem>
         <ListItem>
           <Code>a fun and long show</Code> contains <Code>fun</Code> and <Code>long</Code>, so the row is <Code>[1, 0, 1]</Code>.
         </ListItem>
@@ -852,12 +941,9 @@ all-zero rows: 2 of 4`} />
           <Code>dull dull dull</Code> has one word, repeated. Repeats do not count extra, so the row is <Code>[0, 1, 0]</Code>.
         </ListItem>
         <ListItem>
-          The last two sentences have no vocabulary word, so both rows are <Code>[0, 0, 0]</Code>.
+          The last two sentences have no vocabulary word, so both rows are <Code>[0, 0, 0]</Code>. <Code>count_empty</Code> finds 2 of the 4 rows, which gives the last line.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four rows, then <Code>all-zero rows: 2 of 4</Code>.
-      </Text>
 
       <Text>
         Further reading:{" "}

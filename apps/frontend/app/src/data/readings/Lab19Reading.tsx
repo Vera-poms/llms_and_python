@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -157,10 +157,27 @@ for text, vector in store.items:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same class and function on a new table of three items. The vectors now have 3 numbers.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={19} cellId="topic-1" code={`class TinyStore:
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>TinyStore</Code> and <Code>fill</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>table</Code> with three pairs, each written as <Code>(text, vector)</Code>, in this order: <Code>"Kofi teaches maths."</Code> with <Code>[0.0, 0.2, 1.0]</Code>, then <Code>"Kofi codes at night."</Code> with <Code>[0.1, 1.0, 0.0]</Code>, then <Code>"Kofi cooks rice."</Code> with <Code>[1.0, 0.0, 0.0]</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>store = TinyStore()</Code>, then call <Code>fill(store, table)</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>len(store.items)</Code> and <Code>"items stored"</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for text, vector in store.items:</Code> and print <Code>len(vector)</Code>, <Code>"numbers -&gt;"</Code> and <Code>text</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={19} cellId="topic-1" withHint code={`class TinyStore:
     def __init__(self):
         self.items = []
 
@@ -183,7 +200,15 @@ for text, vector in store.items:
 3 numbers -> Kofi codes at night.
 3 numbers -> Kofi cooks rice.`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`3 items stored
+3 numbers -> Kofi teaches maths.
+3 numbers -> Kofi codes at night.
+3 numbers -> Kofi cooks rice.`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -193,12 +218,9 @@ for text, vector in store.items:
           <Code>len(store.items)</Code> is 3.
         </ListItem>
         <ListItem>
-          The loop prints the size of each vector, 3, and the text it belongs to.
+          The loop prints the size of each vector, 3, and the text it belongs to, one line for each text.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>3 items stored</Code>, then three lines that start with <Code>3 numbers -&gt;</Code>, one for each text.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -314,10 +336,27 @@ for k in (1, 2, 3):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on four new chunks, with a budget of 24 tokens.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={19} cellId="topic-2" code={`def count_tokens(text):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_tokens</Code> and <Code>top_k</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>scored</Code> with four pairs, each written as <Code>(score, text)</Code>, in this order: <Code>0.22</Code> with <Code>"Kofi codes at night."</Code>, <Code>0.88</Code> with <Code>"Kofi teaches maths at a school in Kumasi."</Code>, <Code>0.64</Code> with <Code>"Kofi grades tests on Friday evenings."</Code>, and <Code>0.05</Code> with <Code>"Kofi cooks rice on Sundays."</Code>
+        </ListItem>
+        <ListItem>
+          Set <Code>budget = 24</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for k in (1, 2, 3):</Code>. In each pass, set <Code>chosen = top_k(scored, k)</Code> and <Code>cost = 0</Code>. Then loop with <Code>for score, text in chosen:</Code> and add <Code>count_tokens(text)</Code> to <Code>cost</Code>.
+        </ListItem>
+        <ListItem>
+          Back in the outer loop (after the inner loop), print <Code>"k"</Code>, <Code>k</Code>, <Code>"-&gt; best score"</Code>, <Code>chosen[0][0]</Code>, <Code>"tokens"</Code>, <Code>cost</Code>, <Code>"fits:"</Code> and <Code>cost &lt;= budget</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={19} cellId="topic-2" withHint code={`def count_tokens(text):
     return len(text) // 4 + 1
 
 
@@ -342,7 +381,14 @@ for k in (1, 2, 3):
 k 2 -> best score 0.88 tokens 21 fits: True
 k 3 -> best score 0.88 tokens 27 fits: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`k 1 -> best score 0.88 tokens 11 fits: True
+k 2 -> best score 0.88 tokens 21 fits: True
+k 3 -> best score 0.88 tokens 27 fits: False`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -352,12 +398,9 @@ k 3 -> best score 0.88 tokens 27 fits: False`} />
           <Code>k</Code> 1 costs 11 tokens. <Code>k</Code> 2 adds 10 more, so 21. Both are within 24.
         </ListItem>
         <ListItem>
-          <Code>k</Code> 3 adds 6 more, so 27. That is over 24.
+          <Code>k</Code> 3 adds 6 more, so 27. That is over 24. The best score never changes. Only the cost grows.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>k 1 -&gt; best score 0.88 tokens 11 fits: True</Code>, then the same with 21 tokens and <Code>True</Code>, then 27 tokens and <Code>False</Code>. The best score never changes. Only the cost grows.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -466,10 +509,30 @@ for chunks in cases:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new question about what Kofi teaches.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={19} cellId="topic-3" code={`def build_prompt(question, chunks):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>build_prompt</Code> and <Code>can_answer</Code> from the worked example above, exactly as they are. Keep the <Code>{`"\\n"`}</Code> pieces typed as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>cases</Code> with two lists of chunks. The first is <Code>"Kofi teaches maths."</Code> and <Code>"Kofi codes at night."</Code>. The second is <Code>"Kofi cooks rice."</Code> and <Code>"Kofi codes at night."</Code>
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for chunks in cases:</Code>. In each pass, do three prints in this order:
+        </ListItem>
+        <ListItem>
+          First print <Code>build_prompt("What does Kofi teach?", chunks)</Code>.
+        </ListItem>
+        <ListItem>
+          Then print <Code>"answer is in the context:"</Code> and <Code>can_answer(chunks, "maths")</Code>.
+        </ListItem>
+        <ListItem>
+          Last print <Code>{`"-" * 10`}</Code>, which is a line of 10 dashes.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={19} cellId="topic-3" withHint code={`def build_prompt(question, chunks):
     lines = "\\n".join(f"- {c}" for c in chunks)
     return f"Answer using only this context.\\n\\nContext:\\n{lines}\\n\\nQuestion: {question}"
 
@@ -507,7 +570,29 @@ Question: What does Kofi teach?
 answer is in the context: False
 ----------`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`Answer using only this context.
+
+Context:
+- Kofi teaches maths.
+- Kofi codes at night.
+
+Question: What does Kofi teach?
+answer is in the context: True
+----------
+Answer using only this context.
+
+Context:
+- Kofi cooks rice.
+- Kofi codes at night.
+
+Question: What does Kofi teach?
+answer is in the context: False
+----------`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -517,12 +602,9 @@ answer is in the context: False
           Case 2 has the chunks about rice and coding, so <Code>maths</Code> is not found: <Code>False</Code>.
         </ListItem>
         <ListItem>
-          The prompt layout is the same both times. Only the chunks differ.
+          The prompt layout is the same both times. Only the chunks differ. Each block ends with a line of 10 dashes.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two prompts, each followed by <Code>answer is in the context:</Code> and a line of 10 dashes. The first says <Code>True</Code> and the second says <Code>False</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

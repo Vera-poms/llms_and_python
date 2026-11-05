@@ -191,10 +191,24 @@ print("examples shown:", count_examples(payload["messages"]))`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same three functions on two new reviews, with a temperature of 0.2.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={9} cellId="topic-1" code={`def build_messages(review):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>build_messages</Code>, <Code>build_payload</Code> and <Code>count_examples</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for review in</Code> the list <Code>{`["Too slow", "Great acting"]`}</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, set <Code>payload</Code> to <Code>build_payload(build_messages(review), 0.2)</Code>.
+        </ListItem>
+        <ListItem>
+          Still inside the loop, print the <Code>review</Code>, then <Code>"-&gt;"</Code>, then <Code>len(payload["messages"])</Code>, then <Code>"messages,"</Code>, then <Code>count_examples(payload["messages"])</Code>, then <Code>"examples, temperature"</Code>, then <Code>payload["temperature"]</Code>, all in one <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={9} cellId="topic-1" withHint code={`def build_messages(review):
     return [
         {"role": "system", "content": "Classify the sentiment as positive or negative."},
         {"role": "user", "content": review},
@@ -218,22 +232,29 @@ for review in ["Too slow", "Great acting"]:
     print(review, "->", len(payload["messages"]), "messages,", count_examples(payload["messages"]), "examples, temperature", payload["temperature"])`} expectedOutput={`Too slow -> 2 messages, 0 examples, temperature 0.2
 Great acting -> 2 messages, 0 examples, temperature 0.2`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the two reviews, the temperature and the text inside the print.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`Too slow -> 2 messages, 0 examples, temperature 0.2
+Great acting -> 2 messages, 0 examples, temperature 0.2`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          Each review gets a payload. It holds 2 messages: one <Code>system</Code> and one <Code>user</Code>.
+          Each review gets its own payload. <Code>len(payload["messages"])</Code> is 2: one <Code>system</Code> message and one <Code>user</Code> message.
         </ListItem>
         <ListItem>
-          <Code>count_examples</Code> finds no <Code>assistant</Code> message, so it says 0 examples.
+          <Code>count_examples</Code> finds no <Code>assistant</Code> message, so it says 0 examples. That means the request is zero-shot.
         </ListItem>
         <ListItem>
-          The temperature is 0.2, which asks for steadier answers than the 0.7 above.
+          <Code>payload["temperature"]</Code> is the 0.2 you passed in, which asks for steadier answers than the 0.7 above.
+        </ListItem>
+        <ListItem>
+          <Code>print</Code> puts a space between its pieces, so the review, <Code>-&gt;</Code> and the numbers line up as shown.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two lines, <Code>Too slow -&gt; 2 messages, 0 examples, temperature 0.2</Code> and the same for <Code>Great acting</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -401,10 +422,24 @@ for key, tokens in usage.items():
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on new requests. Pretend <Code>gsk_leak99</Code> is a key that ended up in a public file.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit. Pretend <Code>gsk_leak99</Code> is a key that ended up in a public file.
       </Text>
-      <PracticeCell labId={9} cellId="topic-2" code={`def mask_key(key):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>mask_key</Code> and <Code>add_usage</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>usage = {"{}"}</Code>. Then make a list called <Code>requests_made</Code> with four pairs, in this order: <Code>{`("gsk_mine01", 30)`}</Code>, <Code>{`("gsk_leak99", 500)`}</Code>, <Code>{`("gsk_mine01", 70)`}</Code>, <Code>{`("gsk_leak99", 250)`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for key, tokens in requests_made</Code> and call <Code>add_usage(usage, key, tokens)</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for key, tokens in usage.items()</Code> and print <Code>mask_key(key)</Code>, then <Code>"used"</Code>, then <Code>tokens</Code>, then <Code>"tokens"</Code>, in one <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={9} cellId="topic-2" withHint code={`def mask_key(key):
     return key[:4] + "..." + key[-2:]
 
 
@@ -420,7 +455,14 @@ for key, tokens in usage.items():
     print(mask_key(key), "used", tokens, "tokens")`} expectedOutput={`gsk_...01 used 100 tokens
 gsk_...99 used 750 tokens`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the four pairs in <Code>requests_made</Code> and their order.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`gsk_...01 used 100 tokens
+gsk_...99 used 750 tokens`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -430,12 +472,12 @@ gsk_...99 used 750 tokens`} />
           <Code>gsk_leak99</Code> makes two as well, <Code>500 + 250 = 750</Code> tokens. If that was your key, the stranger used more than you.
         </ListItem>
         <ListItem>
-          <Code>mask_key</Code> shows only the ends of each key, so the output is safe to share.
+          <Code>mask_key</Code> keeps the first 4 and last 2 characters, so <Code>gsk_mine01</Code> becomes <Code>gsk_...01</Code> and <Code>gsk_leak99</Code> becomes <Code>gsk_...99</Code>. The output is safe to share.
+        </ListItem>
+        <ListItem>
+          The keys print in the order they first appeared in <Code>requests_made</Code>, because a dict remembers the order its labels were added.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two lines, <Code>gsk_...01 used 100 tokens</Code> and <Code>gsk_...99 used 750 tokens</Code>. Change a number in <Code>requests_made</Code> and the total changes with it.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -592,10 +634,24 @@ for text in ["Positive.", "The sentiment is negative", "Not sure"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same three functions on three new replies.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={9} cellId="topic-3" code={`def fake_response(text):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>fake_response</Code>, <Code>pull_reply</Code> and <Code>find_label</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for text in</Code> the list <Code>{`["NEGATIVE", "I think it is positive!", "Mixed feelings"]`}</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, set <Code>reply</Code> to <Code>pull_reply(fake_response(text))</Code>, then set <Code>label</Code> to <Code>find_label(reply)</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>repr(reply)</Code>, then <Code>"-&gt;"</Code>, then <Code>label</Code>, then <Code>"| reply equals label:"</Code>, then <Code>reply == label</Code>, in one <Code>print(...)</Code>. Use the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={9} cellId="topic-3" withHint code={`def fake_response(text):
     return {"choices": [{"message": {"content": text}}]}
 
 
@@ -618,9 +674,20 @@ for text in ["NEGATIVE", "I think it is positive!", "Mixed feelings"]:
 'I think it is positive!' -> positive | reply equals label: False
 'Mixed feelings' -> unknown | reply equals label: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the three texts and the print layout, including the quotes that <Code>repr</Code> adds.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`'NEGATIVE' -> negative | reply equals label: False
+'I think it is positive!' -> positive | reply equals label: False
+'Mixed feelings' -> unknown | reply equals label: False`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
+        <ListItem>
+          <Code>repr(reply)</Code> shows the text with its quotes, which is why each line starts with a quoted reply.
+        </ListItem>
         <ListItem>
           <Code>NEGATIVE</Code> becomes <Code>negative</Code> once it is lowercase, so the label is <Code>negative</Code>.
         </ListItem>
@@ -630,10 +697,10 @@ for text in ["NEGATIVE", "I think it is positive!", "Mixed feelings"]:
         <ListItem>
           <Code>Mixed feelings</Code> has neither word, so the label is <Code>unknown</Code>.
         </ListItem>
+        <ListItem>
+          <Code>reply == label</Code> is <Code>False</Code> on all three lines, because the raw reply never equals the clean label exactly. That is why you clean first and then look for the word.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines. The first two end in <Code>reply equals label: False</Code> even though the labels are right, so the cleaning is what makes the match work. The third shows <Code>unknown</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>Groq's response is a JSON object shaped roughly like:</Text>

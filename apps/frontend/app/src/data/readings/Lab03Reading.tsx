@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -189,10 +189,32 @@ print("after the:", table["the"])`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on new pairs.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={3} cellId="topic-1" code={`def add_pair(table, prev, nxt):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>add_pair</Code> and <Code>global_counts</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>pairs</Code> with these six (previous word, next word) pairs, in
+          this order: <Code>("i", "love")</Code>, <Code>("you", "hate")</Code>,{" "}
+          <Code>("i", "love")</Code>, <Code>("you", "hate")</Code>, <Code>("i", "hate")</Code>,{" "}
+          <Code>("you", "love")</Code>.
+        </ListItem>
+        <ListItem>
+          Make an empty dict <Code>table = {"{}"}</Code>. Loop over <Code>pairs</Code> with{" "}
+          <Code>prev, nxt</Code> and call <Code>add_pair(table, prev, nxt)</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>"one tally:"</Code> and <Code>global_counts(pairs)</Code>. Then print{" "}
+          <Code>"per context:"</Code> and <Code>table</Code>. Then print <Code>"after you:"</Code>{" "}
+          and <Code>table["you"]</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={3} cellId="topic-1" withHint code={`def add_pair(table, prev, nxt):
     inner = table.setdefault(prev, {})
     inner[nxt] = inner.get(nxt, 0) + 1
 
@@ -214,26 +236,36 @@ print("after you:", table["you"])`} expectedOutput={`one tally: {'love': 3, 'hat
 per context: {'i': {'love': 2, 'hate': 1}, 'you': {'hate': 2, 'love': 1}}
 after you: {'hate': 2, 'love': 1}`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the six pairs
+        and their order.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`one tally: {'love': 3, 'hate': 3}
+per context: {'i': {'love': 2, 'hate': 1}, 'you': {'hate': 2, 'love': 1}}
+after you: {'hate': 2, 'love': 1}`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          Six pairs: <Code>i</Code> is followed by <Code>love</Code> twice and <Code>hate</Code>
+          Six pairs: <Code>i</Code> is followed by <Code>love</Code> twice and <Code>hate</Code>{" "}
           once. <Code>you</Code> is followed by <Code>hate</Code> twice and <Code>love</Code> once.
         </ListItem>
         <ListItem>
-          The one tally says <Code>love</Code> 3 and <Code>hate</Code> 3. That looks like a tie, but
-          the context tells a different story.
+          The one tally ignores the first word, so it says <Code>love</Code> 3 and <Code>hate</Code>{" "}
+          3. That looks like a tie, but the context tells a different story.
         </ListItem>
         <ListItem>
-          The last line shows the row for <Code>you</Code>: <Code>hate</Code> 2, <Code>love</Code>
-          1.
+          The table keeps a row for each first word, in the order they first appear: <Code>i</Code>{" "}
+          first, then <Code>you</Code>. Inside each row the next words are in the order they first
+          appear.
+        </ListItem>
+        <ListItem>
+          The last line shows only the row for <Code>you</Code>: <Code>hate</Code> 2,{" "}
+          <Code>love</Code> 1.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines: the one tally, the table, and the row after
-        <Code>you</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -416,10 +448,26 @@ for prev in ["the", "was", "great"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on a new table.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={3} cellId="topic-2" code={`def next_chances(table, prev):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>next_chances</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>table</Code> with two rows. The row <Code>"good"</Code> is{" "}
+          <Code>{`{"food": 3, "price": 1}`}</Code>. The row <Code>"very"</Code> is{" "}
+          <Code>{`{"good": 2, "bad": 2, "long": 1}`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for prev in ["good", "very", "price"]:</Code> and print <Code>prev</Code>,{" "}
+          <Code>"-&gt;"</Code> and <Code>next_chances(table, prev)</Code> in one{" "}
+          <Code>print(...)</Code> call, the same layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={3} cellId="topic-2" withHint code={`def next_chances(table, prev):
     inner = table.get(prev)
     if not inner:
         return {}
@@ -438,23 +486,31 @@ for prev in ["good", "very", "price"]:
 very -> {'good': 0.4, 'bad': 0.4, 'long': 0.2}
 price -> {}`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the numbers
+        in the two rows and the three words in the loop.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`good -> {'food': 0.75, 'price': 0.25}
+very -> {'good': 0.4, 'bad': 0.4, 'long': 0.2}
+price -> {}`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          The row for <Code>good</Code> has a total of 4, so <Code>food</Code> gets 0.75 and
-          <Code>price</Code> gets 0.25.
+          The row for <Code>good</Code> has a total of <Code>3 + 1 = 4</Code>, so <Code>food</Code>{" "}
+          gets <Code>3 / 4 = 0.75</Code> and <Code>price</Code> gets <Code>1 / 4 = 0.25</Code>.
         </ListItem>
         <ListItem>
-          The row for <Code>very</Code> has a total of 5, so the chances are 0.4, 0.4 and 0.2.
+          The row for <Code>very</Code> has a total of <Code>2 + 2 + 1 = 5</Code>, so the chances
+          are 0.4, 0.4 and 0.2.
         </ListItem>
         <ListItem>
-          <Code>price</Code> has no row, so you get an empty dict.
+          <Code>price</Code> has no row in the table, so <Code>table.get(prev)</Code> gives nothing
+          and the function returns an empty dict <Code>{"{}"}</Code>. That is a dead end.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines, and the last one ends with an empty dict.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -658,10 +714,29 @@ show_grid(cond, ["the", "was"], columns)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new table.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={3} cellId="topic-3" code={`def shade(chance):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>shade</Code> and <Code>show_grid</Code> from the worked example above, exactly
+          as they are.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>cond</Code> with two rows. The row <Code>"my"</Code> is{" "}
+          <Code>{`{"dog": 0.7, "cat": 0.2, "car": 0.1}`}</Code>. The row <Code>"i"</Code> is{" "}
+          <Code>{`{"love": 0.5, "like": 0.5}`}</Code>.
+        </ListItem>
+        <ListItem>
+          Make <Code>columns = ["dog", "love", "cat", "like"]</Code>.
+        </ListItem>
+        <ListItem>
+          Call <Code>show_grid(cond, ["my", "i"], columns)</Code>. The function does the printing,
+          so you do not need a <Code>print</Code> of your own.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={3} cellId="topic-3" withHint code={`def shade(chance):
     if chance == 0:
         return "."
     if chance < 0.3:
@@ -682,23 +757,33 @@ columns = ["dog", "love", "cat", "like"]
 show_grid(cond, ["my", "i"], columns)`} expectedOutput={`my    # . + .
 i     . # . #`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the chances and
+        the order of <Code>columns</Code>. The word is padded to 5 characters, so the symbols line
+        up.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`my    # . + .
+i     . # . #`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          In the <Code>my</Code> row: <Code>dog</Code> 0.7 is <Code>#</Code>, <Code>love</Code> is
-          never seen (<Code>.</Code>), <Code>cat</Code> 0.2 is <Code>+</Code> and <Code>like</Code>
-          is never seen (<Code>.</Code>).
+          The columns go in the order <Code>dog</Code>, <Code>love</Code>, <Code>cat</Code>,{" "}
+          <Code>like</Code>.
         </ListItem>
         <ListItem>
-          In the <Code>i</Code> row: <Code>love</Code> and <Code>like</Code> are both 0.5, so both
-          are <Code>#</Code>.
+          In the <Code>my</Code> row: <Code>dog</Code> 0.7 is <Code>#</Code>, <Code>love</Code> is
+          never seen (<Code>.</Code>), <Code>cat</Code> 0.2 is <Code>+</Code> and <Code>like</Code>{" "}
+          is never seen (<Code>.</Code>). <Code>car</Code> is not a column, so it is not drawn.
+        </ListItem>
+        <ListItem>
+          In the <Code>i</Code> row: <Code>dog</Code> is never seen, <Code>love</Code> is 0.5 (
+          <Code>#</Code>), <Code>cat</Code> is never seen and <Code>like</Code> is 0.5 (
+          <Code>#</Code>).
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two rows of four symbols each. Half of the cells in each row are
-        dots.
-      </Text>
 
       <Text fontSize="sm" color="gray.500">
         Further reading: IBM Think -{" "}

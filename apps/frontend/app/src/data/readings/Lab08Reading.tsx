@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -163,10 +163,28 @@ for review in ["I loved it", "Too slow"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function with a new instruction and two new reviews.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={8} cellId="topic-1" code={`def build_prompt(instruction, review):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>build_prompt</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Set <Code>instruction = "Translate this review into French."</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for review in ["Great film", "Boring plot"]</Code>. Inside the loop, set{" "}
+          <Code>prompt = build_prompt(instruction, review)</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>prompt</Code>, then print <Code>"characters:"</Code> and{" "}
+          <Code>len(prompt)</Code>, then print <Code>"---"</Code>. Use the same{" "}
+          <Code>print(...)</Code> lines as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={8} cellId="topic-1" withHint code={`def build_prompt(instruction, review):
     return f"{instruction}\\n\\nReview: {review}"
 
 
@@ -186,7 +204,23 @@ Review: Boring plot
 characters: 55
 ---`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these lines, including the empty lines. If yours
+        differ, check the instruction text and the two reviews.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`Translate this review into French.
+
+Review: Great film
+characters: 54
+---
+Translate this review into French.
+
+Review: Boring plot
+characters: 55
+---`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -199,9 +233,6 @@ characters: 55
           <Code>Boring plot</Code> has 11 characters, so that prompt is 55.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two prompts, each with its instruction, a blank line, a review line and a length line, then <Code>---</Code>. The lengths are 54 and 55.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -373,10 +404,39 @@ for name, template in templates.items():
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function with two new templates and three reviews.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={8} cellId="topic-2" code={`def make_prompts(template, reviews):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>make_prompts</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>templates</Code> with two entries. The key <Code>"shout"</Code>{" "}
+          has the text{" "}
+          <Code>{"Rewrite this review in capital letters.\\n\\nReview: {review}"}</Code>. The key{" "}
+          <Code>"title"</Code> has the text{" "}
+          <Code>{"Give this review a short title.\\n\\nReview: {review}"}</Code>. Write the{" "}
+          <Code>{"\\n\\n"}</Code> and the <Code>{"{review}"}</Code> blank just as the worked
+          example does.
+        </ListItem>
+        <ListItem>
+          Set <Code>reviews = ["Nice acting", "Too long", "Loved the music"]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for name, template in templates.items()</Code>. Inside it, set{" "}
+          <Code>prompts = make_prompts(template, reviews)</Code> and print <Code>name</Code>,{" "}
+          <Code>"-&gt;"</Code>, <Code>len(prompts)</Code> and <Code>"prompts"</Code>.
+        </ListItem>
+        <ListItem>
+          Then loop <Code>for prompt in prompts</Code>, set{" "}
+          <Code>{`task, data = prompt.split("\\n\\n")`}</Code>, and print <Code>"  "</Code> (two
+          spaces), <Code>task</Code>, <Code>"|"</Code> and <Code>data</Code>. Use the same{" "}
+          <Code>print(...)</Code> lines as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={8} cellId="topic-2" withHint code={`def make_prompts(template, reviews):
     prompts = []
     for review in reviews:
         prompts.append(template.format(review=review))
@@ -402,7 +462,21 @@ title -> 3 prompts
    Give this review a short title. | Review: Too long
    Give this review a short title. | Review: Loved the music`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these eight lines. If yours differ, check the template
+        text, the reviews and the spaces in your print lines.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`shout -> 3 prompts
+   Rewrite this review in capital letters. | Review: Nice acting
+   Rewrite this review in capital letters. | Review: Too long
+   Rewrite this review in capital letters. | Review: Loved the music
+title -> 3 prompts
+   Give this review a short title. | Review: Nice acting
+   Give this review a short title. | Review: Too long
+   Give this review a short title. | Review: Loved the music`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -412,12 +486,11 @@ title -> 3 prompts
           <Code>prompt.split("\n\n")</Code> cuts at the blank line into two parts. <Code>task, data = ...</Code> gives each part a name.
         </ListItem>
         <ListItem>
-          In all that is 6 prompts, from only 2 instructions.
+          In all that is 6 prompts, from only 2 instructions. In each group the task is the same on
+          every line, and only the review changes. Each printed line starts with 3 spaces: the 2
+          you print, plus the 1 that <Code>print</Code> adds between items.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two groups. <Code>shout -&gt; 3 prompts</Code> and <Code>title -&gt; 3 prompts</Code>, each with three lines. In each group the task is the same on every line, and only the review changes.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -605,10 +678,28 @@ for data in [{"topic": "cats", "style": "funny"}, {"topic": "cats"}, {}]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new template.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={8} cellId="topic-3" code={`def find_missing(required, given):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>find_missing</Code> and <Code>safe_render</Code> from the worked example
+          above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>template = "Write a {"{length}"} poem about {"{topic}"}"</Code> and{" "}
+          <Code>required = ["length", "topic"]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over three dicts, in this order:{" "}
+          <Code>{`{"length": "short", "topic": "rain"}`}</Code>, <Code>{`{"topic": "rain"}`}</Code>{" "}
+          and <Code>{`{"length": "long"}`}</Code>. For each one, print{" "}
+          <Code>safe_render(template, required, data)</Code>. Use the same loop shape as the
+          worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={8} cellId="topic-3" withHint code={`def find_missing(required, given):
     missing = []
     for name in required:
         if name not in given:
@@ -630,7 +721,16 @@ for data in [{"length": "short", "topic": "rain"}, {"topic": "rain"}, {"length":
 NOT SENT, missing: length
 NOT SENT, missing: topic`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the template
+        text and the order of the three dicts.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`Write a short poem about rain
+NOT SENT, missing: length
+NOT SENT, missing: topic`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -643,9 +743,6 @@ NOT SENT, missing: topic`} />
           The second data lacks <Code>length</Code> and the third lacks <Code>topic</Code>, so each one gives a <Code>NOT SENT</Code> line with the missing name.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>Write a short poem about rain</Code>, then <Code>NOT SENT, missing: length</Code>, then <Code>NOT SENT, missing: topic</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

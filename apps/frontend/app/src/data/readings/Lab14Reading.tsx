@@ -200,10 +200,38 @@ print("reply:", reply, "| tokens used:", tokens)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new request and two new responses.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={14} cellId="topic-1" code={`REQUIRED = ["endpoint", "method", "headers", "body"]
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>REQUIRED</Code>, <Code>missing_parts</Code> and <Code>read_response</Code>{" "}
+          from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>odd</Code> with two keys: <Code>endpoint</Code> set to{" "}
+          <Code>https://api.example.com/v1/chat</Code>, and <Code>headers</Code> set to a dict with{" "}
+          <Code>Authorization</Code> set to <Code>Bearer xyz789</Code>. Print{" "}
+          <Code>"odd request is missing:"</Code> and <Code>missing_parts(odd)</Code>.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>responses</Code> with two response dicts. Each has the shape{" "}
+          <Code>{`{"choices": [{"message": {"role": "assistant", "content": ...}}], "usage": {"total_tokens": ...}}`}</Code>
+          . The first has content <Code>Bonjour!</Code> and 9 total tokens. The second has content{" "}
+          <Code>Hola!</Code> and 7 total tokens.
+        </ListItem>
+        <ListItem>
+          Set <Code>total = 0</Code>. Loop over <Code>responses</Code>. In each pass, call{" "}
+          <Code>read_response</Code> to get <Code>reply, tokens</Code>, add <Code>tokens</Code> to{" "}
+          <Code>total</Code>, and print <Code>"reply:"</Code>, the reply, <Code>"| tokens used:"</Code>{" "}
+          and the tokens.
+        </ListItem>
+        <ListItem>
+          After the loop, print <Code>"total tokens:"</Code> and <Code>total</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={14} cellId="topic-1" withHint code={`REQUIRED = ["endpoint", "method", "headers", "body"]
 
 
 def missing_parts(request):
@@ -237,26 +265,31 @@ reply: Bonjour! | tokens used: 9
 reply: Hola! | tokens used: 7
 total tokens: 16`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`odd request is missing: ['method', 'body']
+reply: Bonjour! | tokens used: 9
+reply: Hola! | tokens used: 7
+total tokens: 16`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>odd</Code> has an endpoint and headers, but no method and no body. The loop in{" "}
-          <Code>missing_parts</Code> finds both, in the order of <Code>REQUIRED</Code>.
+          <Code>missing_parts</Code> finds both, in the order of <Code>REQUIRED</Code>, so the
+          list is <Code>['method', 'body']</Code>.
         </ListItem>
         <ListItem>
           The second loop reads each response. Each pass takes out the reply and the token count,
-          and adds the tokens to <Code>total</Code>.
+          adds the tokens to <Code>total</Code>, and prints one line.
         </ListItem>
         <ListItem>
           9 + 7 = 16. Adding up <Code>usage</Code> like this is how you can track what a whole
           session costs.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four lines. The missing parts are <Code>['method', 'body']</Code>,
-        and the total is 16 tokens.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -459,10 +492,32 @@ for reply in replies:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same idea with the labels <Code>toxic</Code> and <Code>non-toxic</Code>.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={14} cellId="topic-2" code={`def clean(reply):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>clean</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Write <Code>to_label(reply)</Code> the same way as the worked example, but with the
+          labels <Code>non-toxic</Code> and <Code>toxic</Code>. Set <Code>text = clean(reply)</Code>.
+          If <Code>"non-toxic"</Code> is in <Code>text</Code>, return <Code>"non-toxic"</Code>. Then
+          if <Code>"toxic"</Code> is in <Code>text</Code>, return <Code>"toxic"</Code>. Otherwise
+          return <Code>"unknown"</Code>. Keep the longer label first.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>replies</Code> with these four strings:{" "}
+          <Code>Toxic!</Code>, <Code>{`" Non-toxic."`}</Code> (it starts with a space),{" "}
+          <Code>I would say it is non-toxic</Code> and <Code>Not sure</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>replies</Code>. For each one, print <Code>reply.strip()</Code>, then{" "}
+          <Code>"-&gt;"</Code>, then <Code>to_label(reply)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={14} cellId="topic-2" withHint code={`def clean(reply):
     return reply.strip().strip(".").lower()
 
 
@@ -482,7 +537,15 @@ Non-toxic. -> non-toxic
 I would say it is non-toxic -> non-toxic
 Not sure -> unknown`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`Toxic! -> toxic
+Non-toxic. -> non-toxic
+I would say it is non-toxic -> non-toxic
+Not sure -> unknown`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -502,10 +565,6 @@ Not sure -> unknown`} />
           <Code>Non-toxic.</Code> so the lines look tidy.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four lines, labelled <Code>toxic</Code>,{" "}
-        <Code>non-toxic</Code>, <Code>non-toxic</Code> and <Code>unknown</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

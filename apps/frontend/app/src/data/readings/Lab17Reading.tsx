@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -133,10 +133,24 @@ for window in (30, 12):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new chat, with windows of 40 and 20 tokens and 8 tokens kept for the reply.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={17} cellId="topic-1" code={`def count_tokens(text):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_tokens</Code> and <Code>total_tokens</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>chat</Code> with three messages, each a dict with <Code>"role"</Code> and <Code>"content"</Code>. First a <Code>system</Code> message with the content <Code>{`You are Kofi's digital twin.`}</Code>. Then a <Code>user</Code> message with the content <Code>Where do you teach maths?</Code>. Then an <Code>assistant</Code> message with the content <Code>At a school in Kumasi, on Fridays.</Code>
+        </ListItem>
+        <ListItem>
+          Set <Code>reply_room = 8</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for window in (40, 20):</Code>. In each pass, set <Code>room = window - reply_room</Code> and <Code>used = total_tokens(chat)</Code>. Then print <Code>"window"</Code>, <Code>window</Code>, <Code>"-&gt; input room"</Code>, <Code>room</Code>, <Code>"used"</Code>, <Code>used</Code>, <Code>"fits:"</Code> and <Code>used &lt;= room</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={17} cellId="topic-1" withHint code={`def count_tokens(text):
     return len(text) // 4 + 1
 
 
@@ -159,22 +173,25 @@ for window in (40, 20):
     print("window", window, "-> input room", room, "used", used, "fits:", used <= room)`} expectedOutput={`window 40 -> input room 32 used 24 fits: True
 window 20 -> input room 12 used 24 fits: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`window 40 -> input room 32 used 24 fits: True
+window 20 -> input room 12 used 24 fits: False`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>total_tokens</Code> adds up the cost of the three messages. The chat costs 24 tokens.
+          <Code>total_tokens</Code> adds up the cost of the three messages: 8 + 7 + 9 = 24 tokens.
         </ListItem>
         <ListItem>
           Window 40 minus 8 leaves 32 for the input. 24 is within 32, so <Code>True</Code>.
         </ListItem>
         <ListItem>
-          Window 20 minus 8 leaves 12. 24 is over 12, so <Code>False</Code>.
+          Window 20 minus 8 leaves 12. 24 is over 12, so <Code>False</Code>. The chat did not change. Only the window did.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>window 40 -&gt; input room 32 used 24 fits: True</Code>, then <Code>window 20 -&gt; input room 12 used 24 fits: False</Code>. The chat did not change. Only the window did.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -294,10 +311,24 @@ for budget in (30, 12):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new chat, with budgets of 22 and 10 tokens.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={17} cellId="topic-2" code={`def count_tokens(text):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_tokens</Code> and <Code>count_kept</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>turns</Code> to a list of four strings, in this order: <Code>I am Kofi.</Code>, <Code>I teach maths in Kumasi.</Code>, <Code>I code at night.</Code> and <Code>Where do I teach?</Code>
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for budget in (22, 10):</Code>. In each pass, set <Code>kept = count_kept(turns, budget)</Code> and <Code>seen = turns[len(turns) - kept:]</Code>.
+        </ListItem>
+        <ListItem>
+          Still inside the loop, print <Code>"budget"</Code>, <Code>budget</Code>, <Code>"-&gt; sees"</Code>, <Code>kept</Code>, <Code>"turns, knows the town:"</Code> and <Code>"I teach maths in Kumasi." in seen</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={17} cellId="topic-2" withHint code={`def count_tokens(text):
     return len(text) // 4 + 1
 
 
@@ -319,7 +350,13 @@ for budget in (22, 10):
     print("budget", budget, "-> sees", kept, "turns, knows the town:", "I teach maths in Kumasi." in seen)`} expectedOutput={`budget 22 -> sees 4 turns, knows the town: True
 budget 10 -> sees 2 turns, knows the town: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`budget 22 -> sees 4 turns, knows the town: True
+budget 10 -> sees 2 turns, knows the town: False`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -332,9 +369,6 @@ budget 10 -> sees 2 turns, knows the town: False`} />
           Budget 10: 5 + 5 = 10 fits. Adding 7 makes 17, over 10, so the loop breaks. Only 2 turns are seen, and the turn with the town is lost.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>budget 22 -&gt; sees 4 turns, knows the town: True</Code>, then <Code>budget 10 -&gt; sees 2 turns, knows the town: False</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -459,10 +493,21 @@ for reply in (500, 1000, 2000):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions with a window of 4,000, a chat of 3,200 tokens and replies of 300, 800 and 1,200.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={17} cellId="topic-3" code={`def input_budget(window, reply):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>input_budget</Code> and <Code>fits</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>window = 4000</Code> and <Code>history_tokens = 3200</Code>. Write the numbers without commas.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for reply in (300, 800, 1200):</Code>. In each pass, print <Code>"reply"</Code>, <Code>reply</Code>, <Code>"-&gt; input budget"</Code>, <Code>input_budget(window, reply)</Code>, <Code>"fits:"</Code> and <Code>fits(history_tokens, window, reply)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={17} cellId="topic-3" withHint code={`def input_budget(window, reply):
     return window - reply
 
 
@@ -477,7 +522,14 @@ for reply in (300, 800, 1200):
 reply 800 -> input budget 3200 fits: True
 reply 1200 -> input budget 2800 fits: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`reply 300 -> input budget 3700 fits: True
+reply 800 -> input budget 3200 fits: True
+reply 1200 -> input budget 2800 fits: False`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -487,12 +539,9 @@ reply 1200 -> input budget 2800 fits: False`} />
           Reply 800: the budget is 3,200. The chat is exactly 3,200, which is not over, so it still fits.
         </ListItem>
         <ListItem>
-          Reply 1,200: the budget is 2,800. The chat is over it, so it does not fit.
+          Reply 1,200: the budget is 2,800. The chat is over it, so it does not fit. The history stayed the same, and only the reply allowance changed.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines. The first two end in <Code>fits: True</Code> and the third in <Code>fits: False</Code>. The history stayed the same, and only the reply allowance changed.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

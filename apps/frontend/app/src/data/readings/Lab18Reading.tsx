@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -121,10 +121,24 @@ for word in WORDS:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function with a new table and the word <Code>jog</Code> as the query. The first number now means food and the second means sport.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit. In the new table the first number means food and the second means sport:
       </Text>
-      <PracticeCell labId={18} cellId="topic-1" code={`def dot(a, b):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>dot</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>WORDS</Code> with three entries: <Code>"tea"</Code> with the list <Code>[0.8, 0.2]</Code>, <Code>"goal"</Code> with <Code>[0.1, 0.9]</Code> and <Code>"jog"</Code> with <Code>[0.0, 1.0]</Code>, in that order.
+        </ListItem>
+        <ListItem>
+          Set <Code>query = WORDS["jog"]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for word in WORDS:</Code> and print <Code>word</Code>, <Code>"-&gt;"</Code> and <Code>round(dot(query, WORDS[word]), 2)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={18} cellId="topic-1" withHint code={`def dot(a, b):
     total = 0
     for x, y in zip(a, b):
         total = total + x * y
@@ -138,7 +152,14 @@ for word in WORDS:
 goal -> 0.9
 jog -> 1.0`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`tea -> 0.2
+goal -> 0.9
+jog -> 1.0`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -148,12 +169,9 @@ jog -> 1.0`} />
           <Code>tea</Code> is <Code>[0.8, 0.2]</Code>. Multiplying the pairs gives 0.0 and 0.2, so the score is 0.2.
         </ListItem>
         <ListItem>
-          <Code>goal</Code> is <Code>[0.1, 0.9]</Code>, mostly sport. The pairs give 0.0 and 0.9, so the score is 0.9. <Code>jog</Code> against itself is 1.0.
+          <Code>goal</Code> is <Code>[0.1, 0.9]</Code>, mostly sport. The pairs give 0.0 and 0.9, so the score is 0.9. <Code>jog</Code> against itself is 1.0. The sport words score high and the food word scores low.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>tea -&gt; 0.2</Code>, <Code>goal -&gt; 0.9</Code> and <Code>jog -&gt; 1.0</Code>. The sport words score high and the food word scores low.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -258,10 +276,27 @@ for name in docs:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a question about sport, <Code>[0.0, 1.0]</Code>, with a short sport note and a long food essay.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={18} cellId="topic-2" code={`import math
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import math</Code>, <Code>length</Code> and <Code>dot</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>query = [0.0, 1.0]</Code>. This is a question about sport.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>docs</Code> with two entries: <Code>"short sport note"</Code> with the list <Code>[0.2, 0.8]</Code>, then <Code>"long food essay"</Code> with <Code>[5.0, 3.0]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for name in docs:</Code>. In each pass, set <Code>d = docs[name]</Code> and <Code>direction = dot(query, d) / (length(query) * length(d))</Code>.
+        </ListItem>
+        <ListItem>
+          Still inside the loop, print <Code>name</Code>, <Code>"-&gt; raw dot:"</Code>, <Code>round(dot(query, d), 2)</Code>, <Code>"direction only:"</Code> and <Code>round(direction, 3)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={18} cellId="topic-2" withHint code={`import math
 
 
 def length(v):
@@ -280,7 +315,13 @@ for name in docs:
     print(name, "-> raw dot:", round(dot(query, d), 2), "direction only:", round(direction, 3))`} expectedOutput={`short sport note -> raw dot: 0.8 direction only: 0.97
 long food essay -> raw dot: 3.0 direction only: 0.514`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`short sport note -> raw dot: 0.8 direction only: 0.97
+long food essay -> raw dot: 3.0 direction only: 0.514`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -293,9 +334,6 @@ long food essay -> raw dot: 3.0 direction only: 0.514`} />
           Again the raw dot picks the wrong one and the direction picks the right one.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>short sport note -&gt; raw dot: 0.8 direction only: 0.97</Code>, then <Code>long food essay -&gt; raw dot: 3.0 direction only: 0.514</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -426,10 +464,24 @@ for fact in ["bread and soup", "run in park"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same functions on a new question, <Code>jog in the park</Code>, and two new facts.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
       </Text>
-      <PracticeCell labId={18} cellId="topic-3" code={`import math
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import math</Code>, the <Code>WORDS</Code> table, <Code>embed</Code>, <Code>cosine</Code> and <Code>shared_words</Code> from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>question = "jog in the park"</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for fact in ["soup for lunch", "run fast"]:</Code>. In each pass, set <Code>score = cosine(embed(question), embed(fact))</Code>.
+        </ListItem>
+        <ListItem>
+          Still inside the loop, print <Code>fact</Code>, <Code>"-&gt; shared words:"</Code>, <Code>shared_words(question, fact)</Code>, <Code>"meaning score:"</Code> and <Code>round(score, 2)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={18} cellId="topic-3" withHint code={`import math
 
 WORDS = {"food": [1.0, 0.0], "cook": [0.9, 0.1], "bread": [1.0, 0.0], "soup": [0.9, 0.0], "run": [0.0, 1.0], "park": [0.1, 0.9]}
 
@@ -464,7 +516,13 @@ for fact in ["soup for lunch", "run fast"]:
     print(fact, "-> shared words:", shared_words(question, fact), "meaning score:", round(score, 2))`} expectedOutput={`soup for lunch -> shared words: 0 meaning score: 0.11
 run fast -> shared words: 0 meaning score: 0.99`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`soup for lunch -> shared words: 0 meaning score: 0.11
+run fast -> shared words: 0 meaning score: 0.99`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -477,9 +535,6 @@ run fast -> shared words: 0 meaning score: 0.99`} />
           No fact shares a word with the question, so both counts are 0. Only the meaning score tells them apart.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>soup for lunch -&gt; shared words: 0 meaning score: 0.11</Code>, then <Code>run fast -&gt; shared words: 0 meaning score: 0.99</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

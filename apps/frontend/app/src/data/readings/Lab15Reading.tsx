@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -174,10 +174,28 @@ for roles in chats:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on two new chats.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={15} cellId="topic-1" code={`def make_history(roles):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>make_history</Code> and <Code>check_history</Code> from the worked example
+          above, exactly as they are (you can leave out the comment).
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>chats</Code> with two lists of roles. The first is{" "}
+          <Code>system</Code>, <Code>user</Code>, <Code>assistant</Code>, <Code>user</Code>. The
+          second is <Code>system</Code>, <Code>user</Code>, <Code>assistant</Code>,{" "}
+          <Code>assistant</Code>. Each role is a string in quotes.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>chats</Code> with <Code>for roles in chats</Code>. For each one, print{" "}
+          <Code>len(roles)</Code>, then <Code>"messages -&gt;"</Code>, then{" "}
+          <Code>check_history(make_history(roles))</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={15} cellId="topic-1" withHint code={`def make_history(roles):
     history = []
     for role in roles:
         history.append({"role": role, "content": "text"})
@@ -204,7 +222,13 @@ for roles in chats:
     print(len(roles), "messages ->", check_history(make_history(roles)))`} expectedOutput={`4 messages -> ok
 4 messages -> problem: expected user but got assistant`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`4 messages -> ok
+4 messages -> problem: expected user but got assistant`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -219,10 +243,6 @@ for roles in chats:
           Both chats have 4 messages, but only the order tells them apart.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>4 messages -&gt; ok</Code>, then{" "}
-        <Code>4 messages -&gt; problem: expected user but got assistant</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -412,11 +432,34 @@ print("after reset:", len(history), "message,", count_words(history), "words")`}
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same three functions with a new system message, a new window and new
-        questions.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={15} cellId="topic-2" code={`def count_words(messages):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_words</Code>, <Code>add</Code> and <Code>reset</Code> from the worked
+          example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>window = 10</Code>. Set <Code>history = reset("Answer in one line.")</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over the three questions <Code>name a fruit</Code>, <Code>name a colour please</Code>{" "}
+          and <Code>name a country in Africa</Code>, using the loop variable <Code>text</Code>. In
+          each pass: call <Code>add(history, "user", text)</Code>, set{" "}
+          <Code>words = count_words(history)</Code>, then print <Code>len(history)</Code>,{" "}
+          <Code>"messages,"</Code>, <Code>words</Code>, <Code>"words, fits:"</Code> and{" "}
+          <Code>words &lt;= window</Code>. Last in the pass, call{" "}
+          <Code>add(history, "assistant", "mango")</Code>.
+        </ListItem>
+        <ListItem>
+          After the loop, set <Code>history = reset("Answer in one line.")</Code> again and print{" "}
+          <Code>"after reset:"</Code>, <Code>len(history)</Code>, <Code>"message,"</Code>,{" "}
+          <Code>count_words(history)</Code> and <Code>"words"</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={15} cellId="topic-2" withHint code={`def count_words(messages):
     total = 0
     for message in messages:
         total = total + len(message["content"].split())
@@ -444,7 +487,15 @@ print("after reset:", len(history), "message,", count_words(history), "words")`}
 6 messages, 18 words, fits: False
 after reset: 1 message, 4 words`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`2 messages, 7 words, fits: True
+4 messages, 12 words, fits: False
+6 messages, 18 words, fits: False
+after reset: 1 message, 4 words`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -463,10 +514,6 @@ after reset: 1 message, 4 words`} />
           words.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> the sizes 7, 12 and 18 words, with <Code>fits: True</Code> only
-        for the first. After the reset the count is back to 1 message.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -650,10 +697,33 @@ for transport in [echo_transport, shout_transport]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same loop with two new stand-in models.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={15} cellId="topic-3" code={`def reverse_transport(messages):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>run_chat</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Write <Code>reverse_transport(messages)</Code>. It returns the content of the last
+          message written backwards: <Code>{`messages[-1]["content"][::-1]`}</Code>.
+        </ListItem>
+        <ListItem>
+          Write <Code>count_transport(messages)</Code>. It returns the text{" "}
+          <Code>"I can see "</Code> plus <Code>str(len(messages))</Code> plus{" "}
+          <Code>" messages"</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>questions = ["abc", "xyz"]</Code>. Loop over{" "}
+          <Code>[reverse_transport, count_transport]</Code> (no brackets after the names) using the
+          loop variable <Code>transport</Code>. In each pass, print <Code>"with"</Code> and{" "}
+          <Code>transport.__name__</Code>, then set{" "}
+          <Code>count = run_chat(transport, questions)</Code>, then print{" "}
+          <Code>"history size:"</Code> and <Code>count</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={15} cellId="topic-3" withHint code={`def reverse_transport(messages):
     return messages[-1]["content"][::-1]
 
 
@@ -684,7 +754,19 @@ abc -> I can see 1 messages
 xyz -> I can see 3 messages
 history size: 4`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`with reverse_transport
+abc -> cba
+xyz -> zyx
+history size: 4
+with count_transport
+abc -> I can see 1 messages
+xyz -> I can see 3 messages
+history size: 4`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -699,10 +781,6 @@ history size: 4`} />
           <Code>run_chat</Code> is exactly the same for both. Each run ends with a history of 4.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two blocks of three lines. In the second block the number of
-        messages seen grows from 1 to 3.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

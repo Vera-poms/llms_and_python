@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -159,10 +159,31 @@ print("model beats baseline:", accuracy(model, labels) > baseline_accuracy(label
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same functions on labels where one answer is very common.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={2} cellId="topic-1" code={`def accuracy(predictions, labels):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>accuracy</Code> and <Code>baseline_accuracy</Code> from the worked example
+          above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make <Code>labels</Code> a list of ten numbers: nine <Code>1</Code>s, then one{" "}
+          <Code>0</Code>.
+        </ListItem>
+        <ListItem>
+          Make <Code>model</Code> a list of ten numbers: eight <Code>1</Code>s, then two{" "}
+          <Code>0</Code>s.
+        </ListItem>
+        <ListItem>
+          Print <Code>"model:"</Code> and <Code>accuracy(model, labels)</Code>. On the next line
+          print <Code>"baseline:"</Code> and <Code>baseline_accuracy(labels)</Code>. On the last
+          line print <Code>"model beats baseline:"</Code> and{" "}
+          <Code>accuracy(model, labels) &gt; baseline_accuracy(labels)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={2} cellId="topic-1" withHint code={`def accuracy(predictions, labels):
     correct = 0
     for guess, truth in zip(predictions, labels):
         if guess == truth:
@@ -185,24 +206,31 @@ print("model beats baseline:", accuracy(model, labels) > baseline_accuracy(label
 baseline: 0.9
 model beats baseline: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the two lists
+        of ten numbers.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`model: 0.9
+baseline: 0.9
+model beats baseline: False`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          There are 10 labels: nine 1s and one 0. The baseline is right 9 times out of 10, so 0.9.
+          There are 10 labels: nine 1s and one 0. The baseline always says 1, so it is right 9 times
+          out of 10, which is 0.9.
         </ListItem>
         <ListItem>
-          The model gets 9 right out of 10 too, so 0.9. It looks good, but it is no better than the
-          lazy guess.
+          The model misses only the ninth label (it says 0, the truth is 1). The last one it gets
+          right. So it is right 9 times out of 10, which is 0.9. It looks good, but it is no better
+          than the lazy guess.
         </ListItem>
         <ListItem>
-          <Code>0.9 &gt; 0.9</Code> is <Code>False</Code>.
+          <Code>0.9 &gt; 0.9</Code> is <Code>False</Code>, so the model does not beat the baseline.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>model: 0.9</Code>, <Code>baseline: 0.9</Code>, then
-        <Code>model beats baseline: False</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -419,10 +447,26 @@ for slope in (1, 2, 3):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same functions on new points, with an intercept of 0.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={2} cellId="topic-2" code={`def line_value(x, slope, intercept):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>line_value</Code> and <Code>total_error</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make <Code>points = [(1, 3), (2, 6), (3, 9)]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for slope in (1, 3, 4):</Code> and print <Code>"slope"</Code>,{" "}
+          <Code>slope</Code>, <Code>"-&gt; error"</Code> and{" "}
+          <Code>total_error(points, slope, 0)</Code> in one <Code>print(...)</Code> call. The
+          intercept is <Code>0</Code> this time.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={2} cellId="topic-2" withHint code={`def line_value(x, slope, intercept):
     return slope * x + intercept
 
 
@@ -439,7 +483,16 @@ for slope in (1, 3, 4):
 slope 3 -> error 0
 slope 4 -> error 14`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the points
+        and that the intercept is 0.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`slope 1 -> error 56
+slope 3 -> error 0
+slope 4 -> error 14`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -450,14 +503,13 @@ slope 4 -> error 14`} />
           56.
         </ListItem>
         <ListItem>
-          Slope 3 hits every point, so the error is 0. Slope 4 gives 4, 8 and 12. The misses are 1,
-          2 and 3, so the error is 14.
+          Slope 3 hits every point, so the error is 0.
+        </ListItem>
+        <ListItem>
+          Slope 4 gives 4, 8 and 12. The misses are 1, 2 and 3, squared 1, 4 and 9, so the error is
+          14.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>slope 1 -&gt; error 56</Code>, <Code>slope 3 -&gt; error
-        0</Code> and <Code>slope 4 -&gt; error 14</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -632,10 +684,32 @@ for name, guesses in models.items():
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on five new values.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={2} cellId="topic-3" code={`def average_miss(truth, guesses):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>average_miss</Code> and <Code>squared_loss</Code> from the worked example
+          above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make <Code>truth = [5, 5, 5, 5, 5]</Code>.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>models</Code> with two entries, in this order:{" "}
+          <Code>"small misses"</Code> with the list <Code>[6, 4, 6, 4, 5]</Code>, then{" "}
+          <Code>"one big miss"</Code> with the list <Code>[5, 5, 5, 5, 9]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>models.items()</Code> with <Code>name, guesses</Code> and print{" "}
+          <Code>name</Code>, <Code>"-&gt; average miss:"</Code>,{" "}
+          <Code>average_miss(truth, guesses)</Code>, <Code>"squared loss:"</Code> and{" "}
+          <Code>squared_loss(truth, guesses)</Code> in one <Code>print(...)</Code> call, the same
+          layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={2} cellId="topic-3" withHint code={`def average_miss(truth, guesses):
     total = 0
     for t, g in zip(truth, guesses):
         total = total + abs(t - g)
@@ -655,22 +729,30 @@ for name, guesses in models.items():
     print(name, "-> average miss:", average_miss(truth, guesses), "squared loss:", squared_loss(truth, guesses))`} expectedOutput={`small misses -> average miss: 0.8 squared loss: 0.8
 one big miss -> average miss: 0.8 squared loss: 3.2`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the lists and
+        the order of the values in the print.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`small misses -> average miss: 0.8 squared loss: 0.8
+one big miss -> average miss: 0.8 squared loss: 3.2`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          The true values are all 5. The first model is off by 1, 1, 1, 1 and 0. The average miss is
-          <Code>4 / 5 = 0.8</Code>, and so is the squared loss.
+          The true values are all 5. The first model is off by 1, 1, 1, 1 and 0. The average miss is{" "}
+          <Code>4 / 5 = 0.8</Code>. Each miss squared is still 1 or 0, so the squared loss is{" "}
+          <Code>4 / 5 = 0.8</Code> too.
         </ListItem>
         <ListItem>
-          The second model is exact four times and off by 4 once. The average miss is also 0.8, but
-          the squared loss is <Code>16 / 5 = 3.2</Code>.
+          The second model is exact four times and off by 4 once. The average miss is{" "}
+          <Code>4 / 5 = 0.8</Code> again, but the squared loss is <Code>16 / 5 = 3.2</Code>.
+        </ListItem>
+        <ListItem>
+          Same average miss, different squared loss. Squaring makes the one big miss stand out.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>small misses</Code> with <Code>0.8</Code> and
-        <Code>0.8</Code>, then <Code>one big miss</Code> with <Code>0.8</Code> and <Code>3.2</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -856,10 +938,25 @@ show_misses(points, 0.108, 3.38)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on new points with a different line.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={2} cellId="topic-4" code={`def line_value(x, slope, intercept):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>line_value</Code> and <Code>show_misses</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make <Code>points = [(35, 8), (45, 11), (55, 9), (65, 5)]</Code>.
+        </ListItem>
+        <ListItem>
+          Call <Code>show_misses(points, 0.1, 4)</Code>. The slope is <Code>0.1</Code> and the
+          intercept is <Code>4</Code>. The function does the printing, so you do not need a{" "}
+          <Code>print</Code> of your own.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={2} cellId="topic-4" withHint code={`def line_value(x, slope, intercept):
     return slope * x + intercept
 
 
@@ -878,25 +975,34 @@ show_misses(points, 0.1, 4)`} expectedOutput={` 35 real 8 guess 7.5 miss 0.5
  55 real 9 guess 9.5 miss 0.5
  65 real 5 guess 10.5 miss 5.5 ######`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these four lines. If yours differ, check the points
+        and the slope and intercept. Each line starts with a space, because the number is padded to
+        3 characters.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {` 35 real 8 guess 7.5 miss 0.5
+ 45 real 11 guess 8.5 miss 2.5 ##
+ 55 real 9 guess 9.5 miss 0.5
+ 65 real 5 guess 10.5 miss 5.5 ######`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          The line is <Code>0.1 * x + 4</Code>. The points at 35 and 55 characters miss by 0.5,
-          which rounds to 0 marks.
+          The line is <Code>0.1 * x + 4</Code>. At 35 characters it guesses 7.5 and the real value
+          is 8, so the miss is 0.5. At 55 characters it guesses 9.5 and the real value is 9, so the
+          miss is 0.5 again. Python rounds 0.5 to 0, so both get no marks.
         </ListItem>
         <ListItem>
-          The point at 45 characters misses by 2.5. That gets 2 marks, because Python rounds an
-          exact half to the nearest even number.
+          The point at 45 characters guesses 8.5 and the real value is 11. The miss is 2.5. That
+          gets 2 marks, because Python rounds an exact half to the nearest even number.
         </ListItem>
         <ListItem>
           The point at 65 characters has 5 words, but the line guesses 10.5. The miss is 5.5, so it
           gets 6 marks. That is the worst point.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four lines. The last one has the longest row of marks.
-      </Text>
 
       <Text fontSize="sm" color="gray.500">
         Further reading: IBM Think -{" "}

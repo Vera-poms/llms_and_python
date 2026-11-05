@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -146,10 +146,27 @@ for text in ["cat sat", "retrieval makes tokenization costly"]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on two new texts, with a window of 6 tokens.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={16} cellId="topic-1" code={`def toy_token_count(text):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>toy_token_count</Code> and <Code>fits</Code> from the worked example above,
+          exactly as they are (you can leave out the comment).
+        </ListItem>
+        <ListItem>
+          Set <Code>window = 6</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over the two texts <Code>dog barks</Code> and{" "}
+          <Code>tokenization of weekends matters</Code>, using the loop variable <Code>text</Code>.
+          For each one, print <Code>text</Code>, then <Code>"-&gt;"</Code>, then{" "}
+          <Code>toy_token_count(text)</Code>, then <Code>"tokens, fits:"</Code>, then{" "}
+          <Code>fits(text, window)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={16} cellId="topic-1" withHint code={`def toy_token_count(text):
     total = 0
     for word in text.split():
         total = total + (len(word) + 3) // 4
@@ -165,7 +182,13 @@ for text in ["dog barks", "tokenization of weekends matters"]:
     print(text, "->", toy_token_count(text), "tokens, fits:", fits(text, window))`} expectedOutput={`dog barks -> 3 tokens, fits: True
 tokenization of weekends matters -> 8 tokens, fits: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`dog barks -> 3 tokens, fits: True
+tokenization of weekends matters -> 8 tokens, fits: False`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -174,14 +197,10 @@ tokenization of weekends matters -> 8 tokens, fits: False`} />
         </ListItem>
         <ListItem>
           <Code>tokenization of weekends matters</Code>: 3 + 1 + 2 + 2 = 8 tokens. That is over the
-          window of 6.
+          window of 6. It has 4 words, just like the first example, and is still too big for the
+          window.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>dog barks -&gt; 3 tokens, fits: True</Code>, then{" "}
-        <Code>tokenization of weekends matters -&gt; 8 tokens, fits: False</Code>. The second text
-        has 4 words, just like the first example, and is still too big for the window.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -311,10 +330,33 @@ for name, text in [("raw", raw), ("clean", clean_text(raw))]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same three functions on a different note, with a window of 10 tokens.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={16} cellId="topic-2" code={`def clean_text(raw):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>clean_text</Code>, <Code>estimate_tokens</Code> and <Code>fits</Code> from the
+          worked example above, exactly as they are (you can leave out the comment).
+        </ListItem>
+        <ListItem>
+          Set <Code>window = 10</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>raw</Code> to this string, written on one line with the backslash-n pieces typed
+          as they are: <Code whiteSpace="pre-wrap">{`"Kofi   teaches\\n\\nmaths    and   codes   at   night"`}</Code>.
+          Between the words there are 3 spaces after <Code>Kofi</Code>, 4 spaces after{" "}
+          <Code>maths</Code>, and 3 spaces after each of <Code>and</Code>, <Code>codes</Code> and{" "}
+          <Code>at</Code>. After <Code>teaches</Code> comes <Code>\n\n</Code> with no spaces.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>[("raw", raw), ("clean", clean_text(raw))]</Code> using{" "}
+          <Code>for name, text in ...</Code>. For each pair, print <Code>name</Code>,{" "}
+          <Code>estimate_tokens(text)</Code>, <Code>"tokens, fits:"</Code> and{" "}
+          <Code>fits(text, window)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={16} cellId="topic-2" withHint code={`def clean_text(raw):
     return " ".join(raw.split())
 
 
@@ -332,7 +374,13 @@ for name, text in [("raw", raw), ("clean", clean_text(raw))]:
     print(name, estimate_tokens(text), "tokens, fits:", fits(text, window))`} expectedOutput={`raw 12 tokens, fits: False
 clean 9 tokens, fits: True`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`raw 12 tokens, fits: False
+clean 9 tokens, fits: True`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -343,13 +391,9 @@ clean 9 tokens, fits: True`} />
         </ListItem>
         <ListItem>
           The loop runs the same line for each version, so the two answers are easy to compare.
+          Cleaning decided whether the note could be used at all.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>raw 12 tokens, fits: False</Code>, then{" "}
-        <Code>clean 9 tokens, fits: True</Code>. Cleaning decided whether the note could be used at
-        all.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -488,10 +532,27 @@ for jump in (4, 2):  # 4 = no overlap, 2 = overlap of 2
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new sentence and a new fact.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={16} cellId="topic-3" code={`def make_chunks(words, size, jump):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>make_chunks</Code> and <Code>count_with_fact</Code> from the worked example
+          above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>words</Code> to <Code>"Ada bakes bread on weekends and sells it".split()</Code>.
+          Set <Code>fact = "bread on weekends"</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for jump in (4, 2):</Code>. In each pass, set{" "}
+          <Code>chunks = make_chunks(words, 4, jump)</Code>, then print <Code>"jump"</Code>,{" "}
+          <Code>jump</Code>, <Code>"-&gt;"</Code>, <Code>len(chunks)</Code>, <Code>"chunks,"</Code>,{" "}
+          <Code>count_with_fact(chunks, fact)</Code> and <Code>"hold the whole fact"</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={16} cellId="topic-3" withHint code={`def make_chunks(words, size, jump):
     chunks = []
     for start in range(0, len(words), jump):
         chunks.append(" ".join(words[start:start + size]))
@@ -513,7 +574,13 @@ for jump in (4, 2):
     print("jump", jump, "->", len(chunks), "chunks,", count_with_fact(chunks, fact), "hold the whole fact")`} expectedOutput={`jump 4 -> 2 chunks, 0 hold the whole fact
 jump 2 -> 4 chunks, 1 hold the whole fact`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b>
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">{`jump 4 -> 2 chunks, 0 hold the whole fact
+jump 2 -> 4 chunks, 1 hold the whole fact`}</Text>
+      <Text>If your output is different, compare your lines with these one by one.</Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -528,13 +595,11 @@ jump 2 -> 4 chunks, 1 hold the whole fact`} />
           <Code>fact in chunk</Code> is <Code>True</Code> when the fact is found inside the chunk.
           Each time, <Code>count</Code> goes up by 1.
         </ListItem>
+        <ListItem>
+          Same text, same chunk size. Only the overlap decides whether the model can ever find the
+          fact. The next labs search through these chunks, so good chunks make good answers later.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>0 hold the whole fact</Code> for jump 4, and{" "}
-        <Code>1 hold the whole fact</Code> for jump 2. Same text, same chunk size. Only the overlap
-        decides whether the model can ever find the fact. The next labs search through these chunks, so good chunks
-        make good answers later.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

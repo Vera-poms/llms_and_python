@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -160,10 +160,32 @@ for question in questions:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions with three questions and a new name.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={13} cellId="topic-1" code={`PREFIX = "My name is "
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>PREFIX</Code>, <Code>fake_model</Code> and <Code>ask</Code> from the worked
+          example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>questions</Code> to{" "}
+          <Code>{`["My name is Kwame", "I like football", "What is my name?"]`}</Code> and{" "}
+          <Code>history</Code> to an empty list.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>questions</Code> and print <Code>"kept list  -&gt;"</Code> (two spaces
+          after <Code>list</Code>) and <Code>ask(history, question)</Code>, using the same{" "}
+          <Code>history</Code> every time.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>questions</Code> again and print <Code>"fresh list -&gt;"</Code> (one space
+          after <Code>list</Code>) and <Code>ask([], question)</Code>, so each question gets a brand
+          new empty list.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={13} cellId="topic-1" withHint code={`PREFIX = "My name is "
 
 
 def fake_model(messages):
@@ -197,28 +219,35 @@ fresh list -> Nice to meet you.
 fresh list -> Nice to meet you.
 fresh list -> I do not know your name.`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these six lines. If yours differ, check the name, the
+        three questions and the two spaces after <Code>kept list</Code>.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`kept list  -> Nice to meet you.
+kept list  -> Nice to meet you.
+kept list  -> Your name is Kwame.
+fresh list -> Nice to meet you.
+fresh list -> Nice to meet you.
+fresh list -> I do not know your name.`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          The first loop uses one <Code>history</Code> list for all three questions. It grows from 0
-          to 6 messages.
+          The first loop uses one <Code>history</Code> list for all three questions. Each call to{" "}
+          <Code>ask</Code> adds the question and the reply, so it grows from 0 to 6 messages.
         </ListItem>
         <ListItem>
-          The middle question, "I like football", gets the plain reply{" "}
-          <Code>Nice to meet you.</Code> The name is still in the list, so the last question finds
-          it.
+          The first two questions are not "What is my name?", so they get the plain reply{" "}
+          <Code>Nice to meet you.</Code> The name Kwame is still in the list, so the last question
+          finds it and says <Code>Your name is Kwame.</Code>
         </ListItem>
         <ListItem>
           The second loop passes <Code>[]</Code> each time, a brand new empty list. The last
-          question has no name to find.
+          question has no name to find, so it says <Code>I do not know your name.</Code>
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> six lines. The kept list ends with{" "}
-        <Code>Your name is Kwame.</Code> and the fresh list ends with{" "}
-        <Code>I do not know your name.</Code>
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -376,10 +405,37 @@ for i in range(len(questions)):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on a new chat.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={13} cellId="topic-2" code={`def count_words(messages):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_words</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Set <Code>history</Code> to a list with one dict: role <Code>system</Code>, content{" "}
+          <Code>Answer briefly.</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>questions</Code> to <Code>{`["Hello", "What is two plus two", "Thanks a lot"]`}</Code>{" "}
+          and <Code>replies</Code> to <Code>{`["Hi!", "Four", "You are welcome"]`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for i in range(len(questions))</Code>. First append a dict with role{" "}
+          <Code>user</Code> and content <Code>questions[i]</Code> to <Code>history</Code>.
+        </ListItem>
+        <ListItem>
+          Then print <Code>"turn"</Code>, <Code>i + 1</Code>, <Code>"sends"</Code>,{" "}
+          <Code>len(history)</Code>, <Code>"messages,"</Code>, <Code>count_words(history)</Code> and{" "}
+          <Code>"words"</Code>, in one <Code>print(...)</Code>.
+        </ListItem>
+        <ListItem>
+          Last, still inside the loop, append a dict with role <Code>assistant</Code> and content{" "}
+          <Code>replies[i]</Code> to <Code>history</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={13} cellId="topic-2" withHint code={`def count_words(messages):
     total = 0
     for message in messages:
         total = total + len(message["content"].split())
@@ -396,7 +452,16 @@ for i in range(len(questions)):
 turn 2 sends 4 messages, 9 words
 turn 3 sends 6 messages, 13 words`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the system
+        text, the questions and replies, and the order of the two appends.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`turn 1 sends 2 messages, 3 words
+turn 2 sends 4 messages, 9 words
+turn 3 sends 6 messages, 13 words`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -414,11 +479,11 @@ turn 3 sends 6 messages, 13 words`} />
           Turn 3: add "Four" (1 word) and "Thanks a lot" (3 words). 9 + 1 + 3 = 13 words in 6
           messages.
         </ListItem>
+        <ListItem>
+          Each call is bigger than the one before, even though the new question is short, because
+          the whole history is sent again.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines, with 3, 9 and 13 words. Each call is bigger than
-        the one before, even though the new question is short.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -594,10 +659,34 @@ for question in ["Do you play chess?", "Do you teach maths?", "Where do you live
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions with a new person and new facts.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={13} cellId="topic-3" code={`def make_system(name, facts):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>make_system</Code> and <Code>fake_twin</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>system</Code> to{" "}
+          <Code>{`make_system("Kofi", ["bakes bread daily", "runs every morning"])`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for question in</Code> the list{" "}
+          <Code>{`["Do you bake bread?", "Do you run every morning?", "Do you swim?"]`}</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, set <Code>messages</Code> to a list of two dicts: one with role{" "}
+          <Code>system</Code> and content <Code>system</Code>, then one with role <Code>user</Code>{" "}
+          and content <Code>question</Code>.
+        </ListItem>
+        <ListItem>
+          Still inside the loop, print <Code>question</Code>, then <Code>"-&gt;"</Code>, then{" "}
+          <Code>fake_twin(messages)</Code>, in one <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={13} cellId="topic-3" withHint code={`def make_system(name, facts):
     lines = ["You are " + name + "."]
     for fact in facts:
         lines.append("- " + fact)
@@ -621,7 +710,16 @@ for question in ["Do you bake bread?", "Do you run every morning?", "Do you swim
 Do you run every morning? -> From my facts: runs every morning
 Do you swim? -> I was not given a fact about that.`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the name, the
+        two facts and the three questions.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`Do you bake bread? -> From my facts: bakes bread daily
+Do you run every morning? -> From my facts: runs every morning
+Do you swim? -> I was not given a fact about that.`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -639,12 +737,11 @@ Do you swim? -> I was not given a fact about that.`} />
           "Do you swim?" has no word of 5 letters or more that is in a fact, so the model says it
           was not given a fact about that.
         </ListItem>
+        <ListItem>
+          The reply copies the fact with <Code>line[2:]</Code>, which drops the first two
+          characters, the <Code>- </Code> bullet.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two answers taken from the facts, then{" "}
-        <Code>I was not given a fact about that.</Code> The facts you write decide what the twin can
-        say.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -173,10 +173,31 @@ for name, messages in [("full list", history), ("last turn only", history[-1:])]
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on a new chat, where the fact is a city.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={12} cellId="topic-1" code={`def model_can_see(messages, fact):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>model_can_see</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>history</Code> with three messages: a <Code>user</Code> message{" "}
+          <Code>I live in Tamale.</Code>, then an <Code>assistant</Code> message{" "}
+          <Code>Tamale is a lovely city!</Code>, then a <Code>user</Code> message{" "}
+          <Code>Which city do I live in?</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>{`[("full list", history), ("last turn only", history[-1:])]`}</Code> with{" "}
+          <Code>for name, messages in</Code>.
+        </ListItem>
+        <ListItem>
+          Inside the loop, print <Code>name</Code>, then <Code>"-&gt;"</Code>, then{" "}
+          <Code>len(messages)</Code>, then <Code>"messages, can see the city:"</Code>, then{" "}
+          <Code>model_can_see(messages, "Tamale")</Code>, in one <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={12} cellId="topic-1" withHint code={`def model_can_see(messages, fact):
     for message in messages:
         if fact in message["content"]:
             return True
@@ -192,25 +213,34 @@ for name, messages in [("full list", history), ("last turn only", history[-1:])]
     print(name, "->", len(messages), "messages, can see the city:", model_can_see(messages, "Tamale"))`} expectedOutput={`full list -> 3 messages, can see the city: True
 last turn only -> 1 messages, can see the city: False`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the three
+        message texts, the fact you search for and the print layout.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`full list -> 3 messages, can see the city: True
+last turn only -> 1 messages, can see the city: False`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The word <Code>Tamale</Code> is in the first two messages, but not in the last one.
         </ListItem>
         <ListItem>
-          On the full list, the loop finds it in the first message and returns <Code>True</Code>.
+          On the full list (3 messages), the loop finds it in the first message and returns{" "}
+          <Code>True</Code>.
         </ListItem>
         <ListItem>
-          On the last turn only, there is 1 message and no <Code>Tamale</Code>, so the loop ends and
-          returns <Code>False</Code>.
+          <Code>history[-1:]</Code> keeps only the last message. It has no <Code>Tamale</Code>, so
+          the loop ends and returns <Code>False</Code>. The model could not answer "Which city do I
+          live in?".
+        </ListItem>
+        <ListItem>
+          The text says "1 messages" because the print uses the fixed word <Code>messages</Code>,
+          even for one.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b>{" "}
-        <Code>full list -&gt; 3 messages, can see the city: True</Code>, then{" "}
-        <Code>last turn only -&gt; 1 messages, can see the city: False</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -387,10 +417,31 @@ for name, messages in [("good", good), ("late", late)]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on two new lists.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={12} cellId="topic-2" code={`def audit(messages):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>audit</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>tidy</Code> with three messages: a <Code>system</Code> message{" "}
+          <Code>You are Kofi.</Code>, a <Code>user</Code> message <Code>Hello</Code> and an{" "}
+          <Code>assistant</Code> message <Code>Hi there!</Code>.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>doubled</Code> with three messages: a <Code>system</Code> message{" "}
+          <Code>You are Kofi.</Code>, a <Code>user</Code> message <Code>Hello</Code> and a second{" "}
+          <Code>system</Code> message <Code>Be funny.</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>{`[("tidy", tidy), ("doubled", doubled)]`}</Code> with{" "}
+          <Code>for name, messages in</Code> and print <Code>name</Code>, then <Code>"-&gt;"</Code>,
+          then <Code>audit(messages)</Code>, in one <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={12} cellId="topic-2" withHint code={`def audit(messages):
     problems = []
     if messages[0]["role"] != "system":
         problems.append("system message is not first")
@@ -414,25 +465,31 @@ for name, messages in [("tidy", tidy), ("doubled", doubled)]:
     print(name, "->", audit(messages))`} expectedOutput={`tidy -> []
 doubled -> ['extra system message at position 2']`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the roles and
+        the order of the messages in each list.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`tidy -> []
+doubled -> ['extra system message at position 2']`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>tidy</Code> has the system dict first, then a user and an assistant. No problems.
+          <Code>tidy</Code> has the system dict first, then a user and an assistant. No problems, so
+          the answer is an empty list.
         </ListItem>
         <ListItem>
           <Code>doubled</Code> has the system dict first, so the first check passes. But it has a
-          second system dict at position 2.
+          second system dict at position 2 (counting from 0).
         </ListItem>
         <ListItem>
-          The loop starts at position 1, so it finds that one and adds a note with the position
-          number. <Code>str(i)</Code> turns the number 2 into the text <Code>"2"</Code>.
+          The loop starts at position 1, so it skips the first dict, passes the user dict, and finds
+          the extra system dict at 2. It adds a note with the position number.{" "}
+          <Code>str(i)</Code> turns the number 2 into the text <Code>"2"</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>tidy -&gt; []</Code>, then{" "}
-        <Code>{"doubled -> ['extra system message at position 2']"}</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -622,10 +679,30 @@ for question, reply in replies:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on three new replies, with a new banned word.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={12} cellId="topic-3" code={`def check_rules(reply, banned, closing):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>check_rules</Code> from the worked example above, exactly as it is.
+        </ListItem>
+        <ListItem>
+          Set <Code>closing = "anything else?"</Code>.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>replies</Code> with three (question, reply) pairs, in this order:{" "}
+          <Code>{`("How do I clean my grinder?", "Brush it weekly. Is there anything else?")`}</Code>,{" "}
+          <Code>{`("Is BrewCo cheaper?", "BrewCo has lower prices, I hear.")`}</Code> and{" "}
+          <Code>{`("Can I pause my plan?", "Yes, from your account page. Is there anything else?")`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop with <Code>for question, reply in replies</Code> and print <Code>question</Code>,
+          then <Code>"-&gt;"</Code>, then <Code>{`check_rules(reply, ["brewco"], closing)`}</Code>, in one{" "}
+          <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={12} cellId="topic-3" withHint code={`def check_rules(reply, banned, closing):
     broken = []
     for word in banned:
         if word in reply.lower():
@@ -646,7 +723,16 @@ for question, reply in replies:
 Is BrewCo cheaper? -> ['mentions brewco', 'no closing question']
 Can I pause my plan? -> []`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the three
+        pairs, the banned word (in small letters) and the closing text.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`How do I clean my grinder? -> []
+Is BrewCo cheaper? -> ['mentions brewco', 'no closing question']
+Can I pause my plan? -> []`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -655,16 +741,14 @@ Can I pause my plan? -> []`} />
         </ListItem>
         <ListItem>
           Replies 1 and 3 do not name the brand and end with <Code>anything else?</Code>, so both
-          give <Code>[]</Code>.
+          give an empty list, <Code>[]</Code>.
         </ListItem>
         <ListItem>
-          Reply 2 names the brand and has no closing question. That is 2 broken rules, in the order
-          the function checks them.
+          Reply 2 names the brand, so <Code>mentions brewco</Code> is added first. It also does not
+          end with <Code>anything else?</Code>, so <Code>no closing question</Code> is added second.
+          That is 2 broken rules, in the order the function checks them.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines. Only the middle one lists broken rules.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

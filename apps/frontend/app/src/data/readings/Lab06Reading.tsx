@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -131,10 +131,31 @@ for bytes_each in [4, 2, 1]:
           Pattern: memory is the number of parameters times the bytes per number.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same functions on three smaller tables.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={6} cellId="topic-1" code={`def table_params(rows, cols):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>table_params</Code>, <Code>total_params</Code> and <Code>memory_bytes</Code>{" "}
+          from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>shapes = [(500, 32), (32, 32), (32, 500)]</Code>, then{" "}
+          <Code>params = total_params(shapes)</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>"parameters:"</Code> and <Code>params</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for bytes_each in [4, 2, 1]</Code> and print{" "}
+          <Code>"bytes per number:"</Code>, <Code>bytes_each</Code>, <Code>"-&gt;"</Code>, the
+          memory written with commas, and <Code>"bytes"</Code>. Use the same{" "}
+          <Code>print(...)</Code> line as the worked example, including its{" "}
+          <Code>{`f"{memory_bytes(params, bytes_each):,}"`}</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={6} cellId="topic-1" withHint code={`def table_params(rows, cols):
     return rows * cols
 
 
@@ -158,19 +179,26 @@ bytes per number: 4 -> 132,096 bytes
 bytes per number: 2 -> 66,048 bytes
 bytes per number: 1 -> 33,024 bytes`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these four lines. If yours differ, check the table
+        sizes and the print line.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`parameters: 33024
+bytes per number: 4 -> 132,096 bytes
+bytes per number: 2 -> 66,048 bytes
+bytes per number: 1 -> 33,024 bytes`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>500 * 32 = 16000</Code>, <Code>32 * 32 = 1024</Code> and <Code>32 * 500 = 16000</Code>. The total is <Code>33024</Code>.
         </ListItem>
         <ListItem>
-          The loop then multiplies by 4, 2 and 1 bytes: <Code>132,096</Code>, <Code>66,048</Code> and <Code>33,024</Code> bytes.
+          The loop then multiplies by 4, 2 and 1 bytes: <Code>132,096</Code>, <Code>66,048</Code> and <Code>33,024</Code> bytes. Each time the bytes per number halve, the memory halves too.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>parameters: 33024</Code>, then three lines. Each time the bytes per number halve, the memory halves too.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -368,10 +396,30 @@ for label, cfg in [("double d_model", Config(128, 2)), ("double n_layers", Confi
           Pattern: depth grows the size in a straight line, and width grows it much faster.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same class and loop on a new base, and one more change.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={6} cellId="topic-2" code={`from dataclasses import dataclass
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy the <Code>from dataclasses import dataclass</Code> line and the{" "}
+          <Code>Config</Code> class (with <Code>attention_total</Code>) from the worked example
+          above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>base = Config(d_model=32, n_layers=3)</Code> and print{" "}
+          <Code>"base"</Code> and <Code>base.attention_total()</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over three pairs: <Code>{`("double d_model", Config(64, 3))`}</Code>,{" "}
+          <Code>{`("double n_layers", Config(32, 6))`}</Code> and{" "}
+          <Code>{`("triple d_model", Config(96, 3))`}</Code>. For each pair, print the label, then{" "}
+          <Code>cfg.attention_total()</Code>, then <Code>"x"</Code>, then{" "}
+          <Code>cfg.attention_total() // base.attention_total()</Code>. Use the same{" "}
+          <Code>print(...)</Code> layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={6} cellId="topic-2" withHint code={`from dataclasses import dataclass
 
 
 @dataclass
@@ -391,7 +439,17 @@ double d_model 49152 x 4
 double n_layers 24576 x 2
 triple d_model 110592 x 9`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these four lines. If yours differ, check the numbers in
+        each <Code>Config(...)</Code>.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`base 12288
+double d_model 49152 x 4
+double n_layers 24576 x 2
+triple d_model 110592 x 9`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -404,9 +462,6 @@ triple d_model 110592 x 9`} />
           Tripling <Code>d_model</Code> to 96 gives <Code>110592</Code>. That is 9 times, because 3 * 3 = 9.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> four lines, ending with <Code>triple d_model 110592 x 9</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -560,10 +615,33 @@ for name, cfg in configs.items():
           Pattern: a config is plain data, so small functions can check it before you run anything.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same functions on three new configs.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={6} cellId="topic-3" code={`def head_size(cfg):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>head_size</Code> and <Code>is_valid</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a dict called <Code>configs</Code> with three entries:{" "}
+          <Code>"tiny"</Code> with <Code>{`{"d_model": 64, "n_heads": 4}`}</Code>,{" "}
+          <Code>"wide"</Code> with <Code>{`{"d_model": 256, "n_heads": 8}`}</Code> and{" "}
+          <Code>"broken"</Code> with <Code>{`{"d_model": 100, "n_heads": 8}`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for name, cfg in configs.items()</Code>. If <Code>is_valid(cfg)</Code>, print
+          the name, <Code>"ok, each head gets"</Code>, <Code>head_size(cfg)</Code> and{" "}
+          <Code>"numbers"</Code>.
+        </ListItem>
+        <ListItem>
+          Otherwise print the name, <Code>"invalid:"</Code>, <Code>cfg["d_model"]</Code>,{" "}
+          <Code>"does not split evenly into"</Code>, <Code>cfg["n_heads"]</Code> and{" "}
+          <Code>"heads"</Code>. Use the same <Code>print(...)</Code> lines as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={6} cellId="topic-3" withHint code={`def head_size(cfg):
     return cfg["d_model"] // cfg["n_heads"]
 
 
@@ -584,7 +662,16 @@ for name, cfg in configs.items():
 wide ok, each head gets 32 numbers
 broken invalid: 100 does not split evenly into 8 heads`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the numbers in
+        each config and the text in your print lines.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`tiny ok, each head gets 16 numbers
+wide ok, each head gets 32 numbers
+broken invalid: 100 does not split evenly into 8 heads`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -597,9 +684,6 @@ broken invalid: 100 does not split evenly into 8 heads`} />
           <Code>broken</Code>: <Code>100 % 8 = 4</Code>, so it is invalid.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>tiny ok, each head gets 16 numbers</Code>, <Code>wide ok, each head gets 32 numbers</Code> and <Code>broken invalid: 100 does not split evenly into 8 heads</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">
         Applied to this lab
@@ -780,10 +864,32 @@ for name, computed, published in models:
           Pattern: judge a gap as a percent of the size, not as a raw number.
         </ListItem>
       </UnorderedList>
-      <Text color="gray.600">
-        Try it: use the same functions on three new models.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={6} cellId="topic-4" code={`def percent_off(computed, published):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>percent_off</Code> and <Code>verdict</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>models</Code> to a list of three tuples (name, computed, published):{" "}
+          <Code>{`("D", 19900, 20000)`}</Code>, <Code>{`("E", 480000, 500000)`}</Code> and{" "}
+          <Code>{`("F", 60000000, 60500000)`}</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for name, computed, published in models</Code>. Set{" "}
+          <Code>pct = percent_off(computed, published)</Code>.
+        </ListItem>
+        <ListItem>
+          Print the name, <Code>"off by"</Code>, the gap{" "}
+          <Code>{`f"{abs(computed - published):,}"`}</Code>, <Code>"="</Code>,{" "}
+          <Code>round(pct, 2)</Code>, <Code>"%"</Code> and <Code>verdict(pct, 1)</Code>. Use the
+          same <Code>print(...)</Code> line as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={6} cellId="topic-4" withHint code={`def percent_off(computed, published):
     return abs(computed - published) / published * 100
 
 
@@ -798,7 +904,16 @@ for name, computed, published in models:
 E off by 20,000 = 4.0 % too far
 F off by 500,000 = 0.83 % good`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the three
+        tuples and the print line.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`D off by 100 = 0.5 % good
+E off by 20,000 = 4.0 % too far
+F off by 500,000 = 0.83 % good`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -811,9 +926,6 @@ F off by 500,000 = 0.83 % good`} />
           <Code>F</Code>: a gap of 500,000 out of 60,500,000 is <Code>0.83</Code> percent. Good, even though it is the biggest gap in raw numbers.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>D off by 100 = 0.5 % good</Code>, <Code>E off by 20,000 = 4.0 % too far</Code> and <Code>F off by 500,000 = 0.83 % good</Code>.
-      </Text>
 
       <Text>
         Further reading:{" "}

@@ -160,10 +160,31 @@ print("shape:", shape(X))`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on a new table and a new sentence. Each word has 2 numbers this time.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={7} cellId="topic-1" code={`def embed_sentence(words, table):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>embed_sentence</Code> and <Code>shape</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>table</Code> to a dict with three words, each with 2 numbers:{" "}
+          <Code>"dog"</Code> is <Code>[2.0, 1.0]</Code>, <Code>"ran"</Code> is{" "}
+          <Code>[0.0, 3.0]</Code> and <Code>"a"</Code> is <Code>[1.0, 1.0]</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>words = ["a", "dog", "ran", "a", "dog"]</Code> and{" "}
+          <Code>X = embed_sentence(words, table)</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for word, row in zip(words, X)</Code> and print <Code>word, row</Code>. After
+          the loop, print <Code>"shape:"</Code> and <Code>shape(X)</Code>. Use the same{" "}
+          <Code>print(...)</Code> lines as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={7} cellId="topic-1" withHint code={`def embed_sentence(words, table):
     rows = []
     for word in words:
         rows.append(table[word])
@@ -186,7 +207,19 @@ a [1.0, 1.0]
 dog [2.0, 1.0]
 shape: (5, 2)`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these six lines. If yours differ, check the table
+        numbers and the order of the words.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`a [1.0, 1.0]
+dog [2.0, 1.0]
+ran [0.0, 3.0]
+a [1.0, 1.0]
+dog [2.0, 1.0]
+shape: (5, 2)`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -199,9 +232,6 @@ shape: (5, 2)`} />
           <Code>shape</Code> uses <Code>len(matrix)</Code>, the number of rows (5), and <Code>len(matrix[0])</Code>, the length of the first row (2). So the shape is <Code>(5, 2)</Code>.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> five lines, each with a word and its two numbers, then <Code>shape: (5, 2)</Code>. Try adding <Code>"ran"</Code> to the end of the sentence. The shape becomes <Code>(6, 2)</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -354,10 +384,26 @@ for word, query in zip(words, vectors):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on three new words. Each word has 2 numbers.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={7} cellId="topic-2" code={`def dot(a, b):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>dot</Code> and <Code>scores_for</Code> from the worked example above, exactly
+          as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>words = ["tea", "coffee", "bus"]</Code> and{" "}
+          <Code>vectors = [[3, 1], [2, 2], [0, 4]]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for word, query in zip(words, vectors)</Code> and print <Code>word</Code>,
+          then <Code>scores_for(query, vectors)</Code>. Use the same <Code>print(...)</Code> line
+          as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={7} cellId="topic-2" withHint code={`def dot(a, b):
     total = 0
     for x, y in zip(a, b):
         total = total + x * y
@@ -378,7 +424,16 @@ for word, query in zip(words, vectors):
 coffee [8, 8, 8]
 bus [4, 8, 16]`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the words and
+        the numbers in <Code>vectors</Code>.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`tea [10, 8, 4]
+coffee [8, 8, 8]
+bus [4, 8, 16]`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -390,10 +445,10 @@ bus [4, 8, 16]`} />
         <ListItem>
           <Code>bus</Code> matches itself best (16) and tea worst (4).
         </ListItem>
+        <ListItem>
+          Each word scores highest against itself, or ties for it.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines: <Code>tea [10, 8, 4]</Code>, <Code>coffee [8, 8, 8]</Code> and <Code>bus [4, 8, 16]</Code>. Each word scores highest against itself, or ties for it.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -576,10 +631,34 @@ for scores in ([1.0, 3.0, 2.0], [1.0, 1.0, 1.0]):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on two new sets of scores.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={7} cellId="topic-3" code={`import math
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import math</Code> and <Code>softmax</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>words = ["a", "dog", "barked"]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for scores in ([0.0, 2.0, 1.0], [2.0, 2.0, 0.0])</Code>. Inside it, set{" "}
+          <Code>weights = softmax(scores)</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>"scores"</Code> and <Code>scores</Code>. Then loop{" "}
+          <Code>for word, weight in zip(words, weights)</Code> and print <Code>"  "</Code> (two
+          spaces), <Code>word</Code> and <Code>round(weight, 2)</Code>.
+        </ListItem>
+        <ListItem>
+          After that inner loop, print <Code>"  total"</Code> (two spaces, then the word total) and{" "}
+          <Code>round(sum(weights), 2)</Code>. Use the same <Code>print(...)</Code> lines as the
+          worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={7} cellId="topic-3" withHint code={`import math
 
 
 def softmax(scores):
@@ -610,7 +689,23 @@ scores [2.0, 2.0, 0.0]
    barked 0.06
   total 1.0`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these ten lines. If yours differ, check the scores and
+        the spaces in your print lines.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`scores [0.0, 2.0, 1.0]
+   a 0.09
+   dog 0.67
+   barked 0.24
+  total 1.0
+scores [2.0, 2.0, 0.0]
+   a 0.47
+   dog 0.47
+   barked 0.06
+  total 1.0`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -622,10 +717,10 @@ scores [2.0, 2.0, 0.0]
         <ListItem>
           <Code>round(weight, 2)</Code> cuts each share to 2 digits, and the totals still show 1.0.
         </ListItem>
+        <ListItem>
+          In the second group two words share most of the attention.
+        </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> two groups of lines, each with three words and a total of <Code>1.0</Code>. The first group matches the worked example. In the second group two words share most of the attention.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -809,10 +904,26 @@ for n_words in (9, 50, 200):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions with 8 numbers per word and three new lengths.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={7} cellId="topic-4" code={`def count_pairs(n_words):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>count_pairs</Code> and <Code>count_multiplications</Code> from the worked
+          example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>dim = 8</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for n_words in (5, 20, 40)</Code> and print <Code>n_words</Code>,{" "}
+          <Code>"words -&gt;"</Code>, <Code>count_pairs(n_words)</Code>, <Code>"scores,"</Code>,{" "}
+          <Code>count_multiplications(n_words, dim)</Code> and <Code>"multiplications"</Code>. Use
+          the same <Code>print(...)</Code> line as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={7} cellId="topic-4" withHint code={`def count_pairs(n_words):
     pairs = 0
     for i in range(n_words):
         for j in range(n_words):
@@ -830,7 +941,16 @@ for n_words in (5, 20, 40):
 20 words -> 400 scores, 3200 multiplications
 40 words -> 1600 scores, 12800 multiplications`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check{" "}
+        <Code>dim</Code> and the list of lengths.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`5 words -> 25 scores, 200 multiplications
+20 words -> 400 scores, 3200 multiplications
+40 words -> 1600 scores, 12800 multiplications`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -843,9 +963,6 @@ for n_words in (5, 20, 40):
           40 words give 1600 scores and 12800 multiplications.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines, from <Code>5 words -&gt; 25 scores, 200 multiplications</Code> to <Code>40 words -&gt; 1600 scores, 12800 multiplications</Code>. Try a length of 80 words. The scores are 6400.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -1047,10 +1164,31 @@ for word, row in zip(words, weights):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on new words and new weights.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={7} cellId="topic-5" code={`def shade(weight):
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>shade</Code> and <Code>brightest</Code> from the worked example above, exactly
+          as they are.
+        </ListItem>
+        <ListItem>
+          Set <Code>words = ["she", "read", "books"]</Code> and{" "}
+          <Code>weights = [[0.7, 0.2, 0.1], [0.6, 0.1, 0.3], [0.1, 0.3, 0.6]]</Code>.
+        </ListItem>
+        <ListItem>
+          Loop <Code>for word, row in zip(words, weights)</Code>. Inside it, start with{" "}
+          <Code>picture = ""</Code>, then loop <Code>for w in row</Code> and add{" "}
+          <Code>shade(w)</Code> to <Code>picture</Code>.
+        </ListItem>
+        <ListItem>
+          Print <Code>word.ljust(7)</Code>, <Code>picture</Code>, <Code>"looks most at"</Code> and{" "}
+          <Code>brightest(words, row)</Code>. Use the same <Code>print(...)</Code> line as the
+          worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={7} cellId="topic-5" withHint code={`def shade(weight):
     if weight >= 0.5:
         return "#"
     if weight >= 0.25:
@@ -1076,7 +1214,16 @@ for word, row in zip(words, weights):
 read    #.+ looks most at she
 books   .+# looks most at books`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these three lines. If yours differ, check the weights
+        and the <Code>ljust(7)</Code> padding.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`she     #.. looks most at she
+read    #.+ looks most at she
+books   .+# looks most at books`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -1092,9 +1239,6 @@ books   .+# looks most at books`} />
           <Code>word.ljust(7)</Code> pads the word with spaces to 7 characters, so the pictures line up.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> three lines, one for each word, each with a three-symbol picture and the word it looks at most. Try changing one weight in a row to make a different symbol.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

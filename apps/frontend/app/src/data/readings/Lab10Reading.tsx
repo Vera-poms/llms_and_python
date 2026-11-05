@@ -1,4 +1,4 @@
-import { Heading, Link, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -188,10 +188,33 @@ for name, messages in [("zero-shot", zero), ("few-shot", few)]:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same two functions on new messages that ask for a city and a temperature.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={10} cellId="topic-1" code={`import json
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import json</Code>, <Code>count_shots</Code> and <Code>shape_to_copy</Code>{" "}
+          from the worked example above, exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>none</Code> with one message: role <Code>user</Code>, content{" "}
+          <Code>Weather in Kumasi?</Code>.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>one</Code> with three messages: a <Code>user</Code> message{" "}
+          <Code>Weather in Accra?</Code>, then an <Code>assistant</Code> message whose content is
+          the text <Code>{`'{"city": "Accra", "temp": 31}'`}</Code>, then a <Code>user</Code>{" "}
+          message <Code>Weather in Kumasi?</Code>.
+        </ListItem>
+        <ListItem>
+          Loop over <Code>[("no shots", none), ("one shot", one)]</Code> and, for each pair, print
+          the name, then <Code>"-&gt; messages:"</Code> and the number of messages, then{" "}
+          <Code>"shots:"</Code> and the shot count, then <Code>"shape:"</Code> and the shape. Use
+          the same <Code>print(...)</Code> layout as the worked example.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={10} cellId="topic-1" withHint code={`import json
 
 
 def count_shots(messages):
@@ -220,26 +243,32 @@ for name, messages in [("no shots", none), ("one shot", one)]:
     print(name, "-> messages:", len(messages), "shots:", count_shots(messages), "shape:", shape_to_copy(messages))`} expectedOutput={`no shots -> messages: 1 shots: 0 shape: unknown
 one shot -> messages: 3 shots: 1 shape: ['city', 'temp']`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these two lines. If yours differ, check the names, the
+        message text and the keys in the reply.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`no shots -> messages: 1 shots: 0 shape: unknown
+one shot -> messages: 3 shots: 1 shape: ['city', 'temp']`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
-          <Code>none</Code> is only the question. It has 1 message and 0 shots, so the model has no
-          shape to copy.
+          <Code>none</Code> is only the question. It has 1 message and 0 shots, so there is no
+          reply to copy and the shape stays <Code>unknown</Code>.
         </ListItem>
         <ListItem>
           <Code>one</Code> has an example pair, then the real question. That is 3 messages and 1
           shot.
         </ListItem>
         <ListItem>
-          The example reply has the keys <Code>city</Code> and <Code>temp</Code>, so a model reading
-          this list would answer Kumasi in the same shape.
+          The example reply has the keys <Code>city</Code> and <Code>temp</Code>.{" "}
+          <Code>sorted</Code> puts them in order, so the shape is{" "}
+          <Code>{"['city', 'temp']"}</Code>. A model reading this list would answer Kumasi with the
+          same keys.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> <Code>no shots -&gt; messages: 1 shots: 0 shape: unknown</Code>,
-        then <Code>{"one shot -> messages: 3 shots: 1 shape: ['city', 'temp']"}</Code>.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>
@@ -475,10 +504,34 @@ print(usable, "of", len(replies), "replies usable")`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: use the same function on five new replies that should hold a city and a temp.
+      <Text>
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
+        press Run and Submit:
       </Text>
-      <PracticeCell labId={10} cellId="topic-2" code={`import json
+      <OrderedList spacing={1} pl={4}>
+        <ListItem>
+          Copy <Code>import json</Code> and <Code>check_reply</Code> from the worked example above,
+          exactly as they are.
+        </ListItem>
+        <ListItem>
+          Make a list called <Code>replies</Code> with five strings, in this order:{" "}
+          <Code>{`'{"city": "Accra", "temp": 31}'`}</Code>, <Code>It is sunny in Accra</Code>,{" "}
+          <Code>{`'{"city": "Kumasi"}'`}</Code>, <Code>{`'{"city": "Tamale", "temp": 35}'`}</Code>{" "}
+          and <Code>{`'{"temp": 29}'`}</Code>.
+        </ListItem>
+        <ListItem>
+          Set <Code>usable = 0</Code>. Then loop over <Code>replies</Code>. For each reply, set{" "}
+          <Code>result</Code> to <Code>check_reply(reply, ["city", "temp"])</Code>. If{" "}
+          <Code>result</Code> equals <Code>"ok"</Code>, add 1 to <Code>usable</Code>. Then print{" "}
+          <Code>result</Code>.
+        </ListItem>
+        <ListItem>
+          After the loop, print <Code>usable</Code>, then <Code>"of"</Code>, then{" "}
+          <Code>len(replies)</Code>, then <Code>"replies usable"</Code>, in one{" "}
+          <Code>print(...)</Code>.
+        </ListItem>
+      </OrderedList>
+      <PracticeCell labId={10} cellId="topic-2" withHint code={`import json
 
 
 def check_reply(text, needed):
@@ -512,7 +565,19 @@ ok
 missing city
 2 of 5 replies usable`} />
       <Text>
-        <b>What this cell does, step by step:</b>
+        <b>What you should see:</b> exactly these six lines. If yours differ, check the reply
+        texts, the list of needed keys and the final print.
+      </Text>
+      <Text as="pre" fontFamily="mono" fontSize="sm" whiteSpace="pre-wrap">
+        {`ok
+not JSON
+missing temp
+ok
+missing city
+2 of 5 replies usable`}
+      </Text>
+      <Text>
+        <b>Why you see it:</b>
       </Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -523,15 +588,15 @@ missing city
           <Code>not JSON</Code>.
         </ListItem>
         <ListItem>
-          Reply 3 has <Code>city</Code> but no <Code>temp</Code>. Reply 5 has <Code>temp</Code> but
-          no <Code>city</Code>. The loop checks <Code>city</Code> first, so reply 5 says{" "}
-          <Code>missing city</Code>.
+          Reply 3 has <Code>city</Code> but no <Code>temp</Code>, so it says{" "}
+          <Code>missing temp</Code>. Reply 5 has <Code>temp</Code> but no <Code>city</Code>. The
+          loop checks <Code>city</Code> first, so reply 5 says <Code>missing city</Code>.
+        </ListItem>
+        <ListItem>
+          Only the two <Code>ok</Code> replies add 1 to <Code>usable</Code>, so the last line says 2
+          of 5. A program that trusted every reply would have failed on 3 of the 5.
         </ListItem>
       </UnorderedList>
-      <Text>
-        <b>What you should see:</b> five labels, then <Code>2 of 5 replies usable</Code>. Notice that
-        a program that trusted every reply would have failed on 3 of the 5.
-      </Text>
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>

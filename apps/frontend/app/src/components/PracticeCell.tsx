@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCodeDraft } from "../hooks/useCodeDraft";
 import { CodeEditor } from "./CodeEditor";
 import { DraftStatus } from "./DraftStatus";
+import { HintButton } from "./HintButton";
 import { emphasizeNumbers } from "./prose";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
@@ -42,9 +43,12 @@ export function PracticeCell({
   labId,
   cellId,
   expectedOutput,
+  withHint = false,
 }: {
   labId: number;
   cellId: string;
+  // Shows the same "Get a hint" button the exercises use. Off by default so other labs are unchanged.
+  withHint?: boolean;
   // Still passed by the readings, but grading uses the server's copy (course/exercises/practice_cells.json).
   code?: string;
   expectedOutput?: string;
@@ -207,6 +211,14 @@ export function PracticeCell({
             <AlertIcon />
             {errorMessage}
           </Alert>
+        )}
+        {withHint && (
+          <HintButton
+            labId={labId}
+            cellId={cellId}
+            getSource={() => source}
+            getOutput={() => (result ? actualStdout(result) : "")}
+          />
         )}
         <Text fontSize="xs" color="gray.500">
           Worth 5 points.
