@@ -91,10 +91,6 @@ print(data["stargazers_count"])`} />
         other side answers it. Your chat message to the model is that letter.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell making a GET request to a different API -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import requests
 
@@ -336,10 +332,6 @@ api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed i
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell reading a value back out of{" "}
-        <Code>os.environ</Code> - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import os
 
@@ -546,10 +538,6 @@ data["scores"][0]  # 1`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell drilling into a different small dict -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`data = {"user": "Vera", "orders": [101, 102, 103]}
 print(data["user"])  # expected output: Vera

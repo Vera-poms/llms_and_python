@@ -75,10 +75,6 @@ export function Lab07Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell for indexing into a small matrix - run it
-        before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
 print(grid[0])  # expected output: [10, 20]
@@ -297,10 +293,6 @@ dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell computing a dot product by hand - run it
-        before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`prices = [2, 5, 1]
 quantities = [3, 2, 4]
@@ -531,10 +523,6 @@ print([round(s, 2) for s in softmax])`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell running softmax on a different set of
-        scores - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import numpy as np
 
@@ -799,10 +787,6 @@ result = np.array(a) + np.array(b)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 4 practice" cell comparing a manual loop to a vectorized
-        numpy operation - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import numpy as np
 
@@ -1058,10 +1042,6 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 5 practice" cell plotting a different toy grid as a heatmap -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rainfall = [[5, 2, 8], [1, 9, 3]]
 plt.imshow(rainfall, cmap="Blues")

@@ -82,10 +82,6 @@ print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell comparing a hand-rolled mean to{" "}
-        <Code>statistics.mean</Code> - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import statistics
 
@@ -325,10 +321,6 @@ print(numbers)  # ['3', '1']`} />
         backslashes and brackets alone. It is a good habit for every pattern.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell pulling hashtags out of a post with{" "}
-        <Code>re.findall</Code> - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import re
 
@@ -578,10 +570,6 @@ print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
         That is why we use <Code>get</Code> with a default of 0.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell that tallies letters in a word the
-        same way - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`word = "mississippi"
 
@@ -797,10 +785,6 @@ print(sum(distribution.values()))  # 1.0`} />
         values and gets 1.0. This is how you check that you did it right.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 4 practice" cell normalizing poll counts into a
-        distribution - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
 total = sum(poll_counts.values())  # 40
@@ -1016,10 +1000,6 @@ print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} />
         Finally <Code>[:2]</Code> keeps the first two pairs. This is called a slice.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 5 practice" cell ranking game runtimes with the same{" "}
-        <Code>sorted(..., key=..., reverse=True)</Code> pattern - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
@@ -1259,10 +1239,6 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 6 practice" cell plotting a small bar chart with{" "}
-        <Code>plt.bar</Code> - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 

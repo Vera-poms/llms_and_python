@@ -54,9 +54,6 @@ print(shopping_list)  # ["milk", "eggs"]`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`readings = []
 readings.append(68)
@@ -315,9 +312,6 @@ print(log)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`deliveries = []
 for package in ["P100", "P101"]:
@@ -560,9 +554,6 @@ letter = f"Dear {name}, welcome to {city}!"`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"

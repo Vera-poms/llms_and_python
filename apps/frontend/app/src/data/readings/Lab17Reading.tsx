@@ -58,9 +58,6 @@ print(7 // 2, 7 / 2)      # 3 3.5`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={17} cellId="concept-1" code={`text = "Hello! How can I help you today?"
 print(len(text))           # expected output: 32
 print(len(text) // 4 + 1)  # expected output: 9`} expectedOutput={`32
@@ -227,9 +224,6 @@ for turn in reversed(turns):
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={17} cellId="concept-2" code={`costs = [5, 3, 9, 5]
 budget = 15
 used = 0
@@ -419,9 +413,6 @@ print(newest_first)  # ['x', 'y', 'z']`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={17} cellId="concept-3" code={`history = ["system", "hi", "hello", "bye"]
 system = history[:1]
 rest = history[1:]

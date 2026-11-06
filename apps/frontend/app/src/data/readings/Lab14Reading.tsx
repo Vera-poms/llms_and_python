@@ -80,9 +80,6 @@ export function Lab14Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`request = {
     "endpoint": "https://api.example.com/orders",
@@ -379,9 +376,6 @@ atm.withdraw(20)  # 50`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class VendingMachine:
     def __init__(self, stock):

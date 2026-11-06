@@ -57,9 +57,6 @@ print(car.odometer)  # 15`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class BankAccount:
     def __init__(self):
@@ -307,9 +304,6 @@ for roles in chats:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`class Playlist:
     def __init__(self):
@@ -578,9 +572,6 @@ after reset: 1 message, 4 words`}</Text>
         can run it later.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def fake_sender(message):
     return f"[fake] would send: {message}"

@@ -66,9 +66,6 @@ for turn in chat_log:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`support_log = [
     {"agent": "Bot", "message": "Hi, how can I help?"},
@@ -311,9 +308,6 @@ print(messages[1]["content"])  # Hello!`}
         looks.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`classroom_log = [
     {"role": "teacher_note", "text": "Keep answers under two sentences."},
@@ -575,9 +569,6 @@ for visitor in ["Sam", "Robin", "Priya"]:    # varies every iteration
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`discount = "SAVE10"                      # built once
 for cart_total in [25, 40, 100]:          # varies every iteration

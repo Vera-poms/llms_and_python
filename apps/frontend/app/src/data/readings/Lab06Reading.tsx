@@ -57,10 +57,6 @@ tiles_needed = rows * cols  # 96`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell counting a different grid of items -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rows = 20
 seats_per_row = 15
@@ -297,10 +293,6 @@ print(r.area())  # 12.0`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell building a different dataclass -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`from dataclasses import dataclass
 
@@ -534,10 +526,6 @@ triple d_model 110592 x 9`}
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell reading a different config dict -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`server_config = {
     "host": "localhost",
@@ -767,10 +755,6 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 4 practice" cell plotting a different grouped bar
-        chart - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 

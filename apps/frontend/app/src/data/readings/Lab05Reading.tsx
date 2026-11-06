@@ -73,10 +73,6 @@ print(heads_count)  # 3`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell looping over a different nested
-        dataset - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
 total_sixes = 0
@@ -283,10 +279,6 @@ print(butter_amount)  # 1.8 - a little less butter next time`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell applying the update rule to a
-        different scenario - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`brew_minutes = 5.0  # minutes used in the too-bitter batch
 too_bitter = -1     # -1 means "too bitter", +1 would mean "too weak"
@@ -507,10 +499,6 @@ print(balance)  # 170 - remembers every deposit before it`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell mutating a running total in place -
-        run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`score = 0
 score += 10  # mutates score in place
@@ -725,10 +713,6 @@ plt.show()`} />
         <Code>.set_title</Code>, exactly like you would on a single-plot figure.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 4 practice" cell plotting two different side-by-side
-        charts - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 

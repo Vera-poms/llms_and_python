@@ -58,9 +58,6 @@ print(len(word))    # 9`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={16} cellId="concept-1" code={`title = "digital twin"
 print(title[:7])   # expected output: digital
 print(title[-4:])  # expected output: twin
@@ -243,9 +240,6 @@ print("Hello".lower())  # hello`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={16} cellId="concept-2" code={`note = "  buy   MILK  and   eggs \\n"
 words = note.lower().split()
 print(words)            # expected output: ['buy', 'milk', 'and', 'eggs']
@@ -435,9 +429,6 @@ for start in range(0, len(letters), 3):
         piece shares 2 items with the next. That sharing is the <b>overlap</b>.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={16} cellId="concept-3" code={`numbers = [1, 2, 3, 4, 5, 6, 7, 8]
 for start in range(0, len(numbers), 2):
     print(numbers[start:start + 4])

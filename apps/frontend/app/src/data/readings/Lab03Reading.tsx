@@ -74,10 +74,6 @@ print(pantry)
         <Code>[...]</Code> picks the shelf. The second picks the item.
       </Text>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell grouping zoo animals by category the
-        same way - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`zoo: dict[str, dict[str, int]] = {}
 
@@ -357,10 +353,6 @@ print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell computing P(biscuit | tea) the same
-        way - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`after_tea = {"biscuit": 4, "scone": 1}
 total = sum(after_tea.values())  # 5
@@ -603,10 +595,6 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell plotting a small heatmap with{" "}
-        <Code>plt.imshow</Code> - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 import numpy as np

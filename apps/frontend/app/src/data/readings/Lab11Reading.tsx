@@ -67,9 +67,6 @@ print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`def guess_total(price, tax_rate):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
@@ -333,9 +330,6 @@ print(extract_total(receipt))  # "$11.50"`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
 

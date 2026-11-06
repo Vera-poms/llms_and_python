@@ -56,10 +56,6 @@ print(best_guess)  # 'heads'`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell guessing the most common weather
-        outcome the same way - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
 
@@ -333,10 +329,6 @@ print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell fitting a line to study hours vs.
-        exam scores - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`hours =  [1, 2, 3, 4, 5]
 scores = [52, 58, 65, 71, 78]
@@ -591,10 +583,6 @@ print(mse)  # 29.333...`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 3 practice" cell scoring a different set of
-        predictions with MSE - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`actual =    [52, 58, 65]
 predicted = [55, 55, 70]
@@ -833,10 +821,6 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 4 practice" cell plotting the study-hours fit line the
-        same way - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import matplotlib.pyplot as plt
 

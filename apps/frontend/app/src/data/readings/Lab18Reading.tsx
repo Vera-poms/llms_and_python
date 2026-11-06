@@ -54,9 +54,6 @@ print(sum(x * y for x, y in zip(a, b)))  # 11`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={18} cellId="concept-1" code={`a = [2, 0, 1]
 b = [1, 5, 4]
 print(sum(x * y for x, y in zip(a, b)))  # expected output: 6`} expectedOutput={`6`} />
@@ -207,9 +204,6 @@ print(math.sqrt(sum(x * x for x in v)))   # 5.0`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={18} cellId="concept-2" code={`import math
 v = [6, 8]
 print(math.sqrt(sum(x * x for x in v)))  # expected output: 10.0`} expectedOutput={`10.0`} />
@@ -373,9 +367,6 @@ print(scores.index(max(scores)))                        # 1`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={18} cellId="concept-3" code={`vectors = [[2, 4], [4, 0], [0, 2]]
 print([sum(c) / len(vectors) for c in zip(*vectors)])  # expected output: [2.0, 2.0]
 scores = [0.1, 0.7, 0.3]

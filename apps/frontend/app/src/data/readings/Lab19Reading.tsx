@@ -75,9 +75,6 @@ print(shelf.books)   # ['Python', 'Maths']`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 1 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={19} cellId="concept-1" code={`class Basket:
     def __init__(self):
         self.items = []
@@ -257,9 +254,6 @@ print(len(pairs[:10]))   # 3`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 2 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={19} cellId="concept-2" code={`scores = [(3, "x"), (8, "y"), (5, "z")]
 scores.sort(reverse=True)
 print(scores[:2])        # expected output: [(8, 'y'), (5, 'z')]
@@ -434,9 +428,6 @@ print(prompt)`} />
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has an "Idea 3 practice" cell for this - run it before moving on.
-      </Text>
       <PracticeCell labId={19} cellId="concept-3" code={`notes = ["tea", "toast"]
 lines = "\\n".join(f"- {n}" for n in notes)
 print(lines)  # expected output: two lines, each starting with "- "`} expectedOutput={`- tea
