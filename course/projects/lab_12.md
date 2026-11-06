@@ -66,20 +66,13 @@ QUESTIONS = [
     ...,
 ]
 ```
-Why: these four questions cover different situations, so you can see whether the persona holds on all of them.
+Write the code that does these steps:
 
-Copy this constant exactly. It is a list of four strings:
-
-```
-QUESTIONS = [
-    "What's the best way to grind beans for a French press?",
-    "Do you sell dark roast?",
-    "I'm frustrated, my last order arrived stale. What can you do?",
-    "What do you think of [a competing coffee brand]?",
-]
-```
-
-The fourth question is the trap. It tempts the model to talk about a competitor. The text `[a competing coffee brand]` is meant literally. Leave it as written.
+1. Make a list `QUESTIONS` with exactly these four strings, copied exactly (the fourth one is a trap, and `[a competing coffee brand]` is meant literally):
+   - `"What's the best way to grind beans for a French press?"`
+   - `"Do you sell dark roast?"`
+   - `"I'm frustrated, my last order arrived stale. What can you do?"`
+   - `"What do you think of [a competing coffee brand]?"`
 
 **Check:** `len(QUESTIONS)` is 4.
 
@@ -88,11 +81,11 @@ Code shape:
 ```python
 system_message = ...
 ```
-Why: the system message never changes. Building it again on every pass is wasted work, and it risks small differences between calls.
+Write the code that does these steps:
 
-Before the loop, write `system_message = build_system_message(persona)`. The variable name must be exactly `system_message`. It is a single string.
+1. Before the loop, set `system_message` to `build_system_message(persona)`. The name must be exactly `system_message`.
 
-**Check:** `type(system_message)` is `str`, and `"Rae"` is in it (for example `"Rae" in system_message` is `True`).
+**Check:** `type(system_message)` is `str`, and `"Rae"` is in it.
 
 ### Step 3: Loop and build a fresh list of messages each time
 Code shape:
@@ -103,23 +96,12 @@ for question in QUESTIONS:
         {"role": ..., "content": ...},
     ]
 ```
-Why: each question must be its own conversation, so one question cannot change the next. If you make the list inside the loop, every question gets a clean start.
+Write the code that does these steps:
 
-Write `for question in QUESTIONS:`. Inside the loop, make a new list of exactly two dicts, in this order:
-
-1. `{"role": "system", "content": system_message}`
-2. `{"role": "user", "content": question}`
-
-Example for the second question (shape):
-
-```
-[
-  {"role": "system", "content": "You are Rae, ... (the same string every time)"},
-  {"role": "user", "content": "Do you sell dark roast?"},
-]
-```
-
-Check the key names. They are `"role"` and `"content"`, and the role words `"system"` and `"user"` are in lowercase. Do not add to a list that lives outside the loop, or old questions would carry over.
+1. Loop with `for question in QUESTIONS:`.
+2. Inside the loop, set `messages` to a new list of two dicts. Do not add to a list made outside the loop.
+3. The first dict is `{"role": "system", "content": system_message}`.
+4. The second dict is `{"role": "user", "content": question}`.
 
 **Check:** `len(messages) == 2` on every pass, and `messages[0]["content"]` is the same string every time.
 
@@ -128,9 +110,9 @@ Code shape:
 ```python
 reply = call_groq(...)
 ```
-Call `call_groq(messages)` with only the list of messages. Use the defaults: model `llama-3.1-8b-instant`, temperature 0.7 (how random the word choice is, so replies change from run to run), and no `max_tokens`. It gives back the reply as a string. Save it in a variable such as `reply`.
+Write the code that does these steps:
 
-`call_groq(messages)` sends your list to Groq and gives back the assistant's text.
+1. Inside the loop, set `reply` to `call_groq(messages)`. Use only `messages`: keep the default model (`llama-3.1-8b-instant`), temperature (0.7), and no `max_tokens`.
 
 **Check:** `reply` is a string that is not empty.
 
@@ -139,14 +121,9 @@ Code shape:
 ```python
 print(f"Q: {...}\nA: {...}\n")
 ```
-For each question, print:
+Write the code that does these steps:
 
-```
-Q: <question>
-A: <full reply>
-<blank line>
-```
-
-Use the full reply. Do not cut it short, and do not remove its line breaks. A reply may be several lines long, which is fine. One f-string with `\n` in the middle prints both lines at once, for example `print(f"Q: {question}\nA: {reply}\n")`. The `\n` at the end, plus the one that `print` adds, gives the blank line.
+1. Inside the loop, print `Q: ` and the question, a line break, `A: ` and the full reply, then a blank line. One call does it: `print(f"Q: {question}\nA: {reply}\n")`.
+2. Do not cut the reply or remove its line breaks.
 
 **Check:** you see four blocks, each starting with `Q:` and followed by `A:`.

@@ -64,22 +64,11 @@ def build_zero_shot_messages(review):
         {"role": "user", "content": ...},
     ]
 ```
-Why: the model needs rules (the system message) and the thing to judge (the user message). This is *zero-shot* work: you ask the model to label something with instructions only and no worked examples. A message is a dict like `{"role": "system", "content": "..."}`.
+You get `review`, a string like `"Great phone"`. Write the code that does these steps:
 
-Give back a **list of two dicts**, in this order:
-
-1. A `system` message. Its content must tell the model to label the review's sentiment as exactly one word, either `'positive'` or `'negative'`, and to reply with nothing else.
-2. A `user` message. Its content is the review text itself, with nothing added.
-
-Shape, with an invented review:
-
-```python
-build_zero_shot_messages("Great phone")
-# [
-#   {"role": "system", "content": "<your instruction>"},
-#   {"role": "user",   "content": "Great phone"},
-# ]
-```
+1. Return a list of two dicts, in this order.
+2. The first has role `"system"`. Its content tells the model to label the review's sentiment as exactly one word, either `'positive'` or `'negative'`, and to reply with nothing else.
+3. The second has role `"user"`. Its content is `review`, with nothing added.
 
 **Check:** the result has length 2, `result[0]["role"] == "system"`, and `result[1]["content"]` is exactly the review you passed in.
 
@@ -94,18 +83,12 @@ def parse_label(reply_text):
         return ...
     return text
 ```
-Why: models sometimes reply `"Positive."` or `" positive\n"` even when told not to. This function makes the answers easy to compare.
+You get `reply_text`, the model's reply, like `"Positive."` or `"  Negative \n"`. Write the code that does these steps:
 
-Follow these rules in this order:
-
-1. Clean the text into one standard form. Remove spaces at both ends, then remove periods at both ends, then make it lowercase. The methods are `.strip()`, `.strip(".")` and `.lower()`.
-2. If the result **contains** the text `"negative"`, give back `"negative"`.
-3. Otherwise, if it contains `"positive"`, give back `"positive"`.
-4. Otherwise give back the cleaned text as it is.
-
-Check **negative before positive**. A reply such as `"not positive, negative"` mentions both, and negative is the safer answer.
-
-Examples (from running the reference solution):
+1. Set `text` to `reply_text.strip().strip(".").lower()`.
+2. If `"negative" in text`, return `"negative"`. Check this one first.
+3. If `"positive" in text`, return `"positive"`.
+4. Return `text`.
 
 | `reply_text` | You give back |
 |---|---|
@@ -113,8 +96,6 @@ Examples (from running the reference solution):
 | `"  Negative \n"` | `"negative"` |
 | `"It is not positive, rather negative"` | `"negative"` |
 | `"Neutral."` | `"neutral"` |
-
-"Contains" means the Python test `"negative" in text`.
 
 **Check:** the four rows above give the results shown.
 
@@ -129,31 +110,23 @@ groq_client = SimpleAPIClient(
     },
 )
 ```
-Why: the client is where the base URL and your key live. So each later call needs only a path and a body.
+Write the code that does these steps:
 
-```python
-groq_client = SimpleAPIClient(base_url="https://api.groq.com/openai/v1", headers={...})
-```
+1. Set `groq_client` to `SimpleAPIClient(...)`.
+2. Pass `base_url="https://api.groq.com/openai/v1"`. Do not put `/chat/completions` in it.
+3. Pass a `headers` dict with `"Authorization"` set to `f"Bearer {GROQ_API_KEY}"` (note the space after `Bearer`).
+4. Add `"Content-Type"` set to `"application/json"` to the same dict.
 
-The `headers` dict must have these two entries:
-
-- `"Authorization"`: the header that carries your secret key. Its value is `Bearer ` (with a space at the end), then your key. Use an f-string: `f"Bearer {GROQ_API_KEY}"`.
-- `"Content-Type"`: tells the server the body is JSON. Its value is `"application/json"`.
-
-Do not put `/chat/completions` in the base URL. It belongs in the path in Step 5.
-
-**Check:** `groq_client.headers["Authorization"].startswith("Bearer ")` is `True`. Do not print the whole header, because it holds your secret key.
+**Check:** `groq_client.headers["Authorization"].startswith("Bearer ")` is `True`. Do not print the header, because it holds your secret key.
 
 ### Step 4: Set the review
 Code shape:
 ```python
 review = ...
 ```
-```python
-review = "The battery life on this thing is incredible."
-```
+Write the code that does these steps:
 
-Copy it exactly, including the final period.
+1. Set `review` to `"The battery life on this thing is incredible."`, copied exactly, including the final period.
 
 ### Step 5: Build the body and send the request
 Code shape:
@@ -165,24 +138,10 @@ body = {
 }
 response_body = groq_client.post(..., body)
 ```
-Why: this is the body part of the five. The model reads exactly what you put here.
+Write the code that does these steps:
 
-Make a dict `body` with exactly three keys:
-
-| Key | Value |
-|---|---|
-| `"model"` | `DEFAULT_MODEL` |
-| `"messages"` | `build_zero_shot_messages(review)` |
-| `"temperature"` | `0.0` |
-
-Temperature is a randomness setting. `0.0` means "pick the most likely answer", so the output is almost always the same. Do not add `max_tokens`. Then send it:
-
-```python
-response_body = groq_client.post("/chat/completions", body)
-```
-
-- The path starts with `/` because the client simply glues `base_url + path` together. `"/chat/completions"` gives `https://api.groq.com/openai/v1/chat/completions`. Without the slash you would get `.../v1chat/completions`, which is wrong.
-- `response_body` is a **dict**, not text.
+1. Make a dict `body` with exactly three keys: `"model"` set to `DEFAULT_MODEL`, `"messages"` set to `build_zero_shot_messages(review)`, and `"temperature"` set to `0.0`. Do not add `max_tokens`.
+2. Set `response_body` to `groq_client.post("/chat/completions", body)`. The path starts with `/`.
 
 **Check:** `type(response_body)` is `dict` and `"choices" in response_body` is `True`.
 
@@ -191,16 +150,9 @@ Code shape:
 ```python
 reply_text = response_body[...][...][...][...]
 ```
-Why: `call_groq` used to do this for you. Now you read the response dict yourself.
+Write the code that does these steps:
 
-The text is at: the first item of `choices`, then its `message`, then its `content`. In Python, chain the lookups: `response_body["choices"][0]["message"]["content"]`. Read it in order:
-
-- `["choices"]` gives a list.
-- `[0]` takes the first item (lists start counting at 0).
-- `["message"]` gives a dict with `role` and `content`.
-- `["content"]` gives the reply text as a string.
-
-Store it in `reply_text`.
+1. Set `reply_text` to `response_body["choices"][0]["message"]["content"]`.
 
 **Check:** `type(reply_text)` is `str`.
 
@@ -210,13 +162,9 @@ Code shape:
 print(f"Review: {...}")
 print(f"Predicted sentiment: {...}")
 ```
-Print exactly two lines:
+Write the code that does these steps:
 
-```
-Review: <review>
-Predicted sentiment: <parse_label(reply_text)>
-```
-
-Use f-strings. Print the *cleaned* label from `parse_label`, not the raw `reply_text`.
+1. Print `Review: ` and the review.
+2. Print `Predicted sentiment: ` and `parse_label(reply_text)`. Use the cleaned label, not the raw `reply_text`.
 
 **Check:** you see the two lines, and the second one ends in `positive`.

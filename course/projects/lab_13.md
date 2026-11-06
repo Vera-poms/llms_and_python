@@ -52,19 +52,15 @@ my_profile = {
     "boundaries": [...],
 }
 ```
-Why: the model knows nothing about you. The profile is what the system prompt is built from.
+Write the code that does these steps:
 
-Make a dict named `my_profile` with **exactly** these five keys:
+1. Make a dict `my_profile` with exactly the keys `name`, `role`, `tone`, `facts`, `boundaries`.
+2. Set `name` to your real name, `role` to one short phrase about your role, and `tone` to a few words for how you talk.
+3. Set `facts` to a list of at least two true things about you.
+4. Set `boundaries` to a list of at least one thing the twin must refuse or avoid.
+5. Use real content, not placeholders like `"your name"`.
 
-| Key | Type | What goes in it |
-|---|---|---|
-| `name` | `str` | Your real name |
-| `role` | `str` | One short phrase about your role |
-| `tone` | `str` | A few words for how you talk |
-| `facts` | `list` of `str` | At least **two** true things about you |
-| `boundaries` | `list` of `str` | At least **one** thing the twin must refuse or avoid |
-
-Example with made-up values (use your own, not these):
+Example with made-up values (use your own):
 
 ```python
 {
@@ -76,8 +72,6 @@ Example with made-up values (use your own, not these):
 }
 ```
 
-Do not leave placeholders such as `"your name"` or `"a real fact about you"`. Use real content.
-
 **Check:** `print(type(my_profile["facts"]))` shows `<class 'list'>`, and `len(my_profile["facts"]) >= 2`.
 
 ### Step 2: Start the `messages` list
@@ -85,17 +79,10 @@ Code shape:
 ```python
 messages = [{"role": "system", "content": ...}]
 ```
-Why: this list is the whole "memory". It starts with the system message, so the model knows who to be.
+Write the code that does these steps:
 
-Build one string with your exercise function. Then put it in a message dict inside a list:
-
-```python
-messages = [{"role": "system", "content": build_digital_twin_system_prompt(my_profile)}]
-```
-
-Rules:
-- Call `build_digital_twin_system_prompt` **once**, here. Do not call it again inside the loop.
-- The list holds exactly **one** item at this point.
+1. Set `messages` to a list with one dict: role `"system"`, and as content `build_digital_twin_system_prompt(my_profile)`.
+2. Call that function only here, not again in the loop.
 
 **Check:** `len(messages)` is `1` and `messages[0]["role"]` is `"system"`.
 
@@ -107,16 +94,11 @@ conversation_turns = [
     ...,
 ]
 ```
-Why: a fixed list of questions makes your run easy to compare with the expected output.
+Write the code that does these steps:
 
-Copy this list exactly:
-
-```python
-conversation_turns = [
-    "Hi! What are you working on lately?",
-    "What's your take on learning by building real projects vs. reading theory?",
-]
-```
+1. Make a list `conversation_turns` with exactly these two strings:
+   - `"Hi! What are you working on lately?"`
+   - `"What's your take on learning by building real projects vs. reading theory?"`
 
 **Check:** `len(conversation_turns)` is `2`.
 
@@ -130,41 +112,16 @@ for user_message in conversation_turns:
     print(...)                     # d. show the exchange
     print(...)
 ```
-Why: each pass of the loop is one trip to the model and back. The order of the three list steps is the whole lesson.
+Write the code that does these steps, in this order:
 
-Use a `for user_message in conversation_turns:` loop. Inside it, do these four things **in this order**:
+1. Loop with `for user_message in conversation_turns:`.
+2. Add `{"role": "user", "content": user_message}` to `messages` with `messages.append(...)`.
+3. Set `reply` to `call_groq(messages)`. Pass the whole `messages` list. Keep the default model (`llama-3.1-8b-instant`), temperature (0.7), and no `max_tokens`.
+4. Add `{"role": "assistant", "content": reply}` to `messages`.
+5. Print `You: ` and the user message.
+6. Print `Twin: ` and the reply, then a blank line (end with `\n` or add an empty `print()`).
 
-a. **Add the user message.** Put `{"role": "user", "content": user_message}` on the end of `messages` with `messages.append(...)`.
-
-b. **Call the model with the whole list.** `reply = call_groq(messages)`.
-
-   - Pass `messages` itself, not just `user_message`.
-   - Use the defaults: model `llama-3.1-8b-instant`, temperature 0.7, no `max_tokens`. (Temperature is the randomness knob. 0.7 means replies vary a fair bit.)
-   - `reply` is a plain string.
-
-c. **Add the assistant reply.** Put `{"role": "assistant", "content": reply}` on the end of `messages`.
-
-d. **Print the exchange** in exactly this shape:
-
-   ```
-   You: <user_message>
-   Twin: <reply>
-   <blank line>
-   ```
-
-   An f-string works: `print(f"You: {user_message}")`. An f-string is a string with `f` in front that fills in values. For the blank line, end the second print with `\n` or add an empty `print()`.
-
-What `messages` looks like as the loop runs:
-
-| Moment | Items in `messages` | Roles in order |
-|---|---|---|
-| Before the loop | 1 | system |
-| After 4a in turn 1 (the call sees this) | 2 | system, user |
-| After 4c in turn 1 | 3 | system, user, assistant |
-| After 4a in turn 2 (the call sees this) | 4 | system, user, assistant, user |
-| After 4c in turn 2 | 5 | system, user, assistant, user, assistant |
-
-Notice that the second call holds the first question and first answer. That is why the twin can refer back to turn 1.
+The second call sees the first question and answer, so the twin can refer back to turn 1.
 
 **Check:** after the loop, `[m["role"] for m in messages]` equals `['system', 'user', 'assistant', 'user', 'assistant']`.
 
@@ -173,14 +130,10 @@ Code shape:
 ```python
 print(f"Final messages list has {...} turns.")
 ```
-Why: it shows that the history grew and was not reset.
+Write the code that does these steps:
 
-After the loop (not inside it) print exactly:
+1. After the loop (not inside it), print `Final messages list has N turns.` where `N` is `len(messages)`. Use an f-string.
 
-```
-Final messages list has N turns.
-```
-
-Here `N` is `len(messages)`. Use an f-string. With two turns, `N` is `5` (1 system + 2 user + 2 assistant). The system message counts as a "turn" here.
+With two turns, `N` is `5` (the system message counts as a turn).
 
 **Check:** the last line printed reads `Final messages list has 5 turns.`

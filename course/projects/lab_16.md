@@ -33,7 +33,9 @@ Code shape:
 ```python
 clean = ...
 ```
-Make a string named `clean` from `TWIN_DOC` in which all runs of spaces and new lines are one single space. Use `" ".join(TWIN_DOC.split())`. Do not change `TWIN_DOC` itself.
+You get `TWIN_DOC`, a string with extra spaces and new lines. Write the code that does this step:
+
+1. Set `clean` to `" ".join(TWIN_DOC.split())`. Do not change `TWIN_DOC`.
 
 **Check:** `"  " in clean` is `False` and `"\n" in clean` is `False`. `len(clean.split())` is `59`.
 
@@ -42,7 +44,9 @@ Code shape:
 ```python
 chunks = chunk_words(..., ..., ...)
 ```
-Call your function on `clean` with `size=12` and `overlap=4`. Save the list as `chunks`. With these numbers each chunk moves 8 words forward.
+You get `clean` and your `chunk_words`. Write the code that does this step:
+
+1. Set `chunks` to `chunk_words(clean, size=12, overlap=4)`.
 
 **Check:** `chunks` is a list of `7` strings. The first one starts with `"Ada writes Python code"`.
 
@@ -51,7 +55,9 @@ Code shape:
 ```python
 print(f"... words -> ... chunks")
 ```
-Print exactly one line: the number of words in `clean`, then ` words -> `, then the number of chunks, then ` chunks`. For example `10 words -> 3 chunks`. Use `len(clean.split())` for the words and `len(chunks)` for the chunks. An *f-string* is a string with `f` in front where `{...}` is replaced by a value: `f"{2 + 3} apples"` is `"5 apples"`.
+You get `clean` and `chunks`. Write the code that does this step:
+
+1. Print `f"{len(clean.split())} words -> {len(chunks)} chunks"`.
 
 **Check:** the line is `59 words -> 7 chunks`.
 
@@ -61,7 +67,10 @@ Code shape:
 for number, chunk in enumerate(chunks, 1):
     print(...)
 ```
-`enumerate(chunks, 1)` hands you each chunk together with a counter that starts at 1. For each one print `[<number>] <chunk>`, for example `[1] Ada writes Python code`.
+You get `chunks`. Write the code that does these steps:
+
+1. Loop with `for number, chunk in enumerate(chunks, 1):`. The counter starts at 1.
+2. Print `[<number>] <chunk>`, like `[1] Ada writes Python code`.
 
 The output is exactly:
 

@@ -39,17 +39,13 @@ def sample_next_word(distribution, n=5):
     weights = ...    # their chances, in the same order
     return ...       # n random picks
 ```
-Define `sample_next_word(distribution: dict[str, float], n: int = 5) -> list[str]`.
+You get `distribution: dict[str, float]` (word -> chance, like `{"the": 0.5, "was": 0.3, "great": 0.2}`) and `n: int = 5`. You give back a `list[str]` of `n` random words. Write the code that does these steps:
 
-What it does: it picks `n` words at random from `distribution` and gives them back in a list. Each pick is separate, and a picked word goes back in the pool, so the same word can come up twice. A word's chance of being picked is the chance stored for it in `distribution`.
+1. Set `words` to `list(distribution.keys())`.
+2. Set `weights` to `list(distribution.values())`.
+3. Return `random.choices(words, weights=weights, k=n)`.
 
-Why: this is the "dice roll" that makes a model's output change from run to run. A word with chance 0.10 should come up about 10 times in 100 picks. A word with chance 0.001 should almost never come up.
-
-How:
-- `random.choices` needs two lists in the same order: the words, and a number for how likely each word is (the *weights*). Make `words = list(distribution.keys())` and `weights = list(distribution.values())`. A dict keeps its order, so the two lists line up.
-- Call `random.choices(words, weights=weights, k=n)`. It already gives back a list, even when `k=1`.
-
-Tiny example: with `{"the": 0.5, "was": 0.3, "great": 0.2}` and `n=5`, one possible result is `['the', 'was', 'the', 'the', 'great']`. Another run gives a different list. Both are correct, because the function is random.
+The same word can come up twice. With `n=5` one possible result is `['the', 'was', 'the', 'the', 'great']`, and another run gives a different list.
 
 **Check:** `len(sample_next_word(dist, n=5)) == 5`, `len(sample_next_word(dist, n=8)) == 8`, and every item is a `str`. Call it with `n=1000` on `dist` and count how often `"the"` comes up. It should be close to 100. A bit more or less is fine, because the chance of `the` is about 0.10.
 
@@ -59,27 +55,26 @@ Code shape:
 counts = ...   # from word_counts
 dist = ...     # from word_probabilities
 ```
-Use **your own** functions, in this order, and keep these names:
-- `counts = word_counts(sentences)`: a dict of word -> how many times it shows up.
-- `dist = word_probabilities(counts)`: a dict of word -> chance.
+Write the code that does these steps, with these exact names:
 
-Why: counts alone are not chances. Dividing by the total turns "how many times" into "how likely". For example, if `the` shows up 148 times out of 1473 words, its chance is `148 / 1473 = 0.1005`.
+1. Set `counts` to `word_counts(sentences)`.
+2. Set `dist` to `word_probabilities(counts)`.
 
-**Check:** `abs(sum(dist.values()) - 1.0) < 1e-9`. This says the chances add up to 1. Decimal numbers can be a tiny bit off, so compare with a tiny gap, not `== 1`. Also `sum(counts.values())` should be 1473. And `dist["the"]` should be about 0.1005.
+**Check:** `abs(sum(dist.values()) - 1.0) < 1e-9`. This says the chances add up to 1. Compare with a tiny gap, not `== 1`, because decimal numbers can be a tiny bit off. Also `sum(counts.values())` should be 1473, and `dist["the"]` should be about 0.1005 (`148 / 1473`).
 
 ### Step 3: Print the summary line
 Code shape:
 ```python
 print(f"{...} sentences, {...} unique words.")
 ```
-Print one line like this, with the numbers **worked out by your code** (do not type them in):
+Print one line like this, with numbers **worked out by your code** (do not type them in):
 
 `170 sentences, 523 unique words.`
 
-- Sentences: `len(sentences)`.
-- Unique words (different words, each counted once): `len(counts)`. A dict has one key for each different word, so its length is the number of different words.
+Write the code that does these steps:
 
-Why: if the data changes later, a number you typed in would quietly be wrong.
+1. Use `len(sentences)` for the sentence count.
+2. Use `len(counts)` for the unique word count.
 
 **Check:** you should see `170 sentences, 523 unique words.` If your number is different, your `tokenize` is probably keeping punctuation, digits or capital letters.
 
@@ -91,11 +86,12 @@ print("Most probable words in the corpus:")
 for word, prob in top15:
     print(f"...")
 ```
-1. `top15 = top_k(dist, 15)`. This is a list of 15 `(word, chance)` pairs, highest first.
-2. Print the line `Most probable words in the corpus:` (the *corpus* is all your sentences together).
-3. Loop over `top15`. Print one line per word. Each line is: **two spaces**, the word padded to 12 characters, a space, `P=`, and the chance with 4 digits after the point. Use `f"  {word:<12} P={prob:.4f}"`.
+Write the code that does these steps:
 
-What the format means: `{word:<12}` adds spaces after the word until it is 12 characters wide, so the `P=` parts line up. `{prob:.4f}` shows the number with exactly 4 digits after the point.
+1. Set `top15` to `top_k(dist, 15)`.
+2. Print the line `Most probable words in the corpus:`.
+3. Loop over `top15` with `for word, prob in top15:`.
+4. Print `f"  {word:<12} P={prob:.4f}"`. That is two spaces, the word padded to 12 characters, a space, `P=`, and the chance with 4 digits after the point.
 
 Example: for `("the", 0.10047...)` the line is `  the          P=0.1005`.
 
@@ -107,13 +103,11 @@ Code shape:
 print()
 print(f"Greedy pick (always highest probability word): {...}")
 ```
-Print an empty line first. For example, call `print()` with nothing inside. Then print:
+Write the code that does these steps:
 
-`Greedy pick (always highest probability word): <word>`
-
-Get the word from `top_k(dist, 1)`. That gives a list with one pair, like `[("the", 0.1005)]`. You want only the word, so take the first item of the list (index `0`), then the first item of the pair (index `0` again).
-
-Why: greedy means "take the highest, every time". So it never changes between runs.
+1. Call `print()` with nothing inside, to print an empty line.
+2. Get the top word with `top_k(dist, 1)[0][0]`. (`top_k(dist, 1)` is a list with one pair, like `[("the", 0.1005)]`. The first `[0]` takes the pair and the second `[0]` takes the word.)
+3. Print `Greedy pick (always highest probability word): <word>`.
 
 **Check:** the word is exactly the word on the first line of the top-15 list (`the`).
 
@@ -122,12 +116,12 @@ Code shape:
 ```python
 print(f"Sampled picks (weighted by probability): {...}")
 ```
-Call `sample_next_word(dist, n=5)` and print:
+Write the code that does these steps:
 
-`Sampled picks (weighted by probability): ` and then the list, for example
-`Sampled picks (weighted by probability): ['the', 'was', 'and', 'the', 'movie']`
+1. Call `sample_next_word(dist, n=5)`.
+2. Print `Sampled picks (weighted by probability): ` followed by the list, like `Sampled picks (weighted by probability): ['the', 'was', 'and', 'the', 'movie']`.
 
-Printing a list directly gives the square brackets and quotes. That is fine.
+Printing the list directly gives the brackets and quotes. That is fine.
 
 **Check:** exactly 5 words. Run the cell a few times. The list should change, and `the` and `and` should show up more often than rare words.
 
@@ -139,14 +133,15 @@ plt.figure(...)
 plt.bar(...)
 # then: title, ylabel, xticks, tight_layout, show
 ```
-Do these in order:
-1. `words, probs = zip(*top15)`. `zip(*pairs)` splits a list of pairs into two groups: all the first items, and all the second items. Now `words` has 15 words and `probs` has their 15 chances, in the same order.
-2. `plt.figure(figsize=(9, 5))`: start a new figure 9 inches wide and 5 inches tall.
-3. `plt.bar(words, probs, color="steelblue")`: one bar for each word. The bar height is the chance.
-4. `plt.title("Word probability distribution over real review sentences")`.
-5. `plt.ylabel("P(word)")`.
-6. `plt.xticks(rotation=45, ha="right")`: tilt the word labels 45 degrees. `ha="right"` ends each label under its bar, so the labels do not overlap.
-7. `plt.tight_layout()`: shrinks the margins so nothing is cut off.
-8. `plt.show()`: shows the chart.
+Write the code that does these steps:
+
+1. Set `words, probs` to `zip(*top15)`. This splits the pairs into 15 words and their 15 chances.
+2. Call `plt.figure(figsize=(9, 5))`.
+3. Call `plt.bar(words, probs, color="steelblue")`.
+4. Call `plt.title("Word probability distribution over real review sentences")`.
+5. Call `plt.ylabel("P(word)")`.
+6. Call `plt.xticks(rotation=45, ha="right")`.
+7. Call `plt.tight_layout()`.
+8. Call `plt.show()`.
 
 **Check:** you see 15 blue bars. The tallest is on the left (`the`, about 0.10) and the shortest is on the right (about 0.0075). The title and y-label match the text above.

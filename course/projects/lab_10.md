@@ -51,16 +51,12 @@ FEW_SHOT_EXAMPLES = [
     (..., {"sentiment": ..., "confidence": ...}),
 ]
 ```
-Why: the examples are what teach the model your reply shape.
+Make a list called `FEW_SHOT_EXAMPLES` with exactly two `(review_text, result_dict)` tuples. Use these values exactly:
 
-Make a variable named exactly `FEW_SHOT_EXAMPLES`. It is a **list of exactly two tuples**. A *tuple* is a fixed pair like `("some text", {"key": 1})`. Each tuple here is `(review_text, result_dict)`. Use these values exactly:
+1. `("This is the best purchase I've made all year.", {"sentiment": "positive", "confidence": 0.97})`
+2. `("It broke after two days and support ignored me.", {"sentiment": "negative", "confidence": 0.95})`
 
-- `("This is the best purchase I've made all year.", {"sentiment": "positive", "confidence": 0.97})`
-- `("It broke after two days and support ignored me.", {"sentiment": "negative", "confidence": 0.95})`
-
-Shape reminder (not your data): `[("some text", {"key": 1}), ("other text", {"key": 2})]`.
-
-Note that `0.97` and `0.95` are numbers, not strings. There are no quotes around them.
+`0.97` and `0.95` are numbers, not strings.
 
 **Check:** `len(FEW_SHOT_EXAMPLES)` is `2`, and `FEW_SHOT_EXAMPLES[0][1]["sentiment"]` is `"positive"`.
 
@@ -70,9 +66,10 @@ Code shape:
 N_SAMPLES = ...
 results = ...
 ```
-Why: `N_SAMPLES` keeps the number of live calls small. Each call takes time and counts against your free quota. `results` is where you keep each answer.
+Write these two lines before the loop:
 
-Write `N_SAMPLES = 8` and `results = []` (an empty list). Do this before the loop. Then the list starts empty once and is not reset on each pass.
+1. `N_SAMPLES = 8`
+2. `results = []`
 
 **Check:** `N_SAMPLES == 8` and `results == []`.
 
@@ -88,22 +85,18 @@ for review in sentences[:N_SAMPLES]:
     except (..., ...) as e:
         results.append((..., ..., ...))
 ```
-`sentences[:N_SAMPLES]` is a *slice*. It gives the first 8 items of the list. For example, `["a", "b", "c"][:2]` is `["a", "b"]`. Write `for review in sentences[:N_SAMPLES]:`.
+`sentences[:N_SAMPLES]` gives the first 8 reviews. Write the code that does these steps:
 
-Inside the loop, do two things for each review.
+1. Loop with `for review in sentences[:N_SAMPLES]:`.
+2. Inside the loop, set `messages` to `build_few_shot_messages(FEW_SHOT_EXAMPLES, review)`.
+3. Set `reply` to `call_groq(messages, response_format={"type": "json_object"})`. Keep the default model and temperature.
+4. Start a `try:` block. Inside it, set `parsed` to `parse_json_response(reply)`.
+5. Still inside `try:`, add `(review, parsed["sentiment"], parsed["confidence"])` to `results` with `results.append((a, b, c))`.
+6. Add `except (json.JSONDecodeError, ValueError) as e:`. Inside it, add `(review, f"PARSE ERROR: {e}", None)` to `results`. The confidence is `None`, not the string `"None"`.
 
-**3a. Call the model.** Build the messages with your function: `build_few_shot_messages(FEW_SHOT_EXAMPLES, review)`. Give the result to `call_groq` as its first argument. Also give it `response_format={"type": "json_object"}`. You pass this one *by name*, like `response_format=...`. It turns on *JSON mode*, which tells the model its reply must be valid JSON. JSON mode makes bad JSON rarer, but not impossible. It also does not check that your keys are there. Do not change the model or the temperature (the temperature is how random the model's word choice is, 0.7 here). Keep the defaults. The call gives back a plain string, for example `'{"sentiment": "positive", "confidence": 0.95}'`. Save it in a variable such as `reply`.
+A bad reply becomes an error row instead of crashing the loop.
 
-**3b. Read the reply safely.** Wrap the next lines in `try:`. A `try:` block means: "attempt this. If it fails, jump to `except` and do that instead of crashing."
-
-- Call `parse_json_response(reply)`. It gives back a dict, for example `{"sentiment": "positive", "confidence": 0.95}`.
-- Add one tuple to `results`: `(review, parsed["sentiment"], parsed["confidence"])`. That is three items: the review text, the sentiment word, and the confidence number. *Confidence* is a number from 0 to 1 that the model says for how sure it is. It is the model's own claim, not a measured chance. Use `results.append(...)` with the tuple inside, so double brackets: `results.append((a, b, c))`.
-
-**3c. Handle a bad reply.** Add `except (json.JSONDecodeError, ValueError) as e:`. Catch both, as a tuple in brackets. `json.JSONDecodeError` is the error for text that is not valid JSON. `ValueError` is the error your function raises when a key is missing. Inside, add `(review, f"PARSE ERROR: {e}", None)` to `results`. A failure becomes a row whose second item starts with `PARSE ERROR: `, then Python's own error message. Its confidence is `None` (not the string `"None"`).
-
-Why this step exists: a model sometimes gives invalid JSON or forgets a key. If you did not catch the error, one bad reply on review 5 would crash the loop. You would lose the other 7 results.
-
-Example of what goes into `results` (shape only; the confidence numbers will vary):
+Rows in `results` look like this (the confidence numbers vary):
 
 ```
 ("the movie was absolutely wonderful and kept me hooked the whole time", "positive", 0.95)
@@ -118,25 +111,17 @@ Code shape:
 for review, sentiment, confidence in results:
     print(f"{...:<25} conf={...}  {...}")
 ```
-Why: aligned columns make the results easy to scan.
+After the loop (not inside it), write the code that does these steps:
 
-After the loop (not inside it), loop over `results` in order. Print one line per tuple, with exactly this layout:
+1. Loop over `results` with `for review, sentiment, confidence in results:`.
+2. Print one line made of: the sentiment (or error text) left-aligned in 25 characters (`{sentiment:<25}`), then `conf=` and the confidence, then two spaces, then `review[:55]`.
 
-1. the sentiment (or the error text), left-aligned and padded to 25 characters wide,
-2. then `conf=` and the confidence,
-3. then two spaces,
-4. then the first 55 characters of the review.
+A long error text or a `None` confidence prints as it is. That is fine.
 
-An f-string can pad. Inside `{ }`, the part after a colon says how to show the value. `{x:<25}` means "left-align `x` in a 25-wide space". For example, `f"{'hi':<5}|"` gives `hi   |`. The slice `review[:55]` keeps the first 55 characters.
-
-Tip: the sentiment column may be a long error text. If it is longer than 25 characters, padding does nothing and it prints in full. That is fine. A `None` confidence prints as `conf=None`. That is normal for error rows.
-
-Example, using the first review in the data. The sentiment word plus its padding fills 25 characters, then `conf=0.95`, two spaces, then the cut-off review:
+Example, using the first review in the data:
 
 ```
 positive                  conf=0.95  the movie was absolutely wonderful and kept me hooked t
 ```
 
-The review is cut at exactly 55 characters, which here ends in `hooked t`. Your confidence number will be different.
-
-**Check:** you see 8 lines. In each line the text `conf=` starts in the same column when the sentiment is shorter than 25 characters.
+**Check:** you see 8 lines. In each line, `conf=` starts in the same column when the sentiment is shorter than 25 characters.

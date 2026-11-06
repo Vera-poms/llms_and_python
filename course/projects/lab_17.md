@@ -34,7 +34,9 @@ Code shape:
 ```python
 before = sum(... for m in CHAT_HISTORY)
 ```
-Add up the token count of every message's text. A *generator expression* like `count_tokens(m["content"]) for m in CHAT_HISTORY` makes one number per message, and `sum(...)` adds them up. Save the total as `before`.
+You get `CHAT_HISTORY` (a list of message dicts) and `count_tokens`. Write the code that does this step:
+
+1. Set `before` to `sum(count_tokens(m["content"]) for m in CHAT_HISTORY)`.
 
 **Check:** `before` is `101`.
 
@@ -43,7 +45,9 @@ Code shape:
 ```python
 trimmed = trim_messages(..., ...)
 ```
-Call your function on `CHAT_HISTORY` with a budget of `60`. Save the result as `trimmed`.
+You get `CHAT_HISTORY` and your `trim_messages`. Write the code that does this step:
+
+1. Set `trimmed` to `trim_messages(CHAT_HISTORY, 60)`.
 
 **Check:** `trimmed` is a list of `5` messages. The first one is still the `"system"` message. `CHAT_HISTORY` still has 9 messages.
 
@@ -52,7 +56,9 @@ Code shape:
 ```python
 after = sum(... for m in trimmed)
 ```
-Same as step 1, but over `trimmed`. Save the total as `after`.
+You get `trimmed`. Write the code that does this step:
+
+1. Set `after` to `sum(count_tokens(m["content"]) for m in trimmed)`.
 
 **Check:** `after` is `59`, and it is not more than `60`.
 
@@ -64,7 +70,12 @@ print(f"after: ... messages, ... tokens")
 for message in trimmed:
     print(f"...: ...")
 ```
-Print two summary lines, then one line per kept message. In the first line use `len(CHAT_HISTORY)` and `before`. In the second use `len(trimmed)` and `after`. Then loop over `trimmed` and print `<role>: <content>`. An *f-string* is a string with `f` in front where `{...}` is replaced by a value. Inside an f-string written with double quotes, use single quotes for the dict key: `f"{message['role']}"`.
+You get `before`, `after`, `CHAT_HISTORY` and `trimmed`. Write the code that does these steps:
+
+1. Print `f"before: {len(CHAT_HISTORY)} messages, {before} tokens"`.
+2. Print `f"after: {len(trimmed)} messages, {after} tokens"`.
+3. Loop with `for message in trimmed:`.
+4. Print `<role>: <content>` for each message. In an f-string with double quotes, use single quotes for the key: `f"{message['role']}"`.
 
 The output is exactly:
 

@@ -54,25 +54,15 @@ def build_digital_twin_system_prompt(profile):
     # boundaries heading, then one bullet per boundary
     return ...
 ```
-Why: the system prompt (the text of the first, system message) is what turns a general model into "you".
+You get `profile`, a dict with `name`, `role`, `tone` (strings) and `facts`, `boundaries` (lists of strings). For example: `{"name": "Ada", "role": "a data analyst", "tone": "warm, curious", "facts": ["likes pandas", "runs weekly"], "boundaries": ["no medical advice"]}`. Write the code that does these steps:
 
-`profile` has the keys `name`, `role`, `tone`, `facts` (list of str) and `boundaries` (list of str). Give back **one string with several lines**, with these parts in this order:
+1. Start a list `lines` with three strings: a line saying the model is role-playing as that person (use the name and role), a line with the tone, and a heading for facts.
+2. For each fact, add a bullet line `"- " + fact` to `lines`.
+3. Add a heading line for boundaries.
+4. For each boundary, add a bullet line `"- " + boundary`.
+5. Join `lines` with `"\n"` and return the result.
 
-1. A line saying the model is role-playing as that person. Use the name and role.
-2. A line that says the speaking tone.
-3. A heading line for facts. Then **one bullet line per fact**. A bullet line starts with `- `.
-4. A heading line for boundaries. Then **one bullet line per boundary**, in the same style.
-
-Build the lines in a Python list. Then join them with `"\n"` (a newline character). For example, `"\n".join(["a", "b"])` gives `"a\nb"`. Use a list comprehension (a one-line loop) or a loop for the bullets, so any number of facts works.
-
-Example with an invented profile:
-
-```python
-{"name": "Ada", "role": "a data analyst", "tone": "warm, curious",
- "facts": ["likes pandas", "runs weekly"], "boundaries": ["no medical advice"]}
-```
-
-can give this string (from running the reference solution; your wording for the heading lines may differ):
+For Ada, one valid result is (your heading words may differ):
 
 ```
 You are role-playing as Ada, a data analyst.
@@ -84,7 +74,7 @@ Boundaries you must respect:
 - no medical advice
 ```
 
-That is 7 lines: 2 intro lines, 1 facts heading, 2 fact bullets, 1 boundaries heading, 1 boundary bullet.
+That is 7 lines.
 
 **Check:** `print(build_digital_twin_system_prompt(my_profile))` shows one bullet per fact and per boundary, and has your name, role and tone. The result is a `str`.
 
@@ -94,13 +84,12 @@ Code shape:
 def real_transport(messages, api_key, model):
     return ...
 ```
-Why: `GroqClient` calls its transport with exactly three arguments. This function makes `call_groq` fit that shape.
+Write the code that does these steps:
 
-Signature: `real_transport(messages: list[dict], api_key: str | None, model: str) -> str`. The body just calls `call_groq(messages, api_key=api_key, model=model)` and gives back the reply text.
+1. Define `real_transport` with the three parameters `messages`, `api_key`, `model`, in this order.
+2. Return `call_groq(messages, api_key=api_key, model=model)`.
 
-Keep the three parameters in this order and with these names. The class passes them by position.
-
-**Check:** `callable(real_transport)` is `True`. (Do not call it yet.)
+**Check:** `callable(real_transport)` is `True`. Do not call it yet.
 
 ### Step 3: Define `my_profile`
 Code shape:
@@ -113,13 +102,11 @@ my_profile = {
     "boundaries": [...],
 }
 ```
-Why: this is what your twin is made of.
+Write the code that does these steps:
 
-A dict with exactly the keys `name`, `role`, `tone`, `facts`, `boundaries`. Use **your own real details**:
-
-- at least **two** facts (list of str),
-- at least **one** boundary (list of str),
-- no placeholder text such as `"your name"` or `"a real fact about you"`.
+1. Make a dict `my_profile` with exactly the keys `name`, `role`, `tone`, `facts`, `boundaries`.
+2. Use your own real details: at least two facts and at least one boundary (both lists of strings).
+3. Use no placeholder text like `"your name"`.
 
 **Check:** `len(my_profile["facts"]) >= 2` and `len(my_profile["boundaries"]) >= 1`.
 
@@ -128,15 +115,12 @@ Code shape:
 ```python
 twin = GroqClient(api_key=..., model=..., system_prompt=..., transport=...)
 ```
-Why: this joins the three pieces (profile, class, transport).
+Write the code that does these steps:
 
-```python
-twin = GroqClient(api_key=GROQ_API_KEY, model=DEFAULT_MODEL,
-                  system_prompt=build_digital_twin_system_prompt(my_profile),
-                  transport=real_transport)
-```
-
-Pass the **function itself** (`real_transport`), with no brackets. With brackets you would call it right away, and it would fail.
+1. Set `twin` to `GroqClient(...)`.
+2. Pass `api_key=GROQ_API_KEY` and `model=DEFAULT_MODEL`.
+3. Pass `system_prompt=build_digital_twin_system_prompt(my_profile)`.
+4. Pass `transport=real_transport`. Write the function name only, with no brackets.
 
 **Check:** `len(twin.history)` is `1` and `twin.history[0]["role"]` is `"system"`.
 
@@ -149,21 +133,15 @@ for user_message in [..., ...]:
     print(...)
     print()
 ```
-Why: the class now does the bookkeeping, so your loop is tiny. Do not add to the messages list yourself.
+Write the code that does these steps:
 
-Loop over exactly these two user messages, in this order:
+1. Loop over a list of exactly these two strings, in this order: `"Hi! What are you working on lately?"` and `"What's the most useful thing you've learned recently?"`.
+2. Set `reply` to `twin.send(user_message)`.
+3. Print `You: ` and the user message.
+4. Print `Twin: ` and the reply.
+5. Print a blank line.
 
-1. `"Hi! What are you working on lately?"`
-2. `"What's the most useful thing you've learned recently?"`
-
-For each message:
-
-- `reply = twin.send(user_message)`. `send` adds the user message, calls the transport with the whole history, adds the reply, and gives back the reply text.
-- Print `You: <user_message>` on one line.
-- Print `Twin: <reply>` on the next line.
-- Print a blank line.
-
-Do not call `add_user_message` or `add_assistant_message` here. `send` already does it. If you did it again, each message would be in the list twice.
+Do not call `add_user_message` or `add_assistant_message` here. `send` already does it.
 
 **Check:** after the loop, `len(twin.history)` is `5`.
 
@@ -174,32 +152,19 @@ print("--- Full messages list ---")
 for message in twin.history:
     print(f"{...:<10} {...}")
 ```
-Why: it shows the list the class built for you. It also shows that the history carried over to the second call.
+Write the code that does these steps:
 
-First print this exact line:
+1. Print the exact line `--- Full messages list ---`.
+2. Loop with `for message in twin.history:`.
+3. Print `f"{message['role']:<10} {message['content'][:80]}"`. The role is padded to 10 characters, then one space, then the first 80 characters of the content.
 
-```
---- Full messages list ---
-```
-
-Then loop over `twin.history` and print **one line per message**, built from:
-
-1. the role, padded on the right with spaces to 10 characters (`f"{message['role']:<10}"`),
-2. one space,
-3. the first 80 characters of the content (`message['content'][:80]`). `text[:80]` gives the first 80 characters, or fewer if the text is shorter.
-
-So one line is `f"{message['role']:<10} {message['content'][:80]}"`. Examples (from running the reference solution, with a 100-character assistant reply):
+Example lines (no quotes in your output):
 
 ```
-'system     You are role-playing as Ada, a data analyst.\nSpeak in a tone that is warm, curio'
-'user       Hi!'
-'assistant  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+system     You are role-playing as Ada, a data analyst.\nSpeak in a tone that is warm, curio
+user       Hi!
 ```
 
-(The quotes and `\n` are shown here only to make it clear. Your output has no quotes.) The role name starts at column 1, and the content always starts at column 12. That is because `system` plus 4 pad spaces plus 1 space is 11 characters.
-
-Two things to know:
-- The system prompt has several lines. Its first 80 characters may hold a newline, so one history entry can print across two lines. That is normal.
-- Cutting is for **display only**. Do not shorten the stored content.
+A system prompt has several lines, so its first 80 characters may hold a newline. That is normal. Cutting is for display only, so do not shorten the stored content.
 
 **Check:** you see 5 entries in the order system, user, assistant, user, assistant.

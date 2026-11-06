@@ -37,12 +37,11 @@ def embed(text):
     known = [... for w in words if ...]
     return [sum(column) / len(known) for column in zip(*known)]
 ```
-**You get:** a sentence as a string. **You give back:** a list of 5 numbers.
+You get a sentence, like `"She bakes bread."`. You give back a list of 5 numbers. Write the code that does these steps:
 
-How:
-1. Make the text lowercase, remove the `.` and `?` characters, and cut it into words. For example `text.lower().replace(".", "").replace("?", "").split()`.
-2. Keep the vector of every word that is in `WORD_VECTORS` and skip the rest. A list comprehension does it: `[WORD_VECTORS[w] for w in words if w in WORD_VECTORS]`. `known` is now a list of vectors.
-3. Average them position by position. `zip(*known)` lines the vectors up so that `column` is all the first numbers, then all the second numbers, and so on. `sum(column) / len(known)` is the average of one column. The `*` unpacks the list into separate arguments.
+1. Set `words` to `text.lower().replace(".", "").replace("?", "").split()`.
+2. Set `known` to `[WORD_VECTORS[w] for w in words if w in WORD_VECTORS]`.
+3. Return `[sum(column) / len(known) for column in zip(*known)]`. This averages the vectors position by position.
 
 **Check:** `embed("She bakes bread.")` has 5 numbers. Only `bakes` and `bread` are known, so its first number is `(0.9 + 1.0) / 2 = 0.95` and the other four are `0.0`.
 
@@ -51,7 +50,9 @@ Code shape:
 ```python
 fact_vectors = [... for fact in TWIN_FACTS]
 ```
-Make a list `fact_vectors` with `embed(fact)` for each fact, in the same order as `TWIN_FACTS`.
+You get `TWIN_FACTS`, a list of 6 sentences. Write the code that does this step:
+
+1. Set `fact_vectors` to `[embed(fact) for fact in TWIN_FACTS]`.
 
 **Check:** `len(fact_vectors)` is `6`, and each item has `5` numbers.
 
@@ -64,15 +65,13 @@ for question in questions:
     scores = [... for vector in fact_vectors]
     best = ...
 ```
-Use exactly these three questions, in this order:
-1. `"What food does she cook?"`
-2. `"Which countries did she visit?"`
-3. `"What programming language does she use?"`
+You get `fact_vectors`, `embed` and `cosine_similarity`. Write the code that does these steps:
 
-For each question:
-1. Embed it with `embed`. Call it `query`.
-2. Make `scores`: `cosine_similarity(query, vector)` for each vector in `fact_vectors`.
-3. Find the position of the highest score: `scores.index(max(scores))`. `max` gives the highest score and `.index` tells you where it sits. Call it `best`.
+1. Set `questions` to a list of exactly these three strings, in this order: `"What food does she cook?"`, `"Which countries did she visit?"`, `"What programming language does she use?"`.
+2. Loop with `for question in questions:`.
+3. Set `query` to `embed(question)`.
+4. Set `scores` to `[cosine_similarity(query, vector) for vector in fact_vectors]`.
+5. Set `best` to `scores.index(max(scores))`.
 
 **Check:** for the first question `best` is `1`.
 
@@ -82,7 +81,10 @@ Code shape:
 print(f"Q: ...")
 print(f"A: ... (...)")
 ```
-Inside the loop print two lines for each question. The first is `Q: <question>`. The second is `A: <best fact> (<score>)`, where the score has 3 digits after the decimal point. In an f-string, `{score:.3f}` does this: `f"{0.5:.3f}"` is `"0.500"`.
+You get `question`, `best` and `scores` inside the loop. Write the code that does these steps, inside the loop:
+
+1. Print `f"Q: {question}"`.
+2. Print `f"A: {TWIN_FACTS[best]} ({scores[best]:.3f})"`. The `:.3f` gives 3 digits after the decimal point.
 
 The output is exactly:
 

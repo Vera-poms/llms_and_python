@@ -32,85 +32,84 @@ Code shape:
 ```python
 N_SAMPLES = ...
 ```
-Write `N_SAMPLES = 10`. Use this name everywhere, instead of typing 10 again.
+Write the code that does this step:
+
+1. Write `N_SAMPLES = 10`. Use this name everywhere, instead of typing 10 again.
 
 **Check:** `N_SAMPLES` is `10`.
 
-### Step 2: loop over the first 10 pairs
+### Step 2: Loop over the first 10 pairs
 Code shape:
 ```python
 correct = 0
 for review, true_label in list(zip(sentences, labels))[:N_SAMPLES]:
     ...
 ```
-Loop over `(review, true_label)` pairs from `zip(sentences, labels)`, but only the first `N_SAMPLES`, in dataset order from the start. `zip(a, b)` walks two lists side by side and gives pairs `(a[0], b[0])`, `(a[1], b[1])`, and so on. You cannot cut `zip` into a slice directly, so wrap it in a list first: `list(zip(sentences, labels))[:N_SAMPLES]`.
+One pair looks like `("i loved every minute of this film", 1)`. Write the code that does these steps:
 
-Before the loop, make a counter: `correct = 0`.
-
-One pair looks like this: `("i loved every minute of this film", 1)`.
+1. Before the loop, write `correct = 0`.
+2. Loop with `for review, true_label in list(zip(sentences, labels))[:N_SAMPLES]:`. The `list(...)` is needed because you cannot slice a `zip` directly.
 
 **Check:** the loop runs 10 times.
 
-### Step 3: predict and convert the label
+### Step 3: Predict and convert the label
 Code shape (inside the loop):
 ```python
     reply = call_groq(...)
     predicted = ...
     true_str = ...
 ```
-Inside the loop:
-1. `reply = call_groq(build_zero_shot_messages(review))`. Pass the **full** review, and no extra arguments (this uses the default model and temperature). The *temperature* is how random the model's choices are. 0 is steady, and higher is more varied. The default here is 0.7, so answers can change from run to run.
-2. `predicted = parse_label(reply)`. It is a string like `"positive"`.
-3. Turn the true label into a string so the two can be compared: `1` -> `"positive"`, `0` -> `"negative"`. For example, `true_str = "positive" if true_label == 1 else "negative"`.
+Write the code that does these steps inside the loop:
 
-Why convert? `predicted` is text and `true_label` is a number. `"positive" == 1` is always `False`, so you must compare string to string.
+1. Set `reply` to `call_groq(build_zero_shot_messages(review))`. Pass the full review and no extra arguments. This uses the default model and temperature 0.7, so answers can change from run to run.
+2. Set `predicted` to `parse_label(reply)`.
+3. Set `true_str` to `"positive"` if `true_label == 1`, else `"negative"`. A string can never equal the number `1`, so you must compare string to string.
 
 **Check:** `predicted` and `true_str` are both strings.
 
-### Step 4: score it
+### Step 4: Score it
 Code shape (inside the loop):
 ```python
     correct += ...
 ```
-A prediction is correct when `predicted == true_str`. Add it to your counter. In Python `True` counts as 1 and `False` as 0, so `correct += (predicted == true_str)` works.
+Write the code that does this step inside the loop:
+
+1. Add to `correct` whether `predicted == true_str`: `correct += (predicted == true_str)`. `True` counts as 1 and `False` as 0.
 
 **Check:** `correct` goes up by 1 only when the two strings match.
 
-### Step 5: print one line per example
+### Step 5: Print one line per example
 Code shape (inside the loop):
 ```python
     status = "OK " if ... else "ERR"
     print(f"{status} predicted={...:<9} true={...:<9} {...}")
 ```
-Each line has this layout:
-- `OK ` (O, K, space) if correct, or `ERR` if not. Always three characters wide.
-- a space, then `predicted=` followed by the predicted label padded to 9 characters (`{predicted:<9}`). Inside an f-string, `{text:<9}` adds spaces on the right of `text` until it is 9 characters wide.
-- a space, then `true=` followed by the true label padded to 9 characters.
-- a space, then the **first 60 characters** of the review (`review[:60]`). Cut the text only for printing. Send the full review to the model.
+Write the code that does these steps inside the loop:
 
-Example for `sentences[0]`, if the model says positive (there are two spaces after `positive`: one is the padding, one is the separator):
+1. Set `status` to `"OK "` (O, K, space) if the prediction is correct, or `"ERR"` if not. It is always three characters wide.
+2. Print one line: `status`, a space, `predicted=` and the predicted label padded to 9 characters (`{predicted:<9}`), a space, `true=` and the true label padded to 9 characters, a space, then `review[:60]`. Cut the review only for printing. Send the full review to the model.
+
+Example for `sentences[0]`, if the model says positive (two spaces after `positive`: one is padding, one is the separator):
 
 ```
 OK  predicted=positive  true=positive  the movie was absolutely wonderful and kept me hooked the wh
 ```
 
-The snippet is cut at exactly 60 characters, so it can stop in the middle of a word, as above.
+The snippet is cut at exactly 60 characters, so it can stop in the middle of a word.
 
 **Check:** a correct line begins `OK ` followed by a space (so `OK  predicted=`). A wrong line begins `ERR predicted=`.
 
-### Step 6: print the accuracy
+### Step 6: Print the accuracy
 Code shape (after the loop):
 ```python
 print(f"\nAccuracy on {...} real sentences: {...}/{...} = {...:.0%}")
 ```
-After the loop, print a blank line, then:
+Write the code that does this step after the loop:
 
-`Accuracy on <N_SAMPLES> real sentences: <correct>/<N_SAMPLES> = <percent>`
+1. Print a blank line, then `Accuracy on <N_SAMPLES> real sentences: <correct>/<N_SAMPLES> = <percent>`. Start the f-string with `\n` for the blank line. Get the percent as a whole number with `{correct / N_SAMPLES:.0%}`.
 
-The percent is a whole number with a `%` sign. `f"{correct / N_SAMPLES:.0%}"` does that (`{x:.0%}` shows a fraction as a whole-number percent). For example, 9 correct gives `Accuracy on 10 real sentences: 9/10 = 90%`, and 8 correct gives `... 8/10 = 80%`.
+For example, 9 correct gives `Accuracy on 10 real sentences: 9/10 = 90%`, and 8 correct gives `... 8/10 = 80%`.
 
-An easy way to print the blank line: start the f-string with `\n`.
-
-The results are **not the same every run**. They depend on the model and the temperature of 0.7, so predictions and accuracy can change. These 10 reviews are all clearly positive, so a good zero-shot prompt usually scores roughly 80-100%. Every `true=` value is `positive` for these 10 items.
+The results are not the same every run. These 10 reviews are all clearly positive, so every `true=` value is `positive`, and a good zero-shot prompt usually scores roughly 80-100%.
 
 **Check:** the number of `OK ` lines equals `<correct>`. If the last line says 9/10, exactly 9 lines start with `OK `.

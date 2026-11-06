@@ -36,14 +36,13 @@ Code shape:
 def tokenize(sentence):
     return re.findall(..., sentence.lower())
 ```
-A *token* is one word after cleaning. Here a token is a run of letters a-z. Make the sentence lowercase, then keep only the runs of letters a-z. Digits and punctuation vanish and act as separators.
+You get a sentence, like `"Hello, World! It's 2024."`. You give back `['hello', 'world', 'it', 's']`. Digits and punctuation vanish.
 
-Example (input -> output):
-- `"Hello, World! It's 2024."` -> `['hello', 'world', 'it', 's']`
+Write the code that does these steps:
 
-`It's` splits into `it` and `s`, and `2024` disappears.
-
-How: `re.findall(r"[a-z]+", text)` finds every run of letters and gives them back as a list. (`re` is Python's pattern-finding tool, called *regular expressions*.) `str.lower()` makes the text lowercase.
+1. Make the sentence lowercase with `sentence.lower()`.
+2. Call `re.findall(r"[a-z]+", ...)` on it. This finds every run of letters a-z.
+3. Return that list.
 
 **Check:** `tokenize("the acting was superb")` gives `['the', 'acting', 'was', 'superb']`.
 
@@ -59,71 +58,61 @@ def bigram_counts(sentences):
             inner[nxt] = ... + 1
     return counts
 ```
-A *bigram* is two words that sit next to each other, in order. In "the acting was", the bigrams are `(the, acting)` and `(acting, was)`. Count how often each word is directly followed by each other word. You give back a dict of dicts: `result[prev][nxt] = count`.
+You get a list of sentences, like `["a b a b", "b c"]`. You give back a dict of dicts, `result[prev][nxt] = count`. Here that is `{'a': {'b': 2}, 'b': {'a': 1, 'c': 1}}`. Pairs of neighbor words never cross from one sentence into the next.
 
-Example with two tiny sentences `["a b a b", "b c"]`:
-- Sentence 1 words: `a b a b`. Pairs: `(a,b)`, `(b,a)`, `(a,b)`.
-- Sentence 2 words: `b c`. Pair: `(b,c)`.
-- Result: `{'a': {'b': 2}, 'b': {'a': 1, 'c': 1}}`
+Write the code that does these steps:
 
-The pair from the end of sentence 1 to the start of sentence 2 is **not** counted. Pairs never cross from one sentence into the next. So split each sentence into words on its own. Then pair up neighbors inside it only.
-
-How: `zip(words, words[1:])` gives every pair of neighbors. `dict.setdefault(key, {})` or `dict.get(key, 0)` lets you add to a count that may not exist yet.
+1. Start with `counts = {}`.
+2. Loop over `sentences`. For each one, set `words` to `tokenize(sentence)`.
+3. Loop over `zip(words, words[1:])` as `prev, nxt`.
+4. Set `inner` to `counts.setdefault(prev, {})`.
+5. Set `inner[nxt]` to its old count plus 1. Use `inner.get(nxt, 0)` for the old count.
+6. After the loops, return `counts`.
 
 **Check:** on the real data, `bigram_counts(sentences)["acting"]` is `{'was': 1, 'felt': 1}`.
 
 ### Step 3: `build_cooccurrence_embeddings(sentences: list[str], dim: int = 16) -> dict[str, np.ndarray]`
-Code shape for all four parts:
+Code shape:
 ```python
 def build_cooccurrence_embeddings(sentences, dim=16):
     counts = bigram_counts(sentences)
-    # 3a
     vocab = sorted(...)
     index = {word: i for i, word in enumerate(vocab)}
     V = len(vocab)
-    # 3b
     raw = np.zeros((V, V))
     for prev, inner in counts.items():
         total = ...
         for nxt, count in inner.items():
             raw[index[prev], index[nxt]] = ...
-    # 3c
     rng = np.random.default_rng(0)
     projection = ...
-    # 3d
     embeddings = ...
     return {word: embeddings[index[word]] for word in vocab}
 ```
-This is the biggest step. It has four parts.
+You get the list of sentences and `dim`. You give back a dict that maps each word to a list of 16 numbers.
 
-**3a. Vocabulary and index.** The *vocabulary* is the list of every different word in the whole dataset, with no repeats. Collect every word from every sentence, remove repeats, and sort them alphabetically. Its length is `V` (it is 523 on the real data). A word's *index* is its position in this sorted list. For example, `a` is index 0 because it sorts first.
+Write the code that does these steps:
 
-**3b. The `raw` grid, shape `(V, V)`.** Start with all zeros. Row `i` is the word at index `i`. Cell `raw[i, j]` is the fraction of the time that word `i` is followed by word `j`:
+1. Set `counts` to `bigram_counts(sentences)`.
+2. Set `vocab` to the sorted list of every different word in all sentences, with no repeats. Use `tokenize` to get the words. On the real data `len(vocab)` is 523.
+3. Set `index` to a dict from each word to its position in `vocab`, and `V` to `len(vocab)`.
+4. Set `raw` to `np.zeros((V, V))`.
+5. Loop over `counts.items()` as `prev, inner`. Set `total` to the sum of `inner.values()`. This is one total per previous word, not one for the whole grid.
+6. Loop over `inner.items()` as `nxt, count`. Set `raw[index[prev], index[nxt]]` to `count / total`. Example: `"the"` is followed by something 148 times, and by `"movie"` 4 times, so that cell is `4 / 148`. Words that are never followed by anything (like `"touching"`) keep a row of zeros. Do not divide by zero for them.
+7. Set `rng = np.random.default_rng(0)`, then `projection = rng.normal(size=(V, dim))`. Use seed `0` and this exact call once, or your picture will differ.
+8. Set `embeddings` to `raw @ projection`. Its shape is `(V, dim)`, which is `(523, 16)`.
+9. Return a dict that maps each word in `vocab` to its row of `embeddings`.
 
-`raw[i, j] = count(i followed by j) / total number of times i was followed by anything`
+**Check:** `len(embeddings)` is 523, and `embeddings["the"].shape` is `(16,)`. `embeddings["touching"]` is 16 zeros.
 
-Example: in the real data, `"the"` is followed by something 148 times in total, and by `"movie"` 4 of those times. So `raw[index["the"], index["movie"]] = 4 / 148` (about 0.027). Each row you fill in adds up to 1. A word that is never followed by anything (it only ever ends sentences, like `"touching"`) keeps a row of all zeros. Do not divide by zero for those: only fill rows for words that appear as `prev` in your bigram counts.
-
-Divide each row by its own total (one total per previous word). Do not use one total for the whole grid.
-
-**3c. The projection grid, shape `(V, dim)`.** The raw rows are as long as the whole vocabulary (hundreds of numbers), but we want only 16. A *random projection* means multiplying by a grid of random numbers to squash long lists into short ones. Make it with exactly these two lines:
-- make a random number generator: `rng = np.random.default_rng(0)`
-- draw the grid: `projection = rng.normal(size=(V, dim))`
-
-The number `0` is the *seed*, a starting number for the generator. The same seed gives the same "random" numbers every run, so your picture matches everyone else's. Use seed `0` and this exact call, once, for the whole vocabulary. Any other seed or call order gives a different picture.
-
-**3d. Embeddings.** `embeddings = raw @ projection`. The shape is `(V, dim)`, which is `(523, 16)`. (`@` is matrix multiplication.) Give back a dict that maps each word to its row, so `result["the"]` is a list of 16 numbers.
-
-Why this works: two words that are followed by similar words get similar rows in `raw`, so they get similar embeddings. It is a cheap stand-in for a trained embedding.
-
-**Check:** `len(embeddings)` is 523, and `embeddings["the"].shape` is `(16,)`. `embeddings["touching"]` is 16 zeros (the word is never followed by anything).
-
-### Step 4: build `embeddings`
+### Step 4: Build `embeddings`
 Code shape:
 ```python
 embeddings = ...
 ```
-Run `embeddings = build_cooccurrence_embeddings(sentences, dim=16)`.
+Write the code that does this step:
+
+1. Set `embeddings` to `build_cooccurrence_embeddings(sentences, dim=16)`.
 
 **Check:** `len(embeddings)` is 523.
 
@@ -134,26 +123,26 @@ sentence = ...
 words = ...
 X = np.stack(...)
 ```
-Use the sentence `"the acting was superb and the story was touching"`. Store it in a variable (you will need it in the title).
-- `words = tokenize(sentence)` gives `['the', 'acting', 'was', 'superb', 'and', 'the', 'story', 'was', 'touching']`: 9 words, with `the` and `was` each showing up twice.
-- `X` is the 9 matching lists of numbers stacked into a grid, **in sentence order, repeats included**. Shape `(9, 16)`.
+You use the sentence `"the acting was superb and the story was touching"`. Write the code that does these steps:
 
-How: `np.stack(list_of_1d_arrays)` makes a 2-D grid whose rows are those lists. The list comprehension `[embeddings[w] for w in words]` builds the list.
+1. Set `sentence` to that text. You need it again in the title.
+2. Set `words` to `tokenize(sentence)`. This gives 9 words: `['the', 'acting', 'was', 'superb', 'and', 'the', 'story', 'was', 'touching']`.
+3. Set `X` to `np.stack([embeddings[w] for w in words])`. Keep sentence order, repeats included. The shape is `(9, 16)`.
 
 **Check:** `X.shape == (9, 16)`, and `X[0]` equals `X[5]` (both are `the`).
 
-### Step 6: attention weights
+### Step 6: Attention weights
 Code shape:
 ```python
 _, weights = scaled_dot_product_attention(..., ..., ...)
 ```
-Call your function with `X` as all three inputs: `scaled_dot_product_attention(X, X, X)`. A real transformer learns different Q, K and V grids, so this is a simpler version. The function gives back two things. Keep the second one, the attention weights, shape `(9, 9)`. In this grid, row `i`, column `j` says how much word `i` looks at word `j`. Each row adds up to 1.
+Write the code that does this step:
 
-Tip: `_, weights = scaled_dot_product_attention(X, X, X)` throws away the first thing it gives back.
+1. Call `scaled_dot_product_attention(X, X, X)` and keep only the second result: `_, weights = ...`. `weights` has shape `(9, 9)`. Row `i`, column `j` says how much word `i` looks at word `j`.
 
 **Check:** `weights.shape == (9, 9)` and `weights.sum(axis=1)` is nine values, all equal to 1 (up to tiny rounding).
 
-### Step 7: the heatmap
+### Step 7: The heatmap
 Code shape:
 ```python
 plt.figure(...)
@@ -165,13 +154,14 @@ plt.title(...)
 plt.tight_layout()
 plt.show()
 ```
-A *heatmap* is a grid drawn as colored squares. `imshow` draws one. Use these exact settings:
-- `plt.figure(figsize=(7, 6))`
-- `plt.imshow(weights, cmap="magma")`: draws the grid with the magma color scale (dark = small, bright = large).
-- `plt.colorbar(label="attention weight")`: the color key, with that label.
-- `plt.xticks(range(9), words, rotation=45, ha="right")`: one label per column, tilted 45 degrees, lined up on the right.
-- `plt.yticks(range(9), words)`: one label per row.
-- `plt.title(...)` with the exact text `Self-attention over: "<the sentence>"`. The sentence is wrapped in double quotes inside the title. For example: `Self-attention over: "the acting was superb and the story was touching"`. An f-string with single quotes outside works: `f'Self-attention over: "{sentence}"'`.
-- `plt.tight_layout()` (stops labels being cut off), then `plt.show()`.
+Write the code that does these steps:
+
+1. Call `plt.figure(figsize=(7, 6))`.
+2. Call `plt.imshow(weights, cmap="magma")`. Dark is small and bright is large.
+3. Call `plt.colorbar(label="attention weight")`.
+4. Call `plt.xticks(range(9), words, rotation=45, ha="right")`.
+5. Call `plt.yticks(range(9), words)`.
+6. Call `plt.title(...)` with the exact text `Self-attention over: "<the sentence>"`, with the sentence in double quotes. For example: `Self-attention over: "the acting was superb and the story was touching"`. Use `f'Self-attention over: "{sentence}"'`.
+7. Call `plt.tight_layout()`, then `plt.show()`.
 
 **Check:** you see a 9x9 colored grid, word labels on both sides, and a color key on the right.

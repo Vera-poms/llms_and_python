@@ -62,9 +62,6 @@ export function Lab10Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 1 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`examples = [
     ("hello", "HELLO!"),
@@ -377,9 +374,6 @@ except ValueError as e:
         </ListItem>
       </UnorderedList>
 
-      <Text color="gray.600">
-        Try it: the notebook has a "Concept 2 practice" cell for this - run it before moving on.
-      </Text>
       <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
         {`import json
 

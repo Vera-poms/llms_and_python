@@ -33,7 +33,7 @@ If you see `NameError: name 'PromptTemplate' is not defined`, run your exercise 
 
 ## Steps
 
-### Step 1: write the `classify_sentiment` template
+### Step 1: Write the `classify_sentiment` template
 Code shape:
 ```python
 classify_sentiment = PromptTemplate(
@@ -42,23 +42,16 @@ classify_sentiment = PromptTemplate(
     "Review: {review}"
 )
 ```
-Build a `PromptTemplate` whose text has this layout:
+You make a `PromptTemplate` with the layout `<instruction>` + `\n\n` + `Review: {review}`. Write the code that does these steps:
 
-`<instruction>` + `\n\n` + `Review: {review}`
-
-The instruction must ask the model to classify the sentiment of the review as positive or negative, and to reply with a single word. The wording is yours. For example:
-
-`"Classify the sentiment of this review as positive or negative. Reply with a single word."`
-
-The only placeholder is `{review}`. Do not add other curly braces anywhere in the text. `required_vars` would pick them up, and `render` would then ask for them.
-
-`\n` is the "new line" character. `\n\n` is two of them, which shows up as one blank line. Python also glues string pieces that sit side by side, so you can split a long string across lines, like the shape above.
-
-Why the blank line? It keeps the instruction apart from the data, which also helps the model.
+1. Write an instruction that asks the model to classify the sentiment of the review as positive or negative, and to reply with a single word. The wording is yours. For example: `"Classify the sentiment of this review as positive or negative. Reply with a single word."`
+2. After it, add the string `"\n\n"` (this shows up as one blank line).
+3. End with the string `"Review: {review}"`.
+4. Do not add any other curly braces. `required_vars` would pick them up, and `render` would then ask for them.
 
 **Check:** `PromptTemplate(...).required_vars == {"review"}`.
 
-### Step 2: write the `summarize` template
+### Step 2: Write the `summarize` template
 Code shape:
 ```python
 summarize = PromptTemplate(
@@ -67,11 +60,15 @@ summarize = PromptTemplate(
     "Review: {review}"
 )
 ```
-Same layout. The instruction asks the model to summarize the review in one short sentence, for example `"Summarize this review in one short sentence."`. Then `\n\n`, then `Review: {review}`.
+It has the same layout. Write the code that does these steps:
+
+1. Write an instruction that asks the model to summarize the review in one short sentence, for example `"Summarize this review in one short sentence."`
+2. After it, add `"\n\n"`.
+3. End with `"Review: {review}"`.
 
 **Check:** `required_vars == {"review"}`.
 
-### Step 3: build `TEMPLATES`
+### Step 3: Build `TEMPLATES`
 Code shape:
 ```python
 TEMPLATES = {
@@ -79,15 +76,17 @@ TEMPLATES = {
     "summarize": ...,
 }
 ```
-A *dict* is a lookup table of `key: value` pairs. `TEMPLATES["summarize"]` gives the summarize template. Make a dict with **exactly two keys**, spelled exactly:
-- `"classify_sentiment"` -> the template from step 1
-- `"summarize"` -> the template from step 2
+Write the code that does these steps:
+
+1. Make a dict called `TEMPLATES` with exactly two keys, spelled exactly as below.
+2. Set `"classify_sentiment"` to the template from Step 1.
+3. Set `"summarize"` to the template from Step 2.
 
 Keep that order, because the output follows it.
 
 **Check:** `list(TEMPLATES)` is `["classify_sentiment", "summarize"]`.
 
-### Step 4: the loop and the output
+### Step 4: The loop and the output
 Code shape:
 ```python
 for name, template in TEMPLATES.items():
@@ -96,15 +95,15 @@ for name, template in TEMPLATES.items():
         print(...)
         print()
 ```
-Loop with `for name, template in TEMPLATES.items():`. `.items()` gives you each `(key, value)` pair of a dict, so the loop gets both the name and the template. For each template:
-1. Print the header `--- <name> ---`, for example `--- classify_sentiment ---`.
-2. For each `review` in `sentences[:2]` (the first two sentences only), print `template.render(review=review)`. Then print one blank line with `print()`.
+Write the code that does these steps:
 
-Fill the template by calling `render` with the name `review=`. Do not use f-strings or `.format` yourself here.
+1. Loop with `for name, template in TEMPLATES.items():`.
+2. Print the header `--- <name> ---`, for example `--- classify_sentiment ---`.
+3. Inside it, loop with `for review in sentences[:2]:` (the first two sentences only).
+4. Print `template.render(review=review)`. Do not use f-strings or `.format` yourself.
+5. Print one blank line with `print()`.
 
-How: `sentences[:2]` is a slice, the first two items of a list. `print()` with nothing inside prints an empty line.
-
-If your instruction is the example above, the output is exactly:
+If your instructions are the examples above, the output is exactly:
 
 ```
 --- classify_sentiment ---

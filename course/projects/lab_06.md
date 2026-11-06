@@ -43,13 +43,14 @@ REAL_CONFIGS = {
     "GPT-2 medium": (ModelConfig(...), ...),
 }
 ```
-Make a dict constant named `REAL_CONFIGS`. Each key is the model name (a string). Each value is a **tuple** `(ModelConfig(...), published_total)`. The *published total* is the official parameter count of the real model.
-- `"GPT-2 small"`: `ModelConfig(vocab_size=50257, d_model=768, n_layers=12, n_heads=12, d_ff=3072)` and published total `124_439_808`.
-- `"GPT-2 medium"`: `ModelConfig(vocab_size=50257, d_model=1024, n_layers=24, n_heads=16, d_ff=4096)` and published total `354_823_168`.
+You make a dict. Each value is a tuple `(ModelConfig(...), published_total)`, where the published total is the official parameter count.
 
-The underscores in `124_439_808` only make a long number easier to read. The value is `124439808`.
+Write the code that does these steps:
 
-Why a tuple: it keeps each model's config and its official number together, so one loop can use both.
+1. Add the key `"GPT-2 small"` with `ModelConfig(vocab_size=50257, d_model=768, n_layers=12, n_heads=12, d_ff=3072)` and published total `124_439_808`.
+2. Add the key `"GPT-2 medium"` with `ModelConfig(vocab_size=50257, d_model=1024, n_layers=24, n_heads=16, d_ff=4096)` and published total `354_823_168`.
+
+The underscores only make the number easier to read. The value is `124439808`.
 
 **Check:** `len(REAL_CONFIGS) == 2`. `REAL_CONFIGS["GPT-2 small"][1] == 124439808`.
 
@@ -59,7 +60,10 @@ Code shape:
 for name, (config, real_total) in REAL_CONFIGS.items():
     breakdown = ...
 ```
-Loop over `REAL_CONFIGS.items()`. `dict.items()` gives `(key, value)` pairs, so `for name, (config, real_total) in REAL_CONFIGS.items():` unpacks the name, the config and the published total in one go. Inside, call `breakdown = config.count_parameters()`. Each `breakdown` is a dict with six keys.
+You get the dict from Step 1. Write the code that does these steps:
+
+1. Loop with `for name, (config, real_total) in REAL_CONFIGS.items():`. This unpacks the name, the config and the published total.
+2. Inside the loop, set `breakdown` to `config.count_parameters()`.
 
 **Check (small):** `breakdown["embedding"] == 38597376` (that is `50257 * 768`), and `breakdown["output_head"] == 38597376`.
 
@@ -68,13 +72,12 @@ Code shape:
 ```python
 tied_total = ...
 ```
-GPT-2 uses one matrix for two jobs. The *output head* turns the model's final vectors back into token scores. The *embedding table* turns tokens into vectors. They are the same size, so GPT-2 shares one matrix for both. This is called *weight tying*. The real model stores that matrix **once**. But your `"total"` counts it twice, in both `"embedding"` and `"output_head"`. Fix that with one subtraction:
+GPT-2 shares one matrix for the embedding and the output head (weight tying), so the real model stores it once. Your `"total"` counts it twice. Write the code that does these steps:
 
-`tied_total = breakdown["total"] - breakdown["output_head"]`
+1. Inside the loop, set `tied_total` to `breakdown["total"] - breakdown["output_head"]`.
+2. Do not change the dict. From now on, `tied_total` is the "computed" number.
 
-Only the total changes. Do not edit the other dict entries. From now on, **`tied_total` is the "computed" number**.
-
-Worked example (tiny config above): `226816 - 64000 = 162816`.
+Example (tiny config): `226816 - 64000 = 162816`.
 
 **Check:** small `tied_total == 123568896` (raw total 162166272). Medium `tied_total == 353551360` (raw total 405014528).
 
@@ -84,12 +87,11 @@ Code shape:
 print(f"{name}: computed(tied)={...:,}  published={...:,}  diff={...:,}")
 print(f"  breakdown: {...}")
 ```
-Line 1 goes all on one line, with two spaces between the three parts:
-`<name>: computed(tied)=<tied_total>  published=<published>  diff=<difference>`
-The *difference* is how far apart the two numbers are, ignoring the sign: `abs(a - b)`. Put commas in all three numbers (`123568896` becomes `123,568,896`). In an f-string, the format `:,` does this: `f"{123568896:,}"` gives `123,568,896`. Build it with an f-string:
-`f"{name}: computed(tied)={tied_total:,}  published={real_total:,}  diff={abs(tied_total - real_total):,}"`
+Inside the loop, write the code that does these steps:
 
-Line 2 is two spaces, the word `breakdown:`, a space, then the raw dict as Python prints it: `print(f"  breakdown: {breakdown}")`. The dict shows with single quotes and no commas inside the numbers, like `{'embedding': 38597376, 'attention': 28311552, ...}`.
+1. Print line 1: `<name>: computed(tied)=<tied_total>  published=<real_total>  diff=<difference>`, with two spaces between the three parts.
+2. Use `abs(tied_total - real_total)` for the difference. Put commas in all three numbers with the format `:,` (`123568896` becomes `123,568,896`).
+3. Print line 2: two spaces, `breakdown:`, a space, then the raw dict: `print(f"  breakdown: {breakdown}")`.
 
 Expected for small:
 ```
@@ -101,7 +103,7 @@ Expected for medium:
 GPT-2 medium: computed(tied)=353,551,360  published=354,823,168  diff=1,271,808
   breakdown: {'embedding': 51463168, 'attention': 100663296, 'feed_forward': 201326592, 'layernorm': 98304, 'output_head': 51463168, 'total': 405014528}
 ```
-So for small, the difference is about 0.7%. For medium, it is about 0.36%.
+The difference is about 0.7% for small and about 0.36% for medium.
 
 ### Step 5: Collect three lists in the same order
 Code shape:
@@ -115,9 +117,14 @@ for name, (config, real_total) in REAL_CONFIGS.items():
     computed.append(...)
     published.append(...)
 ```
-Before the loop, make three empty lists, for example `names`, `computed` and `published`. Inside the loop, add the model name, the `tied_total` and the `real_total`. Position `i` in all three lists is the same model.
+Write the code that does these steps:
 
-**Check:** after the loop, each list has length 2, in the order small, medium (dicts keep the order you put things in).
+1. Before the loop, make three empty lists: `names`, `computed` and `published`.
+2. Inside the loop, add `name` to `names`.
+3. Add `tied_total` to `computed`.
+4. Add `real_total` to `published`.
+
+**Check:** after the loop, each list has length 2, in the order small, medium.
 
 ### Step 6: Grouped bar chart
 Code shape:
@@ -129,11 +136,14 @@ plt.bar([... for i in x], published, width=..., label="published")
 plt.xticks(list(x), names)
 # then: ylabel, title, legend, tight_layout, show
 ```
-A *grouped bar chart* has, for each model (a group), two bars side by side. Use one figure: `plt.figure(figsize=(7, 5))`. This starts a chart 7 by 5 inches.
-- Model `i` sits at x position `i` (0 for small, 1 for medium). Make the positions with `range(len(names))`.
-- The "computed (tied)" bars go at `i - 0.2` (a bit left). The "published" bars go at `i + 0.2` (a bit right). Use a list comprehension to move every position: `[i - 0.2 for i in x]`.
-- `plt.bar(x_positions, heights, width=..., label=...)` draws vertical bars centered at `x_positions`. Give each call `width=0.4`, so the two bars touch in the middle of each group and do not overlap. Labels: `label="computed (tied)"` and `label="published"`.
-- The bars sit at moved positions, so matplotlib would label the x axis with numbers. Call `plt.xticks(list(x), names)`. `plt.xticks(positions, labels)` puts text under the given x positions. Now the labels under each group are the model names.
-- `plt.ylabel("parameters")`, `plt.title("Computed vs. published parameter counts")`, `plt.legend()`, `plt.tight_layout()`, then `plt.show()`.
+Each model gets two bars side by side. Write the code that does these steps:
 
-**Check:** two groups with two bars in each. A legend with two entries. Model names under the groups (not 0 and 1). In each group the two bars look almost the same height, because the difference is under 1%. That near match is the point of the project. The small gap comes from things the simple formula leaves out, such as positional embeddings and bias vectors.
+1. Start the chart with `plt.figure(figsize=(7, 5))`.
+2. Set `x` to `range(len(names))`. Model `i` sits at x position `i`.
+3. Draw the computed bars at `[i - 0.2 for i in x]` with `computed`, `width=0.4` and `label="computed (tied)"`.
+4. Draw the published bars at `[i + 0.2 for i in x]` with `published`, `width=0.4` and `label="published"`.
+5. Put the model names under the groups with `plt.xticks(list(x), names)`.
+6. Call `plt.ylabel("parameters")` and `plt.title("Computed vs. published parameter counts")`.
+7. Call `plt.legend()`, `plt.tight_layout()` and `plt.show()`.
+
+**Check:** two groups with two bars each, a legend with two entries, and model names under the groups (not 0 and 1). The two bars in each group look almost the same height, because the difference is under 1%. That near match is the point of the project.

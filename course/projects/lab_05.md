@@ -38,20 +38,19 @@ MIN_POLARITY_RATIO = ...
 TEST_FRACTION = ...
 RANDOM_SEED = ...
 ```
-Define `MIN_WORD_COUNT = 3`, `MIN_POLARITY_RATIO = 0.7`, `TEST_FRACTION = 0.2` and `RANDOM_SEED = 0`.
+Write the code that does this step:
 
-A *random seed* is a number that fixes a random generator, so it gives the same "random" numbers every run. The same seed means the same split, so everybody gets the same answer.
+1. Define `MIN_WORD_COUNT = 3`, `MIN_POLARITY_RATIO = 0.7`, `TEST_FRACTION = 0.2` and `RANDOM_SEED = 0`.
 
 ### Step 2: Labels as -1 / +1 (`y`)
 Code shape:
 ```python
 y = np.array([... for l in labels])
 ```
-Make `y = np.array(...)` of length 170. Label `1` becomes `+1` and label `0` becomes `-1`.
+You get `labels`, a list of 0s and 1s, like `[1, 0, 1]`. Write the code that does these steps:
 
-Why: `predict` gives back +1 or -1, so the true labels must use the same values.
-
-Example: `[1, 0, 1]` becomes `array([ 1, -1,  1])`.
+1. Make a list with `1 if l == 1 else -1` for each `l` in `labels`.
+2. Set `y` to `np.array(...)` of that list. For the example you get `array([ 1, -1,  1])`.
 
 **Check:** `y.shape == (170,)`. 85 values are +1 and 85 are -1.
 
@@ -61,11 +60,12 @@ Code shape:
 def tok(sentence):
     return re.findall(..., ...)
 ```
-Make the sentence lowercase. Give back the runs of letters a-z, in order, repeats included.
+Write the code that does these steps:
+
+1. Make the sentence lowercase.
+2. Return `re.findall(r"[a-z]+", ...)` on it. Repeats stay in.
 
 Example: `tok("The plot was great, not bad!")` gives `['the', 'plot', 'was', 'great', 'not', 'bad']`.
-
-How: `re.findall(r"[a-z]+", text)` gives all the matches of "one or more lowercase letters in a row".
 
 **Check:** `tok("i loved every minute of this film")` has 7 items.
 
@@ -88,10 +88,14 @@ def build_vocab(sentences, y):
     pairs = sorted(pairs, key=..., reverse=True)
     return [...]
 ```
-Pick the words that lean strongly positive or strongly negative.
-1. **Count sentences per class.** For each sentence, take `set(tok(sentence))`. A set drops repeats, so a word counts once for each sentence, even if it shows up twice. Add 1 to that word in a positive dict if the sentence's `y` is `+1`. Otherwise add 1 in a negative dict. Read counts with `d.get(word, 0)`, because a word may be missing from one dict. `zip(sentences, y)` walks both lists together.
-2. **Filter** every word seen in either dict. Let `pos` and `neg` be its two counts, and `total = pos + neg`. Skip it if `total < MIN_WORD_COUNT`. Skip it if `abs(pos - neg) / total < MIN_POLARITY_RATIO`.
-3. **Sort** the kept words by `total`, biggest first, and give back only the words.
+You give back the words that lean strongly positive or strongly negative, most frequent first. Write the code that does these steps:
+
+1. Loop over `zip(sentences, y)`. For each word in `set(tok(sentence))`, add 1 to `pos_counts[word]` if `label` is `+1`. Otherwise add 1 to `neg_counts[word]`. The `set` makes a word count once per sentence.
+2. Use `d.get(word, 0)` to start a new word from 0.
+3. For each word in `set(pos_counts) | set(neg_counts)`, set `pos` and `neg` with `.get(word, 0)`, and `total = pos + neg`.
+4. Skip the word if `total < MIN_WORD_COUNT`, or if `abs(pos - neg) / total < MIN_POLARITY_RATIO`.
+5. Otherwise add `(word, total)` to `pairs`.
+6. Sort `pairs` by `total`, biggest first, and return only the words.
 
 Worked examples from the real data:
 - `the` has `pos = 55`, `neg = 56`, ratio `1/111 = 0.009`, so it is skipped.
@@ -113,11 +117,13 @@ def vectorize(sentences, vocab):
                 X[i, ...] = 1.0
     return X
 ```
-Build a grid of 0s and 1s with shape `(n_sentences, len(vocab))`. An entry is 1.0 if the vocabulary word is in the sentence, and 0.0 if not. It never counts how many times.
+You give back a grid with one row per sentence and one column per vocabulary word. Example: `vocab = ['felt', 'flat', 'great']` and the sentence `"the characters felt flat and the dialogue was awkward"` give the row `[1.0, 1.0, 0.0]`. Write the code that does these steps:
 
-Example: `vocab = ['felt', 'flat', 'great']` and the sentence `"the characters felt flat and the dialogue was awkward"` give the row `[1.0, 1.0, 0.0]`.
-
-How: start from `np.zeros((n, len(vocab)))`. Make a `{word: column}` dict once, so you can find each column fast.
+1. Make `column`, a dict of each word to its column number, from `enumerate(vocab)`. Do it once, before the loop.
+2. Set `X` to `np.zeros((len(sentences), len(vocab)))`.
+3. For each sentence `i`, loop over `set(tok(sentence))`.
+4. If the word is in `column`, set `X[i, column[word]] = 1.0`. It never counts how many times.
+5. Return `X`.
 
 **Check:** on all 170 sentences, `X.shape == (170, 22)` and `X.sum() == 78.0`. About 100 rows are all zeros (no vocabulary word). That is expected.
 
@@ -132,12 +138,14 @@ def pca_2d(X):
     top2 = ...
     return ...
 ```
-Squash `X` to 2 columns, only for drawing. *PCA* finds the 2 directions along which the data spreads the most, and describes every row with 2 numbers. In this order:
-1. `centered = X - X.mean(axis=0)`. This takes each column's average away.
-2. `cov = np.cov(centered, rowvar=False)`. The *covariance matrix* says how each pair of columns moves together. `rowvar=False` means the columns are the variables. The shape is `(22, 22)`.
-3. `eigenvalues, eigenvectors = np.linalg.eigh(cov)`. Each *eigenvector* is a direction. Its *eigenvalue* says how much the data spreads along it. The eigenvalues come back smallest first. Eigenvector `i` is the **column** `eigenvectors[:, i]`.
-4. `order = np.argsort(eigenvalues)[::-1]` gives the positions from the largest eigenvalue to the smallest. Keep `eigenvectors[:, order[:2]]`. It has shape `(22, 2)`.
-5. Give back `centered @ top2`. (`@` is matrix multiplication.) The shape is `(n, 2)`.
+You give back the rows of `X` described by just 2 numbers each, only for drawing. Write the code that does these steps, in this order:
+
+1. Set `centered` to `X - X.mean(axis=0)`.
+2. Set `cov` to `np.cov(centered, rowvar=False)`. The shape is `(22, 22)`.
+3. Set `eigenvalues, eigenvectors` to `np.linalg.eigh(cov)`. The eigenvalues come back smallest first, and eigenvector `i` is the **column** `eigenvectors[:, i]`.
+4. Set `order` to `np.argsort(eigenvalues)[::-1]`. This lists the positions from the largest eigenvalue to the smallest.
+5. Set `top2` to `eigenvectors[:, order[:2]]`. It has shape `(22, 2)`.
+6. Return `centered @ top2`. The shape is `(n, 2)`.
 
 **Check:** `X2d.shape == (170, 2)`.
 
@@ -153,16 +161,14 @@ def train_test_split(*arrays, test_fraction, seed):
     train_idx = ...
     return [... for a in arrays], [... for a in arrays]
 ```
-Split several arrays of the same length, using the **same** random choice of rows for all of them. `*arrays` means "any number of arrays". `test_fraction` and `seed` must be given by name. The call looks like `train_test_split(X, X2d, y, test_fraction=TEST_FRACTION, seed=RANDOM_SEED)`.
+You get any number of arrays of the same length. `test_fraction` and `seed` are given by name, like `train_test_split(X, X2d, y, test_fraction=TEST_FRACTION, seed=RANDOM_SEED)`. You give back two lists: the train part of every array, then the test part. All arrays use the **same** shuffled rows, so row 5 of `X` stays the same sentence as row 5 of `y`. Write the code that does these steps:
 
-Do exactly this:
-1. `rng = np.random.default_rng(seed)`. This makes a random generator.
-2. `n = len(arrays[0])`.
-3. Shuffle once only: `indices = rng.permutation(n)`. A *permutation* is the numbers `0..n-1` in a random order.
-4. `n_test = int(n * test_fraction)`. The first `n_test` entries of `indices` are the test rows. The rest are the train rows.
-5. Give back two lists, in this order: `[a[train_idx] for a in arrays]` and then `[a[test_idx] for a in arrays]`. (`array[index_array]` picks those rows, in that order.)
-
-Why one shuffle for all arrays: if `X`, `X2d` and `y` were shuffled on their own, row 5 of `X` would no longer be the same sentence as row 5 of `y`.
+1. Set `rng` to `np.random.default_rng(seed)`.
+2. Set `n` to `len(arrays[0])`.
+3. Set `indices` to `rng.permutation(n)`. Shuffle once only.
+4. Set `n_test` to `int(n * test_fraction)`.
+5. Set `test_idx` to `indices[:n_test]`, and `train_idx` to `indices[n_test:]`.
+6. Return `[a[train_idx] for a in arrays]` and then `[a[test_idx] for a in arrays]`.
 
 Worked example: `n = 10`, `test_fraction = 0.2` and `seed = 0` give `int(10 * 0.2) = 2` test rows. `np.random.default_rng(0).permutation(10)` is `[4 6 2 7 3 5 9 0 8 1]`. So the test rows are `[4, 6]` and the train rows are `[2, 7, 3, 5, 9, 0, 8, 1]`.
 
@@ -175,9 +181,10 @@ def accuracy(model, X, y):
     preds = np.array([... for row in X])
     return float(...)
 ```
-This is the fraction of rows where `model.predict(row) == label`. Build `preds = np.array([model.predict(row) for row in X])`. Then give back `float((preds == y).mean())`. Comparing two arrays with `==` gives True and False for each row. `.mean()` counts True as 1, so you get the fraction right.
+You give back the fraction of rows where `model.predict(row)` matches the label, as a number from 0 to 1 (not a percentage). Example: 3 right out of 4 gives `0.75`. Write the code that does these steps:
 
-Example: 3 right out of 4 gives `0.75`. Give back a fraction between 0 and 1, not a percentage.
+1. Set `preds` to `np.array([model.predict(row) for row in X])`.
+2. Return `float((preds == y).mean())`.
 
 **Check:** on a fresh untrained `Perceptron(n_features=22)`, `accuracy(model, X, y)` on all 170 sentences gives exactly `0.5`. Every prediction is +1, and half the labels are +1.
 
@@ -189,7 +196,12 @@ X = ...
 X2d = ...
 print(f"Sentiment vocabulary ({...} words): {...}")
 ```
-`vocab = build_vocab(sentences, y)`, `X = vectorize(sentences, vocab)`, `X2d = pca_2d(X)`. Then print `Sentiment vocabulary (22 words): [...]`. Use `{len(vocab)}` and `{vocab}` in an f-string. The 22 and the list come from your code. They are shown here so you know what to expect.
+Write the code that does these steps:
+
+1. Set `vocab` to `build_vocab(sentences, y)`.
+2. Set `X` to `vectorize(sentences, vocab)`.
+3. Set `X2d` to `pca_2d(X)`.
+4. Print `Sentiment vocabulary (22 words): [...]` with an f-string, using `{len(vocab)}` and `{vocab}`. The 22 and the list come from your code.
 
 ### Step 10: Split
 Code shape:
@@ -197,12 +209,9 @@ Code shape:
 (X_train, X2d_train, y_train), (X_test, X2d_test, y_test) = train_test_split(
     ..., ..., ..., test_fraction=..., seed=...)
 ```
-Write:
-```
-(X_train, X2d_train, y_train), (X_test, X2d_test, y_test) = train_test_split(
-    X, X2d, y, test_fraction=TEST_FRACTION, seed=RANDOM_SEED)
-```
-This unpacks the returned (train list, test list) into six variables. The names must be exactly these.
+Write the code that does this step:
+
+1. Call `train_test_split(X, X2d, y, test_fraction=TEST_FRACTION, seed=RANDOM_SEED)` and unpack the result into exactly these names: `(X_train, X2d_train, y_train), (X_test, X2d_test, y_test)`.
 
 **Check:** `len(X_train) == 136`, `len(X_test) == 34`, `X_train.shape == (136, 22)`, `X2d_test.shape == (34, 2)`.
 
@@ -213,9 +222,11 @@ model = Perceptron(n_features=...)
 errors_per_epoch = train(model, ..., ..., epochs=..., learning_rate=...)
 accuracy_per_epoch = [... for e in errors_per_epoch]
 ```
-- `model = Perceptron(n_features=X.shape[1])`. Use the **full** features: one weight for each vocabulary word (22), not the 2D ones.
-- `errors_per_epoch = train(model, X_train, y_train, epochs=60, learning_rate=1.0)`. Use only the training part. Never train on the test part, or tune anything with it. If you do, the test score is no longer honest.
-- `accuracy_per_epoch = [1 - e / len(X_train) for e in errors_per_epoch]`. Example: 40 mistakes out of 136 gives `1 - 40/136 = 0.706`.
+Write the code that does these steps:
+
+1. Set `model` to `Perceptron(n_features=X.shape[1])`. This uses the full features (22), not the 2D ones.
+2. Set `errors_per_epoch` to `train(model, X_train, y_train, epochs=60, learning_rate=1.0)`. Use only the training part, never the test part.
+3. Set `accuracy_per_epoch` to `[1 - e / len(X_train) for e in errors_per_epoch]`. Example: 40 mistakes out of 136 gives `1 - 40/136 = 0.706`.
 
 **Check:** `len(errors_per_epoch) == 60` and `len(accuracy_per_epoch) == 60`. With the seed above, the first value of `errors_per_epoch` is 53 (accuracy 0.610). It drops to 40 (accuracy 0.706) by epoch 3.
 
@@ -226,12 +237,16 @@ test_acc = ...
 print(f"Train examples: {...}, test examples: {...}")
 print(f"Held-out test accuracy: {...:.2f}%")
 ```
-`test_acc = accuracy(model, X_test, y_test)`. The *test set* is the examples the model never saw while learning. Print two lines:
+Print exactly these two lines (the numbers come from your code):
 ```
 Train examples: 136, test examples: 34
 Held-out test accuracy: 73.53%
 ```
-Use `{len(X_train)}`, `{len(X_test)}` and `{test_acc * 100:.2f}%` (`:.2f` means 2 digits after the point). Print the values your code worked out. The numbers above are what to expect.
+Write the code that does these steps:
+
+1. Set `test_acc` to `accuracy(model, X_test, y_test)`.
+2. Print the first line with `{len(X_train)}` and `{len(X_test)}`.
+3. Print the second line with `{test_acc * 100:.2f}%`.
 
 **Check:** with 34 test examples, one more right answer changes the accuracy by 1/34, about 2.94 points. So `test_acc * 34` should be a whole number (here 25).
 
@@ -249,28 +264,20 @@ axes[1].scatter(...)    # test correct
 axes[1].scatter(...)    # test wrong
 # right panel labels, legend, then tight_layout and show
 ```
-`fig, axes = plt.subplots(1, 2, figsize=(13, 5))`. This makes one figure with 1 row and 2 panels side by side. `axes[0]` is the left one and `axes[1]` is the right one.
+Write the code that does these steps:
 
-First, which test points are right? `preds_test = np.array([model.predict(row) for row in X_test])`. Use the **full-feature** `X_test`. Then `correct = preds_test == y_test`. This is True or False for each test row. (A True/False array like this is called a *mask*. `X[mask]` keeps only the rows where it is True, and `~mask` flips True and False.)
+1. Set `fig, axes` to `plt.subplots(1, 2, figsize=(13, 5))`. `axes[0]` is the left panel and `axes[1]` is the right one.
+2. Set `preds_test` to `np.array([model.predict(row) for row in X_test])`. Use the full-feature `X_test`.
+3. Set `correct` to `preds_test == y_test`. This is True or False for each test row.
+4. Left panel: call `axes[0].plot(range(1, 61), accuracy_per_epoch, marker="o")`.
+5. Left panel: set x label `epoch`, y label `training accuracy`, title `Learning curve`, with `set_xlabel`, `set_ylabel` and `set_title`.
+6. Right panel: scatter `X2d_train[y_train == 1]` with `color="seagreen"`, `alpha=0.4`, `label="train +"`.
+7. Right panel: scatter `X2d_train[y_train == -1]` with `color="crimson"`, `alpha=0.4`, `label="train -"`.
+8. Right panel: scatter `X2d_test[correct]` with `color="royalblue"`, `marker="o"`, `label="test correct"`.
+9. Right panel: scatter `X2d_test[~correct]` with `color="black"`, `marker="x"`, `s=80`, `label="test wrong"`.
+10. Right panel: set x label `PCA component 1 (visualization only)`, y label `PCA component 2 (visualization only)`, and title `f"Trained perceptron (test accuracy {test_acc:.0%})"`, which gives `Trained perceptron (test accuracy 74%)`.
+11. Call `axes[1].legend(fontsize=8)`, then `plt.tight_layout()`, then `plt.show()`.
 
-**Left panel `axes[0]`: learning curve.** A *learning curve* is a line chart of accuracy (up) against epoch number (across).
-- The x values are epoch numbers starting at **1** (so `range(1, 61)`). The y values are `accuracy_per_epoch`.
-- `axes[0].plot(..., marker="o")`. This draws a line with a circle at each point.
-- x label `epoch`, y label `training accuracy`, title `Learning curve`.
-
-**Right panel `axes[1]`: 2D scatter** drawn at the `X2d` positions. Make four `scatter` calls. `ax.scatter(xs, ys, color=..., alpha=..., marker=..., s=..., label=...)` draws dots (`s` is the dot size).
-- Train positives `X2d_train[y_train == 1]`: `"seagreen"`, `alpha=0.4`, label `train +`.
-- Train negatives `X2d_train[y_train == -1]`: `"crimson"`, `alpha=0.4`, label `train -`.
-- Correct test points `X2d_test[correct]`: `"royalblue"`, `marker="o"`, label `test correct`.
-- Wrong test points `X2d_test[~correct]`: `"black"`, `marker="x"`, `s=80`, label `test wrong`.
-
-Tip: `*points.T` turns an `(n, 2)` array of points into two arguments, all the x values and all the y values. So `ax.scatter(*points.T)` is the same as `ax.scatter(points[:, 0], points[:, 1])`.
-
-Important: "correct" comes from the model working on the 22-feature `X_test`. But the dots are drawn at the 2D `X2d_test` positions. The 2D picture is only for looking at.
-- x label `PCA component 1 (visualization only)`, y label `PCA component 2 (visualization only)`.
-- Title `Trained perceptron (test accuracy 74%)`, made with an f-string and `{test_acc:.0%}`. That turns 0.7353 into `74%` (a whole percent).
-- `axes[1].legend(fontsize=8)`.
-
-Set labels and titles with `ax.set_xlabel`, `ax.set_ylabel` and `ax.set_title`. Finish with `plt.tight_layout()` and `plt.show()`.
+To scatter an `(n, 2)` array of points, use `ax.scatter(*points.T)`. It is the same as `ax.scatter(points[:, 0], points[:, 1])`. "Correct" comes from the 22-feature `X_test`, but the dots are drawn at the 2D `X2d_test` positions. The 2D picture is only for looking at.
 
 **Check:** the number of blue dots plus black crosses is 34. With the expected result, that is 25 blue circles and 9 black crosses. The learning curve starts at about 0.61 on epoch 1, rises to about 0.69 on epoch 2, and stays at about 0.706 from epoch 3 on. It stays flat and does not reach 1.0, because no straight line splits this data perfectly. The PCA chart can come out mirrored on some machines. That is harmless.

@@ -54,9 +54,7 @@ QUESTIONS = [
     (..., ...),
 ]
 ```
-Why: this is your test set. Each entry holds the question and the known right answer, so you can compare.
-
-Copy this constant exactly. It is a list of three `(question, expected_answer)` tuples. A *tuple* is a fixed pair like `("x", "1")`. The expected answers are strings, not numbers:
+Copy this constant exactly. It is three `(question, expected_answer)` tuples. The expected answers are strings, not numbers:
 
 ```
 QUESTIONS = [
@@ -66,8 +64,6 @@ QUESTIONS = [
 ]
 ```
 
-You can check the answers by hand. The train goes 60 miles in 0.75 hours, so 60 / 0.75 = 80 mph. The shirt costs 80% of the original, so 40 / 0.8 = 50. Jo has J apples and Sam has 3J, so 4J = 24, J = 6, and Sam has 18.
-
 **Check:** `len(QUESTIONS)` is 3 and `QUESTIONS[0][1]` is `"80"`.
 
 ### Step 2: Loop and unpack
@@ -76,7 +72,9 @@ Code shape:
 for ..., ... in QUESTIONS:
     ...
 ```
-Write `for question, expected in QUESTIONS:`. This is *tuple unpacking*: each pass splits the pair into two names. `question` is the text and `expected` is the answer string. For example, `for a, b in [("x", "1")]:` gives `a = "x"` and `b = "1"`.
+You get the list from Step 1. Write the code that does this step:
+
+1. Write `for question, expected in QUESTIONS:`. Each pass splits one tuple into the question text and the expected answer string. Steps 3 to 5 go inside this loop.
 
 **Check:** the loop body runs 3 times.
 
@@ -86,16 +84,12 @@ Code shape:
 direct_reply = call_groq(...)
 cot_reply = call_groq(...)
 ```
-Why: one call per style lets you compare them on the very same question.
+Use the default model, the default temperature (0.7) and no `max_tokens`. Give `call_groq` only the list of messages. Write the code that does these steps:
 
-Use the default model, the default temperature (0.7) and no `max_tokens`. The temperature is how random the model's word choice is, so answers change from run to run. Give `call_groq` only the list of messages.
+1. Set `direct_reply` to `call_groq(build_direct_prompt(question))`.
+2. Set `cot_reply` to `call_groq(build_cot_prompt(question))`.
 
-- Direct call: `call_groq(build_direct_prompt(question))`. Save the reply text in a variable such as `direct_reply`.
-- CoT call: `call_groq(build_cot_prompt(question))`. Save the reply in a variable such as `cot_reply`.
-
-These are two separate calls. Do not use one reply for both. So the whole project makes 3 x 2 = 6 calls.
-
-`call_groq(messages)` gives back the model's reply as one string.
+These are two separate calls. Do not use one reply for both. The whole project makes 3 x 2 = 6 calls.
 
 **Check:** if you add a counter, it reaches 6 at the end.
 
@@ -104,19 +98,11 @@ Code shape:
 ```python
 cot_answer = ...
 ```
-Why: the CoT reply is long (all the steps). You only want the final line to compare.
+You get `cot_reply`, the long reply with all the steps. Write the code that does this step:
 
-Call `extract_final_answer(cot_reply)`. It keeps what is after the last `Answer:` and removes the spaces around it. If the marker is missing, you get the whole reply with the spaces removed.
+1. Set `cot_answer` to `extract_final_answer(cot_reply)`.
 
-Example. If the model replies:
-
-```
-Step 1: 45 minutes is 0.75 hours.
-Step 2: 60 / 0.75 = 80.
-Answer: 80 mph
-```
-
-then `extract_final_answer(...)` gives back `"80 mph"`. The model may add units, so the value may not be exactly `"80"`. That is allowed.
+If the model replies `Step 1: 45 minutes is 0.75 hours.\nStep 2: 60 / 0.75 = 80.\nAnswer: 80 mph`, you get `"80 mph"`. Units are allowed, so it does not have to be exactly `"80"`.
 
 **Check:** the extracted value is a short string, not all the steps.
 
@@ -129,9 +115,15 @@ print(f"  direct answer:       {...}")
 print(f"  chain-of-thought:    {...}")
 print()
 ```
-Why: with the answers side by side, they are easy to compare.
+For each question, write the code that does these steps:
 
-For each question, print these lines in this order. Use exactly the label text shown, with spaces so the values line up (they start in the same column):
+1. Print `Q: ` followed by `question`.
+2. Print `expected:` with two spaces before it and 12 spaces after it, then `expected`.
+3. Print `direct answer:` with two spaces before it and 7 spaces after it, then `direct_reply` with `.strip()` first and then `[:60]`. Strip first, so leading spaces do not use up your 60 characters.
+4. Print `chain-of-thought:` with two spaces before it and 4 spaces after it, then only `cot_answer` (not the steps).
+5. Print an empty line with `print()`.
+
+The output for one question looks like this (the values line up in one column):
 
 ```
 Q: <question>
@@ -140,12 +132,5 @@ Q: <question>
   chain-of-thought:    <extracted CoT answer>
 <blank line>
 ```
-
-Details:
-
-- For the direct answer, call `.strip()` on the reply first. `.strip()` removes spaces and new lines from both ends of a string. Then slice with `[:60]` to keep the first 60 characters. The order matters: strip first, so leading spaces do not use up your 60 characters. Example: `("  " + "x" * 70).strip()[:60]` gives 60 `x` characters.
-- For the CoT line, print only the extracted answer. Do not print all the steps.
-- The blank line is just `print()`.
-- The label lines start with two spaces. `expected:` is followed by 12 spaces, `direct answer:` by 7 and `chain-of-thought:` by 4. Then the values line up in one column.
 
 **Check:** your output has 3 blocks, each with 4 lines plus a blank line.

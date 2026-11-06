@@ -38,7 +38,11 @@ store = VectorStore()
 for fact in TWIN_FACTS:
     store.add(..., ...)
 ```
-Make a `VectorStore` named `store`. Loop over `TWIN_FACTS`. For each fact, add the fact text together with its vector, `embed(fact)`.
+You get `TWIN_FACTS` (6 sentences), `embed` and `VectorStore`. Write the code that does these steps:
+
+1. Set `store` to `VectorStore()`.
+2. Loop with `for fact in TWIN_FACTS:`.
+3. Call `store.add(fact, embed(fact))`.
 
 **Check:** `len(store.items)` is `6`.
 
@@ -49,11 +53,11 @@ questions = [...]
 for question in questions:
     results = store.search(..., 2)
 ```
-Use exactly these two questions, in this order:
-1. `"Which sport team does she follow?"`
-2. `"Where has she travelled?"`
+You get `store` and `embed`. Write the code that does these steps:
 
-For each one, embed the question and search for the best `2` facts. Save the list as `results`. Each item in it is a `(score, text)` pair.
+1. Set `questions` to a list of exactly these two strings, in this order: `"Which sport team does she follow?"`, `"Where has she travelled?"`.
+2. Loop with `for question in questions:`.
+3. Set `results` to `store.search(embed(question), 2)`. Each item is a `(score, text)` pair.
 
 **Check:** `len(results)` is `2`. For the first question the best text is `"Her favorite team is Hearts of Oak and she watches every match."`
 
@@ -63,7 +67,10 @@ Code shape:
 context = "\n".join(f"- {text}" for ... in results)
 prompt = f"...{context}...{question}"
 ```
-First make `context`: one line per retrieved fact, each starting with `- `, joined with `\n` (a new line). A *generator expression* like `f"- {text}" for _, text in results` makes one line per result. The `_` is a name for a value you do not need, here the score. Then build `prompt` with this exact layout:
+You get `results` (pairs like `(0.9, "some fact")`) and `question`. Write the code that does these steps, inside the loop:
+
+1. Set `context` to `"\n".join(f"- {text}" for _, text in results)`. The `_` is the score, which you do not need.
+2. Set `prompt` with an f-string in this exact layout:
 
 ```
 Answer using only this context.
@@ -74,7 +81,7 @@ Context:
 Question: <question>
 ```
 
-There is a blank line after the first line, after `<context>`, and a `Context:` line in the middle. `\n\n` in a string is a blank line. Use an f-string.
+There is a blank line after the first line and after `<context>`.
 
 **Check:** `prompt` starts with `Answer using only this context.` and ends with `Question: ` plus the question.
 
@@ -84,7 +91,10 @@ Code shape:
 print(prompt)
 print("=" * 20)
 ```
-Print the prompt, then a line of 20 `=` characters (`"=" * 20` repeats the character 20 times). Do this for each question.
+You get `prompt`. Write the code that does these steps, inside the loop:
+
+1. Print `prompt`.
+2. Print `"=" * 20`.
 
 The output is exactly:
 
