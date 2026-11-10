@@ -462,13 +462,15 @@ def judge_cell_code(
 _HINT_STYLE = {
     1: "Name the ONE function or step in the student's code that is still wrong or missing, and what it currently does instead of what it should (max 2 sentences). Skip anything they already got right.",
     2: "Name the exact function and the exact variable or line in the student's code that is wrong, say what it does now versus what it must do, and why that gives the wrong result (max 3 sentences). Describe the fix in words only.",
-    3: "Start with one short line listing what the student already did correctly. Then give numbered steps (max 4) for ONLY what is still wrong or missing. Each step names the exact function and variable to change and says precisely what to change it to, in words, e.g. 'in parse_label, the check that tests reply_text should test the word negative instead'. Do not repeat steps the student has already done.",
+    3: "Give numbered steps (max 4) for ONLY what is still wrong or missing. No intro, no praise, no summary. Each step is ONE short line (under 20 words): the exact function and variable, then what to change, in words, e.g. 'In parse_label, test for the word negative instead of positive.' Do not explain why, and do not teach grammar or programming concepts. Do not repeat steps the student has already done.",
 }
 
 _HINT_FOCUS = (
     "HOW TO WRITE THE HINT:\n"
     "- First compare the student's code and output against the reference, piece by piece (each "
     "function, each TODO step). Work out which pieces already match and which do not.\n"
+    "- Be brief. Every sentence must say what to fix; cut definitions, background, analogies and "
+    "explanations of how Python works. Name the problem and the fix, nothing more.\n"
     "- Be specific and go straight to the point: refer to the student's own function and variable "
     "names, and say what is wrong with THEIR code. Never give a generic roadmap or restate the "
     "exercise's TODO steps.\n"
@@ -534,10 +536,8 @@ def _redact_leaks(hint: str, fragments: list[str]) -> tuple[str, bool]:
 def _llm_hint(item: exercises.GradedItem, payload: CellHintRequest, level: int) -> str:
     system_prompt = (
         "You are a patient programming tutor giving a hint on a graded exercise. Your student is a "
-        "complete beginner who is new to Python: write in simple, friendly, everyday language, avoid "
-        "jargon (if you must use a term like 'loop', 'dictionary' or 'function', explain it in a few "
-        "plain words), use short sentences, and think in small concrete steps with an everyday "
-        "analogy where it helps. Never assume they know programming vocabulary or the standard library. "
+        "complete beginner who is new to Python: use simple everyday words and very short sentences, "
+        "and avoid jargon. Do not teach concepts or explain terms at length; just say what to fix. "
         "You are shown the "
         "reference solution only so your hint is accurate - the student must never be able to "
         "reconstruct it from what you write. If the student has not written anything yet, help them "
