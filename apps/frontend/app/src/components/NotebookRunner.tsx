@@ -43,6 +43,7 @@ export interface OutputItem {
   traceback?: string[];
   line?: number | null;
   code?: string | null;
+  culprit?: string | null;
 }
 
 export interface RunResult {
@@ -87,6 +88,7 @@ export function CellOutput({ result }: { result: RunResult }) {
               {output.ename}
               {output.evalue ? `: ${output.evalue}` : ""}
               {output.line != null && `\n\nFailed at line ${output.line}${output.code ? `:  ${output.code}` : ""}`}
+              {output.culprit && `\nThe real problem: ${output.culprit.replace(/`/g, "")}`}
               {output.traceback && output.traceback.length > 0 && (
                 <details style={{ marginTop: 8 }}>
                   <summary style={{ cursor: "pointer" }}>Full traceback</summary>

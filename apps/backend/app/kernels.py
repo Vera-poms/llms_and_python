@@ -15,6 +15,7 @@ Sized for a small instance (Render free tier: 512 MB RAM). Sessions live in this
 so run exactly one worker/instance.
 """
 
+import ast
 import ctypes
 import os
 import queue
@@ -129,13 +130,17 @@ def _failing_line(traceback: list[str]) -> tuple[int | None, str | None]:
     """Line number and source of the innermost failing line in the user's cell."""
     found: tuple[int | None, str | None] = (None, None)
     for frame in traceback:
+        # Only frames from the student's own cell count ("Cell In[4], line 6, in my_function").
+        # Library frames ("File ...site-packages...") are skipped. Keep the LAST cell frame, so an
+        # error inside a function the student wrote points at that line, not at the call to it.
+        if not _CELL_LINE.search(frame):
+            continue
         for text in frame.splitlines():
             match = _ARROW_LINE.match(text)
             if match:
                 found = (int(match.group(1)), match.group(2).strip())
-        # Only the first frame is the user's cell; deeper ones are library or helper code.
-        if found[0] is not None:
-            return found
+    if found[0] is not None:
+        return found
     # SyntaxErrors have no arrow line: "Cell In[5], line 1" followed by the offending source.
     for frame in traceback:
         lines = frame.splitlines()
@@ -145,6 +150,35 @@ def _failing_line(traceback: list[str]) -> tuple[int | None, str | None]:
                 code = lines[i + 1].strip() if i + 1 < len(lines) else None
                 return int(match.group(1)), code
     return found
+
+_NO_ATTRIBUTE = re.compile(r"'(\w+)' object has no attribute '(\w+)'")
+
+
+def _culprit(ename: str, evalue: str, code: str | None) -> str | None:
+    """For "'list' object has no attribute 'endswith'", name the value that has the wrong type.
+
+    The error message blames the attribute (endswith), but the real mistake is usually the value
+    in front of it (reply.split() gave a list). Returns a plain sentence, or None if unsure.
+    """
+    match = _NO_ATTRIBUTE.search(evalue or "")
+    if ename != "AttributeError" or not match or not code:
+        return None
+    type_name, attr = match.groups()
+    try:
+        tree = ast.parse(code)
+    except SyntaxError:
+        return None  # a fragment like "for x in y:"; better to say nothing than guess
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and node.attr == attr:
+            expr = ast.get_source_segment(code, node.value)
+            if expr:
+                kind = "None" if type_name == "NoneType" else f"a {type_name}"
+                text = f"`{expr}` is {kind}, and {kind} has no `.{attr}`."
+                if kind == "a list" and expr.endswith(".split()"):
+                    text += " `split()` cuts text into a list of words."
+                return text
+    return None
+
 
 _sessions: dict[tuple[int, int], "KernelSession"] = {}
 _sessions_lock = threading.Lock()
@@ -259,6 +293,7 @@ class KernelSession:
                         "traceback": traceback,
                         "line": line,
                         "code": code,
+                        "culprit": _culprit(content["ename"], content["evalue"], code),
                     }
                 )
             elif msg_type == "status" and content["execution_state"] == "idle":

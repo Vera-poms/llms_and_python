@@ -285,6 +285,7 @@ class NotebookOutputItem(BaseModel):
     traceback: list[str] | None = None
     line: int | None = None
     code: str | None = None
+    culprit: str | None = None
 
 
 class RunCellResponse(BaseModel):
