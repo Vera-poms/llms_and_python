@@ -4,13 +4,14 @@ import { useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 
 import { getOwnerToken, ownerApi, setOwnerToken } from "../api/ownerClient";
+import { SESSION_EXPIRED_MESSAGE, wasSessionExpired } from "../api/sessionExpired";
 import { PasswordInput } from "../components/PasswordInput";
 
 export function OwnerLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(wasSessionExpired() ? SESSION_EXPIRED_MESSAGE : null);
   const [submitting, setSubmitting] = useState(false);
 
   if (getOwnerToken()) {

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { redirectToLogin } from "./sessionExpired";
+
 // Admin tokens live in sessionStorage (cleared when the tab closes) and use their own client,
 // so they are never sent with student or owner requests and vice versa.
 const ADMIN_TOKEN_KEY = "admin_token";
@@ -35,7 +37,7 @@ adminApi.interceptors.response.use(
     const status = error.response?.status;
     if ((status === 401 || status === 403) && getAdminToken()) {
       setAdminToken(null);
-      window.location.replace("/admin/login");
+      redirectToLogin("/admin/login");
     }
     return Promise.reject(error);
   },

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { redirectToLogin } from "./sessionExpired";
+
 // Owner tokens live in sessionStorage (cleared when the tab closes) and use their own client,
 // so they are never sent with student requests and student tokens are never sent as owner ones.
 const OWNER_TOKEN_KEY = "owner_token";
@@ -34,7 +36,7 @@ ownerApi.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && getOwnerToken()) {
       setOwnerToken(null);
-      window.location.replace("/owner/login");
+      redirectToLogin("/owner/login");
     }
     return Promise.reject(error);
   },

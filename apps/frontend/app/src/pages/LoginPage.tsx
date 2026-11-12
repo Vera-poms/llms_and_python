@@ -3,6 +3,7 @@ import { isAxiosError } from "axios";
 import { useState, type FormEvent } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
+import { SESSION_EXPIRED_MESSAGE, wasSessionExpired } from "../api/sessionExpired";
 import { PasswordInput } from "../components/PasswordInput";
 import { useAuth } from "../context/AuthContext";
 
@@ -24,7 +25,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(wasSessionExpired() ? SESSION_EXPIRED_MESSAGE : null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent) {

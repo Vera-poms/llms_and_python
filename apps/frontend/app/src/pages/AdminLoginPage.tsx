@@ -4,13 +4,14 @@ import { useState, type FormEvent } from "react";
 import { Link as RouterLink, Navigate, useNavigate } from "react-router-dom";
 
 import { adminApi, getAdminToken, setAdminToken } from "../api/adminClient";
+import { SESSION_EXPIRED_MESSAGE, wasSessionExpired } from "../api/sessionExpired";
 import { PasswordInput } from "../components/PasswordInput";
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(wasSessionExpired() ? SESSION_EXPIRED_MESSAGE : null);
   const [submitting, setSubmitting] = useState(false);
 
   if (getAdminToken()) {

@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { redirectToLogin } from "./sessionExpired";
+
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
@@ -21,7 +23,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !isAuthCall && localStorage.getItem("token")) {
       localStorage.removeItem("token");
       localStorage.removeItem("last-activity");
-      window.location.assign("/login");
+      redirectToLogin("/login");
     }
     return Promise.reject(error);
   },
