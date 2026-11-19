@@ -1,6 +1,7 @@
 import {
   Code as ChakraCode,
   CodeProps,
+  Kbd,
   ListItem as ChakraListItem,
   ListItemProps,
   Text as ChakraText,
@@ -65,5 +66,15 @@ export function Code({ children, ...props }: CodeProps) {
     <ChakraCode fontWeight={numeric ? "bold" : undefined} {...props}>
       {children}
     </ChakraCode>
+  );
+}
+
+// "Run (Shift + Enter) and Submit (Ctrl + Enter)" for the "Your turn" sentences. The keys match the
+// keymap in CodeEditor, so change them in both places together.
+export function RunSubmitKeys() {
+  return (
+    <>
+      <b>Run</b> (<Kbd>Shift</Kbd> + <Kbd>Enter</Kbd>) and <b>Submit</b> (<Kbd>Ctrl</Kbd> + <Kbd>Enter</Kbd>)
+    </>
   );
 }

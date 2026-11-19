@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -145,7 +145,7 @@ for text in ["cat sat", "retrieval makes tokenization costly"]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -326,7 +326,7 @@ for name, text in [("raw", raw), ("clean", clean_text(raw))]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -525,7 +525,7 @@ for jump in (4, 2):  # 4 = no overlap, 2 = overlap of 2
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

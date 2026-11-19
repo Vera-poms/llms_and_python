@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -129,7 +129,7 @@ for bytes_each in [4, 2, 1]:
       </UnorderedList>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -390,7 +390,7 @@ for label, cfg in [("double d_model", Config(128, 2)), ("double n_layers", Confi
       </UnorderedList>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -605,7 +605,7 @@ for name, cfg in configs.items():
       </UnorderedList>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -850,7 +850,7 @@ for name, computed, published in models:
       </UnorderedList>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

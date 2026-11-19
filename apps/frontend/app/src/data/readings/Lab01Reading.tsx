@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -187,7 +187,7 @@ for text in ["the cat saw the dog", "a b a b a"]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -423,7 +423,7 @@ for clean in (False, True):
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -667,7 +667,7 @@ for text in ["the cat and the dog and the bird", "red green blue pink"]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -884,7 +884,7 @@ for scores in [{"great": 6, "long": 3, "boring": 1}, {"yes": 1, "no": 1}]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -1091,7 +1091,7 @@ for min_chance in (0.4, 0.1):
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -1334,7 +1334,7 @@ for word, chance in dist.items():
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

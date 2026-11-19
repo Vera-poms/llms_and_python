@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -177,7 +177,7 @@ for style, reply in replies:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit. The new question is 17 * 23, which is 391:
+        press <RunSubmitKeys />. The new question is 17 * 23, which is 391:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -446,7 +446,7 @@ for reply in replies:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

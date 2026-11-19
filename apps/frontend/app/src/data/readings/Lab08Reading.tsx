@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -161,7 +161,7 @@ for review in ["I loved it", "Too slow"]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -398,7 +398,7 @@ for name, template in templates.items():
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -668,7 +668,7 @@ for data in [{"topic": "cats", "style": "funny"}, {"topic": "cats"}, {}]:
 
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
-        press Run and Submit:
+        press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

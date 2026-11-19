@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -131,7 +131,7 @@ for window in (30, 12):
       </UnorderedList>
 
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -306,7 +306,7 @@ for budget in (30, 12):
       </UnorderedList>
 
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -485,7 +485,7 @@ for reply in (500, 1000, 2000):
       </UnorderedList>
 
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

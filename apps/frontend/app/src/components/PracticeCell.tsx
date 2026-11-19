@@ -121,6 +121,11 @@ export function PracticeCell({
     await execute();
   }
 
+  // Ctrl+Enter follows the same rule as the Submit button: you must Run something first.
+  function submitFromKeyboard() {
+    if (!running && !checking && result && result.outputs.length > 0) void submit();
+  }
+
   async function submit() {
     const runResult = await execute();
     if (!runResult) return;
@@ -169,7 +174,7 @@ export function PracticeCell({
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={updateSource} minHeight="60px" onRun={run} />
+        <CodeEditor value={source} onChange={updateSource} minHeight="60px" onRun={run} onSubmit={submitFromKeyboard} />
         <HStack>
           <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
             Submit

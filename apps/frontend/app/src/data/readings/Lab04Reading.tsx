@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -185,7 +185,7 @@ for name, model in models:
         </ListItem>
       </UnorderedList>
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -411,7 +411,7 @@ explain(words, [1, 0, 1], weights)`} />
         </ListItem>
       </UnorderedList>
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -620,7 +620,7 @@ for z in [-3, -0.5, 0, 0.5, 3]:
         </ListItem>
       </UnorderedList>
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -854,7 +854,7 @@ print("all-zero rows:", count_empty(rows), "of", len(rows))`} />
         </ListItem>
       </UnorderedList>
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

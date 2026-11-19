@@ -1,5 +1,5 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, Text } from "../../components/prose";
+import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
@@ -188,7 +188,7 @@ print("examples shown:", count_examples(payload["messages"]))`} />
       </UnorderedList>
 
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -415,7 +415,7 @@ for key, tokens in usage.items():
       </UnorderedList>
 
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit. Pretend <Code>gsk_leak99</Code> is a key that ended up in a public file.
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />. Pretend <Code>gsk_leak99</Code> is a key that ended up in a public file.
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>
@@ -623,7 +623,7 @@ for text in ["Positive.", "The sentiment is negative", "Not sure"]:
       </UnorderedList>
 
       <Text>
-        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press Run and Submit:
+        <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then press <RunSubmitKeys />:
       </Text>
       <OrderedList spacing={1} pl={4}>
         <ListItem>

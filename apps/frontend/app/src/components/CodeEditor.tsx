@@ -94,17 +94,22 @@ export function CodeEditor({
   onChange,
   minHeight = "80px",
   onRun,
+  onSubmit,
 }: {
   value: string;
   onChange: (value: string) => void;
   minHeight?: string;
   // Called on Shift+Enter; the editor is created once, so keep the latest callback in a ref.
   onRun?: () => void;
+  // Called on Ctrl+Enter, same idea as onRun.
+  onSubmit?: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onRunRef = useRef(onRun);
   onRunRef.current = onRun;
+  const onSubmitRef = useRef(onSubmit);
+  onSubmitRef.current = onSubmit;
   const { colorMode } = useColorMode();
 
   useEffect(() => {
@@ -122,6 +127,16 @@ export function CodeEditor({
               key: "Shift-Enter",
               run: () => {
                 onRunRef.current?.();
+                return true;
+              },
+            },
+            {
+              // Only claim the key where the page has a Submit button; elsewhere Ctrl+Enter keeps its
+              // normal editor meaning (insert a blank line).
+              key: "Ctrl-Enter",
+              run: () => {
+                if (!onSubmitRef.current) return false;
+                onSubmitRef.current();
                 return true;
               },
             },
