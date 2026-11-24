@@ -3,7 +3,10 @@ import {
   Box,
   HStack,
   Input,
+  InputGroup,
+  InputRightElement,
   SimpleGrid,
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -15,9 +18,10 @@ import {
   VStack,
   useToast,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { errorMessage, type UserApi, type UserSummary } from "../../api/userManagement";
+import { LoadingSpinner } from "../LoadingSpinner";
 import { UserDrawer } from "./UserDrawer";
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -32,10 +36,13 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 // Phones get a card per user: the table's five columns don't fit, and hiding them would hide data.
-function UserCard({ user, onOpen }: { user: UserSummary; onOpen: () => void }) {
+function UserCard({ user, number, onOpen }: { user: UserSummary; number: number; onOpen: () => void }) {
   return (
     <Box borderWidth="1px" borderRadius="md" p={3} cursor="pointer" onClick={onOpen} _hover={{ borderColor: "blue.400" }}>
       <HStack align="start" spacing={2} mb={2}>
+        <Text fontSize="sm" color="gray.500" flexShrink={0}>
+          {number}.
+        </Text>
         <Text fontWeight="semibold" fontSize="sm" wordBreak="break-all" minW={0}>
           {user.email}
         </Text>
@@ -62,26 +69,47 @@ export function UsersPanel({ api }: { api: UserApi }) {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<UserSummary[] | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  // Counts requests so a slow, older reply can't switch the spinner off while a newer one is still running.
+  const latestRequest = useRef(0);
 
   const load = useCallback(() => {
+    const request = ++latestRequest.current;
+    setLoading(true);
     api
       .listUsers(search.trim())
-      .then(setUsers)
-      .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load users.") }));
+      .then((list) => {
+        if (request === latestRequest.current) setUsers(list);
+      })
+      .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load users.") }))
+      .finally(() => {
+        if (request === latestRequest.current) setLoading(false);
+      });
   }, [api, search, toast]);
 
   useEffect(() => {
+    // Show the spinner straight away; the short wait below only delays the request while typing.
+    setLoading(true);
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
   }, [load]);
 
   return (
     <VStack align="stretch" spacing={4}>
-      <Input placeholder="Search by email" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <InputGroup>
+        <Input placeholder="Search by email" value={search} onChange={(e) => setSearch(e.target.value)} />
+        {loading && users !== null && (
+          <InputRightElement>
+            <Spinner size="sm" color="blue.500" />
+          </InputRightElement>
+        )}
+      </InputGroup>
+
+      {users === null && loading && <LoadingSpinner label="Loading users…" />}
 
       <VStack align="stretch" spacing={3} display={{ base: "flex", md: "none" }}>
-        {users?.map((u) => (
-          <UserCard key={u.id} user={u} onOpen={() => setSelected(u.id)} />
+        {users?.map((u, i) => (
+          <UserCard key={u.id} user={u} number={i + 1} onOpen={() => setSelected(u.id)} />
         ))}
       </VStack>
 
@@ -89,6 +117,9 @@ export function UsersPanel({ api }: { api: UserApi }) {
         <Table size="sm">
           <Thead>
             <Tr>
+              <Th isNumeric w="1%">
+                #
+              </Th>
               <Th>Email</Th>
               <Th>Progress</Th>
               <Th isNumeric>Score</Th>
@@ -97,8 +128,11 @@ export function UsersPanel({ api }: { api: UserApi }) {
             </Tr>
           </Thead>
           <Tbody>
-            {users?.map((u) => (
+            {users?.map((u, i) => (
               <Tr key={u.id} _hover={{ bg: "gray.50" }} cursor="pointer" onClick={() => setSelected(u.id)}>
+                <Td isNumeric color="gray.500">
+                  {i + 1}
+                </Td>
                 <Td>
                   {u.email} {u.is_admin && <Badge colorScheme="purple">admin</Badge>}
                 </Td>
@@ -113,7 +147,7 @@ export function UsersPanel({ api }: { api: UserApi }) {
           </Tbody>
         </Table>
       </TableContainer>
-      {users?.length === 0 && <Text color="gray.500">No users found.</Text>}
+      {users?.length === 0 && !loading && <Text color="gray.500">No users found.</Text>}
       <UserDrawer api={api} userId={selected} onClose={() => setSelected(null)} onChanged={load} />
     </VStack>
   );

@@ -2,6 +2,7 @@ import { Badge, Box, HStack, Select, Stack, Text, VStack, useToast } from "@chak
 import { useEffect, useMemo, useState } from "react";
 
 import { errorMessage, listReviews, type Review } from "../../api/ownerEndpoints";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -31,7 +32,7 @@ export function ReviewsPanel() {
     return [...seen].sort((a, b) => a[0] - b[0]);
   }, [reviews]);
 
-  if (reviews === null) return <Text color="gray.500">Loading reviews…</Text>;
+  if (reviews === null) return <LoadingSpinner label="Loading reviews…" />;
 
   const shown = reviews.filter((r) => !labId || r.lab_id === Number(labId));
   const average = shown.length ? (shown.reduce((sum, r) => sum + r.rating, 0) / shown.length).toFixed(1) : null;

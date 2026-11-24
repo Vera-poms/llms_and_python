@@ -27,6 +27,7 @@ import {
   type Invite,
   type InviteCreated,
 } from "../../api/ownerEndpoints";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 const STATUS_COLOR = { pending: "blue", used: "green", revoked: "gray", expired: "orange" } as const;
 
@@ -36,6 +37,7 @@ export function AdminsPanel() {
   const [invites, setInvites] = useState<Invite[]>([]);
   const [email, setEmail] = useState("");
   const [created, setCreated] = useState<InviteCreated | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(() => {
     Promise.all([listAdmins(), listInvites()])
@@ -43,7 +45,8 @@ export function AdminsPanel() {
         setAdmins(a);
         setInvites(i);
       })
-      .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load admins.") }));
+      .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load admins.") }))
+      .finally(() => setLoading(false));
   }, [toast]);
 
   useEffect(() => {
@@ -98,6 +101,12 @@ export function AdminsPanel() {
 
       <VStack align="stretch" spacing={2}>
         <Heading size="sm">Admins</Heading>
+        {loading && <LoadingSpinner label="Loading admins…" />}
+        {!loading && admins.length === 0 && (
+          <Text fontSize="sm" color="gray.500">
+            No admins yet.
+          </Text>
+        )}
         {admins.map((a) => (
           <Stack
             key={a.id}
@@ -129,6 +138,12 @@ export function AdminsPanel() {
 
       <VStack align="stretch" spacing={2}>
         <Heading size="sm">Invites</Heading>
+        {loading && <LoadingSpinner label="Loading invites…" />}
+        {!loading && invites.length === 0 && (
+          <Text fontSize="sm" color="gray.500">
+            No invites yet.
+          </Text>
+        )}
         {/* A four-column table is unreadable at phone width, so each invite becomes a stacked row. */}
         {invites.map((i) => (
           <Box key={i.id} borderBottomWidth="1px" py={2}>
