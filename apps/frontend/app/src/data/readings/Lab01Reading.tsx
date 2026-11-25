@@ -1,8 +1,90 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the square root example.
+// In the text, `backticks` style code and **double stars** bold a key word.
+// `block` hints explain a whole indented block (a function, a loop) instead of one piece.
+const SQRT_HINTS: CodeHint[] = [
+  {
+    code: "def my_sqrt",
+    block: "function",
+    text:
+      "Takes a number `x` and gives back its square root. It starts from a guess, makes the " +
+      "guess **better 20 times**, then hands back the last one. You can call it as often as you " +
+      "like, with any number: `my_sqrt(2)`, `my_sqrt(9)`, ...",
+  },
+  {
+    code: "for _ in range(20):",
+    block: "for loop",
+    text:
+      "**Repeats** the indented line under it 20 times. Each round makes `guess` a little " +
+      "closer to the real square root. Lines indented under the `for` are the ones that repeat.",
+  },
+  {
+    code: "import math",
+    text: "Loads Python's `math` toolbox. After this line you can use `math.sqrt`, `math.pi` and more.",
+  },
+  {
+    code: "def my_sqrt",
+    text:
+      '`def` means "define". It makes a **function**: a named set of steps you can use again and ' +
+      "again. `my_sqrt` is its name. The indented lines under it belong to the function.",
+  },
+  {
+    code: "x: float",
+    text:
+      "`x` is the first **argument**: an input you hand to the function. It is the number you want " +
+      'the square root of. `: float` is a note saying "a decimal number". Python does not check it.',
+  },
+  {
+    code: "guess: float = 1.0",
+    text:
+      "`guess` is the second **argument**: where the function starts guessing. `= 1.0` is a " +
+      "**default**. If you don't pass a guess, Python uses `1.0`. That is why `my_sqrt(2)` works " +
+      "with one number.",
+  },
+  {
+    code: "-> float",
+    text: "A note that says what the function **gives back**: a decimal number (`float`).",
+  },
+  {
+    code: "for _ in",
+    text:
+      "A `for` **loop** runs the indented line under it once for each number. `_` holds the " +
+      'current number, but we never use it. The name `_` means "I only want the repeat, not the number".',
+  },
+  {
+    code: "range(20)",
+    text: "Makes the numbers `0, 1, 2 ... 19`. That is **20 numbers**, so the loop runs 20 times.",
+  },
+  {
+    code: "guess = (guess + x / guess) / 2",
+    text:
+      "**The heart of it.** Take the average of the old `guess` and `x / guess`, and store it back " +
+      "in `guess`. If the guess is too small, `x / guess` is too big, so the average is always " +
+      "closer. For `x = 2`: `1.0`, then `1.5`, then `1.4167`, then `1.41421`... After 5 rounds it " +
+      "stops changing.",
+  },
+  {
+    code: "return guess",
+    text:
+      "`return` **hands the final guess back** to whoever called the function. It is indented less " +
+      "than the loop line, so it runs once, after all 20 rounds.",
+  },
+  {
+    code: "my_sqrt(2)",
+    text: "**Calls** your function with `x = 2`. `guess` is not given, so it starts at `1.0`.",
+  },
+  {
+    code: "math.sqrt(2)",
+    text: "The **ready-made** square root from the `math` toolbox. One line, and already tested.",
+  },
+];
 
 export function Lab01Reading() {
   return (
@@ -39,8 +121,8 @@ def my_sqrt(x: float, guess: float = 1.0) -> float:
         guess = (guess + x / guess) / 2
     return guess
 
-print(my_sqrt(2))    # 1.4142135623746899 - close, hand-rolled
-print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
+print(my_sqrt(2))    # 1.414213562373095 - close, hand-rolled
+print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} hints={SQRT_HINTS} />
       <Text>
         <Code>import math</Code> gives the whole file access to Python's built-in math module,
         including a <Code>sqrt</Code> that's already correct, fast, and tested by millions of other
@@ -48,22 +130,6 @@ print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
         nobody ships the hand-rolled one - that's the entire point of <Code>import</Code>: borrow a
         specialized, already-tested tool instead of reinventing it.
       </Text>
-      <Text>Here is what each line of that example does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>import math</Code> - loads the math tools. After this line you can write{" "}
-          <Code>math.sqrt</Code>, <Code>math.pi</Code> and more. The name before the dot says
-          which toolbox the tool comes from.
-        </ListItem>
-        <ListItem>
-          <Code>def my_sqrt(...)</Code> - your own square root. It starts with a guess and
-          improves the guess 20 times. It works, but it took you 5 lines and it is a little bit
-          off.
-        </ListItem>
-        <ListItem>
-          <Code>print(math.sqrt(2))</Code> - the ready-made tool gives the answer in one line.
-        </ListItem>
-      </UnorderedList>
       <Text>
         There are three ways to write an import. They all do the same job. They only change how
         you type the name later:
@@ -82,16 +148,50 @@ print(math.sqrt(2))  # 1.4142135623730951 - exact, one line, battle-tested`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import statistics
+      <CodeBlock code={`import statistics
 
 def my_mean(values: list[float]) -> float:
     return sum(values) / len(values)
 
 nums = [4, 8, 15, 16, 23, 42]
 print(my_mean(nums))              # 18.0 - hand-rolled
-print(statistics.mean(nums))      # 18 - same answer, from the standard library`}
-      </Code>
+print(statistics.mean(nums))      # 18 - same answer, from the standard library`} hints={[
+        {
+          code: "def my_mean(values: list[float]) -> float:",
+          block: "function",
+          text:
+            "Takes a list of numbers and gives back their **average**: add them all up, then divide " +
+            "by how many there are.",
+        },
+        {
+          code: "import statistics",
+          text: "Loads Python's `statistics` toolbox. It has ready-made tools for averages and other summaries of numbers.",
+        },
+        {
+          code: "values: list[float]",
+          text:
+            "`values` is the input: a list of decimal numbers. `list[float]` is only a note for the " +
+            "reader. Python does not check it.",
+        },
+        {
+          code: "sum(values)",
+          text: "Adds up every number in the list. For `nums` that is `4 + 8 + 15 + 16 + 23 + 42 = 108`.",
+        },
+        {
+          code: "len(values)",
+          text: "Counts the items in the list. `nums` has 6 numbers, so this gives 6.",
+        },
+        {
+          code: "nums = [4, 8, 15, 16, 23, 42]",
+          text: "A **list**: several values kept in one name, inside square brackets, in order.",
+        },
+        {
+          code: "statistics.mean(nums)",
+          text:
+            "The **ready-made** average from the toolbox. Same value as `my_mean`, but it prints `18` " +
+            "and not `18.0`.",
+        },
+      ]} />
       <PracticeCell labId={1} cellId="concept-1" code={`import statistics
 
 def my_mean(values: list[float]) -> float:
@@ -163,7 +263,66 @@ def count_with_library(tokens):
 
 for text in ["the cat saw the dog", "a b a b a"]:
     tokens = text.split()
-    print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))`} />
+    print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))`} hints={[
+        {
+          code: "def count_by_hand(tokens):",
+          block: "function",
+          text:
+            "Counts each token with a loop. It starts with an empty dict, adds 1 for every token it " +
+            "meets, then gives the dict back.",
+        },
+        {
+          code: "for token in tokens:",
+          block: "for loop",
+          text: "Goes through the tokens one by one. For each one, it adds 1 to that token's count.",
+        },
+        {
+          code: "def count_with_library(tokens):",
+          block: "function",
+          text: "Does the same counting in one line, with the ready-made `Counter`.",
+        },
+        {
+          code: 'for text in ["the cat saw the dog", "a b a b a"]:',
+          block: "for loop",
+          text:
+            "Runs the two lines under it once for each text. Each round cuts the text into tokens " +
+            "and checks that both ways of counting agree.",
+        },
+        {
+          code: "from collections import Counter",
+          text:
+            "Takes just `Counter` out of the `collections` toolbox, so you can write `Counter(...)` " +
+            "with no toolbox name in front.",
+        },
+        {
+          code: "counts = {}",
+          text:
+            "Makes an empty **dict**: a table that links a key (here a token) to a value (here its " +
+            "count).",
+        },
+        {
+          code: "counts.get(token, 0) + 1",
+          text:
+            "Reads the token's old count, or `0` if the token is new, then adds 1. The result is " +
+            "stored back in `counts[token]`.",
+        },
+        {
+          code: "dict(Counter(tokens))",
+          text:
+            "`Counter(tokens)` counts every token for you. `dict(...)` turns the result into a " +
+            "normal dict, so it prints and compares like the hand-made one.",
+        },
+        {
+          code: "text.split()",
+          text: "Cuts the text at each space. `\"a b a b a\".split()` gives `['a', 'b', 'a', 'b', 'a']`.",
+        },
+        {
+          code: "count_by_hand(tokens) == count_with_library(tokens)",
+          text:
+            "`==` checks if both dicts hold the same counts. It gives `True` or `False`, and that is " +
+            "printed first.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>count_by_hand</Code> is a loop that adds 1 to a dict for every token. You will meet
@@ -289,7 +448,30 @@ True {'go': 3, 'stop': 1}`}
 
 text = "apples: $3, bananas: $1, a gift bag (free!)"
 numbers = re.findall(r"[0-9]+", text)
-print(numbers)  # ['3', '1']`} />
+print(numbers)  # ['3', '1']`} hints={[
+        {
+          code: "import re",
+          text:
+            "Loads Python's `re` toolbox. `re` is short for **regular expressions**: small patterns " +
+            "that describe what text to look for.",
+        },
+        {
+          code: "re.findall",
+          text: "Scans the whole text and gives back a **list** of every piece that matches the pattern.",
+        },
+        {
+          code: 'r"[0-9]+"',
+          text:
+            "The pattern. `[0-9]` means any one digit, and `+` means one or more in a row. The `r` " +
+            "in front tells Python to leave the pattern as it is.",
+        },
+        {
+          code: "print(numbers)",
+          text:
+            "Shows `['3', '1']`. The numbers come back as text (strings), with quote marks, not as " +
+            "real numbers.",
+        },
+      ]} />
       <Text>
         <Code>re.findall(pattern, text)</Code> scans the string and returns every non-overlapping
         chunk that matches <Code>pattern</Code>. <Code>[0-9]+</Code> means "one or more digit
@@ -321,13 +503,26 @@ print(numbers)  # ['3', '1']`} />
         backslashes and brackets alone. It is a good habit for every pattern.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import re
+      <CodeBlock code={`import re
 
 post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
 hashtags = re.findall(r"#[A-Za-z0-9]+", post)
-print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`}
-      </Code>
+print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} hints={[
+        {
+          code: "import re",
+          text: "Loads Python's `re` toolbox, for finding text that matches a pattern.",
+        },
+        {
+          code: "re.findall",
+          text: "Gives back a **list** of every piece of `post` that matches the pattern, in the order they appear.",
+        },
+        {
+          code: 'r"#[A-Za-z0-9]+"',
+          text:
+            "The pattern: a `#`, then one or more letters (`A-Z`, `a-z`) or digits (`0-9`) in a row. " +
+            "It stops at the first space, comma or `!`.",
+        },
+      ]} />
       <PracticeCell labId={1} cellId="concept-2" code={`import re
 
 post = "Loved the #SunsetHike, best #hiking trip of the #Summer2024!"
@@ -401,7 +596,74 @@ def vocab_size(texts, clean):
 
 texts = ["The Movie, was great!", "the movie was Great", "Great movie, the end."]
 for clean in (False, True):
-    print("clean =", clean, "->", vocab_size(texts, clean), "different tokens")`} />
+    print("clean =", clean, "->", vocab_size(texts, clean), "different tokens")`} hints={[
+        {
+          code: "def tokens_of(text, clean):",
+          block: "function",
+          text:
+            "Cuts one text into tokens. If `clean` is `True`, it makes the text lowercase and keeps " +
+            "only letters. If not, it just cuts at the spaces.",
+        },
+        {
+          code: "if clean:",
+          block: "if block",
+          text:
+            "Runs only when `clean` is `True`. The `return` inside ends the function right there, so " +
+            "the plain `split()` line below is skipped.",
+        },
+        {
+          code: "def vocab_size(texts, clean):",
+          block: "function",
+          text:
+            "Counts how many **different** tokens appear in all the texts. It keeps a list of tokens " +
+            "it has already seen and adds each new one only once.",
+        },
+        {
+          code: "for text in texts:",
+          block: "for loop",
+          text: "Goes through the texts one at a time. The loop inside it then goes through that text's tokens.",
+        },
+        {
+          code: "for token in tokens_of(text, clean):",
+          block: "for loop",
+          text: "Goes through each token of the current text and adds it to `seen` if it is new.",
+        },
+        {
+          code: "for clean in (False, True):",
+          block: "for loop",
+          text:
+            "Runs the print twice: first with `clean` set to `False`, then with `True`. You get one " +
+            "line for each.",
+        },
+        {
+          code: 're.findall(r"[a-z]+", text.lower())',
+          text:
+            "`text.lower()` makes every letter small. Then the pattern `[a-z]+` grabs each run of " +
+            "letters and drops commas, `!` and other marks.",
+        },
+        {
+          code: "text.split()",
+          text: "Cuts the text at each space only. Capitals and punctuation stay, so `Movie,` is one token.",
+        },
+        {
+          code: "seen = []",
+          text: "An empty **list**. It will hold each different token once.",
+        },
+        {
+          code: "if token not in seen:",
+          text:
+            "`not in` looks through the list. It is `True` only if this token is not in `seen` yet, " +
+            "so repeats are skipped.",
+        },
+        {
+          code: "seen.append(token)",
+          text: "`append` adds one item to the end of the list.",
+        },
+        {
+          code: "return len(seen)",
+          text: "`len` counts the items in `seen`. That is the number of different tokens.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The three texts say almost the same thing, only with different capitals and punctuation.
@@ -538,7 +800,33 @@ counts: dict[str, int] = {}
 for fruit in basket:
     counts[fruit] = counts.get(fruit, 0) + 1
 
-print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
+print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} hints={[
+        {
+          code: "for fruit in basket:",
+          block: "for loop",
+          text: "Goes through the basket one fruit at a time and adds 1 to that fruit's count.",
+        },
+        {
+          code: "basket = [",
+          text: "A list of six fruit names. Some names repeat, and that is what we count.",
+        },
+        {
+          code: "counts: dict[str, int] = {}",
+          text:
+            "An empty **dict**. `dict[str, int]` is a note: the keys are text (fruit names) and the " +
+            "values are whole numbers (counts).",
+        },
+        {
+          code: "counts[fruit] =",
+          text: "Writes the new count back under this fruit's name. If the fruit is new, this adds a new row.",
+        },
+        {
+          code: "counts.get(fruit, 0)",
+          text:
+            "Reads this fruit's count so far. If the fruit is not in `counts` yet, it gives `0` " +
+            "and not an error.",
+        },
+      ]} />
       <Text>
         <Code>counts.get(fruit, 0)</Code> reads "give me the current count for this fruit, or 0 if
         we've never seen it before" - that's what lets the loop work whether the key already
@@ -570,15 +858,33 @@ print(counts)  # {'apple': 3, 'pear': 2, 'fig': 1}`} />
         That is why we use <Code>get</Code> with a default of 0.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`word = "mississippi"
+      <CodeBlock code={`word = "mississippi"
 
 letter_counts: dict[str, int] = {}
 for letter in word:
     letter_counts[letter] = letter_counts.get(letter, 0) + 1
 
-print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`}
-      </Code>
+print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} hints={[
+        {
+          code: "for letter in word:",
+          block: "for loop",
+          text:
+            "A string works like a list of letters, so this goes through `\"mississippi\"` one " +
+            "letter at a time: 11 rounds in all.",
+        },
+        {
+          code: "letter_counts: dict[str, int] = {}",
+          text: "An empty **dict**. Each key will be a letter, and each value how many times it showed up.",
+        },
+        {
+          code: "letter_counts[letter] =",
+          text: "Stores the new count back under this letter.",
+        },
+        {
+          code: "letter_counts.get(letter, 0)",
+          text: "This letter's count so far, or `0` if the letter is new. For the first `m` it gives 0.",
+        },
+      ]} />
       <PracticeCell labId={1} cellId="concept-3" code={`word = "mississippi"
 
 letter_counts: dict[str, int] = {}
@@ -648,7 +954,59 @@ def top_share(tokens):
 
 for text in ["the cat and the dog and the bird", "red green blue pink"]:
     tokens = text.split()
-    print(len(tokens), "tokens, top share:", round(top_share(tokens), 2))`} />
+    print(len(tokens), "tokens, top share:", round(top_share(tokens), 2))`} hints={[
+        {
+          code: "def count_tokens(tokens):",
+          block: "function",
+          text: "Builds a dict that says how many times each token shows up. It is the same loop as Concept 3.",
+        },
+        {
+          code: "for token in tokens:",
+          block: "for loop",
+          text: "Goes through the tokens one by one and adds 1 to each token's count.",
+        },
+        {
+          code: "def top_share(tokens):",
+          block: "function",
+          text:
+            "Finds the biggest count, then divides it by the number of tokens. The answer is the " +
+            "**share** of the text taken by the most common token.",
+        },
+        {
+          code: "for count in counts.values():",
+          block: "for loop",
+          text:
+            "Looks at every count. Each time it finds one bigger than `biggest`, it keeps that one. " +
+            "At the end, `biggest` is the top count.",
+        },
+        {
+          code: 'for text in ["the cat and the dog and the bird", "red green blue pink"]:',
+          block: "for loop",
+          text:
+            "Runs once for each text: cut it into tokens, then print how many tokens there are and " +
+            "the top share.",
+        },
+        {
+          code: "counts.get(token, 0) + 1",
+          text: "The token's old count, or `0` if it is new, plus 1.",
+        },
+        {
+          code: "biggest = 0",
+          text: "Starts the best-so-far at 0. Any real count is bigger, so the first count will replace it.",
+        },
+        {
+          code: "counts.values()",
+          text: "Gives only the numbers in the dict (the counts), not the words.",
+        },
+        {
+          code: "biggest / len(tokens)",
+          text: "The top count divided by the number of tokens. For the first text: `3 / 8 = 0.375`.",
+        },
+        {
+          code: "round(top_share(tokens), 2)",
+          text: "`round(..., 2)` keeps 2 digits after the point, so `0.375` prints as `0.38`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>biggest</Code> starts at 0 and goes up each time the loop sees a bigger count.
@@ -775,7 +1133,30 @@ for text in ["a a a a b c", "one two three four five six"]:
 total = sum(roll_counts.values())  # 60
 distribution = {face: c / total for face, c in roll_counts.items()}
 print(distribution[3])  # 0.333...
-print(sum(distribution.values()))  # 1.0`} />
+print(sum(distribution.values()))  # 1.0`} hints={[
+        {
+          code: "roll_counts = {",
+          text: "A dict: each key is a face of the die, and each value is how many times it came up in 60 rolls.",
+        },
+        {
+          code: "sum(roll_counts.values())",
+          text: "`.values()` gives only the counts. `sum` adds them: `8 + 11 + 20 + 9 + 7 + 5 = 60`.",
+        },
+        {
+          code: "{face: c / total for face, c in roll_counts.items()}",
+          text:
+            "A **dict comprehension**: a short way to build a dict in one line. For each face and " +
+            "its count `c`, it stores `c / total`. Face 3 gets `20 / 60`.",
+        },
+        {
+          code: "distribution[3]",
+          text: "Looks up face 3 in the new dict. Here `3` is a key, not a position in a list.",
+        },
+        {
+          code: "sum(distribution.values())",
+          text: "Adds all six chances. They make 1.0, which shows the work is right.",
+        },
+      ]} />
       <Text>
         Here is what each line does. <Code>sum(roll_counts.values())</Code> adds the six counts:
         <Code>8 + 11 + 20 + 9 + 7 + 5 = 60</Code>. The dict comprehension{" "}
@@ -785,13 +1166,30 @@ print(sum(distribution.values()))  # 1.0`} />
         values and gets 1.0. This is how you check that you did it right.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
+      <CodeBlock code={`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
 total = sum(poll_counts.values())  # 40
 distribution = {food: c / total for food, c in poll_counts.items()}
 print(distribution["tacos"])          # 0.45
-print(sum(distribution.values()))     # 1.0`}
-      </Code>
+print(sum(distribution.values()))     # 1.0`} hints={[
+        {
+          code: "sum(poll_counts.values())",
+          text: "`.values()` gives only the counts. `sum` adds them: `12 + 18 + 10 = 40`.",
+        },
+        {
+          code: "{food: c / total for food, c in poll_counts.items()}",
+          text:
+            "A **dict comprehension** builds a new dict in one line. For each food and its count " +
+            "`c`, it stores `c / total`. Tacos get `18 / 40 = 0.45`.",
+        },
+        {
+          code: 'distribution["tacos"]',
+          text: "Looks up the chance stored under the key `\"tacos\"`.",
+        },
+        {
+          code: "sum(distribution.values())",
+          text: "Adds the three chances: `0.3 + 0.45 + 0.25 = 1.0`.",
+        },
+      ]} />
       <PracticeCell labId={1} cellId="concept-4" code={`poll_counts = {"pizza": 12, "tacos": 18, "sushi": 10}
 total = sum(poll_counts.values())  # 40
 distribution = {food: c / total for food, c in poll_counts.items()}
@@ -864,7 +1262,58 @@ def add_up(chances):
 
 for scores in [{"great": 6, "long": 3, "boring": 1}, {"yes": 1, "no": 1}]:
     chances = normalize(scores)
-    print(chances, "sum:", add_up(chances))`} />
+    print(chances, "sum:", add_up(chances))`} hints={[
+        {
+          code: "def normalize(scores):",
+          block: "function",
+          text:
+            "Turns raw scores into chances. It adds up all the scores, then divides each score by " +
+            "that total, so the chances add up to 1.",
+        },
+        {
+          code: "for score in scores.values():",
+          block: "for loop",
+          text: "Adds every score into `total`. For the first dict: `6 + 3 + 1 = 10`.",
+        },
+        {
+          code: "for word, score in scores.items():",
+          block: "for loop",
+          text: "Goes through each word with its score and stores `score / total` as that word's chance.",
+        },
+        {
+          code: "def add_up(chances):",
+          block: "function",
+          text: "Adds all the chances together and rounds the result. If `normalize` worked, it gives 1.0.",
+        },
+        {
+          code: "for chance in chances.values():",
+          block: "for loop",
+          text: "Adds each chance into `total`, one by one.",
+        },
+        {
+          code: 'for scores in [{"great": 6, "long": 3, "boring": 1}, {"yes": 1, "no": 1}]:',
+          block: "for loop",
+          text: "Runs once for each dict of scores: turn it into chances, then print the chances and their sum.",
+        },
+        {
+          code: "word, score",
+          text: "Each item is a pair, so `word, score` splits it into two names at once: the key and its value.",
+        },
+        {
+          code: "chances = {}",
+          text: "An empty dict. It will hold each word's chance.",
+        },
+        {
+          code: "score / total",
+          text: "One score divided by the total. For `great`: `6 / 10 = 0.6`.",
+        },
+        {
+          code: "round(total, 6)",
+          text:
+            "Rounds to 6 digits after the point. This hides tiny decimal errors, like " +
+            "`0.9999999999999999`, so the check shows 1.0.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The first scores are 6, 3 and 1. The total is 10, so the chances are 0.6, 0.3 and 0.1.
@@ -989,7 +1438,32 @@ for scores in [{"sunny": 7, "rainy": 2, "cloudy": 1}, {"a": 2, "b": 2, "c": 4}]:
       </Text>
       <RunnableExample labId={1} code={`scores = {"alice": 91, "bob": 78, "cara": 95}
 ranked = sorted(scores.items(), key=lambda item: item[1], reverse=True)
-print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} />
+print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} hints={[
+        {
+          code: "scores.items()",
+          text: "Turns the dict into pairs: `('alice', 91)`, `('bob', 78)`, `('cara', 95)`.",
+        },
+        {
+          code: "sorted(",
+          text: "Gives back a **new list** with the items in order. The dict itself is not changed.",
+        },
+        {
+          code: "key=lambda item: item[1]",
+          text:
+            "`lambda` makes a tiny function with no name. For each pair it gives back `item[1]`, the " +
+            "score, so `sorted` compares scores and not names.",
+        },
+        {
+          code: "reverse=True",
+          text: "Sorts from biggest to smallest, so the top score comes first.",
+        },
+        {
+          code: "ranked[:2]",
+          text:
+            "A **slice**: keeps the items from the start up to (not including) position 2. So you " +
+            "get the first two pairs.",
+        },
+      ]} />
       <Text>
         Here is what each part does. <Code>scores.items()</Code> turns the dict into a list of
         pairs: <Code>[('alice', 91), ('bob', 78), ('cara', 95)]</Code>.{" "}
@@ -1000,11 +1474,28 @@ print(ranked[:2])  # [('cara', 95), ('alice', 91)]`} />
         Finally <Code>[:2]</Code> keeps the first two pairs. This is called a slice.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
+      <CodeBlock code={`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
-print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`}
-      </Code>
+print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} hints={[
+        {
+          code: "runtimes.items()",
+          text: "Turns the dict into pairs, like `('level1', 42.1)`.",
+        },
+        {
+          code: "sorted(",
+          text: "Puts the pairs in order. With no `reverse=True`, it goes from the smallest number to the biggest.",
+        },
+        {
+          code: "key=lambda item: item[1]",
+          text:
+            "A tiny function with no name. It gives back `item[1]`, the time, so `sorted` compares " +
+            "the times.",
+        },
+        {
+          code: "[:2]",
+          text: "A **slice** that keeps the first two pairs of the sorted list: the two smallest times.",
+        },
+      ]} />
       <PracticeCell labId={1} cellId="concept-5" code={`runtimes = {"level1": 42.1, "level2": 30.5, "level3": 55.8}
 fastest = sorted(runtimes.items(), key=lambda item: item[1])[:2]
 print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('level2', 30.5), ('level1', 42.1)]`} />
@@ -1071,7 +1562,58 @@ def shortlist(dist, min_chance):
 dist = {"great": 0.5, "long": 0.3, "boring": 0.15, "odd": 0.05}
 print("greedy:", greedy_pick(dist))
 for min_chance in (0.4, 0.1):
-    print("min", min_chance, "->", shortlist(dist, min_chance))`} />
+    print("min", min_chance, "->", shortlist(dist, min_chance))`} hints={[
+        {
+          code: "def greedy_pick(dist):",
+          block: "function",
+          text:
+            "Finds the word with the highest chance. It walks through the dict and remembers the " +
+            "best word seen so far.",
+        },
+        {
+          code: "for word, chance in dist.items():",
+          block: "for loop",
+          text: "Goes through the dict one pair at a time. `word` gets the key and `chance` gets its value.",
+        },
+        {
+          code: "if chance > best_chance:",
+          block: "if block",
+          text: "Runs only when this chance beats the best so far. Then it saves this word and chance as the new best.",
+        },
+        {
+          code: "def shortlist(dist, min_chance):",
+          block: "function",
+          text:
+            "Keeps every word whose chance is at least `min_chance`, and gives them back as a list, " +
+            "in the dict's order.",
+        },
+        {
+          code: "if chance >= min_chance:",
+          block: "if block",
+          text: '`>=` means "at least". Only words with a big enough chance get added to `keep`.',
+        },
+        {
+          code: "for min_chance in (0.4, 0.1):",
+          block: "for loop",
+          text: "Runs the shortlist twice, once with a bar of 0.4 and once with 0.1, and prints each list.",
+        },
+        {
+          code: "best_word = None",
+          text: '`None` means "nothing yet". No word has been picked before the loop starts.',
+        },
+        {
+          code: "best_chance = -1",
+          text: "Starts below any real chance, so the first word always beats it.",
+        },
+        {
+          code: "keep.append(word)",
+          text: "Adds this word to the end of the `keep` list.",
+        },
+        {
+          code: "dist.items()",
+          text: 'Gives the dict as pairs, like `("great", 0.5)`.',
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>greedy_pick</Code> gives <Code>great</Code>, the word with 0.5. A tie would keep the
@@ -1214,7 +1756,36 @@ plt.bar(colors, votes, color=colors)
 plt.ylabel("votes")
 plt.title("Favorite color survey")
 plt.savefig("colors.png")
-plt.show()`} />
+plt.show()`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text:
+            "Loads the plotting toolbox and gives it the short nickname `plt`. So you write " +
+            "`plt.bar(...)` and not the long name.",
+        },
+        {
+          code: "plt.bar(colors, votes, color=colors)",
+          text:
+            "Draws one bar per color name, as tall as its vote count. `color=colors` paints each " +
+            "bar in its own color.",
+        },
+        {
+          code: 'plt.ylabel("votes")',
+          text: "Writes a label on the side (the y axis), so the reader knows the heights are votes.",
+        },
+        {
+          code: "plt.title(",
+          text: "Puts a heading over the chart.",
+        },
+        {
+          code: 'plt.savefig("colors.png")',
+          text: "Saves the chart as an image file called `colors.png`. Do this before `show`.",
+        },
+        {
+          code: "plt.show()",
+          text: "Shows the chart on the screen.",
+        },
+      ]} />
       <Text>
         <Code>plt.bar(labels, heights)</Code> draws one bar per label, as tall as its
         corresponding number. <Code>ylabel</Code> and <Code>title</Code> label the axis and the
@@ -1239,8 +1810,7 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <CodeBlock code={`import matplotlib.pyplot as plt
 
 topics = ["regex", "dicts", "sorting"]
 votes = [6, 9, 4]
@@ -1249,8 +1819,36 @@ plt.bar(topics, votes, color="salmon")
 plt.ylabel("votes")
 plt.title("Favorite practice topic")
 plt.show()
-print(topics[votes.index(max(votes))])  # dicts`}
-      </Code>
+print(topics[votes.index(max(votes))])  # dicts`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads the plotting toolbox with the short nickname `plt`.",
+        },
+        {
+          code: 'plt.bar(topics, votes, color="salmon")',
+          text: "Draws three bars, one per topic, each as tall as its votes. `salmon` is a pink color.",
+        },
+        {
+          code: 'plt.ylabel("votes")',
+          text: "Labels the side (the y axis) so the reader knows the heights are votes.",
+        },
+        {
+          code: "plt.show()",
+          text: "Shows the chart.",
+        },
+        {
+          code: "topics[",
+          text: "Picks the topic at that position. `topics[1]` is `\"dicts\"`.",
+        },
+        {
+          code: "votes.index(",
+          text: "Finds where a value sits in the list. `votes.index(9)` is `1`, because counting starts at 0.",
+        },
+        {
+          code: "max(votes)",
+          text: "The biggest number in `votes`: 9.",
+        },
+      ]} />
       <PracticeCell labId={1} cellId="concept-6" code={`import matplotlib.pyplot as plt
 
 topics = ["regex", "dicts", "sorting"]
@@ -1313,7 +1911,33 @@ print(topics[votes.index(max(votes))])  # dicts`} />
 
 dist = {"the": 0.4, "was": 0.25, "great": 0.2, "odd": 0.1, "zany": 0.05}
 for word, chance in dist.items():
-    print(bar_row(word, chance))`} />
+    print(bar_row(word, chance))`} hints={[
+        {
+          code: "def bar_row(word, chance):",
+          block: "function",
+          text: "Turns one word and its chance into one line of text: the word, a row of `#` marks, then the chance.",
+        },
+        {
+          code: "for word, chance in dist.items():",
+          block: "for loop",
+          text: "Goes through the dict one pair at a time and prints a bar row for each word.",
+        },
+        {
+          code: "word.ljust(7)",
+          text:
+            "Adds spaces on the right of the word until it is 7 characters long. So `the` gets 4 " +
+            "spaces, and all the bars start in the same column.",
+        },
+        {
+          code: '"#" * round(chance * 20)',
+          text:
+            "`*` on text repeats it. `0.4 * 20 = 8`, so `the` gets 8 marks. Each mark stands for 0.05.",
+        },
+        {
+          code: "str(chance)",
+          text: "Turns the number into text, so it can be joined to the other text with `+`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>round(chance * 20)</Code> counts the marks. <Code>the</Code> has 0.4, so 8 marks.

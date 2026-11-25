@@ -1,8 +1,103 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the examples below.
+// In the text, `backticks` style code and **double stars** bold a key word.
+const FLIPS_HINTS: CodeHint[] = [
+  {
+    code: "for flip in flips:",
+    block: "for loop",
+    text: "Goes through the six flips one by one and adds 1 to the count of that flip.",
+  },
+  {
+    code: "counts: dict[str, int] = {}",
+    text:
+      "`counts` starts empty. The loop looks at each flip. After the six flips it holds " +
+      "`{'heads': 4, 'tails': 2}`.",
+  },
+  {
+    code: "counts[flip] = counts.get(flip, 0) + 1",
+    text: "It counts the same way as Lab 1: get the old count, or 0, and add 1.",
+  },
+  {
+    code: "lambda outcome: counts[outcome]",
+    text:
+      "A tiny function with no name. You give it an outcome, and it gives back that outcome's " +
+      "count. `max` uses it as a score card.",
+  },
+  {
+    code: "max(counts, key=",
+    text:
+      "`max` checks `\"heads\"` (score 4) and `\"tails\"` (score 2). The biggest score is 4, so " +
+      "it returns `\"heads\"`.",
+  },
+];
+
+const MSE_HINTS: CodeHint[] = [
+  {
+    code: "squared_errors = [",
+    text:
+      "A **list comprehension** is a short way to build a list in one line. Here it builds " +
+      "`squared_errors`, which is `[16, 36, 36]`.",
+  },
+  {
+    code: "zip(actual, predicted)",
+    text: "Pairs them up: (86, 90), (101, 95), (114, 120).",
+  },
+  {
+    code: "(a - p) ** 2",
+    text:
+      "For each pair: `(86 - 90) = -4`, squared is 16. `(101 - 95) = 6`, squared is 36. " +
+      "`(114 - 120) = -6`, squared is 36. Squaring makes -4 and 4 both become 16, so a miss in " +
+      "either direction counts the same. It also makes one big miss hurt more than two small ones.",
+  },
+  {
+    code: "mse = sum(squared_errors) / len(squared_errors)",
+    text:
+      "MSE is short for **mean squared error**. `mse` = `(16 + 36 + 36) / 3 = 88` / 3, which is " +
+      "about 29.33.",
+  },
+];
+
+const PLOT_HINTS: CodeHint[] = [
+  {
+    code: "xs = [2, 4, 6, 8, 10]",
+    text: "`xs` are the ages. There are five points in all.",
+  },
+  {
+    code: "ys = [86, 101, 114, 128, 139]",
+    text: "`ys` are the real heights, one for each age.",
+  },
+  {
+    code: 'plt.scatter(xs, ys, label="real points")',
+    text:
+      "Puts 5 dots on the chart. A **scatter plot** is a chart of separate dots. Nothing joins " +
+      "them.",
+  },
+  {
+    code: "[6.6 * x + 73.7 for x in xs]",
+    text:
+      "Builds a new list. For age 2 it gives `6.6 * 2 + 73.7 = 86.9`. For age 10 it gives 139.7. " +
+      "The other ages fall in between.",
+  },
+  {
+    code: "plt.plot(xs, ",
+    text: "Joins those 5 values (the new list) with a line.",
+  },
+  {
+    code: 'color="crimson"',
+    text: "Makes the line dark red.",
+  },
+  {
+    code: "plt.legend()",
+    text: "Shows a small box that explains the dots and the line.",
+  },
+];
 
 export function Lab02Reading() {
   return (
@@ -22,7 +117,7 @@ export function Lab02Reading() {
 
       <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Say you're guessing whether a coin is fair by looking at past flips:</Text>
-      <RunnableExample labId={2} code={`flips = ["heads", "tails", "heads", "heads", "tails", "heads"]
+      <RunnableExample hints={FLIPS_HINTS} labId={2} code={`flips = ["heads", "tails", "heads", "heads", "tails", "heads"]
 
 counts: dict[str, int] = {}
 for flip in flips:
@@ -34,38 +129,45 @@ print(best_guess)  # 'heads'`} />
         <Code>max(iterable, key=...)</Code> walks every key in <Code>counts</Code> and returns the
         one for which <Code>key(item)</Code> is largest - here, the outcome with the highest tally.
       </Text>
-      <Text>Here is what each line of that example does, with the real numbers:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>counts</Code> starts empty. The loop looks at each flip. After the six flips it
-          holds <Code>{"{'heads': 4, 'tails': 2}"}</Code>. (It counts the same way as Lab 1: get
-          the old count, or 0, and add 1.)
-        </ListItem>
-        <ListItem>
-          <Code>lambda outcome: counts[outcome]</Code> is a tiny function with no name. You give
-          it an outcome, and it gives back that outcome's count. <Code>max</Code> uses it as a
-          score card.
-        </ListItem>
-        <ListItem>
-          <Code>max</Code> checks <Code>"heads"</Code> (score 4) and <Code>"tails"</Code> (score
-          2). The biggest score is 4, so it returns <Code>"heads"</Code>.
-        </ListItem>
-        <ListItem>
-          A <b>baseline</b> is a simple guess that you use to compare better models against. Here
-          the baseline is "always say heads". It is right 4 times out of 6.
-        </ListItem>
-      </UnorderedList>
+      <Text>
+        A <b>baseline</b> is a simple guess that you use to compare better models against. Here
+        the baseline is "always say heads". It is right 4 times out of 6.
+      </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
+      <CodeBlock code={`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
 
 counts: dict[str, int] = {}
 for day in weather:
     counts[day] = counts.get(day, 0) + 1
 
 best_guess = max(counts, key=lambda outcome: counts[outcome])
-print(best_guess)  # 'sunny'`}
-      </Code>
+print(best_guess)  # 'sunny'`} hints={[
+        {
+          code: "for day in weather:",
+          block: "for loop",
+          text: "Goes through the six days one by one and adds 1 to the count of that day's weather.",
+        },
+        {
+          code: "counts: dict[str, int] = {}",
+          text: "Starts as an empty dict. After the loop it holds `{'sunny': 3, 'rainy': 2, 'cloudy': 1}`.",
+        },
+        {
+          code: "counts.get(day, 0) + 1",
+          text: "The old count for this weather, or `0` if it is new, plus 1.",
+        },
+        {
+          code: "lambda outcome: counts[outcome]",
+          text:
+            "A tiny function with no name. You give it a weather word, and it gives back that " +
+            "word's count.",
+        },
+        {
+          code: "max(counts, key=",
+          text:
+            "`max` goes through the keys of `counts` and returns the one with the biggest score from " +
+            "`key`. Here that is `\"sunny\"`, with 3.",
+        },
+      ]} />
       <PracticeCell labId={2} cellId="concept-1" code={`weather = ["sunny", "rainy", "sunny", "cloudy", "sunny", "rainy"]
 
 counts: dict[str, int] = {}
@@ -138,7 +240,57 @@ labels = [1, 1, 1, 0, 1, 0, 1, 1]
 model = [1, 1, 0, 0, 1, 0, 1, 1]
 print("model:", accuracy(model, labels))
 print("baseline:", baseline_accuracy(labels))
-print("model beats baseline:", accuracy(model, labels) > baseline_accuracy(labels))`} />
+print("model beats baseline:", accuracy(model, labels) > baseline_accuracy(labels))`} hints={[
+        {
+          code: "def accuracy(predictions, labels):",
+          block: "function",
+          text:
+            "Counts how many guesses match the true labels, then divides by the number of labels. " +
+            "The answer is the **share** that is right.",
+        },
+        {
+          code: "for guess, truth in zip(predictions, labels):",
+          block: "for loop",
+          text: "Walks the two lists side by side. Each round takes one guess and the true label at the same position.",
+        },
+        {
+          code: "if guess == truth:",
+          block: "if block",
+          text: "Runs only when the guess is right. Then it adds 1 to `correct`.",
+        },
+        {
+          code: "def baseline_accuracy(labels):",
+          block: "function",
+          text:
+            "Counts each label, takes the biggest count, and divides by the number of labels. That " +
+            "is the score of always guessing the most common label.",
+        },
+        {
+          code: "for label in labels:",
+          block: "for loop",
+          text: "Goes through the labels and adds 1 to the count of each one.",
+        },
+        {
+          code: "zip(predictions, labels)",
+          text: "`zip` pairs up the two lists by position: first with first, second with second, and so on.",
+        },
+        {
+          code: "correct / len(labels)",
+          text: "Right answers divided by the number of labels. The model gets `7 / 8 = 0.875`.",
+        },
+        {
+          code: "counts.get(label, 0) + 1",
+          text: "The label's old count, or `0` if it is new, plus 1.",
+        },
+        {
+          code: "max(counts.values())",
+          text: "The biggest count. Label `1` shows up 6 times, so this is 6, and `6 / 8 = 0.75`.",
+        },
+        {
+          code: "accuracy(model, labels) > baseline_accuracy(labels)",
+          text: "`>` compares the two scores. It prints `True`, because `0.875` is bigger than `0.75`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           There are 8 labels: six 1s and two 0s. The baseline always says 1, so it is right 6 times
@@ -240,13 +392,34 @@ model beats baseline: False`}
         Here is the lab's real code. It is the same as the weather cell, but the keys are the
         numbers 0 and 1:
       </Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`def most_common_label(labels):
+      <CodeBlock code={`def most_common_label(labels):
     counts = {}
     for label in labels:
         counts[label] = counts.get(label, 0) + 1
-    return max(counts, key=lambda label: counts[label])`}
-      </Code>
+    return max(counts, key=lambda label: counts[label])`} hints={[
+        {
+          code: "def most_common_label(labels):",
+          block: "function",
+          text:
+            "Gives back the label that shows up most often. It counts each label, then picks the " +
+            "one with the biggest count.",
+        },
+        {
+          code: "for label in labels:",
+          block: "for loop",
+          text: "Goes through the labels and adds 1 to the count of each one.",
+        },
+        {
+          code: "counts.get(label, 0) + 1",
+          text: "The label's old count, or `0` if it is new, plus 1.",
+        },
+        {
+          code: "max(counts, key=lambda label: counts[label])",
+          text:
+            "Goes through the labels in `counts` and returns the one with the biggest count. The " +
+            "`lambda` is a tiny function that gives back a label's count. On a tie, the first one wins.",
+        },
+      ]} />
       <Text>Take the labels <Code>[1, 0, 1, 1, 0]</Code>:</Text>
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
@@ -285,7 +458,52 @@ denominator = sum((x - x_mean) ** 2 for x in ages)
 
 slope = numerator / denominator
 intercept = y_mean - slope * x_mean
-print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7`} />
+print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7`} hints={[
+        {
+          code: "n = len(ages)",
+          text: "The number of children: 5.",
+        },
+        {
+          code: "x_mean = sum(ages) / n",
+          text: "The **mean** (average) age: `30 / 5 = 6.0`.",
+        },
+        {
+          code: "y_mean = sum(heights) / n",
+          text: "The average height: `568 / 5 = 113.6`.",
+        },
+        {
+          code: "numerator = sum(",
+          text:
+            "`sum(... for x, y in ...)` works out the part inside for every pair and adds the " +
+            "results. Here the total is 266.",
+        },
+        {
+          code: "(x - x_mean) * (y - y_mean)",
+          text:
+            "For one child: how far the age is from the average, times how far the height is from " +
+            "the average. For age 2: `-4 * -27.6 = 110.4`.",
+        },
+        {
+          code: "zip(ages, heights)",
+          text: "Pairs each age with its height: `(2, 86)`, `(4, 101)` and so on.",
+        },
+        {
+          code: "(x - x_mean) ** 2",
+          text:
+            "The age gap times itself. `** 2` means \"to the power of 2\". The gaps -4, -2, 0, 2, 4 " +
+            "give 16, 4, 0, 4, 16, which add up to 40.",
+        },
+        {
+          code: "slope = numerator / denominator",
+          text: "`266 / 40 = 6.65`. Each extra year adds about 6.65 cm.",
+        },
+        {
+          code: "intercept = y_mean - slope * x_mean",
+          text:
+            "`113.6 - 6.65 * 6`, about 73.7. It moves the line so it goes through the average " +
+            "point (6, 113.6).",
+        },
+      ]} />
       <Text>
         <Code>slope</Code> is the covariance of x and y divided by the variance of x (how much y
         moves together with x, scaled by how spread out x is), and <Code>intercept</Code> shifts
@@ -329,8 +547,7 @@ print(slope, intercept)  # roughly 6.6, 73.7 - predict height ≈ 6.6*age + 73.7
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`hours =  [1, 2, 3, 4, 5]
+      <CodeBlock code={`hours =  [1, 2, 3, 4, 5]
 scores = [52, 58, 65, 71, 78]
 
 n = len(hours)
@@ -342,8 +559,42 @@ denominator = sum((x - x_mean) ** 2 for x in hours)
 
 slope = numerator / denominator
 intercept = y_mean - slope * x_mean
-print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3`}
-      </Code>
+print(round(slope, 2), round(intercept, 2))  # 6.5, 45.3 - predict score ~= 6.5*hours + 45.3`} hints={[
+        {
+          code: "x_mean = sum(hours) / n",
+          text: "The average hours: `15 / 5 = 3.0`.",
+        },
+        {
+          code: "y_mean = sum(scores) / n",
+          text: "The average score: `324 / 5 = 64.8`.",
+        },
+        {
+          code: "numerator = sum(",
+          text:
+            "`sum(... for x, y in ...)` works out the part inside for every pair and adds the " +
+            "results. Here the total is 65.",
+        },
+        {
+          code: "zip(hours, scores)",
+          text: "Pairs each hour count with its score: `(1, 52)`, `(2, 58)` and so on.",
+        },
+        {
+          code: "(x - x_mean) ** 2",
+          text: "The hour gap times itself. The gaps -2, -1, 0, 1, 2 give 4, 1, 0, 1, 4, which add up to 10.",
+        },
+        {
+          code: "slope = numerator / denominator",
+          text: "`65 / 10 = 6.5`. Each extra hour of study adds about 6.5 points.",
+        },
+        {
+          code: "intercept = y_mean - slope * x_mean",
+          text: "`64.8 - 6.5 * 3 = 45.3`: the score the line gives for 0 hours.",
+        },
+        {
+          code: "round(slope, 2)",
+          text: "Keeps 2 digits after the point, so tiny decimal errors do not show.",
+        },
+      ]} />
       <PracticeCell labId={2} cellId="concept-2" code={`hours =  [1, 2, 3, 4, 5]
 scores = [52, 58, 65, 71, 78]
 
@@ -421,7 +672,44 @@ def total_error(points, slope, intercept):
 
 points = [(1, 3), (2, 5), (3, 7)]
 for slope in (1, 2, 3):
-    print("slope", slope, "-> error", total_error(points, slope, 1))`} />
+    print("slope", slope, "-> error", total_error(points, slope, 1))`} hints={[
+        {
+          code: "def line_value(x, slope, intercept):",
+          block: "function",
+          text: "The rule of the model: give it an `x`, and it gives back the height of the line there, `slope * x + intercept`.",
+        },
+        {
+          code: "def total_error(points, slope, intercept):",
+          block: "function",
+          text:
+            "Adds up the squared miss of every point. A miss is the real `y` minus the line's value. " +
+            "A smaller total means a better line.",
+        },
+        {
+          code: "for x, y in points:",
+          block: "for loop",
+          text: "Takes one point at a time. Each point is a pair, so `x, y` splits it into its two numbers.",
+        },
+        {
+          code: "for slope in (1, 2, 3):",
+          block: "for loop",
+          text: "Tries three slopes, keeping the intercept at 1, and prints the error for each.",
+        },
+        {
+          code: "(y - line_value(x, slope, intercept)) ** 2",
+          text:
+            "The miss for one point, squared. With slope 1 and the point `(3, 7)`: the line gives 4, " +
+            "the miss is 3, and squared it is 9.",
+        },
+        {
+          code: "points = [(1, 3), (2, 5), (3, 7)]",
+          text: "Three points, each an `(x, y)` pair. They sit exactly on the line `y = 2x + 1`.",
+        },
+        {
+          code: "total_error(points, slope, 1)",
+          text: "The error for this slope, with the intercept fixed at 1.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The three points sit exactly on the line <Code>y = 2x + 1</Code>.
@@ -550,7 +838,7 @@ slope 4 -> error 14`}
       <Text>
         Suppose you predicted three kids' heights and want to score how far off you were:
       </Text>
-      <RunnableExample labId={2} code={`actual =    [86, 101, 114]
+      <RunnableExample hints={MSE_HINTS} labId={2} code={`actual =    [86, 101, 114]
 predicted = [90, 95, 120]
 
 squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
@@ -561,36 +849,34 @@ print(mse)  # 29.333...`} />
         and too low both count as "bad," and big misses are punished more than small ones), and
         average all those squared differences. A lower MSE means better predictions.
       </Text>
-      <Text>
-        Here is what each line does. (MSE is short for <b>mean squared error</b>.) A list
-        comprehension is a short way to build a list in one line:
-      </Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>zip(actual, predicted)</Code> pairs them up: (86, 90), (101, 95), (114, 120).
-        </ListItem>
-        <ListItem>
-          <Code>(a - p) ** 2</Code> for each pair: <Code>(86 - 90) = -4</Code>, squared is 16. <Code>(101 - 95) = 6</Code>,
-          squared is 36. <Code>(114 - 120) = -6</Code>, squared is 36. So{" "}
-          <Code>squared_errors</Code> is <Code>[16, 36, 36]</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>mse</Code> = <Code>(16 + 36 + 36) / 3 = 88</Code> / 3, which is about 29.33.
-        </ListItem>
-        <ListItem>
-          Squaring makes -4 and 4 both become 16, so a miss in either direction counts the same.
-          It also makes one big miss hurt more than two small ones.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`actual =    [52, 58, 65]
+      <CodeBlock code={`actual =    [52, 58, 65]
 predicted = [55, 55, 70]
 
 squared_errors = [(a - p) ** 2 for a, p in zip(actual, predicted)]
 mse = sum(squared_errors) / len(squared_errors)
-print(mse)  # 14.33`}
-      </Code>
+print(mse)  # 14.33`} hints={[
+        {
+          code: "squared_errors = [",
+          text:
+            "A **list comprehension** builds a list in one line. Here it builds `squared_errors`, " +
+            "which is `[9, 9, 25]`.",
+        },
+        {
+          code: "(a - p) ** 2",
+          text: "For each pair, the gap times itself: `52 - 55 = -3` gives 9, `58 - 55 = 3` gives 9, `65 - 70 = -5` gives 25.",
+        },
+        {
+          code: "zip(actual, predicted)",
+          text: "Pairs them up: (52, 55), (58, 55), (65, 70).",
+        },
+        {
+          code: "mse = sum(squared_errors) / len(squared_errors)",
+          text:
+            "**Mean squared error**: the average of the squared gaps. `(9 + 9 + 25) / 3 = 43 / 3`, " +
+            "about 14.33.",
+        },
+      ]} />
       <PracticeCell labId={2} cellId="concept-3" code={`actual =    [52, 58, 65]
 predicted = [55, 55, 70]
 
@@ -654,7 +940,46 @@ def squared_loss(truth, guesses):
 truth = [10, 10, 10, 10]
 models = {"small misses": [11, 9, 11, 9], "one big miss": [10, 10, 10, 14]}
 for name, guesses in models.items():
-    print(name, "-> average miss:", average_miss(truth, guesses), "squared loss:", squared_loss(truth, guesses))`} />
+    print(name, "-> average miss:", average_miss(truth, guesses), "squared loss:", squared_loss(truth, guesses))`} hints={[
+        {
+          code: "def average_miss(truth, guesses):",
+          block: "function",
+          text:
+            "The average size of the misses. It adds up how far each guess is from the truth, " +
+            "ignoring plus or minus, then divides by how many values there are.",
+        },
+        {
+          code: "def squared_loss(truth, guesses):",
+          block: "function",
+          text: "Like `average_miss`, but each miss is squared first, so one big miss counts a lot more.",
+        },
+        {
+          code: "for t, g in zip(truth, guesses):",
+          block: "for loop",
+          text: "Walks the two lists side by side. `t` is the true value and `g` is the guess at the same position.",
+        },
+        {
+          code: "for name, guesses in models.items():",
+          block: "for loop",
+          text: "Runs once per model. `name` is the dict key and `guesses` is its list. Each round prints both scores.",
+        },
+        {
+          code: "abs(t - g)",
+          text: "`abs` drops the minus sign. `abs(10 - 14)` is 4, and `abs(10 - 9)` is 1.",
+        },
+        {
+          code: "(t - g) ** 2",
+          text: "The miss times itself. A miss of 4 gives 16, but a miss of 1 gives only 1.",
+        },
+        {
+          code: "total / len(truth)",
+          text: "Divides the total by the number of values (4) to get the average.",
+        },
+        {
+          code: "models = {",
+          text: "A dict with two pretend models. Each key is a name, and each value is that model's list of guesses.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The true values are all 10. The first model is off by 1 every time. The second is exact
@@ -781,7 +1106,7 @@ one big miss -> average miss: 0.8 squared loss: 3.2`}
         Say you have a handful of (x, y) points and a line you fit to them, and want to see both
         at once:
       </Text>
-      <RunnableExample labId={2} code={`import matplotlib.pyplot as plt
+      <RunnableExample hints={PLOT_HINTS} labId={2} code={`import matplotlib.pyplot as plt
 
 xs = [2, 4, 6, 8, 10]
 ys = [86, 101, 114, 128, 139]
@@ -798,31 +1123,8 @@ plt.show()`} />
         measurements. <Code>label</Code> plus <Code>plt.legend()</Code> adds a key so you can tell
         the two apart.
       </Text>
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>xs</Code> are the ages and <Code>ys</Code> are the real heights. Five points in
-          all.
-        </ListItem>
-        <ListItem>
-          <Code>plt.scatter(xs, ys, label="real points")</Code> puts 5 dots on the chart. A{" "}
-          <b>scatter plot</b> is a chart of separate dots. Nothing joins them.
-        </ListItem>
-        <ListItem>
-          <Code>[6.6 * x + 73.7 for x in xs]</Code> builds a new list. For age 2 it gives <Code>6.6 * 2</Code>
-          + 73.7 = 86.9. For age 10 it gives 139.7. The other ages fall in between.
-        </ListItem>
-        <ListItem>
-          <Code>plt.plot(xs, those_values, ...)</Code> joins those 5 values with a line.{" "}
-          <Code>color="crimson"</Code> makes it dark red.
-        </ListItem>
-        <ListItem>
-          <Code>plt.legend()</Code> shows a small box that explains the dots and the line.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <CodeBlock code={`import matplotlib.pyplot as plt
 
 xs = [1, 2, 3, 4, 5]
 ys = [52, 58, 65, 71, 78]
@@ -831,8 +1133,40 @@ plt.scatter(xs, ys, label="real points")
 plt.plot(xs, [6.5 * x + 45.3 for x in xs], color="crimson", label="fit line")
 plt.legend()
 plt.show()
-print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a fit line`}
-      </Code>
+print("plotted", len(xs), "points with a fit line")  # plotted 5 points with a fit line`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads the plotting toolbox with the short nickname `plt`.",
+        },
+        {
+          code: 'plt.scatter(xs, ys, label="real points")',
+          text:
+            "Draws 5 dots, one per (hours, score) pair. A **scatter plot** is a chart of separate " +
+            "dots. `label` names them for the legend.",
+        },
+        {
+          code: "[6.5 * x + 45.3 for x in xs]",
+          text:
+            "Builds a new list: for each x it works out `6.5 * x + 45.3`. That gives 51.8, 58.3, " +
+            "64.8, 71.3 and 77.8.",
+        },
+        {
+          code: "plt.plot(xs, ",
+          text: "Joins those 5 values (the new list) with a line.",
+        },
+        {
+          code: 'color="crimson"',
+          text: "Makes the line dark red.",
+        },
+        {
+          code: "plt.legend()",
+          text: "Shows a small box that explains the dots and the line.",
+        },
+        {
+          code: "len(xs)",
+          text: "Counts the points: 5.",
+        },
+      ]} />
       <PracticeCell labId={2} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 xs = [1, 2, 3, 4, 5]
@@ -904,7 +1238,51 @@ def show_misses(points, slope, intercept):
 
 
 points = [(33, 7), (40, 8), (50, 6), (60, 10)]
-show_misses(points, 0.108, 3.38)`} />
+show_misses(points, 0.108, 3.38)`} hints={[
+        {
+          code: "def line_value(x, slope, intercept):",
+          block: "function",
+          text: "The line's rule: give it an `x`, and it gives back `slope * x + intercept`.",
+        },
+        {
+          code: "def show_misses(points, slope, intercept):",
+          block: "function",
+          text:
+            "Prints one line per point: the real value, the line's guess, the miss, and one `#` " +
+            "mark for each whole word of miss.",
+        },
+        {
+          code: "for x, y in points:",
+          block: "for loop",
+          text: "Takes one point at a time: `x` is the number of characters, `y` the real number of words.",
+        },
+        {
+          code: "abs(y - guess)",
+          text: "How far the guess is from the real value, with no minus sign. For 50 characters: `abs(6 - 8.78)`, about 2.8.",
+        },
+        {
+          code: '"#" * round(miss)',
+          text: "`*` on text repeats it. A miss of 2.8 rounds to 3, so it gives `###`.",
+        },
+        {
+          code: "str(x).rjust(3)",
+          text:
+            "`str` turns the number into text. `rjust(3)` adds spaces on the left until it is 3 " +
+            "characters wide, so the lines line up.",
+        },
+        {
+          code: "round(guess, 1)",
+          text: "Keeps 1 digit after the point: `8.78` becomes `8.8`.",
+        },
+        {
+          code: "line.rstrip()",
+          text: "Removes spaces at the end of the line. A point with no marks would otherwise end in a space.",
+        },
+        {
+          code: "show_misses(points, 0.108, 3.38)",
+          text: "Runs it with the project's line: slope 0.108 and intercept 3.38.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The guess is <Code>0.108 * x + 3.38</Code>. For 33 characters that is about 6.9 words, and

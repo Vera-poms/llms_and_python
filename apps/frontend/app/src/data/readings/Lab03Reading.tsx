@@ -1,8 +1,43 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the heatmap example.
+// In the text, `backticks` style code and **double stars** bold a key word.
+const HEATMAP_HINTS: CodeHint[] = [
+  {
+    code: "import numpy as np",
+    text: "Loads numpy, a toolbox for grids of numbers.",
+  },
+  {
+    code: "np.array([[0.1, 0.9], [0.7, 0.3]])",
+    text: "Makes a grid with 2 rows and 2 columns. Each inner list is one row.",
+  },
+  {
+    code: 'plt.imshow(grid, cmap="viridis")',
+    text:
+      "Paints one square per number. `cmap` (color map) is the color scale. 0.9 is the " +
+      "brightest yellow square. 0.1 is the darkest purple.",
+  },
+  {
+    code: 'plt.colorbar(label="value")',
+    text: "Adds a strip on the side that shows which color means which number.",
+  },
+  {
+    code: 'plt.xticks([0, 1], ["col A", "col B"])',
+    text:
+      "Says: put the name \"col A\" at column position 0, and \"col B\" at position 1. Counting " +
+      "starts at 0.",
+  },
+  {
+    code: 'plt.yticks([0, 1], ["row A", "row B"])',
+    text: "Does the same as `xticks`, but for rows.",
+  },
+];
 
 export function Lab03Reading() {
   return (
@@ -35,7 +70,39 @@ for shelf, item in items:
     shelf_counts[item] = shelf_counts.get(item, 0) + 1
 
 print(pantry)
-# {'top shelf': {'pasta': 2, 'rice': 1}, 'bottom shelf': {'cans': 1}}`} />
+# {'top shelf': {'pasta': 2, 'rice': 1}, 'bottom shelf': {'cans': 1}}`} hints={[
+        {
+          code: "for shelf, item in items:",
+          block: "for loop",
+          text:
+            "Goes through the 4 pairs one at a time. Each round finds the shelf's inner dict " +
+            "(or makes it), then adds 1 to that item's count.",
+        },
+        {
+          code: "dict[str, dict[str, int]]",
+          text:
+            "A note on what `pantry` holds: a dict whose keys are text (`str`) and whose values " +
+            "are more dicts, from text to whole numbers (`int`). Python does not check it.",
+        },
+        {
+          code: "shelf, item",
+          text:
+            "Each pair is split into two names. `(\"top shelf\", \"pasta\")` gives " +
+            "`shelf = \"top shelf\"` and `item = \"pasta\"`.",
+        },
+        {
+          code: "pantry.setdefault(shelf, {})",
+          text:
+            "Gives back the inner dict for `shelf`. If that shelf is not there yet, it first " +
+            "stores an empty dict `{}` for it. Either way you get a dict to count in.",
+        },
+        {
+          code: "shelf_counts.get(item, 0) + 1",
+          text:
+            "`get(item, 0)` reads the count for `item`, or 0 if it is not there yet. Adding 1 " +
+            "and storing it back counts one more of that item.",
+        },
+      ]} />
       <Text>
         <Code>dict.setdefault(key, {})</Code> is the key trick: it returns the inner dict for{" "}
         <Code>key</Code> if one already exists, and otherwise creates an empty one, stores it, and
@@ -74,8 +141,7 @@ print(pantry)
         <Code>[...]</Code> picks the shelf. The second picks the item.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`zoo: dict[str, dict[str, int]] = {}
+      <CodeBlock code={`zoo: dict[str, dict[str, int]] = {}
 
 sightings = [("mammals", "lion"), ("mammals", "zebra"),
              ("mammals", "lion"), ("birds", "owl")]
@@ -85,8 +151,39 @@ for category, animal in sightings:
     counts[animal] = counts.get(animal, 0) + 1
 
 print(zoo)
-# {'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`}
-      </Code>
+# {'mammals': {'lion': 2, 'zebra': 1}, 'birds': {'owl': 1}}`} hints={[
+        {
+          code: "for category, animal in sightings:",
+          block: "for loop",
+          text:
+            "Goes through the 4 sightings one at a time. Each round finds the category's inner " +
+            "dict (or makes it), then adds 1 to that animal's count.",
+        },
+        {
+          code: "dict[str, dict[str, int]]",
+          text:
+            "A note on what `zoo` holds: a dict whose keys are text (`str`) and whose values are " +
+            "more dicts, from text to whole numbers (`int`). Python does not check it.",
+        },
+        {
+          code: "category, animal",
+          text:
+            "Each pair is split into two names. `(\"mammals\", \"lion\")` gives " +
+            "`category = \"mammals\"` and `animal = \"lion\"`.",
+        },
+        {
+          code: "zoo.setdefault(category, {})",
+          text:
+            "Gives back the inner dict for `category`. If it is not there yet, it first stores " +
+            "an empty dict `{}` for it. So the first lion makes the `mammals` dict.",
+        },
+        {
+          code: "counts.get(animal, 0) + 1",
+          text:
+            "Reads the count for `animal`, or 0 if this animal is new, then adds 1. The second " +
+            "lion takes the count from 1 to 2.",
+        },
+      ]} />
       <PracticeCell labId={3} cellId="concept-1" code={`zoo: dict[str, dict[str, int]] = {}
 
 sightings = [("mammals", "lion"), ("mammals", "zebra"),
@@ -166,7 +263,58 @@ for prev, nxt in pairs:
     add_pair(table, prev, nxt)
 print("one tally:", global_counts(pairs))
 print("per context:", table)
-print("after the:", table["the"])`} />
+print("after the:", table["the"])`} hints={[
+        {
+          code: "def add_pair(table, prev, nxt):",
+          block: "function",
+          text:
+            "Puts one (previous word, next word) pair into `table`. It finds the row for `prev`, " +
+            "making an empty one if needed, then adds 1 to the count for `nxt` in that row.",
+        },
+        {
+          code: "def global_counts(pairs):",
+          block: "function",
+          text:
+            "Counts only the next words and **ignores the previous word**. For these 5 pairs it " +
+            "gives `{'cat': 3, 'dog': 1, 'bird': 1}`.",
+        },
+        {
+          code: "for prev, nxt in pairs:\n        counts[nxt]",
+          block: "for loop",
+          text:
+            "Goes through every pair. The first word, `prev`, is not used here. Only the next " +
+            "word, `nxt`, is counted.",
+        },
+        {
+          code: "for prev, nxt in pairs:\n    add_pair",
+          block: "for loop",
+          text:
+            "Feeds the 5 pairs into `table`, one at a time. After the loop, `table` has one row " +
+            "for `the` and one row for `a`.",
+        },
+        {
+          code: "table.setdefault(prev, {})",
+          text:
+            "Gives back the row (an inner dict) for `prev`. If there is no row yet, it first " +
+            "stores an empty dict `{}` for it.",
+        },
+        {
+          code: "inner.get(nxt, 0) + 1",
+          text: "Reads the count for `nxt` in this row, or 0 if it is not there yet, then adds 1.",
+        },
+        {
+          code: "counts.get(nxt, 0) + 1",
+          text:
+            "The same counting trick, but in one flat dict for the whole list. The previous word " +
+            "plays no part.",
+        },
+        {
+          code: 'table["the"]',
+          text:
+            "Reads just the row for `the`: `{'cat': 2, 'dog': 1}`. After `the`, cat came twice " +
+            "and dog once.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           With one tally, <Code>cat</Code> is 3 of the 5 next words. You cannot tell which words
@@ -276,13 +424,54 @@ after you: {'hate': 2, 'love': 1}`}
         Here is the lab's real code. The "shelf" is the previous word, and the "item" is the word
         that comes next:
       </Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`for sentence in sentences:
+      <CodeBlock code={`for sentence in sentences:
     words = tokenize(sentence)
     for prev, nxt in zip(words, words[1:]):
         inner = counts.setdefault(prev, {})
-        inner[nxt] = inner.get(nxt, 0) + 1`}
-      </Code>
+        inner[nxt] = inner.get(nxt, 0) + 1`} hints={[
+        {
+          code: "for sentence in sentences:",
+          block: "for loop",
+          text:
+            "Goes through the sentences one at a time. Each sentence is cut into words and its " +
+            "pairs are counted on their own, so a pair never crosses into the next sentence.",
+        },
+        {
+          code: "for prev, nxt in zip(words, words[1:]):",
+          block: "for loop",
+          text:
+            "Visits each pair of neighbor words, called a **bigram**. For each pair it adds 1 to " +
+            "the count of `nxt` in the row for `prev`.",
+        },
+        {
+          code: "tokenize(sentence)",
+          text:
+            "The Lab 1 function that cuts a sentence into a list of words. `\"a b a c\"` gives " +
+            "`[\"a\", \"b\", \"a\", \"c\"]`.",
+        },
+        {
+          code: "zip(words,",
+          text:
+            "`zip` pairs two lists up, item by item, and stops when the shorter one ends. Here " +
+            "each word is paired with the word after it: (a, b), (b, a), (a, c).",
+        },
+        {
+          code: "words[1:]",
+          text:
+            "A **slice**: the same list without its first item. `[\"a\", \"b\", \"a\", \"c\"]` " +
+            "becomes `[\"b\", \"a\", \"c\"]`.",
+        },
+        {
+          code: "counts.setdefault(prev, {})",
+          text:
+            "Gives back the row for `prev`. If there is no row yet, it first stores an empty " +
+            "dict `{}` for it.",
+        },
+        {
+          code: "inner.get(nxt, 0) + 1",
+          text: "Reads the count for `nxt` in this row, or 0 if it is new, then adds 1.",
+        },
+      ]} />
       <Text>
         Take one sentence, <Code>"a b a c"</Code>:
       </Text>
@@ -324,7 +513,26 @@ after you: {'hate': 2, 'love': 1}`}
       <RunnableExample labId={3} code={`after_coffee = {"croissant": 6, "muffin": 3, "nothing": 1}
 total = sum(after_coffee.values())  # 10
 p_croissant_given_coffee = after_coffee["croissant"] / total
-print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} />
+print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} hints={[
+        {
+          code: "sum(after_coffee.values())",
+          text:
+            "`.values()` gives just the counts from the dict: 6, 3 and 1. `sum` adds them up: 10 " +
+            "people who had coffee.",
+        },
+        {
+          code: 'after_coffee["croissant"] / total',
+          text:
+            "Looks up the croissant count (6) and divides it by the total (10). That gives 0.6, " +
+            "the chance of a croissant after coffee.",
+        },
+        {
+          code: "P(croissant | coffee)",
+          text:
+            "Read it as \"the chance of croissant, given coffee\". The bar `|` means \"given\": we " +
+            "only look at people who had coffee.",
+        },
+      ]} />
       <Text>
         Dividing each count by the total for that condition (here, "given coffee") turns raw
         tallies into a proper distribution - one that sums to 1 across everything that could come
@@ -353,12 +561,25 @@ print(p_croissant_given_coffee)  # 0.6 -> P(croissant | coffee) = 0.6`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`after_tea = {"biscuit": 4, "scone": 1}
+      <CodeBlock code={`after_tea = {"biscuit": 4, "scone": 1}
 total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
-print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`}
-      </Code>
+print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} hints={[
+        {
+          code: "sum(after_tea.values())",
+          text: "`.values()` gives just the counts, 4 and 1. `sum` adds them up: 5.",
+        },
+        {
+          code: 'after_tea["biscuit"] / total',
+          text: "The biscuit count (4) divided by the total (5) is 0.8.",
+        },
+        {
+          code: "P(biscuit | tea)",
+          text:
+            "\"The chance of biscuit, given tea.\" The bar `|` means \"given\": we only look at " +
+            "people who had tea.",
+        },
+      ]} />
       <PracticeCell labId={3} cellId="concept-2" code={`after_tea = {"biscuit": 4, "scone": 1}
 total = sum(after_tea.values())  # 5
 p_biscuit_given_tea = after_tea["biscuit"] / total
@@ -423,7 +644,58 @@ print(p_biscuit_given_tea)  # 0.8 -> P(biscuit | tea) = 0.8`} expectedOutput={`0
 
 table = {"the": {"movie": 6, "food": 3, "end": 1}, "was": {"great": 2, "long": 1}}
 for prev in ["the", "was", "great"]:
-    print(prev, "->", next_chances(table, prev))`} />
+    print(prev, "->", next_chances(table, prev))`} hints={[
+        {
+          code: "def next_chances(table, prev):",
+          block: "function",
+          text:
+            "Turns the row of counts for `prev` into chances: each count divided by the row's " +
+            "total. If `prev` has no row, it gives back an empty dict `{}`, a **dead end**.",
+        },
+        {
+          code: "for count in inner.values():",
+          block: "for loop",
+          text: "Adds up all the counts in the row. For `the` that is 6 + 3 + 1 = 10.",
+        },
+        {
+          code: "for word, count in inner.items():",
+          block: "for loop",
+          text:
+            "Goes through each next word with its count and stores count divided by total. For " +
+            "`the`, movie gets 6 / 10 = 0.6.",
+        },
+        {
+          code: 'for prev in ["the", "was", "great"]:',
+          block: "for loop",
+          text:
+            "Asks for the chances after three words and prints each answer. `great` has no row, " +
+            "so its line shows `{}`.",
+        },
+        {
+          code: "table.get(prev)",
+          text:
+            "Reads the row for `prev`. Unlike `table[prev]`, it does not crash when the row is " +
+            "missing. It gives back `None`, which means \"nothing\".",
+        },
+        {
+          code: "if not inner:",
+          text:
+            "True when there is no row (`None`) or the row is empty. Then the function stops " +
+            "right away and gives back `{}`.",
+        },
+        {
+          code: "inner.items()",
+          text:
+            "Gives each key with its value, as pairs like `(\"movie\", 6)`. The loop splits each " +
+            "pair into `word` and `count`.",
+        },
+        {
+          code: "round(count / total, 2)",
+          text:
+            "Divides, then rounds to 2 decimal places. 2 / 3 is 0.666..., so it is stored as " +
+            "`0.67`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The row for <Code>the</Code> has a total of 10, so the chances are 0.6, 0.3 and 0.1.
@@ -514,11 +786,34 @@ price -> {}`}
         with <Code>random.choices</Code>.
       </Text>
       <Text>Here is the lab's real code:</Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`for prev, next_counts in counts.items():
+      <CodeBlock code={`for prev, next_counts in counts.items():
     total = sum(next_counts.values())
-    cond[prev] = {nxt: count / total for nxt, count in next_counts.items()}`}
-      </Code>
+    cond[prev] = {nxt: count / total for nxt, count in next_counts.items()}`} hints={[
+        {
+          code: "for prev, next_counts in counts.items():",
+          block: "for loop",
+          text:
+            "Goes through every row of the counts table. Each row is turned into chances that " +
+            "add up to 1, using that row's own total.",
+        },
+        {
+          code: "in counts.items()",
+          text:
+            "Gives each previous word with its inner dict of counts. `prev` gets the word and " +
+            "`next_counts` gets the dict, like `{'b': 1, 'c': 1}`.",
+        },
+        {
+          code: "sum(next_counts.values())",
+          text: "Adds up the counts in this one row. For `{'b': 1, 'c': 1}` the total is 2.",
+        },
+        {
+          code: "{nxt: count / total for nxt, count in next_counts.items()}",
+          text:
+            "A **dict comprehension**: a short way to build a dict in one line. For each next " +
+            "word it stores count divided by total. `{'b': 1, 'c': 1}` becomes " +
+            "`{'b': 0.5, 'c': 0.5}`.",
+        },
+      ]} />
       <Text>
         Take the counts from the last section, <Code>{"{'a': {'b': 1, 'c': 1}, 'b': {'a': 1}}"}</Code>:
       </Text>
@@ -554,7 +849,7 @@ price -> {}`}
       <Text>
         Say you have a small grid of numbers you want to see as colors instead of digits:
       </Text>
-      <RunnableExample labId={3} code={`import matplotlib.pyplot as plt
+      <RunnableExample hints={HEATMAP_HINTS} labId={3} code={`import matplotlib.pyplot as plt
 import numpy as np
 
 grid = np.array([[0.1, 0.9], [0.7, 0.3]])
@@ -572,31 +867,8 @@ plt.show()`} />
         maps color back to a number, and <Code>xticks</Code>/<Code>yticks</Code> label the rows
         and columns instead of leaving them as bare 0, 1, 2, ...
       </Text>
-      <Text>Here is what each line does with the real numbers:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>import numpy as np</Code> loads numpy, a toolbox for grids of numbers.{" "}
-          <Code>np.array([[0.1, 0.9], [0.7, 0.3]])</Code> makes a grid with 2 rows and 2 columns.
-          Each inner list is one row.
-        </ListItem>
-        <ListItem>
-          <Code>plt.imshow(grid, cmap="viridis")</Code> paints one square per number.{" "}
-          <Code>cmap</Code> (color map) is the color scale. 0.9 is the brightest yellow square. 0.1
-          is the darkest purple.
-        </ListItem>
-        <ListItem>
-          <Code>plt.colorbar(label="value")</Code> adds a strip on the side that shows which color
-          means which number.
-        </ListItem>
-        <ListItem>
-          <Code>plt.xticks([0, 1], ["col A", "col B"])</Code> says: put the name "col A" at
-          column position 0, and "col B" at position 1. Counting starts at 0. <Code>yticks</Code>{" "}
-          does the same for rows.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <CodeBlock code={`import matplotlib.pyplot as plt
 import numpy as np
 
 grid = np.array([[0.2, 0.8], [0.6, 0.4]])
@@ -606,8 +878,46 @@ plt.colorbar(label="score")
 plt.xticks([0, 1], ["team A", "team B"])
 plt.yticks([0, 1], ["round 1", "round 2"])
 plt.show()
-print(grid.shape)  # (2, 2)`}
-      </Code>
+print(grid.shape)  # (2, 2)`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing tools under the short name `plt`.",
+        },
+        {
+          code: "import numpy as np",
+          text: "Loads numpy, a toolbox for grids of numbers, under the short name `np`.",
+        },
+        {
+          code: "np.array([[0.2, 0.8], [0.6, 0.4]])",
+          text:
+            "Makes a grid with 2 rows and 2 columns. Each inner list is one row: round 1 is " +
+            "`[0.2, 0.8]`.",
+        },
+        {
+          code: 'plt.imshow(grid, cmap="viridis")',
+          text:
+            "Paints one colored square per number. `cmap` (color map) is the color scale. 0.8 is " +
+            "the brightest square and 0.2 the darkest.",
+        },
+        {
+          code: 'plt.colorbar(label="score")',
+          text: "Adds a strip on the side that shows which color means which number.",
+        },
+        {
+          code: 'plt.xticks([0, 1], ["team A", "team B"])',
+          text:
+            "Puts the name \"team A\" under column 0 and \"team B\" under column 1. Counting " +
+            "starts at 0.",
+        },
+        {
+          code: 'plt.yticks([0, 1], ["round 1", "round 2"])',
+          text: "Does the same for the rows: \"round 1\" is row 0 and \"round 2\" is row 1.",
+        },
+        {
+          code: "grid.shape",
+          text: "The size of the grid, as (rows, columns). Here it is `(2, 2)`.",
+        },
+      ]} />
       <PracticeCell labId={3} cellId="concept-3" code={`import matplotlib.pyplot as plt
 import numpy as np
 
@@ -681,7 +991,54 @@ def show_grid(cond, rows, columns):
 
 cond = {"the": {"movie": 0.5, "end": 0.25, "food": 0.25}, "was": {"great": 0.6, "long": 0.4}}
 columns = ["movie", "great", "end", "long"]
-show_grid(cond, ["the", "was"], columns)`} />
+show_grid(cond, ["the", "was"], columns)`} hints={[
+        {
+          code: "def shade(chance):",
+          block: "function",
+          text:
+            "Turns one chance into one character: `.` for 0, `+` for less than 0.3, and `#` for " +
+            "0.3 or more. The first `return` that runs ends the function.",
+        },
+        {
+          code: "def show_grid(cond, rows, columns):",
+          block: "function",
+          text:
+            "Prints the table as a little picture: one line per previous word, and one symbol " +
+            "per next word.",
+        },
+        {
+          code: "for prev in rows:",
+          block: "for loop",
+          text: "Makes one printed line per previous word. Here that is `the`, then `was`.",
+        },
+        {
+          code: "for nxt in columns:",
+          block: "for loop",
+          text:
+            "Adds one symbol and a space to `line` for each column word, in the order of " +
+            "`columns`.",
+        },
+        {
+          code: "cond[prev].get(nxt, 0.0)",
+          text:
+            "Looks up the chance of `nxt` in the row for `prev`. If that pair was never seen, " +
+            "`get` gives back 0.0 instead of crashing.",
+        },
+        {
+          code: "prev.ljust(5)",
+          text:
+            "Pads the word with spaces on the right until it is 5 characters long. `the` becomes " +
+            "`\"the  \"`. That keeps the symbols lined up.",
+        },
+        {
+          code: "line.rstrip()",
+          text: "Removes the extra space at the end of the line before it is printed.",
+        },
+        {
+          code: 'show_grid(cond, ["the", "was"], columns)',
+          text: "Draws the rows for `the` and `was`. It prints `the   # . + .` and `was   . # . #`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>cond[prev].get(nxt, 0.0)</Code> gives 0.0 when a pair was never seen, so nothing

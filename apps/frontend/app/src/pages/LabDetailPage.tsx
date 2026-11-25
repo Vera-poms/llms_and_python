@@ -63,7 +63,7 @@ export function LabDetailPage() {
   const readingRef = useRef<HTMLDivElement>(null);
   const notebookRef = useRef<HTMLDivElement>(null);
   const outline = useLabOutline(readingRef, notebookRef);
-  const bookmark = useBookmark(id, outline);
+  const bookmark = useBookmark(id, outline, readingRef);
   const highlights = useHighlights(id, readingRef);
   const [resumeDismissed, setResumeDismissed] = useState(false);
   const [reviewing, setReviewing] = useState<ReviewTarget | null>(null);
@@ -134,11 +134,11 @@ export function LabDetailPage() {
           "[data-nav][data-bookmarked]": { outline: "3px solid", outlineColor: "yellow.400" },
         }}
       >
-        {bookmark.targetId && !resumeDismissed && (
+        {bookmark.found && !resumeDismissed && (
           <Alert status="info" borderRadius="md" flexWrap="wrap" gap={2}>
             <AlertIcon />
             <Text flex="1" minW={0}>
-              You left off at &ldquo;{bookmark.label}&rdquo;.
+              {bookmark.kind === "text" ? "You bookmarked the words" : "You left off at"} &ldquo;{bookmark.label}&rdquo;.
             </Text>
             <Button size="sm" onClick={bookmark.goTo}>
               Continue reading
@@ -179,7 +179,7 @@ export function LabDetailPage() {
         </Box>
       </VStack>
       </Box>
-      <HighlightToolbar highlights={highlights} />
+      <HighlightToolbar highlights={highlights} bookmark={bookmark} />
       <ReviewModal target={reviewing} onClose={() => setReviewing(null)} />
     </Flex>
   );

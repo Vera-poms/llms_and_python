@@ -2,7 +2,17 @@ import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/re
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const DOT_HINTS: CodeHint[] = [
+  {
+    code: "list(zip(a, b))",
+    text: "`zip(a, b)` pairs the first items together and the second items together. Wrapping it in `list(...)` lets you see the pairs: `[(1, 3), (2, 4)]`.",
+  },
+  { code: "sum(", text: "Adds them up: 3 + 8 = 11. That is the dot product." },
+  { code: "x * y for x, y in zip(a, b)", text: "Multiplies each pair: 1 times 3 is 3, and 2 times 4 is 8." },
+];
 
 export function Lab18Reading() {
   return (
@@ -38,21 +48,7 @@ export function Lab18Reading() {
       <RunnableExample labId={18} code={`a = [1, 2]
 b = [3, 4]
 print(list(zip(a, b)))                   # [(1, 3), (2, 4)]
-print(sum(x * y for x, y in zip(a, b)))  # 11`} />
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>zip(a, b)</Code> pairs the first items together and the second items together. Wrap
-          it in <Code>list(...)</Code> to see the pairs: <Code>[(1, 3), (2, 4)]</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>x * y for x, y in zip(a, b)</Code> multiplies each pair: 1 times 3 is 3, and 2 times
-          4 is 8.
-        </ListItem>
-        <ListItem>
-          <Code>sum(...)</Code> adds them up: 3 + 8 = 11. That is the dot product.
-        </ListItem>
-      </UnorderedList>
+print(sum(x * y for x, y in zip(a, b)))  # 11`} hints={DOT_HINTS} />
 
       <PracticeCell labId={18} cellId="concept-1" code={`a = [2, 0, 1]
 b = [1, 5, 4]
@@ -105,7 +101,55 @@ print(sum(x * y for x, y in zip(a, b)))  # expected output: 6`} expectedOutput={
 WORDS = {"bread": [1.0, 0.0], "soup": [0.9, 0.1], "run": [0.0, 1.0]}  # [food, sport]
 query = WORDS["bread"]
 for word in WORDS:
-    print(word, "->", round(dot(query, WORDS[word]), 2))`} />
+    print(word, "->", round(dot(query, WORDS[word]), 2))`} hints={[
+        {
+          code: "def dot(a, b):",
+          block: "function",
+          text:
+            "Works out the **dot product** of two lists of numbers: multiply the pairs, then add the " +
+            "results. A bigger answer means the two arrows point more the same way.",
+        },
+        {
+          code: "for x, y in zip(a, b):",
+          block: "for loop",
+          text:
+            "Runs once for each pair. `x` comes from `a` and `y` comes from `b`, from the same " +
+            "position.",
+        },
+        {
+          code: "for word in WORDS:",
+          block: "for loop",
+          text: "Goes through every word in the table and prints its score against `bread`.",
+        },
+        {
+          code: "zip(a, b)",
+          text: "Pairs up the two lists by position: first with first, second with second.",
+        },
+        {
+          code: "total = total + x * y",
+          text: "Multiplies the pair and adds the result to the running total.",
+        },
+        {
+          code: "WORDS = {",
+          text:
+            "A **dict**: each word (the key) points to its vector, a list of 2 numbers. The first " +
+            "number means food, the second means sport.",
+        },
+        {
+          code: 'WORDS["bread"]',
+          text: "Looks up `bread` in the dict and gives back its vector, `[1.0, 0.0]`.",
+        },
+        {
+          code: "WORDS[word]",
+          text: "The vector of the word the loop is on right now.",
+        },
+        {
+          code: "round(",
+          text:
+            "`round(number, 2)` keeps only 2 digits after the dot, so long decimals print short and " +
+            "tidy.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>dot</Code> loops over the pairs, multiplies each pair and adds it to <Code>total</Code>. That is the dot product from above, now inside a function.
@@ -188,7 +232,24 @@ jog -> 1.0`}</Text>
       <RunnableExample labId={18} code={`import math
 print(math.sqrt(16))                      # 4.0
 v = [3, 4]
-print(math.sqrt(sum(x * x for x in v)))   # 5.0`} />
+print(math.sqrt(sum(x * x for x in v)))   # 5.0`} hints={[
+        {
+          code: "import math",
+          text: "Loads Python's `math` toolbox. After this line you can use `math.sqrt` and more.",
+        },
+        {
+          code: "math.sqrt(16)",
+          text: "The **square root** of 16: the number that, times itself, gives 16. That is `4.0`.",
+        },
+        {
+          code: "sum(",
+          text: "Adds up all the squares: 9 + 16 = 25. Then `math.sqrt(25)` gives `5.0`.",
+        },
+        {
+          code: "x * x for x in v",
+          text: "Squares each number in `v`: 3 times 3 is 9, and 4 times 4 is 16.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>import math</Code> brings in Python's maths tools. You use them as{" "}
@@ -257,7 +318,55 @@ docs = {"short food note": [0.9, 0.1], "long sport essay": [2.0, 6.0]}
 for name in docs:
     d = docs[name]
     direction = dot(query, d) / (length(query) * length(d))
-    print(name, "-> raw dot:", round(dot(query, d), 2), "direction only:", round(direction, 3))`} />
+    print(name, "-> raw dot:", round(dot(query, d), 2), "direction only:", round(direction, 3))`} hints={[
+        {
+          code: "def length(v):",
+          block: "function",
+          text:
+            "The length of an arrow: square each number, add them up, then take the square root. " +
+            "The sport essay `[2.0, 6.0]` is about 6.32 long.",
+        },
+        {
+          code: "def dot(a, b):",
+          block: "function",
+          text: "The dot product in one line: multiply each pair of numbers, then add them all up.",
+        },
+        {
+          code: "for name in docs:",
+          block: "for loop",
+          text:
+            "Runs once for each document. It prints the raw dot product and the direction-only score " +
+            "side by side.",
+        },
+        {
+          code: "sum(x * y for x, y in zip(a, b))",
+          text: "Pairs up the two lists with `zip`, multiplies each pair, and adds the results.",
+        },
+        {
+          code: "query = [1.0, 0.0]",
+          text: "The question as a vector: all food, no sport.",
+        },
+        {
+          code: "docs = {",
+          text:
+            "A dict of two documents. Each name points to its vector `[food, sport]`. The essay has " +
+            "big numbers because it is long.",
+        },
+        {
+          code: "d = docs[name]",
+          text: "Looks up the vector of the document the loop is on.",
+        },
+        {
+          code: "dot(query, d) / (length(query) * length(d))",
+          text:
+            "The **cosine similarity**: the dot product divided by both lengths. This removes the " +
+            "size and keeps only the direction. The food note gets 0.994, the sport essay 0.316.",
+        },
+        {
+          code: "round(direction, 3)",
+          text: "Shows the score with only 3 digits after the dot.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>length</Code> is the square root of the sum of the squares, as above. The direction-only score is the dot product divided by the two lengths.
@@ -351,7 +460,36 @@ long food essay -> raw dot: 3.0 direction only: 0.514`}</Text>
 print(list(zip(*vectors)))                              # [(1, 3), (0, 2)]
 print([sum(c) / len(vectors) for c in zip(*vectors)])   # [2.0, 1.0]
 scores = [0.2, 0.9, 0.4]
-print(scores.index(max(scores)))                        # 1`} />
+print(scores.index(max(scores)))                        # 1`} hints={[
+        {
+          code: "zip(*vectors)",
+          text:
+            "The `*` unpacks the list, so this is the same as `zip([1, 0], [3, 2])`. It groups all the " +
+            "first numbers, then all the second numbers: `(1, 3)` and `(0, 2)`.",
+        },
+        {
+          code: "sum(c) / len(vectors)",
+          text:
+            "The average of one group: add its numbers, then divide by how many vectors there are. " +
+            "`(1 + 3) / 2` is `2.0`.",
+        },
+        {
+          code: "for c in",
+          text:
+            "A **list comprehension**: a short way to build a new list. The part before `for` runs " +
+            "once for each group `c`, and each answer goes into the list.",
+        },
+        {
+          code: "max(scores)",
+          text: "The biggest number in the list: `0.9`.",
+        },
+        {
+          code: "scores.index(",
+          text:
+            "`.index(value)` says where the value sits in the list. `0.9` is at position 1, because " +
+            "counting starts at 0.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>zip(*vectors)</Code> gives <Code>(1, 3)</Code> (the first numbers) and{" "}
@@ -442,7 +580,78 @@ def shared_words(a, b):
 question = "food to cook"
 for fact in ["bread and soup", "run in park"]:
     score = cosine(embed(question), embed(fact))
-    print(fact, "-> shared words:", shared_words(question, fact), "meaning score:", round(score, 2))`} />
+    print(fact, "-> shared words:", shared_words(question, fact), "meaning score:", round(score, 2))`} hints={[
+        {
+          code: "def embed(text):",
+          block: "function",
+          text:
+            "Turns a text into one vector: the **average** of the vectors of its known words. Words " +
+            "not in `WORDS`, like `to`, are skipped. `food to cook` becomes `[0.95, 0.05]`.",
+        },
+        {
+          code: "for word in text.lower().split():",
+          block: "for loop",
+          text:
+            "Looks at each word of the text, in small letters. Only words found in `WORDS` are added " +
+            "to the total and counted.",
+        },
+        {
+          code: "for i in range(2):",
+          block: "for loop",
+          text:
+            "Runs twice: for position 0 (food) and position 1 (sport). Each time it adds this word's " +
+            "number to the total at that position.",
+        },
+        {
+          code: "def cosine(a, b):",
+          block: "function",
+          text:
+            "Scores two vectors by direction: the dot product divided by both lengths. `1.0` means " +
+            "the same direction, `0.0` means nothing in common.",
+        },
+        {
+          code: "def shared_words(a, b):",
+          block: "function",
+          text:
+            "Counts the words of text `a` that also appear in text `b`. This is a plain word search, " +
+            "to compare with the meaning score.",
+        },
+        {
+          code: 'for fact in ["bread and soup", "run in park"]:',
+          block: "for loop",
+          text:
+            "Scores each fact against the question twice: by shared words and by meaning. Then it " +
+            "prints both.",
+        },
+        {
+          code: "if word in WORDS:",
+          text: "Checks if the word is in the table. `in` on a dict looks at its keys, here the words.",
+        },
+        {
+          code: "total[i] = total[i] + WORDS[word][i]",
+          text:
+            "`WORDS[word][i]` is number `i` of this word's vector. It is added to the same position " +
+            "in `total`.",
+        },
+        {
+          code: "[x / count for x in total]",
+          text:
+            "Divides each total by the number of known words. That turns the sum into an " +
+            "**average**.",
+        },
+        {
+          code: "return dot / (",
+          text: "Divides by the two lengths, so only the direction counts, not the size.",
+        },
+        {
+          code: "if word in b.lower().split():",
+          text: "Is this word also one of the words of `b`? It must be spelled exactly the same.",
+        },
+        {
+          code: "cosine(embed(question), embed(fact))",
+          text: "Turns both texts into vectors, then scores them by direction.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           Words that are not in the table, like <Code>to</Code> and <Code>and</Code>, are skipped. The question becomes the average of <Code>food</Code> and <Code>cook</Code>.

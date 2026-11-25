@@ -7,6 +7,7 @@ import {
 } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -49,7 +50,18 @@ export function Lab07Reading() {
       <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Here's a small matrix that has nothing to do with language models yet - just a 2x2 grid of numbers:</Text>
       <RunnableExample labId={7} code={`M = [[1.0, 0.0],
-     [0.0, 1.0]]`} />
+     [0.0, 1.0]]`} hints={[
+        {
+          code: "M = [[1.0, 0.0],",
+          text:
+            "Makes a **matrix** as a list of lists. The outer `[ ]` holds the rows, and each inner list is one row. " +
+            "Row 0 is `[1.0, 0.0]`.",
+        },
+        {
+          code: "[0.0, 1.0]]",
+          text: "Row 1, the second row. The last `]` closes the outer list. Writing it on its own line just makes the grid easy to see.",
+        },
+      ]} />
       <Text>
         That's a 2-row, 2-column matrix - row 0 is the vector <Code>[1.0, 0.0]</Code>, row 1 is{" "}
         <Code>[0.0, 1.0]</Code>. In numpy this is exactly <Code>np.array([[1.0, 0.0], [0.0, 1.0]])</Code>.
@@ -75,11 +87,22 @@ export function Lab07Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
+      <CodeBlock code={`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
 print(grid[0])  # expected output: [10, 20]
-print(grid[1][0])  # expected output: 30`}
-      </Code>
+print(grid[1][0])  # expected output: 30`} hints={[
+        {
+          code: "grid = [[10, 20], [30, 40]]",
+          text: "A list of two lists, so a grid with 2 rows. `[10, 20]` is row 0 and `[30, 40]` is row 1.",
+        },
+        {
+          code: "grid[0]",
+          text: "Takes row 0, the whole first row: `[10, 20]`. Counting starts at 0.",
+        },
+        {
+          code: "grid[1][0]",
+          text: "First `[1]` takes row 1, `[30, 40]`. Then `[0]` takes item 0 of that row: `30`.",
+        },
+      ]} />
       <PracticeCell labId={7} cellId="concept-1" code={`grid = [[10, 20], [30, 40]]  # a 2x2 matrix: row 0 and row 1
 print(grid[0])  # expected output: [10, 20]
 print(grid[1][0])  # expected output: 30`} expectedOutput={`[10, 20]
@@ -140,7 +163,56 @@ words = ["the", "acting", "was", "the"]
 X = embed_sentence(words, table)
 for word, row in zip(words, X):
     print(word, row)
-print("shape:", shape(X))`} />
+print("shape:", shape(X))`} hints={[
+        {
+          code: "def embed_sentence(words, table):",
+          block: "function",
+          text:
+            "Turns a list of words into a grid: it looks up each word's row in the table and collects the rows. " +
+            "4 words give 4 rows.",
+        },
+        {
+          code: "for word in words:",
+          block: "for loop",
+          text: "**Repeats** once for each word in the sentence, in order.",
+        },
+        {
+          code: "def shape(matrix):",
+          block: "function",
+          text:
+            "Gives back the size of a grid as (rows, columns). `len(matrix)` counts the rows, " +
+            "and `len(matrix[0])` counts the numbers in the first row.",
+        },
+        {
+          code: "for word, row in zip(words, X):",
+          block: "for loop",
+          text: "Walks through the words and their rows side by side, and prints each word next to its row.",
+        },
+        {
+          code: "rows = []",
+          text: "Starts an empty list. Each word's row is added to it, one by one.",
+        },
+        {
+          code: "rows.append(table[word])",
+          text: "`table[word]` looks up this word's list of numbers. `.append(...)` adds it to the end of `rows`.",
+        },
+        {
+          code: 'table = {"the"',
+          text: "A **dict** that links each word to its list of 3 numbers. The numbers are made up, so they mean nothing yet.",
+        },
+        {
+          code: "X = embed_sentence(words, table)",
+          text: "Turns the 4 words into a grid with 4 rows. `the` appears twice, so its row appears twice.",
+        },
+        {
+          code: "zip(words, X)",
+          text: "`zip` pairs up two lists item by item: the first word with the first row, the second with the second, and so on.",
+        },
+        {
+          code: 'print("shape:", shape(X))',
+          text: "Prints `shape: (4, 3)`: 4 words, 3 numbers each.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>embed_sentence</Code> loops over the words and collects each word's row from the table. A sentence of 4 words gives 4 rows.
@@ -264,7 +336,22 @@ shape: (5, 2)`}
       <RunnableExample labId={7} code={`a = [1, 2, 3]
 b = [4, 5, 6]
 dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
-# dot == 32`} />
+# dot == 32`} hints={[
+        {
+          code: "a = [1, 2, 3]",
+          text: "A **vector**: just a list of numbers. `a[0]` is its first item, 1.",
+        },
+        {
+          code: "dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]",
+          text:
+            "A **dot product**: multiply the matching items, then add. " +
+            "`1*4 + 2*5 + 3*6` is `4 + 10 + 18 = 32`.",
+        },
+        {
+          code: "# dot == 32",
+          text: "A comment with the answer. There is no `print`, so nothing shows on screen when you run it.",
+        },
+      ]} />
       <Text>
         It's a single number that measures how "aligned" two vectors are - two vectors pointing in a
         similar direction produce a large dot product; unrelated vectors produce something close to
@@ -293,12 +380,25 @@ dot = a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`prices = [2, 5, 1]
+      <CodeBlock code={`prices = [2, 5, 1]
 quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
-print(total)  # expected output: 20`}
-      </Code>
+print(total)  # expected output: 20`} hints={[
+        {
+          code: "prices = [2, 5, 1]",
+          text: "The prices of three items on a shopping list. `quantities` below says how many of each you buy.",
+        },
+        {
+          code: "sum(p * q for p, q in",
+          text:
+            "Multiplies each price by its quantity, giving 6, 10 and 4. `sum(...)` adds them: `20`. " +
+            "That total bill is a **dot product**.",
+        },
+        {
+          code: "zip(prices, quantities)",
+          text: "`zip` pairs the two lists item by item: `(2, 3)`, `(5, 2)` and `(1, 4)`.",
+        },
+      ]} />
       <PracticeCell labId={7} cellId="concept-2" code={`prices = [2, 5, 1]
 quantities = [3, 2, 4]
 total = sum(p * q for p, q in zip(prices, quantities))
@@ -360,7 +460,53 @@ def scores_for(query, keys):
 words = ["cat", "dog", "car"]
 vectors = [[3, 1, 0], [2, 2, 0], [0, 1, 3]]
 for word, query in zip(words, vectors):
-    print(word, scores_for(query, vectors))`} />
+    print(word, scores_for(query, vectors))`} hints={[
+        {
+          code: "def dot(a, b):",
+          block: "function",
+          text: "Works out the **dot product** of two lists: multiply matching numbers, then add them all up.",
+        },
+        {
+          code: "for x, y in zip(a, b):",
+          block: "for loop",
+          text: "Takes one number from each list at a time, side by side, and adds their product to `total`.",
+        },
+        {
+          code: "def scores_for(query, keys):",
+          block: "function",
+          text: "Scores one query against every key. It gives back a list with one score for each word.",
+        },
+        {
+          code: "for key in keys:",
+          block: "for loop",
+          text: "**Repeats** once for each key, working out its score with `dot` and adding it to the list.",
+        },
+        {
+          code: "for word, query in zip(words, vectors):",
+          block: "for loop",
+          text:
+            "Uses each word's list as the query, one word at a time, and prints its scores against all three words. " +
+            "`cat` gives `[10, 8, 1]`.",
+        },
+        {
+          code: "total = total + x * y",
+          text: "Multiplies the two matching numbers and adds the result to the running total.",
+        },
+        {
+          code: "scores.append(dot(query, key))",
+          text: "Works out one score with `dot` and adds it to the end of the `scores` list.",
+        },
+        {
+          code: "vectors = [[3, 1, 0], [2, 2, 0], [0, 1, 3]]",
+          text:
+            "Made-up lists of 3 numbers, one for each word. `cat` and `dog` look alike, and `car` does not. " +
+            "Each list is used as both the query and the key.",
+        },
+        {
+          code: "scores_for(query, vectors)",
+          text: "Scores this word's query against all three lists. The result is one row of the score table.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>dot</Code> multiplies matching numbers and adds them up, like the shopping bill above.
@@ -498,7 +644,32 @@ total = sum(exp_scores)                     # 11.22
 softmax = [e / total for e in exp_scores]   # [0.66, 0.24, 0.10]
 print([round(e, 2) for e in exp_scores])
 print(round(total, 2))
-print([round(s, 2) for s in softmax])`} />
+print([round(s, 2) for s in softmax])`} hints={[
+        {
+          code: "import math",
+          text: "Loads Python's `math` toolbox, so you can use `math.exp`.",
+        },
+        {
+          code: "[math.exp(s) for s in scores]",
+          text:
+            "A **list comprehension**: a short loop that builds a list. `math.exp(s)` is e (about 2.718) to the power `s`. " +
+            "It makes every number positive: about `[7.39, 2.72, 1.11]`.",
+        },
+        {
+          code: "total = sum(exp_scores)",
+          text: "Adds the three numbers. The exact total is about `11.21`. The comment says `11.22` because it adds the rounded numbers.",
+        },
+        {
+          code: "[e / total for e in exp_scores]",
+          text:
+            "Divides each number by the total, so the shares add up to 1. " +
+            "The biggest score, 2.0, gets the biggest share: about `0.66`.",
+        },
+        {
+          code: "round(total, 2)",
+          text: "`round(x, 2)` keeps 2 digits after the point, so the print is easy to read.",
+        },
+      ]} />
       <Text>
         Those three outputs sum to 1.0 and are all positive - a genuine probability distribution.
       </Text>
@@ -523,14 +694,35 @@ print([round(s, 2) for s in softmax])`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import numpy as np
+      <CodeBlock code={`import numpy as np
 
 scores = np.array([3.0, 1.0, 0.0])
 exp_scores = np.exp(scores - scores.max())
 probs = exp_scores / exp_scores.sum()
-print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`}
-      </Code>
+print(np.round(probs, 2))  # expected output: [0.84 0.11 0.04]`} hints={[
+        {
+          code: "import numpy as np",
+          text: "Loads the numpy toolbox for fast math on lists of numbers, and gives it the short nickname `np`.",
+        },
+        {
+          code: "np.array([3.0, 1.0, 0.0])",
+          text: "Makes a numpy **array**: like a list, but it can do math on all its numbers at once.",
+        },
+        {
+          code: "np.exp(scores - scores.max())",
+          text:
+            "`scores.max()` is 3.0. Taking it away from every score gives `[0, -2, -3]`, which keeps `exp` from getting too big. " +
+            "Then `np.exp` gives about `[1.0, 0.135, 0.050]`.",
+        },
+        {
+          code: "exp_scores / exp_scores.sum()",
+          text: "Divides every number by their sum (about 1.185) in one go. The shares now add up to 1.",
+        },
+        {
+          code: "np.round(probs, 2)",
+          text: "Keeps 2 digits after the point for each share, giving `[0.84 0.11 0.04]`.",
+        },
+      ]} />
       <PracticeCell labId={7} cellId="concept-3" code={`import numpy as np
 
 scores = np.array([3.0, 1.0, 0.0])
@@ -603,7 +795,57 @@ for scores in ([1.0, 3.0, 2.0], [1.0, 1.0, 1.0]):
     print("scores", scores)
     for word, weight in zip(words, weights):
         print("  ", word, round(weight, 2))
-    print("  total", round(sum(weights), 2))`} />
+    print("  total", round(sum(weights), 2))`} hints={[
+        {
+          code: "def softmax(scores):",
+          block: "function",
+          text:
+            "Turns a list of scores into shares that add up to 1. " +
+            "It makes each score positive with `math.exp`, then divides each one by the total.",
+        },
+        {
+          code: "for s in scores:",
+          block: "for loop",
+          text: "First loop: makes each score positive with `math.exp` and collects the results in `exps`.",
+        },
+        {
+          code: "for e in exps:",
+          block: "for loop",
+          text: "Second loop: divides each positive number by the total, so the shares add up to 1.",
+        },
+        {
+          code: "for scores in ([1.0, 3.0, 2.0], [1.0, 1.0, 1.0]):",
+          block: "for loop",
+          text:
+            "Runs two cases: one with a clear favourite, and one with all scores equal. " +
+            "For each case it prints the scores, each word's share, and the total.",
+        },
+        {
+          code: "for word, weight in zip(words, weights):",
+          block: "for loop",
+          text: "Prints each word next to its share. For `[1.0, 3.0, 2.0]` the shares are 0.09, 0.67 and 0.24.",
+        },
+        {
+          code: "import math",
+          text: "Loads Python's `math` toolbox, so you can use `math.exp`.",
+        },
+        {
+          code: "exps.append(math.exp(s))",
+          text: "`math.exp(s)` is e (about 2.718) to the power `s`. It is always positive. `.append` adds it to the end of `exps`.",
+        },
+        {
+          code: "total = sum(exps)",
+          text: "Adds up all the positive numbers. Each share is one number divided by this total.",
+        },
+        {
+          code: "round(weight, 2)",
+          text: "Keeps 2 digits after the point, so `0.6652...` shows as `0.67`.",
+        },
+        {
+          code: "round(sum(weights), 2)",
+          text: "Adds up all the shares. It is always `1.0`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>softmax</Code> has two loops. The first makes each score positive with <Code>math.exp</Code> and adds them up. The second divides each one by the total.
@@ -762,7 +1004,38 @@ for i in range(2):
 
 # numpy: no loop needed
 import numpy as np
-result = np.array(a) + np.array(b)`} />
+result = np.array(a) + np.array(b)`} hints={[
+        {
+          code: "for i in range(2):",
+          block: "for loop",
+          text:
+            "Two loops, one inside the other. The outer one picks the row `i` (0, then 1). " +
+            "For each row, the inner one visits every column, so all 4 spots get filled.",
+        },
+        {
+          code: "for j in range(2):",
+          block: "for loop",
+          text: "Visits column 0, then column 1, inside the current row `i`.",
+        },
+        {
+          code: "result = [[0, 0], [0, 0]]",
+          text: "Makes an empty 2 by 2 grid of zeros. The loop fills in each spot.",
+        },
+        {
+          code: "result[i][j] = a[i][j] + b[i][j]",
+          text: "Adds the numbers in the same spot of `a` and `b`. For row 0, column 0: `1 + 5 = 6`.",
+        },
+        {
+          code: "import numpy as np",
+          text: "Loads the numpy toolbox for fast math on grids of numbers, and gives it the short nickname `np`.",
+        },
+        {
+          code: "np.array(a) + np.array(b)",
+          text:
+            "Turns both lists into numpy arrays, then `+` adds matching spots all at once. " +
+            "It gives the same `[[6, 8], [10, 12]]` with no loop.",
+        },
+      ]} />
       <Text>
         Numpy's <Code>np.array</Code> gives you two things plain lists of lists don't:{" "}
         <b>vectorized operations</b> (add, multiply, or matrix-multiply an entire array at once, in
@@ -787,8 +1060,7 @@ result = np.array(a) + np.array(b)`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import numpy as np
+      <CodeBlock code={`import numpy as np
 
 a = [1, 2, 3]
 b = [10, 20, 30]
@@ -798,8 +1070,28 @@ manual = [a[i] + b[i] for i in range(len(a))]
 
 # numpy: no loop needed
 vectorized = np.array(a) + np.array(b)
-print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`}
-      </Code>
+print(manual, list(vectorized))  # expected output: [11, 22, 33] [11, 22, 33]`} hints={[
+        {
+          code: "import numpy as np",
+          text: "Loads the numpy toolbox for fast math on lists of numbers, and gives it the short nickname `np`.",
+        },
+        {
+          code: "[a[i] + b[i] for i in range(len(a))]",
+          text:
+            "A **list comprehension**: a short loop that builds a list. `len(a)` is 3, so `i` is 0, 1 and 2. " +
+            "It gives `[1 + 10, 2 + 20, 3 + 30]`, which is `[11, 22, 33]`.",
+        },
+        {
+          code: "np.array(a) + np.array(b)",
+          text: "Turns both lists into numpy arrays, then `+` adds matching spots all at once, with no loop.",
+        },
+        {
+          code: "list(vectorized)",
+          text:
+            "Turns the numpy array back into a normal list. Newer numpy may print each number as `np.int64(11)`, " +
+            "which is just numpy's way to say \"a whole number\".",
+        },
+      ]} />
       <PracticeCell labId={7} cellId="concept-4" code={`import numpy as np
 
 a = [1, 2, 3]
@@ -869,7 +1161,49 @@ def count_multiplications(n_words, dim):
 
 dim = 16
 for n_words in (9, 50, 200):
-    print(n_words, "words ->", count_pairs(n_words), "scores,", count_multiplications(n_words, dim), "multiplications")`} />
+    print(n_words, "words ->", count_pairs(n_words), "scores,", count_multiplications(n_words, dim), "multiplications")`} hints={[
+        {
+          code: "def count_pairs(n_words):",
+          block: "function",
+          text:
+            "Counts every pair of (word i, word j) by adding 1 for each pair. " +
+            "The answer is n times n: 9 words give `81` pairs.",
+        },
+        {
+          code: "for i in range(n_words):",
+          block: "for loop",
+          text:
+            "The outer loop picks each word `i`. For every `i`, the inner loop runs over all the words again, " +
+            "so the inner line runs n times n.",
+        },
+        {
+          code: "for j in range(n_words):",
+          block: "for loop",
+          text: "The inner loop: pairs the current word `i` with every word `j`, one at a time.",
+        },
+        {
+          code: "def count_multiplications(n_words, dim):",
+          block: "function",
+          text: "Each score needs one multiplication for each number in a word's list, so it is pairs times `dim`.",
+        },
+        {
+          code: "for n_words in (9, 50, 200):",
+          block: "for loop",
+          text: "Tries three sentence lengths and prints the work for each. 200 words give `40000` scores and `640000` multiplications.",
+        },
+        {
+          code: "pairs = pairs + 1",
+          text: "Adds one to the count for this pair.",
+        },
+        {
+          code: "count_pairs(n_words) * dim",
+          text: "Pairs times numbers per word. For 9 words: `81 * 16 = 1296`.",
+        },
+        {
+          code: "dim = 16",
+          text: "Each word has 16 numbers, the size the lab uses.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>count_pairs</Code> has two loops, one inside the other. It counts every pair of (word i, word j), which gives n times n.
@@ -1014,7 +1348,38 @@ plt.imshow(scores, cmap="viridis")
 plt.colorbar(label="score")
 plt.xticks(range(3), ["math", "history", "art"])
 plt.yticks(range(3), ["Ana", "Ben", "Cy"])
-plt.show()`} />
+plt.show()`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing toolbox and gives it the short nickname `plt`.",
+        },
+        {
+          code: "scores = [[92, 78, 85],",
+          text: "A 3 by 3 grid: one row per student, one column per subject. Row 0 is Ana: 92, 78 and 85.",
+        },
+        {
+          code: 'plt.imshow(scores, cmap="viridis")',
+          text:
+            "Paints one colored square for each number. `cmap` is the **color map**: it picks the colors. " +
+            "In viridis, low numbers are dark purple and high numbers are bright yellow.",
+        },
+        {
+          code: 'plt.colorbar(label="score")',
+          text: "Adds a strip at the side that shows which color means which number.",
+        },
+        {
+          code: 'plt.xticks(range(3), ["math", "history", "art"])',
+          text: "`range(3)` gives the spots 0, 1 and 2. This puts a subject name under each column.",
+        },
+        {
+          code: 'plt.yticks(range(3), ["Ana", "Ben", "Cy"])',
+          text: "Puts a student name next to each row.",
+        },
+        {
+          code: "plt.show()",
+          text: "Shows the chart on the screen.",
+        },
+      ]} />
       <Text>
         <Code>plt.imshow</Code> takes any 2D grid of numbers and paints each cell a color based on its
         value - here, brighter colors for higher exam scores. <Code>plt.colorbar</Code> adds the
@@ -1042,16 +1407,45 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`rainfall = [[5, 2, 8], [1, 9, 3]]
+      <CodeBlock code={`rainfall = [[5, 2, 8], [1, 9, 3]]
 plt.imshow(rainfall, cmap="Blues")
 plt.colorbar(label="mm")
 plt.xticks(range(3), ["Jan", "Feb", "Mar"])
 plt.yticks(range(2), ["CityA", "CityB"])
 plt.title("Monthly rainfall")
 plt.show()
-print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall grid`}
-      </Code>
+print("plotted a 2x3 rainfall grid")  # expected output: plotted a 2x3 rainfall grid`} hints={[
+        {
+          code: "rainfall = [[5, 2, 8], [1, 9, 3]]",
+          text: "A grid with 2 rows (two cities) and 3 columns (three months). CityA had 5, 2 and 8 mm of rain.",
+        },
+        {
+          code: 'plt.imshow(rainfall, cmap="Blues")',
+          text:
+            "Paints 6 squares, one for each number. `plt` is matplotlib's drawing toolbox. " +
+            "With the `Blues` color map, low numbers are pale and high numbers are deep blue.",
+        },
+        {
+          code: 'plt.colorbar(label="mm")',
+          text: "Adds a strip that shows which shade of blue means how many mm of rain.",
+        },
+        {
+          code: 'plt.xticks(range(3), ["Jan", "Feb", "Mar"])',
+          text: "Puts a month name under each of the 3 columns.",
+        },
+        {
+          code: 'plt.yticks(range(2), ["CityA", "CityB"])',
+          text: "`range(2)` gives the spots 0 and 1. This puts a city name next to each row.",
+        },
+        {
+          code: 'plt.title("Monthly rainfall")',
+          text: "Adds a heading above the chart.",
+        },
+        {
+          code: "plt.show()",
+          text: "Draws the chart on the screen.",
+        },
+      ]} />
       <PracticeCell labId={7} cellId="concept-5" code={`rainfall = [[5, 2, 8], [1, 9, 3]]
 plt.imshow(rainfall, cmap="Blues")
 plt.colorbar(label="mm")
@@ -1128,7 +1522,58 @@ for word, row in zip(words, weights):
     picture = ""
     for w in row:
         picture = picture + shade(w)
-    print(word.ljust(7), picture, "looks most at", brightest(words, row))`} />
+    print(word.ljust(7), picture, "looks most at", brightest(words, row))`} hints={[
+        {
+          code: "def shade(weight):",
+          block: "function",
+          text:
+            "Turns a weight into a symbol: `#` for 0.5 or more, `+` for 0.25 or more, and `.` for anything smaller. " +
+            "The first `return` that runs ends the function.",
+        },
+        {
+          code: "def brightest(words, row):",
+          block: "function",
+          text: "Finds the biggest weight in a row and gives back the word in that spot.",
+        },
+        {
+          code: "for j in range(len(row)):",
+          block: "for loop",
+          text: "Visits every spot in the row. `best` remembers the spot of the biggest weight seen so far.",
+        },
+        {
+          code: "if row[j] > row[best]:",
+          block: "if block",
+          text: "If this weight beats the best one so far, remember this spot as the new `best`.",
+        },
+        {
+          code: "for word, row in zip(words, weights):",
+          block: "for loop",
+          text:
+            "Takes one word and its row of weights at a time. It builds a little picture of the row and prints it, " +
+            "with the word it looks at most.",
+        },
+        {
+          code: "for w in row:",
+          block: "for loop",
+          text: "Turns each weight in the row into a symbol and adds it to `picture`. `[0.6, 0.3, 0.1]` becomes `#+.`.",
+        },
+        {
+          code: "if weight >= 0.5:",
+          text: '`>=` means "is at least". If the weight is 0.5 or more, the function gives back `#` and stops there.',
+        },
+        {
+          code: 'picture = ""',
+          text: "Starts with empty text. The symbols get added to it one by one.",
+        },
+        {
+          code: "return words[best]",
+          text: "`best` is a spot number, like 1. `words[best]` turns it into the word in that spot, like `dog`.",
+        },
+        {
+          code: "word.ljust(7)",
+          text: "Pads the word with spaces until it is 7 characters long, so the pictures line up.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>shade</Code> turns a number into a symbol. 0.5 or more is <Code>#</Code>, 0.25 or more is <Code>+</Code>, and anything less is <Code>.</Code>.

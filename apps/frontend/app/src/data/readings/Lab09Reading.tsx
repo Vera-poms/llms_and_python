@@ -1,8 +1,49 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the examples below.
+// In the text, `backticks` style code and **double stars** bold a key word.
+const REQUESTS_HINTS: CodeHint[] = [
+  {
+    code: "import requests",
+    text:
+      "Loads a toolbox (a **library**) that knows how to talk to websites. Someone else wrote it, so you do not have to.",
+  },
+  {
+    code: 'requests.get("https://api.github.com/repos/python/cpython")',
+    text:
+      "Sends a request to that web address. An **API** is a web address made for programs to talk to, not people. " +
+      "GitHub's computer sends an answer back, and Python keeps it in `response`.",
+  },
+  {
+    code: "response.json()",
+    text:
+      "Turns the answer text into a Python dict (a table of labels and values). JSON is explained further down.",
+  },
+  {
+    code: 'data["stargazers_count"]',
+    text: 'Picks one value out of the dict: the number of stars people have given that project. A star is like a "like" button.',
+  },
+];
+
+const JSON_INDEX_HINTS: CodeHint[] = [
+  {
+    code: 'data["name"]',
+    text: 'Looks up the label `"name"` and gives `"Vera"`.',
+  },
+  {
+    code: 'data["scores"][0]',
+    text:
+      '`data["scores"]` on its own gives the whole list `[1, 2, 3]`. The `[0]` goes one step further and takes the first ' +
+      "item of that list. Python counts positions from 0, so the first item is at 0, the second at 1, and so on. " +
+      "The result is 1.",
+  },
+];
 
 export function Lab09Reading() {
   return (
@@ -55,7 +96,7 @@ export function Lab09Reading() {
         The <Code>requests</Code> library is the standard tool for doing this yourself, instead of
         through a browser:
       </Text>
-      <RunnableExample labId={9} code={`import requests
+      <RunnableExample labId={9} hints={REQUESTS_HINTS} code={`import requests
 
 response = requests.get("https://api.github.com/repos/python/cpython")
 data = response.json()
@@ -65,39 +106,36 @@ print(data["stargazers_count"])`} />
         is used instead when you need to send data along with the request, not just ask for it.
       </Text>
 
-      <Text>Here is what each line of that example does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>import requests</Code> loads a toolbox (a <b>library</b>) that knows how to talk to
-          websites. Someone else wrote it, so you do not have to.
-        </ListItem>
-        <ListItem>
-          <Code>requests.get("https://api.github.com/...")</Code> sends a request to that web
-          address. An <b>API</b> is a web address made for programs to talk to, not people. GitHub's
-          computer sends an answer back, and Python keeps it in <Code>response</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>response.json()</Code> turns the answer text into a Python dict (a table of labels
-          and values). JSON is explained further down.
-        </ListItem>
-        <ListItem>
-          <Code>data["stargazers_count"]</Code> picks one value out of the dict: the number of
-          stars people have given that project. A star is like a "like" button.
-        </ListItem>
-      </UnorderedList>
       <Text>
         Think of <Code>GET</Code> like reading a notice board: you only look. Think of{" "}
         <Code>POST</Code> like putting a letter in a post box: you hand something over, and the
         other side answers it. Your chat message to the model is that letter.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import requests
+      <CodeBlock code={`import requests
 
 response = requests.get("https://api.github.com/repos/psf/requests")
 data = response.json()
-print(data["language"])  # expected output: Python`}
-      </Code>
+print(data["language"])  # expected output: Python`} hints={[
+        {
+          code: "import requests",
+          text: "Loads the `requests` **library**: a toolbox, written by someone else, for talking to websites.",
+        },
+        {
+          code: 'requests.get("https://api.github.com/repos/psf/requests")',
+          text:
+            "Asks GitHub for information about the project `psf/requests`. The answer comes back and is kept in " +
+            "`response`. This needs an internet connection.",
+        },
+        {
+          code: "response.json()",
+          text: "Turns the answer text into a Python dict: a table of labels and values.",
+        },
+        {
+          code: 'data["language"]',
+          text: 'Picks the value stored under the label `"language"`: the main language the project is written in, `Python`.',
+        },
+      ]} />
       <PracticeCell labId={9} cellId="concept-1" code={`import requests
 
 response = requests.get("https://api.github.com/repos/psf/requests")
@@ -171,7 +209,66 @@ payload = build_payload(build_messages("I loved it"), 0.7)
 print("model:", payload["model"], "| temperature:", payload["temperature"])
 for message in payload["messages"]:
     print(message["role"], "->", message["content"])
-print("examples shown:", count_examples(payload["messages"]))`} />
+print("examples shown:", count_examples(payload["messages"]))`} hints={[
+        {
+          code: "def build_messages(review):",
+          block: "function",
+          text:
+            "Makes the list of two messages for one review: a `system` message with the rules, then a `user` " +
+            "message that holds the review.",
+        },
+        {
+          code: "def build_payload(messages, temperature):",
+          block: "function",
+          text:
+            "Puts the model name, the messages and the temperature into one dict. That dict is the **body** a real " +
+            "request would carry.",
+        },
+        {
+          code: "def count_examples(messages):",
+          block: "function",
+          text:
+            "Counts the `assistant` messages, which are worked example answers. Zero means the request is zero-shot.",
+        },
+        {
+          code: "for message in messages:",
+          block: "for loop",
+          text: "Looks at each message in turn and adds 1 to `count` when its role is `assistant`.",
+        },
+        {
+          code: 'for message in payload["messages"]:',
+          block: "for loop",
+          text: "Prints each message on its own line: its role, an arrow, then its text.",
+        },
+        {
+          code: '{"role": "system", "content": "Classify the sentiment as positive or negative."}',
+          text:
+            "One message is a small dict with two labels. `role` says who is speaking, and `content` holds the " +
+            "text. A `system` message holds the rules.",
+        },
+        {
+          code: '{"role": "user", "content": review}',
+          text: "The `user` message holds the review itself: the data the model should work on.",
+        },
+        {
+          code: '"temperature": temperature',
+          text: "**Temperature** says how much the answers may vary: 0 is steady, higher is more varied. Here it is 0.7.",
+        },
+        {
+          code: 'if message["role"] == "assistant":',
+          text: "`==` checks whether two things are equal. This is True only for messages written as the model's answers.",
+        },
+        {
+          code: 'build_payload(build_messages("I loved it"), 0.7)',
+          text:
+            "A call inside a call. Python runs the inner one first, `build_messages(\"I loved it\")`, then hands " +
+            "its list of messages to `build_payload`.",
+        },
+        {
+          code: 'payload["model"]',
+          text: "Reads one value out of the payload dict. Here it gives `toy-model`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>build_messages</Code> makes the two messages: a <Code>system</Code> rule and the <Code>user</Code> review.
@@ -309,7 +406,18 @@ Great acting -> 2 messages, 0 examples, temperature 0.2`}
       </Text>
       <RunnableExample labId={9} code={`import os
 
-api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed into the file`} />
+api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed into the file`} hints={[
+        {
+          code: "import os",
+          text: "Loads Python's `os` toolbox, which lets your code talk to your computer.",
+        },
+        {
+          code: 'os.environ["GROQ_API_KEY"]',
+          text:
+            "`os.environ` works like a dict of named notes kept by your computer, called **environment variables**. " +
+            "This looks up the note `GROQ_API_KEY`. If it does not exist, Python stops with a `KeyError`.",
+        },
+      ]} />
       <Text>
         The value itself lives somewhere outside the source file - an environment variable set in
         your shell, or a <Code>.env</Code> file that's excluded from git.
@@ -332,13 +440,26 @@ api_key = os.environ["GROQ_API_KEY"]  # read from the environment, never typed i
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import os
+      <CodeBlock code={`import os
 
 os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code, not like this
 token = os.environ["MY_APP_TOKEN"]
-print(token)  # expected output: demo-token-123`}
-      </Code>
+print(token)  # expected output: demo-token-123`} hints={[
+        {
+          code: "import os",
+          text: "Loads Python's `os` toolbox, which lets your code talk to your computer.",
+        },
+        {
+          code: 'os.environ["MY_APP_TOKEN"] = "demo-token-123"',
+          text:
+            "Writes a new note (an **environment variable**) called `MY_APP_TOKEN`. We do it here only so the box " +
+            "runs by itself. In real life you never type a secret into the code.",
+        },
+        {
+          code: 'token = os.environ["MY_APP_TOKEN"]',
+          text: "Reads the note back by its name. `token` now holds `\"demo-token-123\"`.",
+        },
+      ]} />
       <PracticeCell labId={9} cellId="concept-2" code={`import os
 
 os.environ["MY_APP_TOKEN"] = "demo-token-123"  # normally set outside your code, not like this
@@ -398,7 +519,50 @@ requests_made = [("gsk_abc123", 120), ("gsk_xyz789", 40), ("gsk_abc123", 80)]
 for key, tokens in requests_made:
     add_usage(usage, key, tokens)
 for key, tokens in usage.items():
-    print(mask_key(key), "used", tokens, "tokens")`} />
+    print(mask_key(key), "used", tokens, "tokens")`} hints={[
+        {
+          code: "def mask_key(key):",
+          block: "function",
+          text: "Hides most of a key. It keeps the first 4 and last 2 characters, so `gsk_abc123` becomes `gsk_...23`.",
+        },
+        {
+          code: "def add_usage(usage, key, tokens):",
+          block: "function",
+          text: "Adds one request's tokens to that key's running total in the `usage` dict.",
+        },
+        {
+          code: "for key, tokens in requests_made:",
+          block: "for loop",
+          text: "Goes through the 3 requests one by one and adds each one's tokens to the right key's total.",
+        },
+        {
+          code: "for key, tokens in usage.items():",
+          block: "for loop",
+          text: "Prints one line per key, with the key masked. `gsk_abc123` shows 200 tokens and `gsk_xyz789` shows 40.",
+        },
+        {
+          code: "key[:4]",
+          text: '**Slicing**: `[:4]` takes the first 4 characters. `"gsk_abc123"[:4]` is `"gsk_"`.',
+        },
+        {
+          code: "key[-2:]",
+          text: '`[-2:]` takes the last 2 characters. A minus number counts from the end. `"gsk_abc123"[-2:]` is `"23"`.',
+        },
+        {
+          code: "usage.get(key, 0)",
+          text:
+            "Looks up the key's total so far. If the key is not in the dict yet, `.get` gives back the 0 you passed, " +
+            "instead of an error.",
+        },
+        {
+          code: "usage = {}",
+          text: "An empty dict. It will hold one running total for each key.",
+        },
+        {
+          code: '("gsk_abc123", 120)',
+          text: "A **pair** in round brackets (a tuple): a made-up key, then the tokens one request used.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>add_usage</Code> adds tokens to a key's running total. <Code>usage.get(key, 0)</Code> gives 0 for a key not seen before.
@@ -513,36 +677,33 @@ gsk_...99 used 750 tokens`}
         dict with a nested list, and <Code>response.json()</Code> does that conversion for you
         automatically:
       </Text>
-      <RunnableExample labId={9} code={`data = {"name": "Vera", "scores": [1, 2, 3]}
+      <RunnableExample labId={9} hints={JSON_INDEX_HINTS} code={`data = {"name": "Vera", "scores": [1, 2, 3]}
 data["name"]       # "Vera"
 data["scores"][0]  # 1`} />
       <Text>Once you have a dict, getting a value out is just regular dict/list indexing, drilling down key by key.</Text>
 
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>data["name"]</Code> looks up the label <Code>"name"</Code> and gives{" "}
-          <Code>"Vera"</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>data["scores"]</Code> gives the whole list <Code>[1, 2, 3]</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>data["scores"][0]</Code> goes one step further: the <Code>[0]</Code> takes the
-          first item of that list. Python counts positions from 0, so the first item is at 0, the
-          second at 1, and so on. The result is 1.
-        </ListItem>
-        <ListItem>
-          <b>JSON</b> is plain text that looks like a Python dict. It uses double quotes, and
-          Python turns it into real dicts and lists for you.
-        </ListItem>
-      </UnorderedList>
+      <Text>
+        <b>JSON</b> is plain text that looks like a Python dict. It uses double quotes, and
+        Python turns it into real dicts and lists for you.
+      </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`data = {"user": "Vera", "orders": [101, 102, 103]}
+      <CodeBlock code={`data = {"user": "Vera", "orders": [101, 102, 103]}
 print(data["user"])  # expected output: Vera
-print(data["orders"][-1])  # expected output: 103`}
-      </Code>
+print(data["orders"][-1])  # expected output: 103`} hints={[
+        {
+          code: 'data = {"user": "Vera", "orders": [101, 102, 103]}',
+          text: 'A dict with two labels. `"user"` holds text, and `"orders"` holds a list of three numbers.',
+        },
+        {
+          code: 'data["user"]',
+          text: 'Looks up the label `"user"` and gives `Vera`.',
+        },
+        {
+          code: 'data["orders"][-1]',
+          text:
+            'Takes the list under `"orders"`, then `[-1]` picks its last item. A minus number counts from the end, so you get 103.',
+        },
+      ]} />
       <PracticeCell labId={9} cellId="concept-3" code={`data = {"user": "Vera", "orders": [101, 102, 103]}
 print(data["user"])  # expected output: Vera
 print(data["orders"][-1])  # expected output: 103`} expectedOutput={`Vera
@@ -606,7 +767,60 @@ def find_label(reply):
 for text in ["Positive.", "The sentiment is negative", "Not sure"]:
     reply = pull_reply(fake_response(text))
     label = find_label(reply)
-    print(repr(reply), "->", label, "| reply equals label:", reply == label)`} />
+    print(repr(reply), "->", label, "| reply equals label:", reply == label)`} hints={[
+        {
+          code: "def fake_response(text):",
+          block: "function",
+          text:
+            "Builds a pretend response in the same shape as the real one: a dict with a `choices` list, holding a " +
+            "message, holding the text.",
+        },
+        {
+          code: "def pull_reply(response):",
+          block: "function",
+          text: "Digs the reply text out of the response, one level at a time.",
+        },
+        {
+          code: "def find_label(reply):",
+          block: "function",
+          text:
+            "Makes the reply lowercase, then looks for `negative`, then `positive`. It gives back the first word " +
+            "it finds, or `unknown` if neither is there.",
+        },
+        {
+          code: 'for word in ("negative", "positive"):',
+          block: "for loop",
+          text: "Tries the two words in order. As soon as one is found in the text, `return` hands it back and the loop stops.",
+        },
+        {
+          code: 'for text in ["Positive.", "The sentiment is negative", "Not sure"]:',
+          block: "for loop",
+          text:
+            "Runs every step on three pretend replies: build a response, pull the text out, find the label, then print.",
+        },
+        {
+          code: 'response["choices"][0]["message"]["content"]',
+          text:
+            'Drills down step by step: the `"choices"` list, its first item `[0]`, that item\'s `"message"`, then ' +
+            'its `"content"` text.',
+        },
+        {
+          code: "reply.lower()",
+          text: 'Makes every letter small, so `"Positive."` becomes `"positive."`. Now a capital letter cannot hide the word.',
+        },
+        {
+          code: "if word in text:",
+          text: '`in` asks whether the word appears anywhere inside the text. `"negative" in "the sentiment is negative"` is True.',
+        },
+        {
+          code: "repr(reply)",
+          text: "Shows the text with its quote marks, like `'Positive.'`, so you see exactly what the reply was.",
+        },
+        {
+          code: "reply == label",
+          text: "Checks whether the raw reply is exactly the same as the clean label. It is `False` all three times.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>pull_reply</Code> drills down: <Code>"choices"</Code>, then item 0, then <Code>"message"</Code>, then <Code>"content"</Code>.
@@ -692,9 +906,20 @@ for text in ["NEGATIVE", "I think it is positive!", "Mixed feelings"]:
 
       <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
       <Text>Groq's response is a JSON object shaped roughly like:</Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`{"choices": [{"message": {"content": "positive"}}]}`}
-      </Code>
+      <CodeBlock code={`{"choices": [{"message": {"content": "positive"}}]}`} hints={[
+        {
+          code: '"choices": [',
+          text: "A list of possible replies. Usually there is only one, at position 0.",
+        },
+        {
+          code: '"message":',
+          text: "The first choice holds a message: a small dict for one reply from the model.",
+        },
+        {
+          code: '"content": "positive"',
+          text: 'The reply text itself, here `"positive"`. This is the part your code wants.',
+        },
+      ]} />
       <Text>
         That's why the notebook's <Code>extract_reply</Code> function is just{" "}
         <Code>response_json["choices"][0]["message"]["content"]</Code>: drilling down to the

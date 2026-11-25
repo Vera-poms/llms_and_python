@@ -2,7 +2,24 @@ import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/re
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const SHELF_HINTS: CodeHint[] = [
+  { code: "class Shelf:", block: "class", text: "A **class** bundles data with the functions that work on it. This one is the bookshelf." },
+  {
+    code: "def __init__(self):",
+    block: "function",
+    text: "`__init__` runs once when you write `Shelf()`. It gives the new shelf an empty list called `self.books`.",
+  },
+  { code: "def add(self, title):", block: "function", text: "A **method** (a function inside a class). `self` is the object itself, here the shelf." },
+  { code: "self.books = []", text: "The new shelf's own empty list called `self.books`." },
+  { code: "shelf = Shelf()", text: "Makes one shelf. Each shelf keeps its own list. A second `Shelf()` would start empty." },
+  {
+    code: "shelf.add(\"Python\")",
+    text: "Calls the method. Inside it, `self` is `shelf`, so it appends to that shelf's own list.",
+  },
+];
 
 export function Lab19Reading() {
   return (
@@ -59,21 +76,7 @@ export function Lab19Reading() {
 shelf = Shelf()
 shelf.add("Python")
 shelf.add("Maths")
-print(shelf.books)   # ['Python', 'Maths']`} />
-      <Text>Here is what each part does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>__init__</Code> runs once when you write <Code>Shelf()</Code>. It gives the new
-          shelf an empty list called <Code>self.books</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>shelf.add("Python")</Code> calls the method. Inside it, <Code>self</Code> is{" "}
-          <Code>shelf</Code>, so it appends to that shelf's own list.
-        </ListItem>
-        <ListItem>
-          Each shelf keeps its own list. A second <Code>Shelf()</Code> would start empty.
-        </ListItem>
-      </UnorderedList>
+print(shelf.books)   # ['Python', 'Maths']`} hints={SHELF_HINTS} />
 
       <PracticeCell labId={19} cellId="concept-1" code={`class Basket:
     def __init__(self):
@@ -141,7 +144,66 @@ store = TinyStore()
 fill(store, table)
 print(len(store.items), "items stored")
 for text, vector in store.items:
-    print(len(vector), "numbers ->", text)`} />
+    print(len(vector), "numbers ->", text)`} hints={[
+        {
+          code: "class TinyStore:",
+          block: "class",
+          text:
+            "A tiny **vector database**. It keeps a list of pairs, each text next to its vector, and " +
+            "has a method to add a new pair.",
+        },
+        {
+          code: "def __init__(self):",
+          block: "function",
+          text: "Runs once when you write `TinyStore()`. It gives the new store an empty list, `self.items`.",
+        },
+        {
+          code: "def add(self, text, vector):",
+          block: "function",
+          text:
+            "A **method** (a function inside a class) that puts one `(text, vector)` pair on the end " +
+            "of the list. `self` is the store itself.",
+        },
+        {
+          code: "def fill(store, table):",
+          block: "function",
+          text: "Fills a store from a table. It calls `store.add` once for each row.",
+        },
+        {
+          code: "for text, vector in table:",
+          block: "for loop",
+          text:
+            "Runs once for each row. Each row is a pair, so `text, vector` splits it into the " +
+            "sentence and its vector.",
+        },
+        {
+          code: "for text, vector in store.items:",
+          block: "for loop",
+          text: "Goes through every stored pair and prints the size of its vector next to its text.",
+        },
+        {
+          code: "self.items.append((text, vector))",
+          text:
+            "Two sets of brackets: the outer ones call `append`, the inner ones make a **tuple**, a " +
+            "pair that keeps the text and the vector together.",
+        },
+        {
+          code: "table = [",
+          text: "A list of rows. Each row is a pair: a sentence and its made-up vector of 2 numbers.",
+        },
+        {
+          code: "store = TinyStore()",
+          text: "Makes one new, empty store.",
+        },
+        {
+          code: "len(store.items)",
+          text: "How many pairs are stored: 2.",
+        },
+        {
+          code: "len(vector)",
+          text: "How many numbers are in this vector: 2.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>TinyStore</Code> starts with an empty <Code>items</Code> list. <Code>add</Code> appends one pair, the text and its vector.
@@ -239,7 +301,24 @@ for text, vector in store.items:
 pairs.sort(reverse=True)
 print(pairs)        # [(0.9, 'a'), (0.5, 'c'), (0.2, 'b')]
 print(pairs[:2])    # [(0.9, 'a'), (0.5, 'c')]
-print(len(pairs[:10]))   # 3`} />
+print(len(pairs[:10]))   # 3`} hints={[
+        {
+          code: "pairs.sort(reverse=True)",
+          text:
+            "`.sort()` puts the list in order and changes the list itself. Pairs are compared by their " +
+            "first item, the score. `reverse=True` puts the biggest first.",
+        },
+        {
+          code: "pairs[:2]",
+          text: "A **slice**: the first two pairs, so the two best scores.",
+        },
+        {
+          code: "len(pairs[:10])",
+          text:
+            "Asks for 10 pairs, but only 3 exist. A slice just gives what is there, so the length " +
+            "is 3.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The scores come first in each pair, so sorting orders the pairs by score. The biggest,
@@ -317,7 +396,60 @@ for k in (1, 2, 3):
     cost = 0
     for score, text in chosen:
         cost = cost + count_tokens(text)
-    print("k", k, "-> best score", chosen[0][0], "tokens", cost, "fits:", cost <= budget)`} />
+    print("k", k, "-> best score", chosen[0][0], "tokens", cost, "fits:", cost <= budget)`} hints={[
+        {
+          code: "def count_tokens(text):",
+          block: "function",
+          text: "The rule of thumb: characters divided by 4, plus 1. It gives back a token guess for one text.",
+        },
+        {
+          code: "def top_k(scored, k):",
+          block: "function",
+          text:
+            "Sorts the pairs with the highest score first and keeps the first `k`. Those are the `k` " +
+            "best chunks.",
+        },
+        {
+          code: "for k in (1, 2, 3):",
+          block: "for loop",
+          text:
+            "Tries three values of `k`. For each one it picks the top chunks, adds up their token " +
+            "cost and checks it against the budget.",
+        },
+        {
+          code: "for score, text in chosen:",
+          block: "for loop",
+          text:
+            "Goes through the chosen pairs. Each pair is split into `score` and `text`, and the " +
+            "text's token cost is added to `cost`.",
+        },
+        {
+          code: "sorted(scored, reverse=True)",
+          text:
+            "`sorted` gives back a **new** sorted list and leaves `scored` as it was. `reverse=True` " +
+            "puts the highest score first.",
+        },
+        {
+          code: "ranked[:k]",
+          text: "A slice that keeps the first `k` pairs, the best ones.",
+        },
+        {
+          code: "scored = [",
+          text:
+            "A list of `(score, chunk)` pairs. The score says how well the chunk matches a question " +
+            "about food. The numbers are made up.",
+        },
+        {
+          code: "chosen[0][0]",
+          text:
+            "`chosen[0]` is the best pair, and its `[0]` is the score. It is `0.91` every time, because " +
+            "the best chunk is always kept.",
+        },
+        {
+          code: "cost <= budget",
+          text: "`True` if the chosen chunks fit in the budget of 20 tokens, `False` if not.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>top_k</Code> sorts the pairs with the highest score first and keeps the first <Code>k</Code>. The score comes first in each pair, so it decides the order.
@@ -414,7 +546,28 @@ k 3 -> best score 0.88 tokens 27 fits: False`}</Text>
       <RunnableExample labId={19} code={`facts = ["She bakes bread.", "She runs daily."]
 context = "\\n".join(f"- {f}" for f in facts)
 prompt = f"Context:\\n{context}\\n\\nQuestion: What does she bake?"
-print(prompt)`} />
+print(prompt)`} hints={[
+        {
+          code: '"\\n".join(',
+          text:
+            "Glues the lines together with a **new line** (`\\n`) between each, so they print one " +
+            "under the other.",
+        },
+        {
+          code: 'f"- {f}" for f in facts',
+          text:
+            "Makes one line per fact. In an **f-string** (a string with `f` in front), `{f}` is " +
+            "replaced by the value of `f`. So you get `- She bakes bread.`",
+        },
+        {
+          code: "{context}",
+          text: "The joined fact lines are dropped into the prompt at this spot.",
+        },
+        {
+          code: "\\n\\nQuestion",
+          text: "Two new lines in a row make a **blank line**, so the question sits apart from the context.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>{`f"- {f}" for f in facts`}</Code> makes one line per fact, each starting with a dash.
@@ -487,7 +640,66 @@ cases = [
 for chunks in cases:
     print(build_prompt("What does she bake?", chunks))
     print("answer is in the context:", can_answer(chunks, "bread"))
-    print("-" * 10)`} />
+    print("-" * 10)`} hints={[
+        {
+          code: "def build_prompt(question, chunks):",
+          block: "function",
+          text:
+            "Builds the prompt: the instruction at the top, the chunks as dash lines in the middle and " +
+            "the question at the bottom.",
+        },
+        {
+          code: "def can_answer(chunks, keyword):",
+          block: "function",
+          text:
+            "Checks if any chunk holds the keyword. It gives back `True` as soon as one does, and " +
+            "`False` if none do.",
+        },
+        {
+          code: "for chunk in chunks:",
+          block: "for loop",
+          text: "Looks at each chunk in turn and stops early if the keyword is found.",
+        },
+        {
+          code: "for chunks in cases:",
+          block: "for loop",
+          text:
+            "Runs once for each case: build the prompt, check if the answer is in it, then print a " +
+            "line of dashes.",
+        },
+        {
+          code: '"\\n".join(f"- {c}" for c in chunks)',
+          text:
+            "Makes one dash line per chunk, like `- She bakes bread.`, and puts a **new line** " +
+            "between them.",
+        },
+        {
+          code: "Answer using only this context.",
+          text:
+            "This instruction tells the model to answer from your chunks, not from what it learned " +
+            "in training.",
+        },
+        {
+          code: "keyword in chunk.lower()",
+          text:
+            "`.lower()` makes the chunk all small letters first, so `Bread` would still match " +
+            "`bread`. `in` then checks if the keyword is inside.",
+        },
+        {
+          code: "return True",
+          text:
+            "Found it, so the function stops right here and gives back `True`. The other chunks are " +
+            "not checked.",
+        },
+        {
+          code: "cases = [",
+          text: "A list of two lists. Each inner list holds the chunks that one search might find.",
+        },
+        {
+          code: '"-" * 10',
+          text: "`*` on a string repeats it. This gives 10 dashes: `----------`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>build_prompt</Code> joins the chunks into dash lines, then puts the instruction at the top and the question at the bottom.

@@ -1,8 +1,70 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the examples below.
+// In the text, `backticks` style code and **double stars** bold a key word.
+const TILES_HINTS: CodeHint[] = [
+  {
+    code: "rows = 12",
+    text:
+      "Stores the number 12. A name like `rows` is called a **variable**. It is a label stuck on a value.",
+  },
+  {
+    code: "cols = 8",
+    text: "Stores the number 8 under the label `cols`. Another **variable**, a label stuck on a value.",
+  },
+  {
+    code: "rows * cols",
+    text: "Multiplies them: `12 * 8 = 96`. Picture 12 lines of 8 tiles. That is 96 tiles.",
+  },
+  {
+    code: "# 96",
+    text: "Everything after `#` is a **comment**. Python ignores it. It is a note for people.",
+  },
+];
+
+const RECTANGLE_HINTS: CodeHint[] = [
+  {
+    code: "class Rectangle:",
+    block: "class",
+    text:
+      'A **class** is a blueprint for one kind of thing. `Rectangle` says "every rectangle has a width and a height".',
+  },
+  {
+    code: "@dataclass",
+    text:
+      "Sits on top of the class. It is called a **decorator**, and it adds extra features. Here it writes the setup code for you.",
+  },
+  {
+    code: "width: float",
+    text:
+      "A **field**: a named value every rectangle holds. The word after the colon is a hint about the kind of value. Python does not force it.",
+  },
+  {
+    code: "height: float",
+    text:
+      "The second **field**. The word after the colon is a hint about the kind of value. Python does not force it.",
+  },
+  {
+    code: "Rectangle(width=4, height=3)",
+    text: "Builds one rectangle with width 4 and height 3.",
+  },
+  {
+    code: "r.area()",
+    text: "Calls the method. It gives back `12`.",
+  },
+  {
+    code: "self.width * self.height",
+    text:
+      'Inside the method, `self` means "this rectangle", so this is `4 * 3 = 12`. Because 4 and 3 are whole numbers, ' +
+      "printing it shows `12`. It would show `12.0` if you used 4.0 and 3.0.",
+  },
+];
 
 export function Lab06Reading() {
   return (
@@ -34,35 +96,35 @@ export function Lab06Reading() {
         Before any LLM math, here's the same idea for a much smaller problem: how many tiles do
         you need to cover a rectangular floor?
       </Text>
-      <RunnableExample labId={6} code={`rows = 12
+      <RunnableExample labId={6} hints={TILES_HINTS} code={`rows = 12
 cols = 8
 tiles_needed = rows * cols  # 96`} />
       <Text>
         Nothing fancy - the floor is a grid, and a grid's total cell count is always{" "}
         <Code>rows * cols</Code>, whether the cells are floor tiles or numbers in a table.
       </Text>
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>rows = 12</Code> and <Code>cols = 8</Code> store two numbers. A name like{" "}
-          <Code>rows</Code> is called a <b>variable</b>. It is a label stuck on a value.
-        </ListItem>
-        <ListItem>
-          <Code>rows * cols</Code> multiplies them: <Code>12 * 8 = 96</Code>. Picture 12 lines of 8 tiles. That
-          is 96 tiles.
-        </ListItem>
-        <ListItem>
-          Everything after <Code>#</Code> is a <b>comment</b>. Python ignores it. It is a note for
-          people.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`rows = 20
+      <CodeBlock code={`rows = 20
 seats_per_row = 15
 total_seats = rows * seats_per_row
-print(total_seats)  # 300`}
-      </Code>
+print(total_seats)  # 300`} hints={[
+        {
+          code: "seats_per_row = 15",
+          text: "A **variable**: a label stuck on a value. Here the label `seats_per_row` holds 15.",
+        },
+        {
+          code: "rows * seats_per_row",
+          text: "Multiplies 20 by 15. The answer, `300`, is stored in `total_seats`.",
+        },
+        {
+          code: "print(total_seats)",
+          text: "Shows the value of `total_seats` on the screen: `300`.",
+        },
+        {
+          code: "# 300",
+          text: "A **comment**. Python skips everything after `#`. It tells you the answer to expect.",
+        },
+      ]} />
       <PracticeCell labId={6} cellId="concept-1" code={`rows = 20
 seats_per_row = 15
 total_seats = rows * seats_per_row
@@ -115,7 +177,59 @@ shapes = [(1000, 64), (64, 64), (64, 1000)]
 params = total_params(shapes)
 print("parameters:", params)
 for bytes_each in [4, 2, 1]:
-    print("bytes per number:", bytes_each, "->", f"{memory_bytes(params, bytes_each):,}", "bytes")`} />
+    print("bytes per number:", bytes_each, "->", f"{memory_bytes(params, bytes_each):,}", "bytes")`} hints={[
+        {
+          code: "def table_params(rows, cols):",
+          block: "function",
+          text: "Counts the numbers in one table: rows times columns. A 1000 by 64 table holds `64000` numbers.",
+        },
+        {
+          code: "def total_params(shapes):",
+          block: "function",
+          text:
+            "Goes through the list of table sizes and adds up the numbers in every table. " +
+            "For the three tables here it gives back `132096`.",
+        },
+        {
+          code: "for rows, cols in shapes:",
+          block: "for loop",
+          text:
+            "**Repeats** for each table size. Each `(rows, cols)` pair is split into two names, " +
+            "so the first round has `rows = 1000` and `cols = 64`.",
+        },
+        {
+          code: "def memory_bytes(params, bytes_each):",
+          block: "function",
+          text: "Works out the memory: the number of parameters times the bytes each number takes.",
+        },
+        {
+          code: "for bytes_each in [4, 2, 1]:",
+          block: "for loop",
+          text:
+            "Runs the print line three times, once for 4, 2 and 1 bytes per number. " +
+            "Each time the bytes halve, the memory halves too.",
+        },
+        {
+          code: "total = total + table_params(rows, cols)",
+          text: "Adds this table's count to the running total. `total` starts at 0 and grows each round.",
+        },
+        {
+          code: "shapes = [(1000, 64), (64, 64), (64, 1000)]",
+          text:
+            "A list of three **tuples**. A tuple is a small fixed group of values in round brackets. " +
+            "Each one is the (rows, columns) of one table.",
+        },
+        {
+          code: "params = total_params(shapes)",
+          text: "Calls the function and stores the answer, `132096`, in `params`.",
+        },
+        {
+          code: 'f"{memory_bytes(params, bytes_each):,}"',
+          text:
+            "An **f-string**: text with an `f` in front, where a value goes inside `{ }`. " +
+            "The `:,` adds commas, so `528384` shows as `528,384`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>total_params</Code> adds <Code>1000 * 64</Code>, <Code>64 * 64</Code> and <Code>64 * 1000</Code>. That is <Code>64000 + 4096 + 64000 = 132096</Code> parameters.
@@ -252,7 +366,7 @@ bytes per number: 1 -> 33,024 bytes`}
         In plain Python
       </Heading>
       <Text>Compare it to describing a rectangle:</Text>
-      <RunnableExample labId={6} code={`from dataclasses import dataclass
+      <RunnableExample labId={6} hints={RECTANGLE_HINTS} code={`from dataclasses import dataclass
 
 @dataclass
 class Rectangle:
@@ -270,31 +384,8 @@ print(r.area())  # 12.0`} />
         constructor - the decorator just generates that boilerplate for you from the type-annotated
         fields.
       </Text>
-      <Text>Here is what each part of that example does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          A <b>class</b> is a blueprint for one kind of thing. <Code>Rectangle</Code> says "every
-          rectangle has a width and a height".
-        </ListItem>
-        <ListItem>
-          <Code>@dataclass</Code> sits on top of the class. It is called a <b>decorator</b>, and it
-          adds extra features. Here it writes the setup code for you.
-        </ListItem>
-        <ListItem>
-          <Code>width: float</Code> and <Code>height: float</Code> are the <b>fields</b>. The word
-          after the colon is a hint about the kind of value. Python does not force it.
-        </ListItem>
-        <ListItem>
-          <Code>Rectangle(width=4, height=3)</Code> builds one rectangle. <Code>r.area()</Code>{" "}
-          calls the method. Inside it, <Code>self</Code> means "this rectangle", so{" "}
-          <Code>self.width * self.height</Code> is <Code>4 * 3 = 12</Code>. Because 4 and 3 are whole numbers,
-          printing it shows <Code>12</Code>. It would show <Code>12.0</Code> if you used 4.0 and
-          3.0.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`from dataclasses import dataclass
+      <CodeBlock code={`from dataclasses import dataclass
 
 @dataclass
 class Car:
@@ -305,8 +396,50 @@ class Car:
         return self.mpg * self.tank_gallons
 
 c = Car(mpg=30.0, tank_gallons=12.0)
-print(c.range_miles())  # 360.0`}
-      </Code>
+print(c.range_miles())  # 360.0`} hints={[
+        {
+          code: "class Car:",
+          block: "class",
+          text:
+            "A **class** is a blueprint for one kind of thing. `Car` says \"every car has a miles-per-gallon number and a tank size\", " +
+            "and it can work out how far it goes.",
+        },
+        {
+          code: "def range_miles(self) -> float:",
+          block: "function",
+          text:
+            "A **method**: a function that belongs to the class. It multiplies miles per gallon by the tank size " +
+            "to get how far the car can go on a full tank.",
+        },
+        {
+          code: "from dataclasses import dataclass",
+          text: "Loads the `dataclass` tool from Python's `dataclasses` toolbox, so you can use `@dataclass` below.",
+        },
+        {
+          code: "@dataclass",
+          text:
+            "A **decorator**: it sits on top of the class and adds extra features. " +
+            "Here it writes the setup code that stores `mpg` and `tank_gallons` for you.",
+        },
+        {
+          code: "mpg: float",
+          text:
+            "A **field**: a named value every car holds. `mpg` means miles per gallon. " +
+            "`float` is a hint that it is a decimal number.",
+        },
+        {
+          code: "-> float",
+          text: "A note saying the method gives back a decimal number. Python does not check it.",
+        },
+        {
+          code: "Car(mpg=30.0, tank_gallons=12.0)",
+          text: "Builds one car that goes 30 miles per gallon and holds 12 gallons. It is stored in `c`.",
+        },
+        {
+          code: "c.range_miles()",
+          text: "Calls the method on this car. Inside, `self` is `c`, so it works out `30.0 * 12.0 = 360.0`.",
+        },
+      ]} />
       <PracticeCell labId={6} cellId="concept-2" code={`from dataclasses import dataclass
 
 @dataclass
@@ -373,7 +506,51 @@ class Config:
 base = Config(d_model=64, n_layers=2)
 print("base", base.attention_total())
 for label, cfg in [("double d_model", Config(128, 2)), ("double n_layers", Config(64, 4))]:
-    print(label, cfg.attention_total(), "x", cfg.attention_total() // base.attention_total())`} />
+    print(label, cfg.attention_total(), "x", cfg.attention_total() // base.attention_total())`} hints={[
+        {
+          code: "class Config:",
+          block: "class",
+          text:
+            "A **class** that bundles two design numbers, `d_model` and `n_layers`, " +
+            "plus a method that counts the attention numbers from them.",
+        },
+        {
+          code: "def attention_total(self):",
+          block: "function",
+          text:
+            "Counts the attention numbers: 4 tables of `d_model * d_model` in every layer. " +
+            "For the base config that is `2 * 4 * 64 * 64 = 32768`.",
+        },
+        {
+          code: 'for label, cfg in [("double d_model", Config(128, 2)), ("double n_layers", Config(64, 4))]:',
+          block: "for loop",
+          text:
+            "Goes through two (label, config) pairs. Each round prints the label, the attention total, " +
+            "and how many times bigger it is than the base.",
+        },
+        {
+          code: "@dataclass",
+          text: "A **decorator**: it sits on top of the class and writes the setup code that stores the fields for you.",
+        },
+        {
+          code: "d_model: int",
+          text: "A **field**: how many numbers describe each token. `int` is a hint that it is a whole number.",
+        },
+        {
+          code: "Config(d_model=64, n_layers=2)",
+          text: "Builds the base config: 64 numbers per token and 2 layers.",
+        },
+        {
+          code: "Config(128, 2)",
+          text: "Builds a config without writing the field names. The values go in order: `d_model=128`, `n_layers=2`.",
+        },
+        {
+          code: "cfg.attention_total() // base.attention_total()",
+          text:
+            "`//` divides and keeps only the whole number. It shows how many times bigger this config is " +
+            "than the base, for example `131072 // 32768 = 4`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The base is 64 wide with 2 layers: <Code>2 * 4 * 64 * 64 = 32768</Code>. This is the lab's tiny-model attention total.
@@ -504,7 +681,34 @@ triple d_model 110592 x 9`}
     "n_layers": 12,
     "n_heads": 12,
     "d_ff": 3072,
-}`} />
+}`} hints={[
+        {
+          code: "gpt2_small_config = {",
+          text:
+            "Makes a **dict**: a set of `key: value` pairs inside curly braces. " +
+            'You look up a value by its key, like `gpt2_small_config["n_layers"]`, which gives `12`.',
+        },
+        {
+          code: '"vocab_size": 50257',
+          text: "How many different tokens (words or pieces of words) the model knows: 50,257.",
+        },
+        {
+          code: '"d_model": 768',
+          text: "How many numbers describe each token: 768.",
+        },
+        {
+          code: '"n_layers": 12',
+          text: "How many transformer blocks are stacked on top of each other: 12.",
+        },
+        {
+          code: '"n_heads": 12',
+          text: "How many attention heads each block has. A head is one part of attention that looks at the words in its own way.",
+        },
+        {
+          code: '"d_ff": 3072',
+          text: "The width of the feed-forward step inside each block: 3072, which is 4 times `d_model`.",
+        },
+      ]} />
       <Text>
         It's a plain dictionary - no classes, no code, just named numbers - which is exactly why
         it's easy to save as JSON, load in any language, and diff between model versions.
@@ -526,15 +730,32 @@ triple d_model 110592 x 9`}
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`server_config = {
+      <CodeBlock code={`server_config = {
     "host": "localhost",
     "port": 8080,
     "workers": 4,
     "timeout_seconds": 30,
 }
-print(server_config["workers"])  # 4`}
-      </Code>
+print(server_config["workers"])  # 4`} hints={[
+        {
+          code: "server_config = {",
+          text: "Makes a **dict**: a set of `key: value` pairs inside curly braces. The key is the label, the value is what is stored.",
+        },
+        {
+          code: '"host": "localhost"',
+          text: 'The server\'s address. `"localhost"` means "this same computer".',
+        },
+        {
+          code: '"port": 8080',
+          text: "The door number the server listens on: 8080.",
+        },
+        {
+          code: 'server_config["workers"]',
+          text:
+            "Looks up the key `\"workers\"` in square brackets and gives its value, `4`. " +
+            "A misspelled key, like `\"worker\"`, stops Python with a `KeyError`.",
+        },
+      ]} />
       <PracticeCell labId={6} cellId="concept-3" code={`server_config = {
     "host": "localhost",
     "port": 8080,
@@ -588,7 +809,54 @@ for name, cfg in configs.items():
     if is_valid(cfg):
         print(name, "ok, each head gets", head_size(cfg), "numbers")
     else:
-        print(name, "invalid:", cfg["d_model"], "does not split evenly into", cfg["n_heads"], "heads")`} />
+        print(name, "invalid:", cfg["d_model"], "does not split evenly into", cfg["n_heads"], "heads")`} hints={[
+        {
+          code: "def head_size(cfg):",
+          block: "function",
+          text:
+            "Works out how many numbers each attention head gets: `d_model` split evenly among `n_heads`. " +
+            "For GPT-2 small that is `768 // 12 = 64`.",
+        },
+        {
+          code: "def is_valid(cfg):",
+          block: "function",
+          text:
+            "Gives back `True` when `d_model` splits evenly among the heads, and `False` when it does not.",
+        },
+        {
+          code: "for name, cfg in configs.items():",
+          block: "for loop",
+          text:
+            "Goes through the three configs one at a time. For each one it prints either the head size " +
+            "or a message saying the numbers do not fit.",
+        },
+        {
+          code: 'cfg["d_model"] // cfg["n_heads"]',
+          text: '`cfg["d_model"]` reads one value from the dict by its key. `//` divides and keeps only the whole number.',
+        },
+        {
+          code: 'cfg["d_model"] % cfg["n_heads"] == 0',
+          text:
+            "`%` gives the **remainder** after dividing. `768 % 12` is 0, so it splits evenly. " +
+            "`== 0` checks for that and gives `True` or `False`.",
+        },
+        {
+          code: "configs = {",
+          text: "A dict of dicts. Each key is a model name, and each value is a small dict with that model's two numbers.",
+        },
+        {
+          code: '"typo": {"d_model": 770, "n_heads": 12}',
+          text: "A broken config on purpose. `770 % 12 = 2`, so the numbers do not split evenly and it is reported as invalid.",
+        },
+        {
+          code: "configs.items()",
+          text: '`.items()` gives each key together with its value. So each round gets a name like `"gpt2-small"` and its config.',
+        },
+        {
+          code: "if is_valid(cfg):",
+          text: "Runs the next line only when the config is valid. If not, Python skips to the `else:` part and prints the problem.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>gpt2-small</Code> has <Code>768 // 12 = 64</Code>. <Code>gpt2-medium</Code> has <Code>1024 // 16 = 64</Code>. Both give each head 64 numbers.
@@ -728,7 +996,50 @@ plt.xticks(list(x), names)
 plt.ylabel("votes")
 plt.legend()
 plt.savefig("votes.png")
-plt.show()`} />
+plt.show()`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing toolbox and gives it the short nickname `plt`, so you can write `plt.bar(...)`.",
+        },
+        {
+          code: "x = range(len(names))",
+          text: "`len(names)` is 2, so `range(2)` gives the spots 0 and 1: one spot for each candidate along the bottom.",
+        },
+        {
+          code: "plt.bar",
+          text: "Draws bars. First come the spots where the bars stand, then their heights.",
+        },
+        {
+          code: "[i - 0.2 for i in x]",
+          text:
+            "A **list comprehension**: a short loop that builds a list. It takes 0.2 away from each spot, " +
+            "giving `[-0.2, 0.8]`. The predicted bars move a little to the left.",
+        },
+        {
+          code: "[i + 0.2 for i in x]",
+          text: "Adds 0.2 to each spot, giving `[0.2, 1.2]`. The actual bars move a little to the right.",
+        },
+        {
+          code: "width=0.4",
+          text: "Makes each bar 0.4 wide. The two bars in a pair are 0.4 apart, so they touch without overlapping.",
+        },
+        {
+          code: "plt.xticks(list(x), names)",
+          text: 'Writes the names under the spots: "Alicia" under 0 and "Ben" under 1.',
+        },
+        {
+          code: "plt.legend()",
+          text: "Adds a small box that says which bar color is `predicted` and which is `actual`. It uses each bar's `label`.",
+        },
+        {
+          code: 'plt.savefig("votes.png")',
+          text: "Saves the chart as a picture file called `votes.png`.",
+        },
+        {
+          code: "plt.show()",
+          text: "Shows the chart on the screen.",
+        },
+      ]} />
       <Text>
         Each candidate gets two bars, shifted left and right by <Code>0.2</Code> so they sit
         side-by-side instead of on top of each other; <Code>xticks</Code> labels each pair with the
@@ -755,8 +1066,7 @@ plt.show()`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <CodeBlock code={`import matplotlib.pyplot as plt
 
 quarters = ["Q1", "Q2"]
 budget = [100, 120]
@@ -769,8 +1079,46 @@ plt.xticks(list(x), quarters)
 plt.ylabel("$ thousands")
 plt.legend()
 plt.savefig("budget_vs_actual.png")
-print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar chart to budget_vs_actual.png`}
-      </Code>
+print("Saved grouped bar chart to budget_vs_actual.png")  # Saved grouped bar chart to budget_vs_actual.png`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing toolbox and gives it the short nickname `plt`.",
+        },
+        {
+          code: "x = range(len(quarters))",
+          text: "`len(quarters)` is 2, so `range(2)` gives the spots 0 and 1: one spot for each quarter along the bottom.",
+        },
+        {
+          code: "[i - 0.2 for i in x]",
+          text:
+            "A **list comprehension**: a short loop that builds a list. It gives `[-0.2, 0.8]`, " +
+            "so the budget bars sit a little to the left.",
+        },
+        {
+          code: "[i + 0.2 for i in x]",
+          text: "Gives `[0.2, 1.2]`, so the actual bars sit a little to the right.",
+        },
+        {
+          code: "width=0.4",
+          text: "Makes each bar 0.4 wide, so the two bars in a pair touch side by side.",
+        },
+        {
+          code: "plt.xticks(list(x), quarters)",
+          text: "Writes Q1 and Q2 under the two pairs of bars.",
+        },
+        {
+          code: 'plt.ylabel("$ thousands")',
+          text: "Names the up-and-down axis, so readers know the heights are thousands of dollars.",
+        },
+        {
+          code: "plt.legend()",
+          text: "Adds a small box that says which color is budget and which is actual.",
+        },
+        {
+          code: 'plt.savefig("budget_vs_actual.png")',
+          text: "Saves the chart to a picture file. There is no `plt.show()`, so the chart may not appear on screen.",
+        },
+      ]} />
       <PracticeCell labId={6} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 quarters = ["Q1", "Q2"]
@@ -833,7 +1181,53 @@ def verdict(pct, limit):
 models = [("A", 990000, 1000000), ("B", 4970000, 5000000), ("C", 3000000, 3300000)]
 for name, computed, published in models:
     pct = percent_off(computed, published)
-    print(name, "off by", f"{abs(computed - published):,}", "=", round(pct, 2), "%", verdict(pct, 1))`} />
+    print(name, "off by", f"{abs(computed - published):,}", "=", round(pct, 2), "%", verdict(pct, 1))`} hints={[
+        {
+          code: "def percent_off(computed, published):",
+          block: "function",
+          text:
+            "Turns the gap between the two counts into a percentage of the real size. " +
+            "For model A: `10000 / 1000000 * 100 = 1.0`.",
+        },
+        {
+          code: "def verdict(pct, limit):",
+          block: "function",
+          text: 'Gives back `"good"` when the percentage is within the limit, and `"too far"` when it is not.',
+        },
+        {
+          code: "for name, computed, published in models:",
+          block: "for loop",
+          text:
+            "Goes through the three models. Each tuple is split into three names, " +
+            "then the gap, the percentage and the verdict are printed.",
+        },
+        {
+          code: "abs(computed - published)",
+          text: "`abs` drops the minus sign. `990000 - 1000000` is `-10000`, and `abs` makes it `10000`.",
+        },
+        {
+          code: '"good" if pct <= limit else "too far"',
+          text: 'A one-line choice. It gives `"good"` if `pct` is at most `limit`, and `"too far"` otherwise.',
+        },
+        {
+          code: 'models = [("A", 990000, 1000000)',
+          text:
+            "A list of three **tuples**. A tuple is a small fixed group of values in round brackets. " +
+            "Each one holds a name, the computed count and the published count.",
+        },
+        {
+          code: ":,}",
+          text: "Inside an **f-string** (text with an `f` in front), `:,` writes the number with commas, so `10000` shows as `10,000`.",
+        },
+        {
+          code: "round(pct, 2)",
+          text: "Keeps 2 digits after the point. Model C's `9.0909...` shows as `9.09`.",
+        },
+        {
+          code: "verdict(pct, 1)",
+          text: "Checks the percentage against a limit of 1 percent.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>A</Code> is off by 10,000 out of 1,000,000. That is <Code>1.0</Code> percent, which is within the limit.

@@ -1,8 +1,56 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const SHOPPING_HINTS: CodeHint[] = [
+  {
+    code: "shopping_list = []",
+    text:
+      "Makes an empty **list**. A list is an ordered row of things in square brackets. This one has nothing in it yet.",
+  },
+  {
+    code: ".append(\"milk\")",
+    text:
+      "Adds one item to the end. The list is now `[\"milk\"]`.",
+  },
+  {
+    code: ".append(\"eggs\")",
+    text:
+      "Adds to the end again. The list is now `[\"milk\", \"eggs\"]`. The old item is still there. Nothing was erased.",
+  },
+  {
+    code: "print(shopping_list)",
+    text:
+      "Shows both items, in the order they were added.",
+  },
+];
+
+const LETTER_HINTS: CodeHint[] = [
+  {
+    code: "name = \"Priya\"",
+    text:
+      "`name` holds the text `\"Priya\"`. A piece of text in quote marks is called a **string**.",
+  },
+  {
+    code: "city = \"Austin\"",
+    text:
+      "`city` holds the text `\"Austin\"`.",
+  },
+  {
+    code: "f\"Dear",
+    text:
+      "The `f` in front of the quote marks turns on the blanks. Each `{name}` is a blank that Python fills with the value of that variable.",
+  },
+  {
+    code: "letter",
+    text:
+      "So `letter` becomes `\"Dear Priya, welcome to Austin!\"`. Change `name` to `\"Sam\"` and the letter says \"Dear Sam\" with no other edit.",
+  },
+];
 
 export function Lab13Reading() {
   return (
@@ -29,37 +77,34 @@ export function Lab13Reading() {
       <RunnableExample labId={13} code={`shopping_list = []
 shopping_list.append("milk")
 shopping_list.append("eggs")
-print(shopping_list)  # ["milk", "eggs"]`} />
+print(shopping_list)  # ["milk", "eggs"]`} hints={SHOPPING_HINTS} />
       <Text>
         By the time you're at the register, the list holds every item you added, in order - that's
         the entire idea of "state": a value that persists and accumulates across separate actions,
         instead of being thrown away after each one.
       </Text>
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>shopping_list = []</Code> makes an empty <b>list</b>. A list is an ordered row of
-          things in square brackets. This one has nothing in it yet.
-        </ListItem>
-        <ListItem>
-          <Code>.append("milk")</Code> adds one item to the end. The list is now{" "}
-          <Code>["milk"]</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>.append("eggs")</Code> adds to the end again. The list is now{" "}
-          <Code>["milk", "eggs"]</Code>. The old item is still there. Nothing was erased.
-        </ListItem>
-        <ListItem>
-          <Code>print(shopping_list)</Code> shows both items, in the order they were added.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`readings = []
+      <CodeBlock code={`readings = []
 readings.append(68)
 readings.append(71)
-print(readings)  # expected output: [68, 71]`}
-      </Code>
+print(readings)  # expected output: [68, 71]`} hints={[
+        {
+          code: "readings = []",
+          text: "Makes an empty **list**: square brackets with nothing inside yet.",
+        },
+        {
+          code: ".append(68)",
+          text: "`.append` adds one item to the end of the list. The list is now `[68]`.",
+        },
+        {
+          code: ".append(71)",
+          text: "Adds 71 after it. The list is now `[68, 71]`. The 68 is still there.",
+        },
+        {
+          code: "# expected output:",
+          text: "A **comment**: Python skips everything after `#`. It shows what the line prints.",
+        },
+      ]} />
       <PracticeCell labId={13} cellId="concept-1" code={`readings = []
 readings.append(68)
 readings.append(71)
@@ -137,7 +182,69 @@ history = []
 for question in questions:
     print("kept list  ->", ask(history, question))
 for question in questions:
-    print("fresh list ->", ask([], question))`} />
+    print("fresh list ->", ask([], question))`} hints={[
+        {
+          code: "def fake_model(messages):",
+          block: "function",
+          text:
+            "A pretend model. It looks through the list for a message that starts with `My name is `. If the last message asks for the name, it answers from what it found. Otherwise it says `Nice to meet you.`",
+        },
+        {
+          code: "def ask(history, question):",
+          block: "function",
+          text:
+            "One chat turn. It adds the question to `history`, calls the model, adds the reply too, and gives the reply back. So each call makes `history` 2 messages longer.",
+        },
+        {
+          code: "    for message in messages:",
+          block: "for loop",
+          text: "Checks every message in the list. If one starts with `My name is `, it saves the name that follows.",
+        },
+        {
+          code: "for question in questions:",
+          block: "for loop",
+          text: "Asks the two questions one at a time and prints each reply.",
+        },
+        {
+          code: "ask(history, question))",
+          text:
+            "Uses the **same** `history` list for both questions. The name from the first question is still there for the second, so the reply is `Your name is Ama.`",
+        },
+        {
+          code: "PREFIX = \"My name is \"",
+          text: "The start of the message we look for. Names in capital letters are a habit for values that never change.",
+        },
+        {
+          code: "name = None",
+          text: "`None` is Python's word for \"nothing yet\". It stays `None` if no name is found.",
+        },
+        {
+          code: ".startswith(PREFIX)",
+          text: "`True` if the text begins with `PREFIX`. `\"My name is Ama\".startswith(\"My name is \")` is `True`.",
+        },
+        {
+          code: "[len(PREFIX):]",
+          text:
+            "A **slice**: it keeps the text from position `len(PREFIX)` to the end. `PREFIX` is 11 characters long, so this cuts it off and keeps just the name, `Ama`.",
+        },
+        {
+          code: "messages[-1]",
+          text: "`-1` means the last item in the list. Here that is the newest message.",
+        },
+        {
+          code: "if name is None:",
+          text: "`True` when no name was found in the list. Then the model has to admit it does not know.",
+        },
+        {
+          code: "history.append(",
+          text: "`.append` adds one dict to the end of `history`. The list keeps growing and nothing is erased.",
+        },
+        {
+          code: "ask([], question)",
+          text:
+            "`[]` is a brand new empty list, so each call starts with no earlier messages. The second question cannot see the name, so the reply is `I do not know your name.`",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>fake_model</Code> loops over the messages it was given and looks for a line that
@@ -284,7 +391,31 @@ fresh list -> I do not know your name.`}
       <RunnableExample labId={13} code={`log = []
 for visitor in ["Alice", "Bob"]:
     log.append(f"{visitor} checked in")
-print(log)`} />
+print(log)`} hints={[
+        {
+          code: "for visitor in [\"Alice\", \"Bob\"]:",
+          block: "for loop",
+          text:
+            "Runs the indented line once for each name. On pass 1 `visitor` is `\"Alice\"`, on pass 2 it is `\"Bob\"`.",
+        },
+        {
+          code: "log = []",
+          text: "Starts an empty list. It fills up one entry per visitor.",
+        },
+        {
+          code: "log.append(",
+          text: "`.append` adds one item to the end of the list. Earlier entries stay.",
+        },
+        {
+          code: "f\"{visitor} checked in\"",
+          text:
+            "An **f-string**: `{visitor}` is replaced by its value. On pass 1 this becomes `\"Alice checked in\"`.",
+        },
+        {
+          code: "print(log)",
+          text: "Shows the whole list after the loop: `['Alice checked in', 'Bob checked in']`.",
+        },
+      ]} />
       <Text>
         Each visitor gets appended to <Code>log</Code> one at a time, and by the end the log holds
         one entry per visitor, in the order they arrived - one action (a visitor arrives), one
@@ -312,12 +443,32 @@ print(log)`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`deliveries = []
+      <CodeBlock code={`deliveries = []
 for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
-print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`}
-      </Code>
+print(deliveries)  # expected output: ['P100 delivered', 'P101 delivered']`} hints={[
+        {
+          code: "for package in [\"P100\", \"P101\"]:",
+          block: "for loop",
+          text: "Runs the indented line twice: first with `package` set to `\"P100\"`, then `\"P101\"`.",
+        },
+        {
+          code: "deliveries = []",
+          text: "Starts an empty list. Each pass of the loop adds one item.",
+        },
+        {
+          code: "deliveries.append(",
+          text: "`.append` adds one item to the end of the list. Earlier items stay.",
+        },
+        {
+          code: "f\"{package} delivered\"",
+          text: "An **f-string**: `{package}` is replaced by its value. On pass 1 this becomes `\"P100 delivered\"`.",
+        },
+        {
+          code: "# expected output:",
+          text: "A **comment**: Python skips everything after `#`. It shows what the line prints.",
+        },
+      ]} />
       <PracticeCell labId={13} cellId="concept-2" code={`deliveries = []
 for package in ["P100", "P101"]:
     deliveries.append(f"{package} delivered")
@@ -379,7 +530,51 @@ replies = ["Hello!", "Why did the chicken cross the road", "Because it wanted to
 for i in range(len(questions)):
     history.append({"role": "user", "content": questions[i]})
     print("turn", i + 1, "sends", len(history), "messages,", count_words(history), "words")
-    history.append({"role": "assistant", "content": replies[i]})`} />
+    history.append({"role": "assistant", "content": replies[i]})`} hints={[
+        {
+          code: "def count_words(messages):",
+          block: "function",
+          text:
+            "Adds up the words in every message of the list and gives back the total. We use words as a simple stand-in for tokens.",
+        },
+        {
+          code: "    for message in messages:",
+          block: "for loop",
+          text: "Visits each message and adds its word count to `total`.",
+        },
+        {
+          code: "for i in range(len(questions)):",
+          block: "for loop",
+          text:
+            "One pass per chat turn, 3 in all. Each pass adds the question, prints how big the call would be, then adds the reply. The list gets 2 messages longer every pass.",
+        },
+        {
+          code: ".split()",
+          text:
+            "Cuts the text at the spaces and gives a list of words. `\"Hi there\".split()` is `[\"Hi\", \"there\"]`. `len` of that list is the number of words.",
+        },
+        {
+          code: "total = total + ",
+          text: "Adds this message's word count to the running total.",
+        },
+        {
+          code: "range(len(questions))",
+          text:
+            "`len(questions)` is 3, so `range` gives `0`, `1`, `2`. `i` uses these to pick the matching question and reply.",
+        },
+        {
+          code: "questions[i]",
+          text: "Picks the question at position `i`. On the first pass `i` is 0, so this is `\"Hi there\"`.",
+        },
+        {
+          code: "i + 1",
+          text: "Positions start at 0, so we add 1 to print turn numbers 1, 2, 3.",
+        },
+        {
+          code: "count_words(history)",
+          text: "How many words this call would send: 4, then 10, then 20. It grows because the whole history is sent each time.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           Turn 1 sends 2 messages: the system message (2 words) and the question (2 words). That is
@@ -531,34 +726,35 @@ turn 3 sends 6 messages, 13 words`}
       </Text>
       <RunnableExample labId={13} code={`name = "Priya"
 city = "Austin"
-letter = f"Dear {name}, welcome to {city}!"`} />
+letter = f"Dear {name}, welcome to {city}!"`} hints={LETTER_HINTS} />
       <Text>
         <Code>name</Code> and <Code>city</Code> get dropped straight into the string wherever the
         curly braces are - that's the entire mechanism behind an f-string, no matter how long the
         template gets.
       </Text>
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>name</Code> holds the text <Code>"Priya"</Code>. <Code>city</Code> holds{" "}
-          <Code>"Austin"</Code>. A piece of text in quote marks is called a <b>string</b>.
-        </ListItem>
-        <ListItem>
-          The <Code>f</Code> in front of the quote marks turns on the blanks. Each{" "}
-          <Code>{"{name}"}</Code> is a blank that Python fills with the value of that variable.
-        </ListItem>
-        <ListItem>
-          So <Code>letter</Code> becomes <Code>"Dear Priya, welcome to Austin!"</Code>. Change{" "}
-          <Code>name</Code> to <Code>"Sam"</Code> and the letter says "Dear Sam" with no other
-          edit.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`person = {"name": "Sam", "occasion": "graduation"}
+      <CodeBlock code={`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
-print(card)  # expected output: Congrats Sam on your graduation!`}
-      </Code>
+print(card)  # expected output: Congrats Sam on your graduation!`} hints={[
+        {
+          code: "person = {",
+          text:
+            "A **dict**: a small table of labels and values, in curly braces. The labels are called **keys**. This one has 2 keys, `\"name\"` and `\"occasion\"`.",
+        },
+        {
+          code: "f\"Congrats",
+          text: "The `f` before the quote makes an **f-string**. Each `{...}` is a blank that Python fills with a value.",
+        },
+        {
+          code: "person['name']",
+          text:
+            "Looks up the value for the key `\"name\"`: `\"Sam\"`. The inner quotes are single quotes because the outer ones are double quotes.",
+        },
+        {
+          code: "person['occasion']",
+          text: "Looks up the value for the key `\"occasion\"`: `\"graduation\"`.",
+        },
+      ]} />
       <PracticeCell labId={13} cellId="concept-3" code={`person = {"name": "Sam", "occasion": "graduation"}
 card = f"Congrats {person['name']} on your {person['occasion']}!"
 print(card)  # expected output: Congrats Sam on your graduation!`} expectedOutput={`Congrats Sam on your graduation!`} />
@@ -630,7 +826,70 @@ def fake_twin(messages):
 system = make_system("Ada", ["plays chess on Sundays", "teaches maths at night"])
 for question in ["Do you play chess?", "Do you teach maths?", "Where do you live?"]:
     messages = [{"role": "system", "content": system}, {"role": "user", "content": question}]
-    print(question, "->", fake_twin(messages))`} />
+    print(question, "->", fake_twin(messages))`} hints={[
+        {
+          code: "def make_system(name, facts):",
+          block: "function",
+          text:
+            "Builds a small system prompt: one line `You are Ada.`, then one `- ` bullet line per fact. Gives back all the lines glued into one string.",
+        },
+        {
+          code: "    for fact in facts:",
+          block: "for loop",
+          text: "Adds one bullet line for each fact, like `- plays chess on Sundays`.",
+        },
+        {
+          code: "def fake_twin(messages):",
+          block: "function",
+          text:
+            "A pretend model. It reads the fact lines in the system message. If a long word from the question is in a fact, it answers with that fact. If no fact matches, it says it was not given one.",
+        },
+        {
+          code: "    for line in messages[0]",
+          block: "for loop",
+          text: "Goes through the system prompt one line at a time, looking only at the `- ` fact lines.",
+        },
+        {
+          code: "for word in question.strip(\"?\").split():",
+          block: "for loop",
+          text: "Tries each word of the question against the current fact line.",
+        },
+        {
+          code: "for question in [\"Do you play chess?\"",
+          block: "for loop",
+          text:
+            "Asks 3 questions. Each pass builds a fresh 2-message list, system first, then user, and prints the pretend reply.",
+        },
+        {
+          code: "\"\\n\".join(lines)",
+          text: "`\\n` means \"start a new line\". `.join` glues the lines into one string, with a new line between each pair.",
+        },
+        {
+          code: ".lower()",
+          text: "Makes a copy of the text in small letters, so `Chess` and `chess` match.",
+        },
+        {
+          code: ".split(\"\\n\")",
+          text: "The opposite of `.join`: cuts the prompt back into a list of lines at each new line.",
+        },
+        {
+          code: ".strip(\"?\")",
+          text: "Removes the `?` from the ends of the question, so `chess?` becomes `chess`.",
+        },
+        {
+          code: "len(word) >= 5 and word in line",
+          text:
+            "Both parts must be `True`. The word must have 5 or more letters, so short words like `do` and `you` are skipped. And it must appear in the fact line.",
+        },
+        {
+          code: "line[2:]",
+          text: "A **slice**: everything from position 2 to the end. It drops the first two characters, the `- ` bullet.",
+        },
+        {
+          code: "messages[0]",
+          text: "The first message in the list, which is the system message. Counting starts at 0.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>make_system</Code> loops over the facts and adds one <Code>- </Code> bullet line

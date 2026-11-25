@@ -1,6 +1,7 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -45,7 +46,34 @@ heads_count = 0
 for flip in flips:
     if flip == "H":
         heads_count += 1
-print(heads_count)  # 3`} />
+print(heads_count)  # 3`} hints={[
+        {
+          code: "for flip in flips:",
+          block: "for loop",
+          text:
+            "Takes the flips one at a time, in order. Each time, the indented lines run once " +
+            "with `flip` set to that item.",
+        },
+        {
+          code: 'if flip == "H":',
+          block: "if block",
+          text: "Runs the indented line only when the flip is heads. Tails are skipped.",
+        },
+        {
+          code: "heads_count = 0",
+          text: "Starts the counter at 0, before the loop. Nothing inside the loop resets it.",
+        },
+        {
+          code: '== "H"',
+          text:
+            "`==` asks \"are these the same?\" and gives `True` or `False`. A single `=` is " +
+            "different: it stores a value.",
+        },
+        {
+          code: "heads_count += 1",
+          text: "Short for `heads_count = heads_count + 1`. It adds 1 to the counter.",
+        },
+      ]} />
       <Text>
         The loop visits each element of <Code>flips</Code> in order, binding it to{" "}
         <Code>flip</Code>, and <Code>heads_count</Code> keeps a running tally that survives across
@@ -73,15 +101,43 @@ print(heads_count)  # 3`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
+      <CodeBlock code={`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
 total_sixes = 0
 for round_rolls in rounds:
     for roll in round_rolls:
         if roll == 6:
             total_sixes += 1
-print(total_sixes)  # 2`}
-      </Code>
+print(total_sixes)  # 2`} hints={[
+        {
+          code: "for round_rolls in rounds:",
+          block: "for loop",
+          text:
+            "The **outer loop**. It takes one round (a list of 3 rolls) at a time. There are 3 " +
+            "rounds, so it runs 3 times.",
+        },
+        {
+          code: "for roll in round_rolls:",
+          block: "for loop",
+          text:
+            "The **inner loop**. It runs all the way through for each round, one roll at a " +
+            "time. 3 rolls times 3 rounds is 9 rolls in all.",
+        },
+        {
+          code: "if roll == 6:",
+          block: "if block",
+          text:
+            "Adds 1 to the counter only when the roll is a 6. Only round `[6, 6, 1]` has any, so " +
+            "the total is 2.",
+        },
+        {
+          code: "[[3, 5, 2], [6, 6, 1], [4, 4, 4]]",
+          text: "A list that holds three smaller lists. Each small list is one round of three dice rolls.",
+        },
+        {
+          code: "total_sixes += 1",
+          text: "Short for `total_sixes = total_sixes + 1`. It adds 1 to the counter.",
+        },
+      ]} />
       <PracticeCell labId={5} cellId="concept-1" code={`rounds = [[3, 5, 2], [6, 6, 1], [4, 4, 4]]
 total_sixes = 0
 for round_rolls in rounds:
@@ -132,7 +188,47 @@ data = [10, 10]
 guess = 0.0
 for epoch in range(1, 4):
     guess = one_pass(guess, data, 0.5)
-    print("epoch", epoch, "guess", guess, "off by", target - guess)`} />
+    print("epoch", epoch, "guess", guess, "off by", target - guess)`} hints={[
+        {
+          code: "def one_pass(guess, data, rate):",
+          block: "function",
+          text:
+            "One **epoch**: one pass over all the data. For each value it moves the guess part " +
+            "of the way toward it, then gives back the new guess.",
+        },
+        {
+          code: "for value in data:",
+          block: "for loop",
+          text: "One nudge per data value. `data` has 2 values, so each pass nudges twice.",
+        },
+        {
+          code: "for epoch in range(1, 4):",
+          block: "for loop",
+          text:
+            "Runs 3 epochs and prints how far off the guess is after each one. The gap shrinks: " +
+            "2.5, then 0.625, then 0.15625.",
+        },
+        {
+          code: "guess + rate * (value - guess)",
+          text:
+            "`value - guess` is the gap to the answer. `rate` is the share of the gap to cover. " +
+            "With rate 0.5, the guess goes from 0.0 to 5.0, then to 7.5.",
+        },
+        {
+          code: "range(1, 4)",
+          text: "Gives the numbers 1, 2 and 3. It stops before 4, so the loop runs 3 times.",
+        },
+        {
+          code: "one_pass(guess, data, 0.5)",
+          text:
+            "Runs one full pass with rate 0.5 and stores the result back in `guess`. The next " +
+            "epoch starts from there.",
+        },
+        {
+          code: "target - guess",
+          text: "How far off the guess still is. After epoch 1 that is 10 - 7.5 = 2.5.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The data has 2 values, so <Code>one_pass</Code> nudges twice in each epoch. With a rate of 0.5, each nudge covers half of the gap.
@@ -255,7 +351,28 @@ learning_rate = 0.1
 
 adjustment = learning_rate * went_too_flat * butter_amount
 butter_amount += adjustment
-print(butter_amount)  # 1.8 - a little less butter next time`} />
+print(butter_amount)  # 1.8 - a little less butter next time`} hints={[
+        {
+          code: "went_too_flat = -1",
+          text: "The **direction** of the mistake. -1 says \"go down\". +1 would say \"go up\".",
+        },
+        {
+          code: "learning_rate = 0.1",
+          text:
+            "The **step size**. 0.1 keeps each fix small. Too big and the recipe swings wildly. " +
+            "Too small and it improves very slowly.",
+        },
+        {
+          code: "learning_rate * went_too_flat * butter_amount",
+          text:
+            "Step size times direction times how much butter was used: `0.1 * -1 * 2.0 = -0.2`. " +
+            "The minus sign means \"use less\".",
+        },
+        {
+          code: "butter_amount += adjustment",
+          text: "Short for `butter_amount = butter_amount + adjustment`: `2.0 + (-0.2) = 1.8`.",
+        },
+      ]} />
       <Text>
         Break the update into its three pieces: <Code>went_too_flat</Code> is which direction
         things were wrong in, <Code>butter_amount</Code> is how present that ingredient was (an
@@ -279,15 +396,32 @@ print(butter_amount)  # 1.8 - a little less butter next time`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`brew_minutes = 5.0  # minutes used in the too-bitter batch
+      <CodeBlock code={`brew_minutes = 5.0  # minutes used in the too-bitter batch
 too_bitter = -1     # -1 means "too bitter", +1 would mean "too weak"
 learning_rate = 0.2
 
 adjustment = learning_rate * too_bitter * brew_minutes
 brew_minutes += adjustment
-print(brew_minutes)  # 4.0 - a little less brew time next time`}
-      </Code>
+print(brew_minutes)  # 4.0 - a little less brew time next time`} hints={[
+        {
+          code: "too_bitter = -1",
+          text: "The **direction** of the mistake. -1 says \"go down\" (brew for less time). +1 would say \"go up\".",
+        },
+        {
+          code: "learning_rate = 0.2",
+          text: "The **step size**. 0.2 means each fix is 20% of the brew time used.",
+        },
+        {
+          code: "learning_rate * too_bitter * brew_minutes",
+          text:
+            "`0.2 * -1 * 5.0 = -1.0`. The step points down, and it is bigger when more brew time " +
+            "was used.",
+        },
+        {
+          code: "brew_minutes += adjustment",
+          text: "Short for `brew_minutes = brew_minutes + adjustment`: `5.0 + (-1.0) = 4.0`.",
+        },
+      ]} />
       <PracticeCell labId={5} cellId="concept-2" code={`brew_minutes = 5.0  # minutes used in the too-bitter batch
 too_bitter = -1     # -1 means "too bitter", +1 would mean "too weak"
 learning_rate = 0.2
@@ -337,7 +471,43 @@ print(brew_minutes)  # 4.0 - a little less brew time next time`} expectedOutput=
 
 
 for rate in [0.1, 0.5, 1.5]:
-    print("rate", rate, "->", run(rate, 3))`} />
+    print("rate", rate, "->", run(rate, 3))`} hints={[
+        {
+          code: "def run(rate, epochs):",
+          block: "function",
+          text:
+            "Starts the guess at 0 and nudges it toward 10 once per epoch. It saves every guess " +
+            "in the list `seen` and gives the list back.",
+        },
+        {
+          code: "for _ in range(epochs):",
+          block: "for loop",
+          text:
+            "Repeats the nudge `epochs` times. The name `_` means \"I do not need the counter " +
+            "number\".",
+        },
+        {
+          code: "for rate in [0.1, 0.5, 1.5]:",
+          block: "for loop",
+          text:
+            "Tries three rates, 3 epochs each, and prints the guesses. Rate 1.5 gives " +
+            "`[15.0, 7.5, 11.25]`: it jumps past 10 and swings back.",
+        },
+        {
+          code: "guess + rate * (target - guess)",
+          text:
+            "Moves the guess the share `rate` of the way to the answer. Rate 0.5 covers half the " +
+            "gap. Rate 1.5 goes past it.",
+        },
+        {
+          code: "seen.append(guess)",
+          text: "Adds the new guess to the end of the list, so you can see every step.",
+        },
+        {
+          code: "run(rate, 3)",
+          text: "Runs 3 epochs with this rate and gives back the 3 guesses.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           Rate <Code>0.1</Code> gives <Code>[1.0, 1.9, 2.71]</Code>. It is safe but slow.
@@ -479,7 +649,24 @@ rate 1.5 -> [30.0, 15.0, 22.5]`}
       <RunnableExample labId={5} code={`balance = 100
 balance += 50   # mutates balance in place
 balance += 20
-print(balance)  # 170 - remembers every deposit before it`} />
+print(balance)  # 170 - remembers every deposit before it`} hints={[
+        {
+          code: "balance += 50",
+          text:
+            "Short for `balance = balance + 50`. It reads 100, adds 50 and stores 150 back in the " +
+            "same name.",
+        },
+        {
+          code: "mutates",
+          text:
+            "To **mutate** means to change a value in place. There is still only one `balance`. " +
+            "Its number just changes.",
+        },
+        {
+          code: "balance += 20",
+          text: "Starts from the 150 that is already there: reads 150, adds 20 and stores 170.",
+        },
+      ]} />
       <Text>
         Each <Code>+=</Code> reads the current value, adds to it, and writes the result back into
         the same variable - the next line sees the updated number, not the original one.
@@ -499,12 +686,25 @@ print(balance)  # 170 - remembers every deposit before it`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`score = 0
+      <CodeBlock code={`score = 0
 score += 10  # mutates score in place
 score += 25
-print(score)  # 35 - remembers every point scored before it`}
-      </Code>
+print(score)  # 35 - remembers every point scored before it`} hints={[
+        {
+          code: "score += 10",
+          text: "Short for `score = score + 10`: `0 + 10 = 10`.",
+        },
+        {
+          code: "mutates",
+          text:
+            "To **mutate** means to change a value in place. There is still only one `score`. " +
+            "Its number just changes.",
+        },
+        {
+          code: "score += 25",
+          text: "Starts from the 10 that is already there: `10 + 25 = 35`.",
+        },
+      ]} />
       <PracticeCell labId={5} cellId="concept-3" code={`score = 0
 score += 10  # mutates score in place
 score += 25
@@ -556,7 +756,55 @@ def total_loss(scores, targets):
 targets = [1, -1, 1, -1]
 models = [("A", [0.5, -0.5, -0.5, 0.5]), ("B", [0.5, -0.5, -4.0, 4.0])]
 for name, scores in models:
-    print(name, "wrong:", count_wrong(scores, targets), "loss:", total_loss(scores, targets))`} />
+    print(name, "wrong:", count_wrong(scores, targets), "loss:", total_loss(scores, targets))`} hints={[
+        {
+          code: "def count_wrong(scores, targets):",
+          block: "function",
+          text:
+            "Counts the mistakes. It turns each score into 1 or -1, and adds 1 to `wrong` when " +
+            "that does not match the right answer.",
+        },
+        {
+          code: "for score, target in zip(scores, targets):\n        guess",
+          block: "for loop",
+          text:
+            "Takes each score with its right answer. Both models are wrong on the third and the " +
+            "fourth answer, so this counts 2 for each.",
+        },
+        {
+          code: "def total_loss(scores, targets):",
+          block: "function",
+          text:
+            "Adds up the squared gap between each score and its right answer. Small gaps cost " +
+            "little and big gaps cost a lot. Model A gets `5.0` and model B gets `50.5`.",
+        },
+        {
+          code: "for score, target in zip(scores, targets):\n        loss",
+          block: "for loop",
+          text:
+            "Adds `(target - score) ** 2` to the loss for each answer. For B's third answer that " +
+            "is `(1 - (-4.0)) ** 2 = 25.0`.",
+        },
+        {
+          code: "for name, scores in models:",
+          block: "for loop",
+          text: "Checks both models the same way and prints the mistake count and the loss for each.",
+        },
+        {
+          code: "1 if score >= 0 else -1",
+          text: "Turns the score into a decision, like the perceptron: 1 if it is 0 or more, otherwise -1.",
+        },
+        {
+          code: "guess != target",
+          text: "`!=` means \"is not equal to\". It is True when the decision is wrong.",
+        },
+        {
+          code: "(target - score) ** 2",
+          text:
+            "`** 2` **squares** the gap: it multiplies it by itself. A gap of 1.5 costs 2.25. A " +
+            "gap of 5.0 costs 25.0.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           Both models get exactly 2 answers wrong: the third and the fourth. <Code>count_wrong</Code> says it is a tie.
@@ -705,7 +953,44 @@ axes[1].set_title("pet votes")
 
 plt.tight_layout()
 plt.savefig("two_charts.png")
-plt.show()`} />
+plt.show()`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing tools under the short name `plt`.",
+        },
+        {
+          code: "plt.subplots(1, 2, figsize=(10, 4))",
+          text:
+            "Makes one picture with 1 row and 2 columns of charts. `figsize` is the size in " +
+            "inches: 10 wide and 4 tall. `fig` is the whole picture, and `axes` holds the two charts.",
+        },
+        {
+          code: "axes[0].plot([1, 2, 3, 4], [68, 70, 71, 73])",
+          text:
+            "Draws a line on the left chart (`axes[0]`, since counting starts at 0) through the " +
+            "points (1, 68), (2, 70), (3, 71) and (4, 73).",
+        },
+        {
+          code: 'axes[1].bar(["cats", "dogs", "birds"], [12, 19, 7])',
+          text: "Draws three bars on the right chart, one per name. Dogs is the tallest, at 19.",
+        },
+        {
+          code: "set_title",
+          text: "Puts a name above that one chart.",
+        },
+        {
+          code: "plt.tight_layout()",
+          text: "Spaces the two charts so their text does not overlap.",
+        },
+        {
+          code: 'plt.savefig("two_charts.png")',
+          text: "Saves the whole picture, both charts, as a file called `two_charts.png`.",
+        },
+        {
+          code: "plt.show()",
+          text: "Shows the picture on screen.",
+        },
+      ]} />
       <Text>
         <Code>plt.subplots(1, 2, ...)</Code> creates one figure with a 1-row-by-2-column grid of
         axes and hands them back as a list; each entry in <Code>axes</Code> is then a normal,
@@ -713,8 +998,7 @@ plt.show()`} />
         <Code>.set_title</Code>, exactly like you would on a single-plot figure.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <CodeBlock code={`import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
 axes[0].plot([1, 2, 3], [10, 20, 15])
@@ -723,8 +1007,40 @@ axes[1].bar(["tea", "coffee"], [5, 9])
 axes[1].set_title("drink orders")
 plt.tight_layout()
 plt.savefig("two_panels.png")
-print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side charts to two_panels.png`}
-      </Code>
+print("Saved side-by-side charts to two_panels.png")  # Saved side-by-side charts to two_panels.png`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing tools under the short name `plt`.",
+        },
+        {
+          code: "plt.subplots(1, 2, figsize=(8, 3))",
+          text:
+            "Makes one picture with 1 row and 2 columns of charts. `figsize` is the size in " +
+            "inches: 8 wide and 3 tall. The two charts are saved in `axes`.",
+        },
+        {
+          code: "axes[0].plot([1, 2, 3], [10, 20, 15])",
+          text:
+            "Draws a line on the left chart (`axes[0]`, since counting starts at 0) through " +
+            "(1, 10), (2, 20) and (3, 15).",
+        },
+        {
+          code: 'axes[1].bar(["tea", "coffee"], [5, 9])',
+          text: "Draws two bars on the right chart. Tea is 5 tall and coffee is 9 tall.",
+        },
+        {
+          code: "set_title",
+          text: "Puts a name above that one chart.",
+        },
+        {
+          code: "plt.tight_layout()",
+          text: "Spaces the two charts so their text does not overlap.",
+        },
+        {
+          code: 'plt.savefig("two_panels.png")',
+          text: "Saves the whole picture, both charts, as a file called `two_panels.png`.",
+        },
+      ]} />
       <PracticeCell labId={5} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(1, 2, figsize=(8, 3))
@@ -801,7 +1117,74 @@ def rule(sentence):
 
 
 for name, predict in [("memorizer", memorizer), ("rule", rule)]:
-    print(name, "train:", accuracy(predict, train), "test:", round(accuracy(predict, test), 2))`} />
+    print(name, "train:", accuracy(predict, train), "test:", round(accuracy(predict, test), 2))`} hints={[
+        {
+          code: "def accuracy(predict, data):",
+          block: "function",
+          text:
+            "Tries a model on some data and gives back the share it got right. 1 right out of 3 " +
+            "is 0.333..., which prints as `0.33` after rounding.",
+        },
+        {
+          code: "for sentence, label in data:",
+          block: "for loop",
+          text: "Asks the model about each sentence, and adds 1 to `right` when its answer matches the label.",
+        },
+        {
+          code: "for sentence, label in train:",
+          block: "for loop",
+          text:
+            "Stores the answer for every training sentence in the dict `memory`. That is all the " +
+            "memorizer \"learns\".",
+        },
+        {
+          code: "def memorizer(sentence):",
+          block: "function",
+          text:
+            "Gives back the stored answer if it has seen this exact sentence. For anything new it " +
+            "just says 1.",
+        },
+        {
+          code: "def rule(sentence):",
+          block: "function",
+          text:
+            "Says 1 if the sentence has the word `great`, otherwise -1. It is written by hand, as " +
+            "a stand-in for a trained model.",
+        },
+        {
+          code: 'for name, predict in [("memorizer", memorizer), ("rule", rule)]:',
+          block: "for loop",
+          text:
+            "Tests both models on the training data and on the test data. It prints " +
+            "`memorizer train: 1.0 test: 0.33` and `rule train: 1.0 test: 1.0`.",
+        },
+        {
+          code: "predict(sentence) == label",
+          text:
+            "`predict` is whichever model was passed in. You can hand a function to another " +
+            "function, like any other value. This is True when the model's answer is right.",
+        },
+        {
+          code: "right / len(data)",
+          text: "Right answers divided by the number of examples. 1 right out of 3 is 0.333...",
+        },
+        {
+          code: "test = [",
+          text:
+            "The **test set**: sentences the models never trained on. This is where you see " +
+            "whether a model really learned.",
+        },
+        {
+          code: "memory.get(sentence, 1)",
+          text:
+            "Looks up the sentence in `memory`. If it is not there, `get` gives back the default, " +
+            "1, instead of crashing.",
+        },
+        {
+          code: '"great" in sentence.split()',
+          text: "`split()` cuts the sentence into words. `in` checks whether `great` is one of them.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           On the training data, both models score <Code>1.0</Code>. The memorizer has seen every sentence.

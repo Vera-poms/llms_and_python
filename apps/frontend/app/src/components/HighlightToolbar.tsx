@@ -1,6 +1,7 @@
 import { Box, Button, HStack, Input, Portal, Text, useToast } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import type { BookmarkState } from "../hooks/useBookmark";
 import type { HighlightsState, SelectionInfo } from "../hooks/useHighlights";
 
 const PRESETS = ["#ffe066", "#b2f2bb", "#ffc9c9", "#a5d8ff", "#ffd8a8"];
@@ -19,7 +20,7 @@ function savedColor(): string {
 
 // Pops up beside selected reading text so it can be highlighted in a chosen color with an optional note,
 // and beside an existing highlight (when it is clicked) so its color or note can be changed or it can be removed.
-export function HighlightToolbar({ highlights }: { highlights: HighlightsState }) {
+export function HighlightToolbar({ highlights, bookmark }: { highlights: HighlightsState; bookmark?: BookmarkState }) {
   const toast = useToast();
   const boxRef = useRef<HTMLDivElement>(null);
   const [target, setTarget] = useState<Target | null>(null);
@@ -130,12 +131,14 @@ export function HighlightToolbar({ highlights }: { highlights: HighlightsState }
     }
   }
 
+  const bookmarkOnly = target.kind === "new" && !!bookmark;
+
   return (
     <Portal>
       <Box
         ref={boxRef}
         role="dialog"
-        aria-label={target.kind === "new" ? "Highlight selected text" : "Edit highlight"}
+        aria-label={bookmarkOnly ? "Bookmark selected text" : target.kind === "new" ? "Highlight selected text" : "Edit highlight"}
         position="absolute"
         top={`${anchor.top}px`}
         left={`${anchor.left}px`}
@@ -180,18 +183,20 @@ export function HighlightToolbar({ highlights }: { highlights: HighlightsState }
             style={{ width: 32, height: 32, padding: 0, border: "none", background: "transparent", cursor: "pointer" }}
           />
         </HStack>
-        <Input
-          size="sm"
-          placeholder="Add a note (optional)"
-          value={note}
-          maxLength={500}
-          onChange={(e) => setNote(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") void save();
-          }}
-        />
+        {!bookmarkOnly && (
+          <Input
+            size="sm"
+            placeholder="Add a note (optional)"
+            value={note}
+            maxLength={500}
+            onChange={(e) => setNote(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") void save();
+            }}
+          />
+        )}
         {target.kind === "new" && (
-          <Text fontSize="xs" color="gray.500" mt={1} noOfLines={1}>
+          <Text fontSize="xs" color="gray.500" mt={1} noOfLines={bookmarkOnly ? 2 : 1}>
             &ldquo;{target.info.text}&rdquo;
           </Text>
         )}
@@ -207,9 +212,24 @@ export function HighlightToolbar({ highlights }: { highlights: HighlightsState }
             <Button size="xs" variant="ghost" onClick={() => setTarget(null)}>
               Cancel
             </Button>
-            <Button size="xs" colorScheme="blue" onClick={save} isLoading={busy}>
-              {target.kind === "new" ? "Highlight" : "Save"}
-            </Button>
+            {bookmarkOnly ? (
+              <Button
+                size="xs"
+                colorScheme="yellow"
+                leftIcon={<span aria-hidden="true">🔖</span>}
+                onClick={() => {
+                  bookmark?.saveText(target.info, color);
+                  window.getSelection()?.removeAllRanges();
+                  setTarget(null);
+                }}
+              >
+                Bookmark
+              </Button>
+            ) : (
+              <Button size="xs" colorScheme="blue" onClick={save} isLoading={busy}>
+                {target.kind === "new" ? "Highlight" : "Save"}
+              </Button>
+            )}
           </HStack>
         </HStack>
       </Box>

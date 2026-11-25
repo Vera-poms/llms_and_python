@@ -3,12 +3,25 @@ import { useState } from "react";
 
 import { api } from "../api/client";
 import { CodeEditor } from "./CodeEditor";
+import { CodeHint } from "./codeHints";
+import { HintLegend } from "./HintLegend";
 import { CellOutput, RunResult } from "./NotebookRunner";
 
 type RunFn = (source: string) => Promise<RunResult>;
 
 // `run` overrides the default lab-notebook endpoint, e.g. for weekly resources.
-export function RunnableExample({ labId, code, run }: { labId?: number; code: string; run?: RunFn }) {
+// `hints` underlines pieces of the code and explains each one when the reader hovers it.
+export function RunnableExample({
+  labId,
+  code,
+  run,
+  hints,
+}: {
+  labId?: number;
+  code: string;
+  run?: RunFn;
+  hints?: CodeHint[];
+}) {
   const [source, setSource] = useState(code);
   const [result, setResult] = useState<RunResult | null>(null);
   const [running, setRunning] = useState(false);
@@ -37,7 +50,8 @@ export function RunnableExample({ labId, code, run }: { labId?: number; code: st
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={setSource} minHeight="60px" onRun={execute} />
+        <HintLegend hints={hints} />
+        <CodeEditor value={source} onChange={setSource} minHeight="60px" onRun={execute} hints={hints} />
         {result && <CellOutput result={result} />}
       </VStack>
     </Box>

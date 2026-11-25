@@ -1,6 +1,7 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -37,7 +38,44 @@ def show_the_work(a, b):
     return f"{a}*20={step1}, {a}*4={step2}, total={total}"
 
 print(guess_directly(17, 24))   # 408 - correct, but you'd have to trust it
-print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`} />
+print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`} hints={[
+        {
+          code: "def guess_directly(a, b):",
+          block: "function",
+          text: "Multiplies the two numbers in one go and gives back only the answer. Nothing shows how it got there.",
+        },
+        {
+          code: "def show_the_work(a, b):",
+          block: "function",
+          text:
+            "Splits the job into small steps: `a * 20`, then `a * 4`, then adds them. It gives back text that shows " +
+            "every step.",
+        },
+        {
+          code: '"""Straight to an answer',
+          text:
+            "A **docstring**: a note in triple quote marks, right under `def`, that says what the function is for. " +
+            "It does not change what the function does.",
+        },
+        {
+          code: "total = step1 + step2",
+          text: "Adds the two pieces: `340 + 68 = 408`.",
+        },
+        {
+          code: 'f"{a}*20={step1}, {a}*4={step2}, total={total}"',
+          text:
+            "An f-string that fills each `{...}` blank with a value. For 17 and 24 it gives " +
+            "`\"17*20=340, 17*4=68, total=408\"`.",
+        },
+        {
+          code: "guess_directly(17, 24)",
+          text: "Gives `408`. The answer is right, but there are no steps to check.",
+        },
+        {
+          code: "show_the_work(17, 24)",
+          text: "Gives the text `17*20=340, 17*4=68, total=408`. Each small step can be checked.",
+        },
+      ]} />
       <Text>
         Both approaches can land on the right number, but the second one produces a trail of
         intermediate steps - a <b>reasoning trace</b> - that you (or anyone else) can check for
@@ -67,8 +105,7 @@ print(show_the_work(17, 24))    # shows each intermediate number, easy to audit`
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`def guess_total(price, tax_rate):
+      <CodeBlock code={`def guess_total(price, tax_rate):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
     return price + price * tax_rate
 
@@ -79,8 +116,41 @@ def show_total_steps(price, tax_rate):
     return f"tax={tax:.2f}, total={total:.2f}"
 
 print(guess_total(50, 0.08))        # expected output: 54.0
-print(show_total_steps(50, 0.08))   # expected output: tax=4.00, total=54.00`}
-      </Code>
+print(show_total_steps(50, 0.08))   # expected output: tax=4.00, total=54.00`} hints={[
+        {
+          code: "def guess_total(price, tax_rate):",
+          block: "function",
+          text: "Works out price plus tax in one line and gives back only the final number.",
+        },
+        {
+          code: "def show_total_steps(price, tax_rate):",
+          block: "function",
+          text: "Works it out in two steps, first the tax, then the total, and gives back text that shows both.",
+        },
+        {
+          code: '"""Straight to an answer',
+          text:
+            "A **docstring**: a note in triple quote marks, right under `def`, that says what the function is for. " +
+            "It does not change what the function does.",
+        },
+        {
+          code: "price * tax_rate",
+          text: "The tax: the price times the tax rate. `50 * 0.08` is 4.0.",
+        },
+        {
+          code: "{tax:.2f}",
+          text:
+            '`:.2f` means "show this number with exactly 2 digits after the point". So 4.0 is written `4.00`.',
+        },
+        {
+          code: "guess_total(50, 0.08)",
+          text: "`0.08` is 8% tax (8 out of 100). It gives `50 + 4.0 = 54.0`, with no steps.",
+        },
+        {
+          code: "show_total_steps(50, 0.08)",
+          text: "Gives the text `tax=4.00, total=54.00`, so you see the tax and the total.",
+        },
+      ]} />
       <PracticeCell labId={11} cellId="concept-1" code={`def guess_total(price, tax_rate):
     """Straight to an answer - fast, but nothing to check if it's wrong."""
     return price + price * tax_rate
@@ -159,7 +229,41 @@ replies = [
     ("step by step", "17*20=340. 17*4=68. 340+68=408. Answer: 408"),
 ]
 for style, reply in replies:
-    print(style, "-> words:", word_cost(reply), "correct:", is_correct(reply, expected))`} />
+    print(style, "-> words:", word_cost(reply), "correct:", is_correct(reply, expected))`} hints={[
+        {
+          code: "def word_cost(reply):",
+          block: "function",
+          text: "Counts the words in a reply, as a simple measure of how long, and so how costly, it is.",
+        },
+        {
+          code: "def is_correct(reply, expected):",
+          block: "function",
+          text: "Gives `True` if the reply ends with the expected answer, and `False` if not.",
+        },
+        {
+          code: "for style, reply in replies:",
+          block: "for loop",
+          text:
+            "Runs once for each pair. `style` gets the name and `reply` gets the text. Each round prints the word " +
+            "count and whether the reply is right.",
+        },
+        {
+          code: "len(reply.split())",
+          text:
+            "`.split()` with nothing inside cuts the text at the spaces into a list of words. `len` counts them. The " +
+            "step-by-step reply has 5.",
+        },
+        {
+          code: "reply.strip().endswith(expected)",
+          text:
+            "`.strip()` removes spaces at both ends. `.endswith` asks whether the text ends with `expected`. The " +
+            "step-by-step reply ends with `408`, so this gives `True`.",
+        },
+        {
+          code: '("direct", "406")',
+          text: "A pair: a name for the style, then the pretend reply. `406` is a wrong answer.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>word_cost</Code> splits the reply at the spaces and counts the pieces.{" "}
@@ -301,7 +405,43 @@ def extract_total(text: str, marker: str = "Total:") -> str:
         return text.strip()
     return text.rsplit(marker, 1)[1].strip()
 
-print(extract_total(receipt))  # "$11.50"`} />
+print(extract_total(receipt))  # "$11.50"`} hints={[
+        {
+          code: 'def extract_total(text: str, marker: str = "Total:") -> str:',
+          block: "function",
+          text:
+            "Gives back the text that comes after the last `Total:` label. If the label is missing, it gives back " +
+            "the whole text, with spaces trimmed from the ends.",
+        },
+        {
+          code: "\\n",
+          text: '`\\n` inside a string means "new line". So the receipt is one string with three lines.',
+        },
+        {
+          code: 'marker: str = "Total:"',
+          text:
+            "`marker` is the label to look for. `= \"Total:\"` is a **default**: if you don't pass a marker, Python " +
+            "uses `\"Total:\"`. `: str` is a note saying it is text.",
+        },
+        {
+          code: "-> str",
+          text: "A note that says the function gives back text (a `str`).",
+        },
+        {
+          code: "if marker not in text:",
+          text: "Checks whether the label is missing. It is in the receipt, so the next line is skipped.",
+        },
+        {
+          code: "text.rsplit(marker, 1)",
+          text:
+            "Cuts the text at the **last** `Total:`, at most once. You get a list of two pieces: everything before " +
+            "it, and `\" $11.50\"`.",
+        },
+        {
+          code: "[1].strip()",
+          text: '`[1]` picks the second piece (counting starts at 0). `.strip()` removes the space in front, leaving `"$11.50"`.',
+        },
+      ]} />
       <Text>
         <Code>str.rsplit(marker, 1)</Code> splits the string into two pieces at the{" "}
         <i>last</i> occurrence of <Code>marker</Code>, and <Code>[1]</Code> grabs everything after
@@ -330,16 +470,45 @@ print(extract_total(receipt))  # "$11.50"`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
+      <CodeBlock code={`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
 
 def extract_high(text: str, marker: str = "High:") -> str:
     if marker not in text:
         return text.strip()
     return text.rsplit(marker, 1)[1].strip()
 
-print(extract_high(forecast))  # expected output: 78F`}
-      </Code>
+print(extract_high(forecast))  # expected output: 78F`} hints={[
+        {
+          code: 'def extract_high(text: str, marker: str = "High:") -> str:',
+          block: "function",
+          text:
+            "Gives back the text that comes after the last `High:` label. If the label is missing, it gives back " +
+            "the whole text, with spaces trimmed from the ends.",
+        },
+        {
+          code: "\\n",
+          text: '`\\n` inside a string means "new line". So the forecast is one string with three lines.',
+        },
+        {
+          code: 'marker: str = "High:"',
+          text:
+            "`marker` is the label to look for. `= \"High:\"` is a **default**: if you don't pass a marker, Python " +
+            "uses `\"High:\"`.",
+        },
+        {
+          code: "if marker not in text:",
+          text: "Checks whether the label is missing. It is in the forecast, so the function does not return early.",
+        },
+        {
+          code: "text.rsplit(marker, 1)",
+          text:
+            "Cuts the text at the **last** `High:`, at most once. You get two pieces: the first two lines, and `\" 78F\"`.",
+        },
+        {
+          code: "[1].strip()",
+          text: '`[1]` picks the second piece (counting starts at 0). `.strip()` removes the space in front, leaving `"78F"`.',
+        },
+      ]} />
       <PracticeCell labId={11} cellId="concept-2" code={`forecast = "Morning: cloudy\\nAfternoon: sunny\\nHigh: 78F"
 
 def extract_high(text: str, marker: str = "High:") -> str:
@@ -423,7 +592,60 @@ replies = [
     "It is about 80",
 ]
 for reply in replies:
-    print(grade(reply, "80"))`} />
+    print(grade(reply, "80"))`} hints={[
+        {
+          code: "def final_answer(reply):",
+          block: "function",
+          text:
+            "Looks at each line of the reply and keeps the text after `Answer:`. If no line has the marker, it " +
+            "gives back `None`.",
+        },
+        {
+          code: 'for line in reply.split("\\n"):',
+          block: "for loop",
+          text:
+            "Runs once per line. When a line starts with `Answer:`, its answer is saved. A later marker line " +
+            "replaces an earlier one, so the last one wins.",
+        },
+        {
+          code: "def grade(reply, expected):",
+          block: "function",
+          text:
+            "Gives `\"no marker\"` if no answer was found. Otherwise it compares the first word of the answer with " +
+            "the expected one and gives `\"right\"` or `\"wrong\"`.",
+        },
+        {
+          code: "for reply in replies:",
+          block: "for loop",
+          text: "Grades each of the 3 pretend replies against `\"80\"` and prints the result: right, wrong, then no marker.",
+        },
+        {
+          code: "answer = None",
+          text: '`None` is Python\'s word for "nothing". The answer stays `None` unless a marker line is found.',
+        },
+        {
+          code: 'reply.split("\\n")',
+          text: "Cuts the reply at each new line (`\\n`), giving a list of lines.",
+        },
+        {
+          code: 'line.startswith("Answer:")',
+          text: "Asks whether the line begins with the text `Answer:`. It gives `True` or `False`.",
+        },
+        {
+          code: 'line[len("Answer:"):]',
+          text:
+            '`len("Answer:")` is 7, so this is `line[7:]`: everything from position 7 on, which is the text after ' +
+            'the label. For `Answer: 80 mph` that is `" 80 mph"`.',
+        },
+        {
+          code: "if answer is None:",
+          text: '`is None` checks for "nothing found". `final_answer` gives `None` when no line has the marker.',
+        },
+        {
+          code: "answer.split()[0]",
+          text: 'Cuts the answer at the spaces and takes the first word. `"80 mph"` becomes `"80"`, so a unit is allowed.',
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>final_answer</Code> loops over the lines of the reply. When a line starts with{" "}

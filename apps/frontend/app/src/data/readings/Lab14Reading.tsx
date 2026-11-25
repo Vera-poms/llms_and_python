@@ -1,8 +1,56 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const ATM_HINTS: CodeHint[] = [
+  {
+    code: "class ATM:",
+    block: "class",
+    text:
+      "A **class** is a blueprint. An **object** is one thing built from the blueprint.",
+  },
+  {
+    code: "def __init__(self, balance):",
+    block: "function",
+    text:
+      "Runs once, right when the object is built. `self` means \"this object\".",
+  },
+  {
+    code: "self.balance = balance",
+    text:
+      "Stores the starting balance (100) inside the object.",
+  },
+  {
+    code: "def withdraw(self, amount):",
+    block: "method",
+    text:
+      "A **method** is a function that belongs to the object. This one is `withdraw`.",
+  },
+  {
+    code: "self.balance -= amount",
+    text:
+      "\"Take away\": subtracts `amount` from the saved balance.",
+  },
+  {
+    code: "atm = ATM(balance=100)",
+    text:
+      "Builds one ATM object that starts with 100.",
+  },
+  {
+    code: "atm.withdraw(30)",
+    text:
+      "Calls the method. `100 - 30 = 70`. It returns 70.",
+  },
+  {
+    code: "atm.withdraw(20)",
+    text:
+      "Starts from the saved 70, not from 100. `70 - 20 = 50`. That is what \"the object remembers\" means.",
+  },
+];
 
 export function Lab14Reading() {
   return (
@@ -80,15 +128,44 @@ export function Lab14Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`request = {
+      <CodeBlock code={`request = {
     "endpoint": "https://api.example.com/orders",
     "method": "POST",
     "headers": {"Authorization": "Bearer abc123"},
     "body": {"item": "widget", "qty": 2},
 }
-print(f"{request['method']} {request['endpoint']}")  # expected output: POST https://api.example.com/orders`}
-      </Code>
+print(f"{request['method']} {request['endpoint']}")  # expected output: POST https://api.example.com/orders`} hints={[
+        {
+          code: "request = {",
+          text:
+            "One **dict** that holds the parts of a request. A dict is a small table of labels (called **keys**) and values. Nothing is sent anywhere. It only describes a request.",
+        },
+        {
+          code: "\"endpoint\": ",
+          text: "The **endpoint**: the web address the request goes to, like the address on an envelope.",
+        },
+        {
+          code: "\"method\": ",
+          text: "The **method**. `POST` hands something over. `GET` just asks for something back.",
+        },
+        {
+          code: "\"Authorization\": \"Bearer abc123\"",
+          text:
+            "A **header** that works like a key card: it tells the service who you are. `abc123` is a made-up token.",
+        },
+        {
+          code: "{\"item\": \"widget\", \"qty\": 2}",
+          text: "The **body**: the real content you send. Here it says you want 2 widgets. It is a dict inside the dict.",
+        },
+        {
+          code: "request['method']",
+          text: "Reads the value for the key `\"method\"`: `\"POST\"`.",
+        },
+        {
+          code: "request['endpoint']",
+          text: "Reads the value for the key `\"endpoint\"`: the URL. The f-string prints both, with a space between.",
+        },
+      ]} />
       <PracticeCell labId={14} cellId="concept-1" code={`request = {
     "endpoint": "https://api.example.com/orders",
     "method": "POST",
@@ -177,7 +254,56 @@ for name, request in [("good", good), ("bad", bad)]:
 response = {"choices": [{"message": {"role": "assistant", "content": "Hello!"}}],
             "usage": {"total_tokens": 12}}
 reply, tokens = read_response(response)
-print("reply:", reply, "| tokens used:", tokens)`} />
+print("reply:", reply, "| tokens used:", tokens)`} hints={[
+        {
+          code: "def missing_parts(request):",
+          block: "function",
+          text:
+            "Checks a request dict for the 4 parts it needs. Gives back a list of the parts that are not there. An empty list, `[]`, means nothing is missing.",
+        },
+        {
+          code: "    for part in REQUIRED:",
+          block: "for loop",
+          text: "Tries each required part name in turn: `\"endpoint\"`, `\"method\"`, `\"headers\"`, `\"body\"`.",
+        },
+        {
+          code: "def read_response(response):",
+          block: "function",
+          text:
+            "Digs two values out of a response dict: the reply text and the number of tokens used. Gives both back.",
+        },
+        {
+          code: "for name, request in [(\"good\", good), (\"bad\", bad)]:",
+          block: "for loop",
+          text: "Checks both requests. `good` prints `[]`. `bad` prints `['headers']`, because it has no headers.",
+        },
+        {
+          code: "REQUIRED = [",
+          text: "The 4 parts every request needs. Names in capital letters are a habit for values that never change.",
+        },
+        {
+          code: "if part not in request:",
+          text:
+            "`in` on a dict checks its **keys**. `not in` is `True` when the key is missing. Then the part is added to `missing`.",
+        },
+        {
+          code: "response[\"choices\"][0][\"message\"][\"content\"]",
+          text:
+            "Walks down the response one step at a time: the `\"choices\"` list, its first item `[0]`, that item's `\"message\"` dict, then its `\"content\"` text. Here that gives `\"Hello!\"`.",
+        },
+        {
+          code: "response[\"usage\"][\"total_tokens\"]",
+          text: "Walks down to the token count: the `\"usage\"` dict, then its `\"total_tokens\"` value, here 12.",
+        },
+        {
+          code: "return reply, tokens",
+          text: "Gives back two values at once, as a pair.",
+        },
+        {
+          code: "reply, tokens = read_response(response)",
+          text: "Catches the pair and splits it: `reply` gets `\"Hello!\"` and `tokens` gets 12.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>missing_parts</Code> checks each name in <Code>REQUIRED</Code> against the keys of
@@ -350,34 +476,13 @@ total tokens: 16`}</Text>
 
 atm = ATM(balance=100)
 atm.withdraw(30)  # 70
-atm.withdraw(20)  # 50`} />
+atm.withdraw(20)  # 50`} hints={ATM_HINTS} />
       <Text>
         <Code>self.balance</Code> is remembered between calls, and <Code>withdraw</Code> is the one
         place the logic lives - you never rewrite "subtract and check" by hand again.
       </Text>
-      <Text>Here is what each part does, with the real numbers:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          A <b>class</b> is a blueprint. An <b>object</b> is one thing built from the blueprint.{" "}
-          <Code>ATM(balance=100)</Code> builds one ATM object that starts with 100.
-        </ListItem>
-        <ListItem>
-          <Code>__init__</Code> runs once, right when the object is built. <Code>self</Code> means
-          "this object". <Code>self.balance = balance</Code> stores 100 inside it.
-        </ListItem>
-        <ListItem>
-          <Code>atm.withdraw(30)</Code> is a <b>method</b>, which is a function that belongs to the
-          object. <Code>self.balance -= amount</Code> means "take away". <Code>100 - 30 = 70</Code>. It
-          returns 70.
-        </ListItem>
-        <ListItem>
-          <Code>atm.withdraw(20)</Code> starts from the saved 70, not from 100. <Code>70 - 20 = 50</Code>. That
-          is what "the object remembers" means.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`class VendingMachine:
+      <CodeBlock code={`class VendingMachine:
     def __init__(self, stock):
         self.stock = stock  # state the object remembers
 
@@ -387,8 +492,42 @@ atm.withdraw(20)  # 50`} />
 
 vm = VendingMachine({"soda": 5})
 print(vm.dispense("soda"))  # expected output: 4
-print(vm.dispense("soda"))  # expected output: 3`}
-      </Code>
+print(vm.dispense("soda"))  # expected output: 3`} hints={[
+        {
+          code: "class VendingMachine:",
+          block: "class",
+          text:
+            "A **class** is a blueprint. This one describes a vending machine: what it remembers (its stock) and what it can do (dispense an item).",
+        },
+        {
+          code: "def __init__(self, stock):",
+          block: "function",
+          text: "Runs once, right when a machine is built. It saves the stock dict inside the machine.",
+        },
+        {
+          code: "def dispense(self, item):",
+          block: "method",
+          text:
+            "A **method**: a function that belongs to the object. It takes one of `item` out of the stock and gives back how many are left.",
+        },
+        {
+          code: "self.stock = stock",
+          text: "`self` means \"this machine\". This line keeps the stock dict inside the machine, so later calls can use it.",
+        },
+        {
+          code: "self.stock[item] -= 1",
+          text: "`-= 1` means \"take away 1\". It is the same as `self.stock[item] = self.stock[item] - 1`.",
+        },
+        {
+          code: "vm = VendingMachine({\"soda\": 5})",
+          text: "Builds one machine, called an **object**, with 5 sodas. This runs `__init__`.",
+        },
+        {
+          code: "vm.dispense(\"soda\")",
+          text:
+            "Calls the method. The first call gives `5 - 1 = 4`. The second starts from the saved 4 and gives 3. The machine remembers.",
+        },
+      ]} />
       <PracticeCell labId={14} cellId="concept-2" code={`class VendingMachine:
     def __init__(self, stock):
         self.stock = stock  # state the object remembers
@@ -468,7 +607,45 @@ def to_label(reply):
 
 replies = ["Spam.", "  not spam \\n", "It is NOT spam, I think", "Hard to say"]
 for reply in replies:
-    print(reply.strip(), "->", to_label(reply))`} />
+    print(reply.strip(), "->", to_label(reply))`} hints={[
+        {
+          code: "def clean(reply):",
+          block: "function",
+          text: "Tidies a reply: cuts spaces and new lines off the ends, then a dot at the end, then makes it lowercase. `\"Spam.\"` becomes `\"spam\"`.",
+        },
+        {
+          code: "def to_label(reply):",
+          block: "function",
+          text:
+            "Turns a reply into one fixed label: `\"not spam\"`, `\"spam\"` or `\"unknown\"`. It checks the longer label first, because `\"not spam\"` also contains `\"spam\"`.",
+        },
+        {
+          code: "for reply in replies:",
+          block: "for loop",
+          text: "Labels each of the 4 replies and prints the tidy reply next to its label.",
+        },
+        {
+          code: ".strip().strip(\".\").lower()",
+          text:
+            "Three steps in a row. `.strip()` removes spaces and new lines at both ends. `.strip(\".\")` removes dots at the ends. `.lower()` makes all letters small.",
+        },
+        {
+          code: "if \"not spam\" in text:",
+          text: "Checked **first**. If `\"spam\"` were checked first, `\"it is not spam\"` would get the wrong label.",
+        },
+        {
+          code: "return \"unknown\"",
+          text: "The fallback. It is reached only when neither label is found, like for `\"Hard to say\"`.",
+        },
+        {
+          code: "\\n",
+          text: "`\\n` is a new line character. `clean` removes it, along with the spaces around it.",
+        },
+        {
+          code: "reply.strip(), ",
+          text: "Trims the spaces and the new line only for printing, so the lines look tidy.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>clean</Code> removes the spaces and the new line at the ends, removes a dot at the

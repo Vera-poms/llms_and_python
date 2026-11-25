@@ -2,7 +2,15 @@ import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/re
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const TEXT_SIZE_HINTS: CodeHint[] = [
+  { code: "len(text)", text: "Counts every character, spaces and the question mark included: 17." },
+  { code: "len(text) // 4 + 1", text: "Adding 1 makes sure even a one-letter message costs at least 1 token. So the guess is 5." },
+  { code: "len(text) // 4", text: "17 divided by 4 with the fraction dropped: 4." },
+  { code: "7 // 2, 7 / 2", text: "Shows the difference between `//` (3) and `/` (3.5)." },
+];
 
 export function Lab17Reading() {
   return (
@@ -41,22 +49,7 @@ export function Lab17Reading() {
 print(len(text))          # 17
 print(len(text) // 4)     # 4
 print(len(text) // 4 + 1) # 5
-print(7 // 2, 7 / 2)      # 3 3.5`} />
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>len(text)</Code> counts every character, spaces and the question mark included: 17.
-        </ListItem>
-        <ListItem>
-          <Code>len(text) // 4</Code> is 17 divided by 4 with the fraction dropped: 4.
-        </ListItem>
-        <ListItem>
-          Adding 1 makes sure even a one-letter message costs at least 1 token. So the guess is 5.
-        </ListItem>
-        <ListItem>
-          The last line shows the difference between <Code>//</Code> (3) and <Code>/</Code> (3.5).
-        </ListItem>
-      </UnorderedList>
+print(7 // 2, 7 / 2)      # 3 3.5`} hints={TEXT_SIZE_HINTS} />
 
       <PracticeCell labId={17} cellId="concept-1" code={`text = "Hello! How can I help you today?"
 print(len(text))           # expected output: 32
@@ -117,7 +110,60 @@ reply_room = 5
 for window in (30, 12):
     room = window - reply_room
     used = total_tokens(chat)
-    print("window", window, "-> input room", room, "used", used, "fits:", used <= room)`} />
+    print("window", window, "-> input room", room, "used", used, "fits:", used <= room)`} hints={[
+        {
+          code: "def count_tokens(text):",
+          block: "function",
+          text:
+            "The rule of thumb as a function: the number of characters divided by 4, plus 1. It gives " +
+            "back a token guess for one text.",
+        },
+        {
+          code: "def total_tokens(messages):",
+          block: "function",
+          text:
+            "Adds up the token guess of every message in the chat. For this chat that is " +
+            "7 + 5 + 6 = 18 tokens.",
+        },
+        {
+          code: "for message in messages:",
+          block: "for loop",
+          text: "Visits each message in turn and adds its cost to `total`.",
+        },
+        {
+          code: "for window in (30, 12):",
+          block: "for loop",
+          text:
+            "Runs twice, once for each window size. Each time it works out the room left for the " +
+            "input and checks if the chat fits.",
+        },
+        {
+          code: 'message["content"]',
+          text:
+            "Each message is a **dict**: a set of named values. `[\"content\"]` picks out the text of " +
+            "the message, like `What do you cook?`.",
+        },
+        {
+          code: "chat = [",
+          text:
+            "The chat is a list of messages. Each one has a `role` (who is speaking) and a `content` " +
+            "(what they said).",
+        },
+        {
+          code: "reply_room = 5",
+          text: "Tokens kept free for the model's answer. The reply needs room in the window too.",
+        },
+        {
+          code: "room = window - reply_room",
+          text: "What is left for your input: 30 - 5 = 25 in the first round, and 12 - 5 = 7 in the second.",
+        },
+        {
+          code: "used <= room",
+          text:
+            "`<=` means \"less than or equal to\". It gives `True` if the chat fits in the input room, " +
+            "and `False` if not.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>count_tokens</Code> is the rule of thumb from above: characters divided by 4, plus 1. <Code>total_tokens</Code> loops over the messages and adds up the cost of each <Code>message["content"]</Code>. This chat costs 18 tokens.
@@ -209,7 +255,38 @@ window 20 -> input room 12 used 24 fits: False`}</Text>
 for turn in reversed(turns):
     print(turn)
     if turn == "third":
-        break`} />
+        break`} hints={[
+        {
+          code: "for turn in reversed(turns):",
+          block: "for loop",
+          text:
+            "Walks the list from the end to the start. It prints each turn, and it stops right after " +
+            "`third`.",
+        },
+        {
+          code: 'if turn == "third":',
+          block: "if block",
+          text: "Runs only when the turn is `third`. Then `break` stops the whole loop at once.",
+        },
+        {
+          code: "reversed(turns)",
+          text:
+            "Gives the items from last to first: `fourth`, `third`, and so on. The list itself is not " +
+            "changed.",
+        },
+        {
+          code: "==",
+          text:
+            "`==` asks \"are these two equal?\" and gives `True` or `False`. A single `=` would store a " +
+            "value instead.",
+        },
+        {
+          code: "break",
+          text:
+            "Ends the loop right away, even if items are left. `second` and `first` are never " +
+            "visited.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The loop starts at the end, so the first <Code>turn</Code> is <Code>fourth</Code>. It is
@@ -292,7 +369,57 @@ turns = ["My name is Ada.", "I live in Accra.", "I bake bread on Sundays.", "Wha
 for budget in (30, 12):
     kept = count_kept(turns, budget)
     seen = turns[len(turns) - kept:]
-    print("budget", budget, "-> sees", kept, "turns, knows the name:", "My name is Ada." in seen)`} />
+    print("budget", budget, "-> sees", kept, "turns, knows the name:", "My name is Ada." in seen)`} hints={[
+        {
+          code: "def count_tokens(text):",
+          block: "function",
+          text: "The rule of thumb: characters divided by 4, plus 1. It gives back a token guess for one text.",
+        },
+        {
+          code: "def count_kept(turns, budget):",
+          block: "function",
+          text:
+            "Counts how many of the newest turns fit in the budget. It starts at the last turn, adds " +
+            "each cost, and stops at the first turn that goes over.",
+        },
+        {
+          code: "for turn in reversed(turns):",
+          block: "for loop",
+          text:
+            "Walks the turns from the newest to the oldest. Each round adds one turn's cost and counts " +
+            "it, unless the budget is passed.",
+        },
+        {
+          code: "if used > budget:",
+          block: "if block",
+          text: "If the total is now over the budget, `break` stops the loop. This turn is not counted.",
+        },
+        {
+          code: "for budget in (30, 12):",
+          block: "for loop",
+          text: "Tries two budgets with the same turns, and checks each time if the name turn survived.",
+        },
+        {
+          code: "used = used + count_tokens(turn)",
+          text: "Adds this turn's cost to the running total.",
+        },
+        {
+          code: "kept = kept + 1",
+          text: "This turn fits, so it is counted as kept.",
+        },
+        {
+          code: "turns[len(turns) - kept:]",
+          text:
+            "A slice from position `len(turns) - kept` to the end: the newest `kept` turns. With 2 " +
+            "kept, it is `turns[2:]`, the last two.",
+        },
+        {
+          code: '"My name is Ada." in seen',
+          text:
+            "`in` checks if that turn is in the list the model sees. `True` means the model still " +
+            "knows the name.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The four turns cost 4, 5, 7 and 5 tokens, 21 in all. <Code>count_kept</Code> starts at the newest turn and adds costs until the budget is passed. Then <Code>break</Code> stops it.
@@ -401,7 +528,22 @@ print(new)  # ['a', 'b', 'c']
 
 newest_first = ["z", "y", "x"]
 newest_first.reverse()
-print(newest_first)  # ['x', 'y', 'z']`} />
+print(newest_first)  # ['x', 'y', 'z']`} hints={[
+        {
+          code: 'old + ["c"]',
+          text: "`+` joins two lists into a **new**, third list. `old` itself is not changed.",
+        },
+        {
+          code: "print(old)",
+          text: "Still prints `['a', 'b']`. This shows that `old` was left alone.",
+        },
+        {
+          code: "newest_first.reverse()",
+          text:
+            "`.reverse()` flips the list **in place**: it changes `newest_first` itself instead of " +
+            "making a new list.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>old + ["c"]</Code> builds a third list. <Code>old</Code> is untouched, which is why
@@ -471,7 +613,38 @@ def fits(history_tokens, window, reply):
 window = 8000
 history_tokens = 6500
 for reply in (500, 1000, 2000):
-    print("reply", reply, "-> input budget", input_budget(window, reply), "fits:", fits(history_tokens, window, reply))`} />
+    print("reply", reply, "-> input budget", input_budget(window, reply), "fits:", fits(history_tokens, window, reply))`} hints={[
+        {
+          code: "def input_budget(window, reply):",
+          block: "function",
+          text: "Works out the room left for your input: the window minus the room kept for the reply.",
+        },
+        {
+          code: "def fits(history_tokens, window, reply):",
+          block: "function",
+          text: "Checks if the chat fits in the input budget. It gives back `True` or `False`.",
+        },
+        {
+          code: "for reply in (500, 1000, 2000):",
+          block: "for loop",
+          text:
+            "Tries three reply sizes. A bigger reply leaves less room for the chat: the budget is " +
+            "7500, then 7000, then 6000.",
+        },
+        {
+          code: "window = 8000",
+          text: "The model can see 8,000 tokens in one call, your input and its reply together.",
+        },
+        {
+          code: "history_tokens = 6500",
+          text: "The size of the chat so far, in tokens.",
+        },
+        {
+          code: "history_tokens <= input_budget(window, reply)",
+          text:
+            "`<=` means \"less than or equal to\". 6500 fits a budget of 7000, but not a budget of 6000.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>input_budget</Code> is the window minus the room kept for the reply. <Code>fits</Code> checks that the chat is within it.

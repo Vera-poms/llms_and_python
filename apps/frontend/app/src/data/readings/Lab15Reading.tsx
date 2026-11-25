@@ -1,6 +1,7 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -31,7 +32,48 @@ export function Lab15Reading() {
 car = Car()
 car.drive(10)
 car.drive(5)
-print(car.odometer)  # 15`} />
+print(car.odometer)  # 15`} hints={[
+        {
+          code: "class Car:",
+          block: "class",
+          text:
+            "A **class** is a blueprint. This one describes a car that keeps its own mileage, with a way to drive it.",
+        },
+        {
+          code: "def __init__(self):",
+          block: "function",
+          text: "Runs once, right when a car is built. It gives the new car an odometer that starts at 0.",
+        },
+        {
+          code: "def drive(self, miles):",
+          block: "method",
+          text: "A **method**: a function that belongs to the object. It adds the miles driven to this car's total.",
+        },
+        {
+          code: "self.odometer = 0",
+          text: "`self` means \"this car\". This line saves a number, 0, inside the car.",
+        },
+        {
+          code: "self.odometer += miles",
+          text: "`+=` means \"add to what is already there\". It is the same as `self.odometer = self.odometer + miles`.",
+        },
+        {
+          code: "car = Car()",
+          text: "Builds one car, called an **object**, from the blueprint. This runs `__init__`.",
+        },
+        {
+          code: "car.drive(10)",
+          text: "Calls the method on this car. `0 + 10 = 10`.",
+        },
+        {
+          code: "car.drive(5)",
+          text: "Starts from the saved 10, not from 0. `10 + 5 = 15`.",
+        },
+        {
+          code: "car.odometer",
+          text: "Reads the number the car kept: 15.",
+        },
+      ]} />
       <Text>
         Nobody outside the object has to remember to update a separate "total miles" variable - the
         car keeps track of itself.
@@ -57,8 +99,7 @@ print(car.odometer)  # 15`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`class BankAccount:
+      <CodeBlock code={`class BankAccount:
     def __init__(self):
         self.balance = 0
 
@@ -68,8 +109,39 @@ print(car.odometer)  # 15`} />
 account = BankAccount()
 account.deposit(50)
 account.deposit(25)
-print(account.balance)  # expected output: 75`}
-      </Code>
+print(account.balance)  # expected output: 75`} hints={[
+        {
+          code: "class BankAccount:",
+          block: "class",
+          text: "A **class** is a blueprint. This one describes a bank account that keeps its own balance.",
+        },
+        {
+          code: "def __init__(self):",
+          block: "function",
+          text: "Runs once, right when an account is built. It starts the balance at 0.",
+        },
+        {
+          code: "def deposit(self, amount):",
+          block: "method",
+          text: "A **method**: a function that belongs to the object. It adds `amount` to this account's balance.",
+        },
+        {
+          code: "self.balance += amount",
+          text: "`self` means \"this account\". `+=` adds `amount` to the balance that is already saved.",
+        },
+        {
+          code: "account = BankAccount()",
+          text: "Builds one account, called an **object**. Its balance starts at 0.",
+        },
+        {
+          code: "account.deposit(50)",
+          text: "`0 + 50 = 50`.",
+        },
+        {
+          code: "account.deposit(25)",
+          text: "Starts from the saved 50. `50 + 25 = 75`.",
+        },
+      ]} />
       <PracticeCell labId={15} cellId="concept-1" code={`class BankAccount:
     def __init__(self):
         self.balance = 0
@@ -152,7 +224,57 @@ chats = [
     ["system", "user", "user"],
 ]
 for roles in chats:
-    print(len(roles), "messages ->", check_history(make_history(roles)))`} />
+    print(len(roles), "messages ->", check_history(make_history(roles)))`} hints={[
+        {
+          code: "def make_history(roles):",
+          block: "function",
+          text:
+            "Builds a messages list from a list of role names. Each message gets the role and the placeholder text `\"text\"`.",
+        },
+        {
+          code: "    for role in roles:",
+          block: "for loop",
+          text: "Adds one message dict for each role name, in the same order.",
+        },
+        {
+          code: "def check_history(messages):",
+          block: "function",
+          text:
+            "Checks that after the system message the roles go user, assistant, user, assistant... Gives back `\"ok\"`, or a note about the first message that is out of place.",
+        },
+        {
+          code: "    for message in messages[1:]:",
+          block: "for loop",
+          text:
+            "Visits every message after the first. It compares each role with the one expected, then flips what it expects next.",
+        },
+        {
+          code: "for roles in chats:",
+          block: "for loop",
+          text:
+            "Checks both chats. The first prints `5 messages -> ok`. The second prints `3 messages -> problem: expected assistant but got user`.",
+        },
+        {
+          code: "messages[1:]",
+          text: "A **slice**: everything from position 1 to the end. It skips position 0, the system message.",
+        },
+        {
+          code: "# skip the system message",
+          text: "A **comment**: Python skips everything after `#`. It is a note for the reader.",
+        },
+        {
+          code: "!= expected",
+          text: "`!=` means \"is not equal to\". So this is `True` when the role is not the one we expected.",
+        },
+        {
+          code: "if expected == \"user\":",
+          text: "`==` asks \"are these equal?\". Together with `else`, this flips `expected` between `\"user\"` and `\"assistant\"`.",
+        },
+        {
+          code: "check_history(make_history(roles))",
+          text: "Runs the inner call first: `make_history` builds the list. Then `check_history` checks that list.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>messages[1:]</Code> skips the first message, the system one. Then{" "}
@@ -283,7 +405,40 @@ for roles in chats:
 
     def add(self, item):
         self.items.append(item)
-        print(f"Added: {item} ({len(self.items)} items total)")`} />
+        print(f"Added: {item} ({len(self.items)} items total)")`} hints={[
+        {
+          code: "class TodoList:",
+          block: "class",
+          text: "A **class** is a blueprint. This one is a to-do list that keeps its items inside itself.",
+        },
+        {
+          code: "def __init__(self):",
+          block: "function",
+          text: "Runs once, right when a to-do list is built. It starts with an empty list of items.",
+        },
+        {
+          code: "def add(self, item):",
+          block: "method",
+          text:
+            "A **method**: a function that belongs to the object. It is the one place that adds an item and reports the new total, so callers never repeat those steps.",
+        },
+        {
+          code: "self.items = []",
+          text: "`self` means \"this to-do list\". It gets its own empty list.",
+        },
+        {
+          code: "self.items.append(item)",
+          text: "Adds the item to the end of this object's list.",
+        },
+        {
+          code: "len(self.items)",
+          text: "Counts the items in the list. After the first `add(\"milk\")` it is 1.",
+        },
+        {
+          code: "print(f\"Added:",
+          text: "An **f-string** fills in each `{...}`. After `add(\"milk\")` it prints `Added: milk (1 items total)`.",
+        },
+      ]} />
       <Text>
         <Code>add</Code> is the one place that appends to <Code>self.items</Code> and reports back -
         callers never touch <Code>self.items</Code> directly, they just call <Code>add(...)</Code>.
@@ -304,8 +459,7 @@ for roles in chats:
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`class Playlist:
+      <CodeBlock code={`class Playlist:
     def __init__(self):
         self.songs = []
 
@@ -318,8 +472,43 @@ playlist.add("Song A")
 playlist.add("Song B")
 # expected output:
 # Queued: Song A (1 songs total)
-# Queued: Song B (2 songs total)`}
-      </Code>
+# Queued: Song B (2 songs total)`} hints={[
+        {
+          code: "class Playlist:",
+          block: "class",
+          text: "A **class** is a blueprint. This one is a playlist that keeps its songs inside itself.",
+        },
+        {
+          code: "def __init__(self):",
+          block: "function",
+          text: "Runs once, right when a playlist is built. It starts with an empty list of songs.",
+        },
+        {
+          code: "def add(self, song):",
+          block: "method",
+          text: "A **method**: a function that belongs to the object. It adds one song and prints the new total.",
+        },
+        {
+          code: "self.songs.append(song)",
+          text: "Adds the song to the end of this playlist's own list.",
+        },
+        {
+          code: "len(self.songs)",
+          text: "Counts the songs so far: 1 after the first `add`, 2 after the second.",
+        },
+        {
+          code: "playlist = Playlist()",
+          text: "Builds one playlist, called an **object**. This runs `__init__`.",
+        },
+        {
+          code: "playlist.add(\"Song A\")",
+          text: "Calls the method. The caller writes one line, and the method does both jobs: add and report.",
+        },
+        {
+          code: "# expected output:",
+          text: "A **comment**: Python skips everything after `#`. These lines show what the code prints.",
+        },
+      ]} />
       <PracticeCell labId={15} cellId="concept-2" code={`class Playlist:
     def __init__(self):
         self.songs = []
@@ -407,7 +596,50 @@ for text in ["tell me about cats", "now tell me about dogs", "and about birds"]:
     print(len(history), "messages,", words, "words, fits:", words <= window)
     add(history, "assistant", "ok ok ok")
 history = reset("Be brief.")
-print("after reset:", len(history), "message,", count_words(history), "words")`} />
+print("after reset:", len(history), "message,", count_words(history), "words")`} hints={[
+        {
+          code: "def count_words(messages):",
+          block: "function",
+          text: "Adds up the words in every message and gives back the total. Words stand in for tokens here.",
+        },
+        {
+          code: "    for message in messages:",
+          block: "for loop",
+          text: "Visits each message and adds its word count to `total`.",
+        },
+        {
+          code: "def add(history, role, text):",
+          block: "function",
+          text: "Puts one message, with the given role and text, at the end of the history list.",
+        },
+        {
+          code: "def reset(system_text):",
+          block: "function",
+          text: "Gives back a brand new history that holds only the system message. The old chat is gone, but the rules stay.",
+        },
+        {
+          code: "for text in [\"tell me about cats\"",
+          block: "for loop",
+          text:
+            "One pass per question. Each pass adds the question, measures the history, prints the size, then adds a 3-word reply. The word count goes 6, 14, 20.",
+        },
+        {
+          code: ".split()",
+          text: "Cuts the text at the spaces into a list of words. `\"Be brief.\".split()` is `[\"Be\", \"brief.\"]`, so 2 words.",
+        },
+        {
+          code: "window = 12",
+          text: "The pretend **window**: the most words the model can take in at once.",
+        },
+        {
+          code: "words <= window",
+          text: "`<=` means \"less than or equal to\". It prints `True` if the history fits the window, `False` if not.",
+        },
+        {
+          code: "history = reset(\"Be brief.\")",
+          text: "Starts a fresh history with only the system message. After the loop, this brings it back to 1 message and 2 words.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           Each pass of the loop adds a question, measures the history, then adds a canned reply of
@@ -572,8 +804,7 @@ after reset: 1 message, 4 words`}</Text>
         can run it later.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`def fake_sender(message):
+      <CodeBlock code={`def fake_sender(message):
     return f"[fake] would send: {message}"
 
 class Notifier:
@@ -584,8 +815,46 @@ class Notifier:
         return self.sender(message)
 
 notifier = Notifier(sender=fake_sender)
-print(notifier.notify("Build complete"))  # expected output: [fake] would send: Build complete`}
-      </Code>
+print(notifier.notify("Build complete"))  # expected output: [fake] would send: Build complete`} hints={[
+        {
+          code: "def fake_sender(message):",
+          block: "function",
+          text: "The stand-in courier. It does not send anything. It just gives back the text `[fake] would send: ` with the message added.",
+        },
+        {
+          code: "class Notifier:",
+          block: "class",
+          text:
+            "A **class** that sends notes. It does not know **how** a note is sent. It uses whatever sender function it was given.",
+        },
+        {
+          code: "def __init__(self, sender):",
+          block: "function",
+          text: "Runs once, when the notifier is built. It saves the sender function inside the object.",
+        },
+        {
+          code: "def notify(self, message):",
+          block: "method",
+          text: "A **method**: a function that belongs to the object. It hands the message to the saved sender and gives back what the sender returns.",
+        },
+        {
+          code: "self.sender = sender",
+          text: "Saves a **function** in the object, just like you would save a number or a list.",
+        },
+        {
+          code: "self.sender(message)",
+          text: "The brackets **run** the saved function now. Here that means `fake_sender(\"Build complete\")`.",
+        },
+        {
+          code: "sender=fake_sender",
+          text:
+            "Passes the function itself, with **no brackets**, so it is stored, not run. `sender=` names the argument it goes into.",
+        },
+        {
+          code: "notifier.notify(\"Build complete\")",
+          text: "Gives back `\"[fake] would send: Build complete\"`, and `print` shows it.",
+        },
+      ]} />
       <PracticeCell labId={15} cellId="concept-3" code={`def fake_sender(message):
     return f"[fake] would send: {message}"
 
@@ -668,7 +937,58 @@ questions = ["hello", "how are you"]
 for transport in [echo_transport, shout_transport]:
     print("with", transport.__name__)
     count = run_chat(transport, questions)
-    print("history size:", count)`} />
+    print("history size:", count)`} hints={[
+        {
+          code: "def echo_transport(messages):",
+          block: "function",
+          text: "A stand-in model. It replies with `echo: ` plus the last message. For `\"hello\"` it gives `echo: hello`.",
+        },
+        {
+          code: "def shout_transport(messages):",
+          block: "function",
+          text: "Another stand-in model. It replies with the last message in capital letters plus `!`. For `\"hello\"` it gives `HELLO!`.",
+        },
+        {
+          code: "def run_chat(transport, questions):",
+          block: "function",
+          text:
+            "One chat loop that works with **any** transport. It asks each question, saves the reply, prints both, and gives back the history size at the end.",
+        },
+        {
+          code: "    for question in questions:",
+          block: "for loop",
+          text: "One chat turn per question: add the question, get a reply from the transport, add the reply.",
+        },
+        {
+          code: "for transport in [echo_transport, shout_transport]:",
+          block: "for loop",
+          text: "Runs the same chat twice, once with each stand-in model. Both runs end with a history size of 4.",
+        },
+        {
+          code: "messages[-1][\"content\"]",
+          text: "`[-1]` means the last item in the list. So this is the text of the newest message.",
+        },
+        {
+          code: ".upper()",
+          text: "Makes a copy of the text in capital letters. `\"hello\".upper()` is `\"HELLO\"`.",
+        },
+        {
+          code: "reply = transport(messages)",
+          text: "Runs whichever function was passed in as `transport`. `run_chat` never needs to know which one it is.",
+        },
+        {
+          code: "[echo_transport, shout_transport]",
+          text: "A list of two **functions**. There are no brackets after the names, so they are stored here, not run.",
+        },
+        {
+          code: "transport.__name__",
+          text: "The name of the function, as text. For the first one it is `echo_transport`.",
+        },
+        {
+          code: "return len(messages)",
+          text: "Gives back how many messages the chat ended with: 2 questions plus 2 replies, so 4.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>run_chat</Code> never says which model it uses. It just calls{" "}

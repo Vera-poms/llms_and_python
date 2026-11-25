@@ -8,6 +8,7 @@ import { EditorView, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { useEffect, useRef } from "react";
 
+import { CodeHint, codeHints } from "./codeHints";
 import { editorTheme, highlightFor, paletteFor } from "./codeTheme";
 
 const MAX_LINE_LENGTH = 79;
@@ -95,8 +96,11 @@ export function CodeEditor({
   minHeight = "80px",
   onRun,
   onSubmit,
+  hints,
 }: {
   value: string;
+  // Pieces of code to underline and explain on hover. Read once, when the editor is created.
+  hints?: CodeHint[];
   onChange: (value: string) => void;
   minHeight?: string;
   // Called on Shift+Enter; the editor is created once, so keep the latest callback in a ref.
@@ -149,6 +153,7 @@ export function CodeEditor({
         python(),
         pythonLinter,
         lintGutter(),
+        hints && hints.length > 0 ? codeHints(hints) : [],
         themeCompartment.of([editorTheme(palette, dark), syntaxHighlighting(highlightFor(dark))]),
         EditorView.contentAttributes.of({ spellcheck: "false", autocorrect: "off", autocapitalize: "off" }),
         EditorView.lineWrapping,

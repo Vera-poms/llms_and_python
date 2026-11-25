@@ -1,8 +1,97 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the examples below.
+// In the text, `backticks` style code and **double stars** bold a key word.
+const NAME_HINT: CodeHint = {
+  code: 'name = "Vera"',
+  text: "Saves the text `Vera` under the label `name`. A piece of text in quote marks is called a **string**.",
+};
+
+const CONCAT_HINTS: CodeHint[] = [
+  NAME_HINT,
+  {
+    code: '"Hello, " + name + "!"',
+    text:
+      'Glues three pieces together: `"Hello, "` + `"Vera"` + `"!"` gives `"Hello, Vera!"`. It works, but ' +
+      "it is easy to forget a space or a quote mark.",
+  },
+];
+
+const FSTRING_HINTS: CodeHint[] = [
+  NAME_HINT,
+  {
+    code: 'f"Hello, {name}!"',
+    text:
+      "The `f` before the quote marks turns on filling. Python sees the `{name}`, looks up what `name` holds " +
+      '("Vera"), and puts it there. The `{name}` is called a **placeholder**: an empty spot with a label.',
+  },
+];
+
+const FORMAT_HINTS: CodeHint[] = [
+  {
+    code: 'template = "Hello, {name}!"',
+    text: "Here the string has no `f`, so it is just plain text with a placeholder in it.",
+  },
+  {
+    code: "template.format(",
+    text: 'Calling `.format` says "fill the blank called `name` with `Vera`".',
+  },
+  {
+    code: 'name="Vera"',
+    text: "A **keyword argument**: you give the value together with the label it belongs to.",
+  },
+];
+
+const COUNTER_HINTS: CodeHint[] = [
+  {
+    code: "class Counter:",
+    block: "class",
+    text: "Starts the blueprint. Nothing exists yet. It is only the plan, like a drawing of a house.",
+  },
+  {
+    code: "def __init__(self, start=0):",
+    block: "function",
+    text:
+      "Runs once, by itself, when a new object is made. It stores the starting total inside the object. " +
+      "If you pass nothing, `start` is 0.",
+  },
+  {
+    code: "def add(self, amount):",
+    block: "function",
+    text:
+      "A **method**: a function that belongs to the object. It adds `amount` to the stored total and gives back the new total.",
+  },
+  {
+    code: "c = Counter()",
+    text:
+      'Builds one real **object** from the plan. Python automatically runs `__init__`. The word `self` means "this ' +
+      'object". So `self.total = start` stores 0 inside `c`.',
+  },
+  {
+    code: "self.total = start",
+    text: 'Stores `start` (0 here) inside this object. `self` means "this object".',
+  },
+  {
+    code: "c.add(5)",
+    text:
+      'Runs the method on `c`. `self.total += amount` means "add to what is already stored". `0 + 5 = 5`, and 5 is returned.',
+  },
+  {
+    code: "self.total += amount",
+    text: 'Means "add to what is already stored".',
+  },
+  {
+    code: "c.add(3)",
+    text:
+      'Starts from the stored 5, not from 0. `5 + 3 = 8`. This is what "remembers" means: the number is kept inside the object between calls.',
+  },
+];
 
 export function Lab08Reading() {
   return (
@@ -28,7 +117,7 @@ export function Lab08Reading() {
 
       <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>You could paste strings together:</Text>
-      <RunnableExample labId={8} code={`name = "Vera"
+      <RunnableExample labId={8} hints={CONCAT_HINTS} code={`name = "Vera"
 greeting = "Hello, " + name + "!"
 # "Hello, Vera!"`} />
       <Text>
@@ -36,51 +125,41 @@ greeting = "Hello, " + name + "!"
         cleaner ways to do the same thing. An <b>f-string</b> (a string literal prefixed with{" "}
         <Code>f</Code>) lets you drop a variable straight into the text inside <Code>{"{}"}</Code>:
       </Text>
-      <RunnableExample labId={8} code={`name = "Vera"
+      <RunnableExample labId={8} hints={FSTRING_HINTS} code={`name = "Vera"
 greeting = f"Hello, {name}!"
 # "Hello, Vera!"`} />
       <Text>
         A close cousin is the <Code>.format()</Code> method, which does the same substitution but on
         a plain string template that isn't tied to variables at the moment it's written:
       </Text>
-      <RunnableExample labId={8} code={`template = "Hello, {name}!"
+      <RunnableExample labId={8} hints={FORMAT_HINTS} code={`template = "Hello, {name}!"
 template.format(name="Vera")
 # "Hello, Vera!"`} />
 
-      <Text>Here is what each of the three examples does, one step at a time:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>name = "Vera"</Code> saves the text <Code>Vera</Code> under the label{" "}
-          <Code>name</Code>. A piece of text in quote marks is called a <b>string</b>.
-        </ListItem>
-        <ListItem>
-          <Code>"Hello, " + name + "!"</Code> glues three pieces together: <Code>"Hello, "</Code>{" "}
-          + <Code>"Vera"</Code> + <Code>"!"</Code> gives <Code>"Hello, Vera!"</Code>. It works, but
-          it is easy to forget a space or a quote mark.
-        </ListItem>
-        <ListItem>
-          <Code>f"Hello, {"{name}"}!"</Code> - the <Code>f</Code> before the quote marks turns on
-          filling. Python sees the <Code>{"{name}"}</Code>, looks up what <Code>name</Code> holds
-          ("Vera"), and puts it there. The <Code>{"{name}"}</Code> is called a{" "}
-          <b>placeholder</b>: an empty spot with a label.
-        </ListItem>
-        <ListItem>
-          <Code>template.format(name="Vera")</Code> - here the string has no <Code>f</Code>, so it
-          is just plain text with a placeholder in it. Calling <Code>.format</Code> says "fill the
-          blank called <Code>name</Code> with <Code>Vera</Code>". The <Code>name="Vera"</Code> part
-          is a <b>keyword argument</b>: you give the value together with the label it belongs to.
-        </ListItem>
-      </UnorderedList>
-
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`item = "notebook"
+      <CodeBlock code={`item = "notebook"
 qty = 3
 message = f"You ordered {qty} {item}(s)."
 print(message)  # expected output: You ordered 3 notebook(s).
 
 order_template = "You ordered {qty} {item}(s)."
-print(order_template.format(qty=5, item="pen"))  # expected output: You ordered 5 pen(s).`}
-      </Code>
+print(order_template.format(qty=5, item="pen"))  # expected output: You ordered 5 pen(s).`} hints={[
+        {
+          code: 'f"You ordered {qty} {item}(s)."',
+          text:
+            "An **f-string**: the `f` before the quote marks fills each `{...}` blank right now. `{qty}` becomes 3 " +
+            "and `{item}` becomes notebook. The number is turned into text for you.",
+        },
+        {
+          code: 'order_template = "You ordered {qty} {item}(s)."',
+          text: "The same sentence, but with no `f`. It is plain text with two blanks still in it. Nothing is filled yet.",
+        },
+        {
+          code: 'order_template.format(qty=5, item="pen")',
+          text:
+            "Fills the blanks now, with new values. `qty=5` and `item=\"pen\"` say which value goes in which blank. " +
+            "You get `You ordered 5 pen(s).`",
+        },
+      ]} />
       <PracticeCell labId={8} cellId="concept-1" code={`item = "notebook"
 qty = 3
 message = f"You ordered {qty} {item}(s)."
@@ -143,7 +222,37 @@ for review in ["I loved it", "Too slow"]:
     prompt = build_prompt(instruction, review)
     print(prompt)
     print("characters:", len(prompt))
-    print("---")`} />
+    print("---")`} hints={[
+        {
+          code: "def build_prompt(instruction, review):",
+          block: "function",
+          text:
+            "Takes an instruction and a review and gives back one finished prompt: the instruction, a blank line, " +
+            "then `Review:` and the review.",
+        },
+        {
+          code: 'for review in ["I loved it", "Too slow"]:',
+          block: "for loop",
+          text:
+            "Runs the indented lines once for each review. Each round builds a prompt, prints it, prints its " +
+            "length, then prints `---` to keep the two apart.",
+        },
+        {
+          code: 'f"{instruction}\\n\\nReview: {review}"',
+          text:
+            "An f-string that fills two blanks. `\\n` means \"new line\", so `\\n\\n` ends the instruction line and " +
+            "then leaves one empty line before the review.",
+        },
+        {
+          code: "prompt = build_prompt(",
+          text: "Calls the function with this round's review. The finished text it gives back is stored in `prompt`.",
+        },
+        {
+          code: "len(prompt)",
+          text:
+            "Counts the characters in the prompt, spaces and new lines included. The first prompt has 64, the second 62.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>build_prompt</Code> glues three parts: the instruction, a blank line (<Code>\n\n</Code>) and <Code>Review:</Code> plus the review.
@@ -280,7 +389,41 @@ def render(template, **data):
     return template.format(**data)
 
 render(template, name="Vera")  # "Hello, Vera!"
-render(template, name="Sam")   # "Hello, Sam!"`} />
+render(template, name="Sam")   # "Hello, Sam!"`} hints={[
+        {
+          code: "def render(template, **data):",
+          block: "function",
+          text:
+            "Fills any template with any data you pass in, and gives back the finished text. The same function " +
+            "works for every template.",
+        },
+        {
+          code: 'template = "Hello, {name}!"',
+          text:
+            "The **template**: text with a blank called `name`. It has no `f`, so the blank stays empty until " +
+            "something fills it.",
+        },
+        {
+          code: ", **data)",
+          text:
+            "`**data` collects every **keyword argument** (a value given with its label, like `name=\"Vera\"`) " +
+            "into one dict. Here `data` becomes `{'name': 'Vera'}`.",
+        },
+        {
+          code: ".format(**data)",
+          text:
+            "Here `**` works the other way. It spreads the dict back out into labelled values, so this is the same " +
+            "as `template.format(name=\"Vera\")`.",
+        },
+        {
+          code: 'render(template, name="Vera")',
+          text: "Calls `render` with the template and one labelled value. It gives back `\"Hello, Vera!\"`.",
+        },
+        {
+          code: 'render(template, name="Sam")',
+          text: "Same template, new data. This time you get `\"Hello, Sam!\"`.",
+        },
+      ]} />
       <Text>
         The template gets written once, and reused for as many different pieces of data as you like -
         it means you can write it once, test it once, and reuse it safely for a thousand different
@@ -305,14 +448,42 @@ render(template, name="Sam")   # "Hello, Sam!"`} />
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`def render(template, **data):
+      <CodeBlock code={`def render(template, **data):
     return template.format(**data)
 
 invoice_template = "Invoice for {customer}: \${amount}"
 print(render(invoice_template, customer="Alex", amount=42))  # expected output: Invoice for Alex: $42
-print(render(invoice_template, customer="Sam", amount=17))  # expected output: Invoice for Sam: $17`}
-      </Code>
+print(render(invoice_template, customer="Sam", amount=17))  # expected output: Invoice for Sam: $17`} hints={[
+        {
+          code: "def render(template, **data):",
+          block: "function",
+          text: "The same `render` as above. It fills the blanks in any template with the labelled values you pass in.",
+        },
+        {
+          code: ", **data)",
+          text: "`**data` collects the labelled values you pass in, like `customer=\"Alex\"`, into one dict called `data`.",
+        },
+        {
+          code: ".format(**data)",
+          text: "`**` spreads the dict back out into labelled values, and `.format` puts each one in its blank.",
+        },
+        {
+          code: 'invoice_template = "Invoice for {customer}: ${amount}"',
+          text:
+            "A template with two blanks, `{customer}` and `{amount}`. The `$` is just a normal character. Only " +
+            "curly braces make a blank.",
+        },
+        {
+          code: 'render(invoice_template, customer="Alex", amount=42)',
+          text:
+            "Inside `render`, `data` becomes `{'customer': 'Alex', 'amount': 42}`. The blanks are filled and you " +
+            "get `Invoice for Alex: $42`.",
+        },
+        {
+          code: 'render(invoice_template, customer="Sam", amount=17)',
+          text: "Same template, new data. You get `Invoice for Sam: $17`. The template itself is not changed.",
+        },
+      ]} />
       <PracticeCell labId={8} cellId="concept-2" code={`def render(template, **data):
     return template.format(**data)
 
@@ -380,7 +551,61 @@ for name, template in templates.items():
     print(name, "->", len(prompts), "prompts")
     for prompt in prompts:
         task, data = prompt.split("\\n\\n")
-        print("  ", task, "|", data)`} />
+        print("  ", task, "|", data)`} hints={[
+        {
+          code: "def make_prompts(template, reviews):",
+          block: "function",
+          text:
+            "Takes one template and a list of reviews. It fills the template once for each review and gives back " +
+            "the list of finished prompts.",
+        },
+        {
+          code: "for review in reviews:",
+          block: "for loop",
+          text: "Repeats once per review. Each round fills the `{review}` blank and adds the result to the `prompts` list.",
+        },
+        {
+          code: "for name, template in templates.items():",
+          block: "for loop",
+          text:
+            "Runs once for each template in the dict: first `classify`, then `summarize`. Each round makes the " +
+            "prompts for both reviews and prints them.",
+        },
+        {
+          code: "for prompt in prompts:",
+          block: "for loop",
+          text: "Runs once per prompt. It cuts the prompt at the blank line and prints the two parts with a `|` between them.",
+        },
+        {
+          code: "prompts = []",
+          text: "Starts an empty list. The loop below adds one prompt to it for each review.",
+        },
+        {
+          code: "prompts.append(",
+          text: "`.append` adds one item to the end of a list. Here it adds the filled-in prompt.",
+        },
+        {
+          code: "template.format(review=review)",
+          text:
+            "Fills the `{review}` blank with this round's review. The left `review` is the blank's name, the right " +
+            "`review` is the value.",
+        },
+        {
+          code: "templates = {",
+          text:
+            "A **dict**: a table of labels and values. Each label (`\"classify\"`, `\"summarize\"`) points to one template.",
+        },
+        {
+          code: "templates.items()",
+          text: "`.items()` gives the dict's entries as pairs. `name` gets the label and `template` gets the text.",
+        },
+        {
+          code: 'task, data = prompt.split("\\n\\n")',
+          text:
+            "`.split` cuts the text at the blank line into a list of two pieces. `task, data = ...` gives each " +
+            "piece its own name: the instruction, then the review line.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>make_prompts</Code> loops over the reviews and fills the blank each time. Two reviews give two prompts.
@@ -529,7 +754,7 @@ title -> 3 prompts
 
       <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
       <Text>Here's the idea with something totally unrelated to LLMs - a class that remembers a running total:</Text>
-      <RunnableExample labId={8} code={`class Counter:
+      <RunnableExample labId={8} hints={COUNTER_HINTS} code={`class Counter:
     def __init__(self, start=0):
         self.total = start  # state stored on the instance
 
@@ -546,29 +771,7 @@ c.add(3)   # 8 - remembers the previous call`} />
         is a method: a function attached to the class that can read and update that stored state.
       </Text>
 
-      <Text>Here is the <Code>Counter</Code> example, line by line:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>class Counter:</Code> starts the blueprint. Nothing exists yet. It is only the
-          plan, like a drawing of a house.
-        </ListItem>
-        <ListItem>
-          <Code>c = Counter()</Code> builds one real <b>object</b> from the plan. Python
-          automatically runs <Code>__init__</Code>. The word <Code>self</Code> means "this
-          object". So <Code>self.total = start</Code> stores 0 inside <Code>c</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>c.add(5)</Code> runs the method on <Code>c</Code>. <Code>self.total += amount</Code>{" "}
-          means "add to what is already stored". <Code>0 + 5 = 5</Code>, and 5 is returned.
-        </ListItem>
-        <ListItem>
-          <Code>c.add(3)</Code> starts from the stored 5, not from 0. <Code>5 + 3 = 8</Code>. This is what
-          "remembers" means: the number is kept inside the object between calls.
-        </ListItem>
-      </UnorderedList>
-
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`class Tally:
+      <CodeBlock code={`class Tally:
     def __init__(self, start=0):
         self.count = start  # state stored on the instance
 
@@ -578,8 +781,47 @@ c.add(3)   # 8 - remembers the previous call`} />
 
 t = Tally()
 t.bump(2)
-print(t.bump(3))  # expected output: 5`}
-      </Code>
+print(t.bump(3))  # expected output: 5`} hints={[
+        {
+          code: "class Tally:",
+          block: "class",
+          text:
+            "A blueprint for a counter object. Each `Tally` you make keeps its own `count` and has a `bump` " +
+            "method to add to it.",
+        },
+        {
+          code: "def __init__(self, start=0):",
+          block: "function",
+          text: "Runs once, by itself, when you make a new `Tally`. It stores the starting count: 0, unless you pass another number.",
+        },
+        {
+          code: "def bump(self, n=1):",
+          block: "function",
+          text:
+            "Adds `n` to the stored count and gives back the new count. `n=1` is a **default**: call `bump()` " +
+            "with nothing and `n` is 1.",
+        },
+        {
+          code: "self.count = start",
+          text: 'Stores `start` inside this object. `self` means "this object".',
+        },
+        {
+          code: "self.count += n",
+          text: "Short for `self.count = self.count + n`: add to what is already stored.",
+        },
+        {
+          code: "t = Tally()",
+          text: "Builds one real object from the blueprint. `__init__` runs and `count` starts at 0.",
+        },
+        {
+          code: "t.bump(2)",
+          text: "Adds 2, so the count is now 2. It gives back 2, but nothing prints it, so you do not see it.",
+        },
+        {
+          code: "t.bump(3)",
+          text: "Adds 3 to the stored 2, giving 5. It sits inside `print`, so the 5 shows on screen.",
+        },
+      ]} />
       <PracticeCell labId={8} cellId="concept-3" code={`class Tally:
     def __init__(self, start=0):
         self.count = start  # state stored on the instance
@@ -650,7 +892,56 @@ def safe_render(template, required, data):
 template = "Tell me about {topic} in {style} style"
 required = ["topic", "style"]
 for data in [{"topic": "cats", "style": "funny"}, {"topic": "cats"}, {}]:
-    print(safe_render(template, required, data))`} />
+    print(safe_render(template, required, data))`} hints={[
+        {
+          code: "def find_missing(required, given):",
+          block: "function",
+          text:
+            "Goes through the names a template needs and collects the ones the data does not have. It gives back " +
+            "that list, which is empty if nothing is missing.",
+        },
+        {
+          code: "for name in required:",
+          block: "for loop",
+          text: "Checks each needed name, one at a time. Any name that is not in the data is added to `missing`.",
+        },
+        {
+          code: "def safe_render(template, required, data):",
+          block: "function",
+          text:
+            "Builds the prompt only when no name is missing. Otherwise it gives back a `NOT SENT` message that " +
+            "lists every missing name.",
+        },
+        {
+          code: 'for data in [{"topic": "cats", "style": "funny"}, {"topic": "cats"}, {}]:',
+          block: "for loop",
+          text:
+            "Tries three dicts of data: one complete, one without `style`, and one empty (`{}`). Each round prints " +
+            "what `safe_render` gives back.",
+        },
+        {
+          code: "if name not in given:",
+          text: '`not in` asks "is this name missing?" For a dict, it looks at the labels.',
+        },
+        {
+          code: "if missing:",
+          text: "An empty list counts as false. So this only runs when at least one name is missing.",
+        },
+        {
+          code: '", ".join(missing)',
+          text:
+            "Glues the names in the list into one text, with `, ` between them. `[\"topic\", \"style\"]` becomes " +
+            "`topic, style`.",
+        },
+        {
+          code: "template.format(**data)",
+          text: "Fills the blanks. `**data` spreads the dict out into labelled values, like `topic=\"cats\", style=\"funny\"`.",
+        },
+        {
+          code: 'required = ["topic", "style"]',
+          text: "The names the template needs, one for each blank.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The first data has both names, so the prompt is built: <Code>Tell me about cats in funny style</Code>.

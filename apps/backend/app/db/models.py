@@ -87,6 +87,11 @@ class ReadingBookmark(Base):
     lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"), nullable=False)
     anchor_id: Mapped[str] = mapped_column(String(128), nullable=False)
     label: Mapped[str] = mapped_column(String(255), nullable=False)
+    # Set only when the bookmark is a selected line or word instead of a heading; found again by text + context.
+    text: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    prefix: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    suffix: Mapped[str] = mapped_column(Text, default="", server_default="", nullable=False)
+    color: Mapped[str] = mapped_column(String(7), default="", server_default="", nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
 

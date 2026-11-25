@@ -1,6 +1,7 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
 
@@ -33,7 +34,22 @@ export function Lab10Reading() {
 ]
 # Show these two, then ask: "Alan Turing" -> ?
 # Most people (and most models) infer "Turing, A." from the pattern
-# faster and more reliably than from the worded rule above.`} />
+# faster and more reliably than from the worded rule above.`} hints={[
+        {
+          code: "examples = [",
+          text: "A list of **pairs**. Each pair in round brackets holds an input, then the answer you want for it.",
+        },
+        {
+          code: '("Ada Lovelace", "Lovelace, A.")',
+          text:
+            "One example pair: the input name, then the wanted output. Last name first, a comma, then the first " +
+            "letter and a dot.",
+        },
+        {
+          code: "# Show these two",
+          text: "A **comment**: Python skips everything after `#` on a line. It is a note for people, not code.",
+        },
+      ]} />
       <Text>
         That's few-shot learning: instead of (or in addition to) instructions, you hand over a
         short list of worked examples and let the reader (or the model) infer the pattern. It's
@@ -62,8 +78,7 @@ export function Lab10Reading() {
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`examples = [
+      <CodeBlock code={`examples = [
     ("hello", "HELLO!"),
     ("bye", "BYE!"),
 ]
@@ -72,8 +87,30 @@ def apply_pattern(word):
     return word.upper() + "!"
 
 query = "yes"
-print(apply_pattern(query))  # expected output: YES!`}
-      </Code>
+print(apply_pattern(query))  # expected output: YES!`} hints={[
+        {
+          code: "def apply_pattern(word):",
+          block: "function",
+          text: "Does what the examples show: makes the word all capitals and adds `!` at the end.",
+        },
+        {
+          code: '("hello", "HELLO!")',
+          text:
+            'One example pair: `"hello"` should become `"HELLO!"`. The list only shows the pattern. The function below does not use it.',
+        },
+        {
+          code: "word.upper()",
+          text: '`.upper()` makes every letter big: `"yes"` becomes `"YES"`.',
+        },
+        {
+          code: '+ "!"',
+          text: "Adds an exclamation mark to the end of the text.",
+        },
+        {
+          code: "apply_pattern(query)",
+          text: 'Calls the function with `"yes"`. It gives back `"YES!"`.',
+        },
+      ]} />
       <PracticeCell labId={10} cellId="concept-1" code={`examples = [
     ("hello", "HELLO!"),
     ("bye", "BYE!"),
@@ -164,7 +201,60 @@ few = [
     {"role": "user", "content": "Nice shoes!"},
 ]
 for name, messages in [("zero-shot", zero), ("few-shot", few)]:
-    print(name, "-> messages:", len(messages), "shots:", count_shots(messages), "shape:", shape_to_copy(messages))`} />
+    print(name, "-> messages:", len(messages), "shots:", count_shots(messages), "shape:", shape_to_copy(messages))`} hints={[
+        {
+          code: "import json",
+          text: "Loads Python's `json` toolbox. It turns JSON text into Python data, and back.",
+        },
+        {
+          code: "def count_shots(messages):",
+          block: "function",
+          text: "Counts the `assistant` messages. Each one is a worked example answer, called a **shot**.",
+        },
+        {
+          code: "def shape_to_copy(messages):",
+          block: "function",
+          text:
+            "Finds the keys of the last example reply. That is the shape a model would copy. If there is no " +
+            "example, it stays `\"unknown\"`.",
+        },
+        {
+          code: "for message in messages:",
+          block: "for loop",
+          text: "Looks at each message in turn. Only `assistant` messages count here, because they are the example answers.",
+        },
+        {
+          code: 'for name, messages in [("zero-shot", zero), ("few-shot", few)]:',
+          block: "for loop",
+          text:
+            "Runs once for each list, first `zero`, then `few`. Each round prints the number of messages, the " +
+            "number of shots and the shape.",
+        },
+        {
+          code: 'json.loads(message["content"])',
+          text:
+            "`json.loads` turns JSON text into a real dict. The content of a message is always text, so this step " +
+            "is needed before you can read its keys.",
+        },
+        {
+          code: "sorted(",
+          text: "`sorted` puts items in order, A to Z. So the keys always come out the same way: `['mood', 'topic']`.",
+        },
+        {
+          code: ".keys()",
+          text: "Gives the labels of the dict, here `topic` and `mood`.",
+        },
+        {
+          code: "few = [",
+          text:
+            "The few-shot list: 5 messages. Two example pairs (a user review, then an assistant reply in JSON) come " +
+            "before the real question, `Nice shoes!`.",
+        },
+        {
+          code: '\'{"topic": "phone", "mood": "happy"}\'',
+          text: "The example reply is JSON **text**, inside single quotes. Message content is always text, not a dict.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>count_shots</Code> loops over the messages and adds 1 for each{" "}
@@ -336,7 +426,47 @@ try:
 except json.JSONDecodeError:
     print("that wasn't valid JSON at all")
 except ValueError as e:
-    print(f"parsed fine, but the data is incomplete: {e}")`} />
+    print(f"parsed fine, but the data is incomplete: {e}")`} hints={[
+        {
+          code: "try:",
+          block: "try block",
+          text:
+            "**Try** these lines. If one of them raises an error, Python jumps to the matching `except` block below " +
+            "instead of crashing.",
+        },
+        {
+          code: "except json.JSONDecodeError:",
+          block: "except block",
+          text: "Runs only if `json.loads` could not read the text as JSON at all.",
+        },
+        {
+          code: "except ValueError as e:",
+          block: "except block",
+          text: "Runs if our own check raised a `ValueError`. `e` holds the error, and printing it shows its message.",
+        },
+        {
+          code: "import json",
+          text: "Loads Python's `json` toolbox. It turns JSON text into Python data, and back.",
+        },
+        {
+          code: 'raw = \'{"name": "Priya", "phone": "555-0100"}\'',
+          text: 'A string that only looks like a dict. To Python it is plain text, so `raw["name"]` would not work.',
+        },
+        {
+          code: "json.loads(raw)",
+          text:
+            "Reads the JSON text and builds a real dict: `{'name': 'Priya', 'phone': '555-0100'}`. If the text is " +
+            "not valid JSON, it raises `json.JSONDecodeError`.",
+        },
+        {
+          code: 'if "phone" not in contact:',
+          text: 'Checks whether the label `"phone"` is missing. Here it is there, so the next line is skipped.',
+        },
+        {
+          code: 'raise ValueError("missing phone number")',
+          text: "`raise` makes an error on purpose. Python jumps straight to the matching `except` block.",
+        },
+      ]} />
       <Text>
         <Code>json.loads</Code> turns a JSON-formatted string into real Python data (a dict, here)
         - but it only works if the string is <i>exactly</i> valid JSON, and even then the dict
@@ -374,8 +504,7 @@ except ValueError as e:
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import json
+      <CodeBlock code={`import json
 
 raw = '{"item": "Mug", "price": 9.99}'
 
@@ -387,8 +516,45 @@ try:
 except json.JSONDecodeError:
     print("not valid JSON")
 except ValueError as e:
-    print(f"parsed but incomplete: {e}")`}
-      </Code>
+    print(f"parsed but incomplete: {e}")`} hints={[
+        {
+          code: "try:",
+          block: "try block",
+          text:
+            "**Try** these lines. If one of them raises an error, Python jumps to the matching `except` block below " +
+            "instead of crashing.",
+        },
+        {
+          code: "except json.JSONDecodeError:",
+          block: "except block",
+          text: "Runs only if `json.loads` could not read the text as JSON. Here it does not run.",
+        },
+        {
+          code: "except ValueError as e:",
+          block: "except block",
+          text: "Runs if the price check raised a `ValueError`. `e` holds the error, and its message is printed.",
+        },
+        {
+          code: "import json",
+          text: "Loads Python's `json` toolbox. It turns JSON text into Python data, and back.",
+        },
+        {
+          code: "json.loads(raw)",
+          text: "Turns the text into the dict `{'item': 'Mug', 'price': 9.99}`. The price is a real number now, not text.",
+        },
+        {
+          code: 'if "price" not in product:',
+          text: "False here, because the label is there. So the `raise` line is skipped.",
+        },
+        {
+          code: 'raise ValueError("missing price")',
+          text: "`raise` makes an error on purpose. Python jumps straight to the matching `except` block.",
+        },
+        {
+          code: 'print(product["item"], product["price"])',
+          text: "Prints both values with a space between them: `Mug 9.99`.",
+        },
+      ]} />
       <PracticeCell labId={10} cellId="concept-2" code={`import json
 
 raw = '{"item": "Mug", "price": 9.99}'
@@ -477,7 +643,56 @@ for reply in replies:
     if result == "ok":
         usable = usable + 1
     print(result)
-print(usable, "of", len(replies), "replies usable")`} />
+print(usable, "of", len(replies), "replies usable")`} hints={[
+        {
+          code: "def check_reply(text, needed):",
+          block: "function",
+          text:
+            "Sorts one reply into `ok`, `not JSON` or `missing` plus a key name. It never crashes: every problem " +
+            "becomes a short label.",
+        },
+        {
+          code: "try:",
+          block: "try block",
+          text: "Tries to read the text as JSON. If that fails, the `except` line below runs instead of crashing.",
+        },
+        {
+          code: "for key in needed:",
+          block: "for loop",
+          text:
+            "Checks each needed key in order. The first one that is missing makes the function return right away, " +
+            "for example `missing confidence`.",
+        },
+        {
+          code: "for reply in replies:",
+          block: "for loop",
+          text: "Checks each of the 4 replies, prints its label, and adds 1 to `usable` for each `ok`.",
+        },
+        {
+          code: "import json",
+          text: "Loads Python's `json` toolbox. It turns JSON text into Python data, and back.",
+        },
+        {
+          code: "json.loads(text)",
+          text: "Turns the reply text into a dict. If the text is not valid JSON, it raises `json.JSONDecodeError`.",
+        },
+        {
+          code: "except json.JSONDecodeError:",
+          text: 'Catches the error `json.loads` raises when the text is not JSON. The function then returns `"not JSON"`.',
+        },
+        {
+          code: 'return "missing " + key',
+          text: "Glues the word `missing` and the key's name together, like `missing confidence`.",
+        },
+        {
+          code: 'check_reply(reply, ["sentiment", "confidence"])',
+          text: "Checks one reply. The list holds the keys every reply must have.",
+        },
+        {
+          code: "usable = usable + 1",
+          text: "Adds 1 to the count of good replies. Only 2 of the 4 get here.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>check_reply</Code> first tries <Code>json.loads</Code>. If the text is not JSON, the{" "}

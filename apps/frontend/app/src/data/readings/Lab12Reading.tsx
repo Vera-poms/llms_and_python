@@ -1,8 +1,44 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const CHAT_LOG_HINTS: CodeHint[] = [
+  {
+    code: "chat_log = [",
+    text:
+      "A **list** is an ordered row of things, written in square brackets. A **dict** is a small table of labels and values, written in curly braces. A label is called a **key**. `chat_log` is a list with 3 dicts inside. Each dict is one turn in the chat.",
+  },
+  {
+    code: "\"speaker\": \"Sam\"",
+    text:
+      "This dict has the key `\"speaker\"` and the value `\"Sam\"`.",
+  },
+  {
+    code: "for turn in chat_log:",
+    block: "for loop",
+    text:
+      "Visits the dicts one by one. On the first pass `turn` is the Sam dict. On the second pass it is the Robin dict. On the third pass it is the Sam dict again.",
+  },
+  {
+    code: "turn['speaker']",
+    text:
+      "Reads the value for the key `\"speaker\"`, which is `\"Sam\"` on the first pass.",
+  },
+  {
+    code: "turn['text']",
+    text:
+      "Reads the value for the key `\"text\"`, which is `\"running late, sorry!\"` on the first pass.",
+  },
+  {
+    code: "print(f\"",
+    text:
+      "The `f` before the quote marks makes an **f-string**. Whatever is inside `{...}` is replaced by its value. So the first line printed is `Sam: running late, sorry!`. Then `Robin: no worries, see you soon`, then `Sam: be there in 5`.",
+  },
+];
 
 export function Lab12Reading() {
   return (
@@ -33,41 +69,12 @@ export function Lab12Reading() {
 ]
 
 for turn in chat_log:
-    print(f"{turn['speaker']}: {turn['text']}")`} />
+    print(f"{turn['speaker']}: {turn['text']}")`} hints={CHAT_LOG_HINTS} />
       <Text>
         Nothing fancy here - just a list, where each entry is a dict with a couple of fixed keys.
       </Text>
-      <Text>Here is what each line does, with the real values:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          A <b>list</b> is an ordered row of things, written in square brackets. A <b>dict</b> is
-          a small table of labels and values, written in curly braces. A label is called a{" "}
-          <b>key</b>. For example, <Code>{'{"speaker": "Sam"}'}</Code> has the key{" "}
-          <Code>"speaker"</Code> and the value <Code>"Sam"</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>chat_log</Code> is a list with 3 dicts inside. Each dict is one turn in the chat.
-        </ListItem>
-        <ListItem>
-          <Code>for turn in chat_log</Code> visits the dicts one by one. On the first pass{" "}
-          <Code>turn</Code> is the Sam dict. On the second pass it is the Robin dict. On the third
-          pass it is the Sam dict again.
-        </ListItem>
-        <ListItem>
-          <Code>turn['speaker']</Code> reads the value for the key <Code>"speaker"</Code>, which is{" "}
-          <Code>"Sam"</Code> on the first pass. <Code>turn['text']</Code> reads{" "}
-          <Code>"running late, sorry!"</Code>.
-        </ListItem>
-        <ListItem>
-          The <Code>f</Code> before the quote marks makes an <b>f-string</b>. Whatever is inside{" "}
-          <Code>{"{...}"}</Code> is replaced by its value. So the first line printed is{" "}
-          <Code>Sam: running late, sorry!</Code>. Then <Code>Robin: no worries, see you soon</Code>
-          , then <Code>Sam: be there in 5</Code>.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`support_log = [
+      <CodeBlock code={`support_log = [
     {"agent": "Bot", "message": "Hi, how can I help?"},
     {"agent": "User", "message": "My order is late."},
     {"agent": "Bot", "message": "Let me check that for you."},
@@ -78,8 +85,36 @@ for turn in support_log:
 # expected output:
 # Bot: Hi, how can I help?
 # User: My order is late.
-# Bot: Let me check that for you.`}
-      </Code>
+# Bot: Let me check that for you.`} hints={[
+        {
+          code: "for turn in support_log:",
+          block: "for loop",
+          text:
+            "Visits the 3 dicts one by one and prints one line for each. On the first pass `turn` is the first Bot dict, on the second pass the User dict.",
+        },
+        {
+          code: "support_log = [",
+          text:
+            "A **list** of 3 **dicts**. A dict holds labels, called **keys**, each with a value, like `\"agent\": \"Bot\"`. Each dict is one turn in the chat.",
+        },
+        {
+          code: "turn['agent']",
+          text: "Reads the value stored under the key `\"agent\"`. On the first pass that is `\"Bot\"`.",
+        },
+        {
+          code: "turn['message']",
+          text: "Reads the value stored under the key `\"message\"`. On the first pass that is `\"Hi, how can I help?\"`.",
+        },
+        {
+          code: "print(f\"",
+          text:
+            "The `f` before the quote makes an **f-string**. Each `{...}` is replaced by its value, so the first line printed is `Bot: Hi, how can I help?`.",
+        },
+        {
+          code: "# expected output:",
+          text: "Lines that start with `#` are **comments**. Python skips them. These ones show what the code prints.",
+        },
+      ]} />
       <PracticeCell labId={12} cellId="concept-1" code={`support_log = [
     {"agent": "Bot", "message": "Hi, how can I help?"},
     {"agent": "User", "message": "My order is late."},
@@ -154,7 +189,56 @@ history = [
     {"role": "user", "content": "What is my name?"},
 ]
 for name, messages in [("full list", history), ("last turn only", history[-1:])]:
-    print(name, "->", len(messages), "messages, can see the name:", model_can_see(messages, "Ama"))`} />
+    print(name, "->", len(messages), "messages, can see the name:", model_can_see(messages, "Ama"))`} hints={[
+        {
+          code: "def model_can_see(messages, fact):",
+          block: "function",
+          text:
+            "Checks every message in the list. Gives back `True` as soon as one message contains `fact`, or `False` if none of them does.",
+        },
+        {
+          code: "for message in messages:",
+          block: "for loop",
+          text: "Looks at the dicts one at a time. `message` is the current dict.",
+        },
+        {
+          code: "for name, messages in [(\"full list\"",
+          block: "for loop",
+          text:
+            "Runs twice: once with the full list, once with only the last message. Each pass prints a label, the number of messages, and whether the name can be seen.",
+        },
+        {
+          code: "if fact in message[\"content\"]:",
+          text:
+            "`in` checks if one piece of text appears inside another. `\"Ama\" in \"My name is Ama.\"` is `True`. `message[\"content\"]` is the words of the current message.",
+        },
+        {
+          code: "return True",
+          text: "Stops the function right away and gives back `True`. The rest of the loop is skipped.",
+        },
+        {
+          code: "return False",
+          text: "Only reached when the loop finishes without a match. The fact is in none of the messages.",
+        },
+        {
+          code: "for name, messages in",
+          text:
+            "Each item is a pair, like `(\"full list\", history)`. Python splits it in two: `name` gets the label and `messages` gets the list.",
+        },
+        {
+          code: "history[-1:]",
+          text:
+            "A **slice**: a piece of a list. `-1` means the last item and `:` means \"up to the end\". So this is a new list holding only the last dict.",
+        },
+        {
+          code: "len(messages)",
+          text: "`len` counts the items in a list: 3 for the full list, 1 for the last turn only.",
+        },
+        {
+          code: "model_can_see(messages, \"Ama\")",
+          text: "Calls the function and prints its answer: `True` for the full list, `False` for the last turn only.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>model_can_see</Code> loops over the dicts and looks for the fact inside each{" "}
@@ -253,13 +337,26 @@ last turn only -> 1 messages, can see the city: False`}
         <Code>len(messages) == 2</Code> on every pass.
       </Text>
       <Text>A tiny messages list, with two turns, looks like this:</Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`messages = [
+      <CodeBlock code={`messages = [
     {"role": "user", "content": "Hi"},
     {"role": "assistant", "content": "Hello!"},
 ]
-print(messages[1]["content"])  # Hello!`}
-      </Code>
+print(messages[1]["content"])  # Hello!`} hints={[
+        {
+          code: "messages = [",
+          text:
+            "A list of 2 dicts, one per turn. `\"role\"` says who is talking. `\"content\"` holds the words.",
+        },
+        {
+          code: "messages[1][\"content\"]",
+          text:
+            "`messages[1]` is the second dict, because counting starts at 0. `[\"content\"]` then reads its words, `\"Hello!\"`.",
+        },
+        {
+          code: "# Hello!",
+          text: "A **comment**: Python skips everything after `#`. It shows what the line prints.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>messages[0]</Code> is the first dict. Counting starts at 0, so{" "}
@@ -308,16 +405,33 @@ print(messages[1]["content"])  # Hello!`}
         looks.
       </Text>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`classroom_log = [
+      <CodeBlock code={`classroom_log = [
     {"role": "teacher_note", "text": "Keep answers under two sentences."},
     {"role": "student", "text": "What's the capital of France?"},
     {"role": "helper", "text": "Paris."},
 ]
 
 standing_rule = classroom_log[0]["text"]
-print(standing_rule)  # expected output: Keep answers under two sentences.`}
-      </Code>
+print(standing_rule)  # expected output: Keep answers under two sentences.`} hints={[
+        {
+          code: "classroom_log = [",
+          text: "A list of 3 dicts. Each dict has a `\"role\"` (who wrote it) and a `\"text\"` (the words).",
+        },
+        {
+          code: "\"teacher_note\"",
+          text:
+            "The role of the first dict. It is a standing rule for the whole chat, just like a **system** message.",
+        },
+        {
+          code: "classroom_log[0][\"text\"]",
+          text:
+            "`[0]` picks the first dict, because counting starts at 0. `[\"text\"]` then reads its words: `\"Keep answers under two sentences.\"`.",
+        },
+        {
+          code: "# expected output:",
+          text: "A **comment**: Python skips everything after `#`. It shows what the line prints.",
+        },
+      ]} />
       <PracticeCell labId={12} cellId="concept-2" code={`classroom_log = [
     {"role": "teacher_note", "text": "Keep answers under two sentences."},
     {"role": "student", "text": "What's the capital of France?"},
@@ -392,7 +506,57 @@ late = [
     {"role": "system", "content": "You are Rae."},
 ]
 for name, messages in [("good", good), ("late", late)]:
-    print(name, "->", audit(messages))`} />
+    print(name, "->", audit(messages))`} hints={[
+        {
+          code: "def audit(messages):",
+          block: "function",
+          text:
+            "Checks a messages list for two mistakes: a system message that is not first, and extra system messages later on. Gives back a list of problems. An empty list, `[]`, means all is fine.",
+        },
+        {
+          code: "if messages[0][\"role\"] != \"system\":",
+          block: "if block",
+          text: "Runs only when the first message is not a system message. Then it notes that problem.",
+        },
+        {
+          code: "for i in range(1, len(messages)):",
+          block: "for loop",
+          text:
+            "Visits every position after the first one. If it finds another system message there, it notes that position.",
+        },
+        {
+          code: "for name, messages in [(\"good\"",
+          block: "for loop",
+          text:
+            "Runs `audit` on both lists and prints the result. `good` gives `[]`. `late` gives 2 problems.",
+        },
+        {
+          code: "problems = []",
+          text: "Starts an empty list. Each problem the function finds is added to it.",
+        },
+        {
+          code: "!= \"system\"",
+          text: "`!=` means \"is not equal to\". So this is `True` when the role is anything other than `\"system\"`.",
+        },
+        {
+          code: "range(1, len(messages))",
+          text:
+            "Gives the numbers from 1 up to, but not including, the number of messages. For 2 messages that is just `1`. Starting at 1 skips position 0, which was already checked.",
+        },
+        {
+          code: "problems.append(",
+          text: "`.append` adds one item to the end of a list.",
+        },
+        {
+          code: "str(i)",
+          text:
+            "Turns the number `i` into text, so it can be joined to other text with `+`. `str(1)` is `\"1\"`.",
+        },
+        {
+          code: "return problems",
+          text: "Gives the finished list of problems back to whoever called `audit`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>audit</Code> keeps a list of <Code>problems</Code>. It first checks position 0, then
@@ -502,15 +666,46 @@ doubled -> ['extra system message at position 2']`}
         Here is the lab's real code, run on a tiny persona. The persona is{" "}
         <Code>{'{"name": "Rae", "role": "a coffee helper", "tone": "warm", "constraints": ["be brief", "no jokes"]}'}</Code>:
       </Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`lines = [
+      <CodeBlock code={`lines = [
     f"You are {persona['name']}, {persona['role']}.",
     f"Your tone is {persona['tone']}.",
     "Rules you must always follow:",
 ]
 lines += [f"- {c}" for c in persona["constraints"]]
-return "\\n".join(lines)`}
-      </Code>
+return "\\n".join(lines)`} hints={[
+        {
+          code: "lines = [",
+          text: "A list of 3 strings. Each one will become one line of the system message.",
+        },
+        {
+          code: "f\"You are {",
+          text:
+            "An **f-string**: each `{...}` is filled in with its value. With the tiny persona, this line becomes `You are Rae, a coffee helper.`",
+        },
+        {
+          code: "persona['name']",
+          text: "Reads the value under the key `\"name\"` in the `persona` dict. Here that is `\"Rae\"`.",
+        },
+        {
+          code: "lines +=",
+          text: "`+=` adds the new lines to the end of `lines`. With 2 rules, `lines` now holds 5 lines.",
+        },
+        {
+          code: "[f\"- {c}\" for c in persona[\"constraints\"]]",
+          text:
+            "A **list comprehension**: a short way to build a list in one line. For each rule `c`, it makes a line that starts with `- `. Here that gives `- be brief` and `- no jokes`.",
+        },
+        {
+          code: "\"\\n\".join(lines)",
+          text:
+            "`\\n` means \"start a new line\". `.join` glues the lines into one string, with a new line between each pair.",
+        },
+        {
+          code: "return",
+          text:
+            "Gives the finished string back. This is the end of the lab's `build_system_message` function. Its `def` line is not shown here.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The first list has 3 lines: <Code>You are Rae, a coffee helper.</Code>, then{" "}
@@ -546,7 +741,28 @@ return "\\n".join(lines)`}
       </Text>
       <RunnableExample labId={12} code={`greeting = "Welcome, please have a seat."   # built once
 for visitor in ["Sam", "Robin", "Priya"]:    # varies every iteration
-    print(f"{greeting} ({visitor})")`} />
+    print(f"{greeting} ({visitor})")`} hints={[
+        {
+          code: "for visitor in [\"Sam\", \"Robin\", \"Priya\"]:",
+          block: "for loop",
+          text:
+            "Runs the print 3 times, with `visitor` set to `\"Sam\"`, then `\"Robin\"`, then `\"Priya\"`. `greeting` stays the same each time.",
+        },
+        {
+          code: "greeting = \"Welcome, please have a seat.\"",
+          text: "Set **once**, before the loop. Nothing inside the loop changes it.",
+        },
+        {
+          code: "# varies every iteration",
+          text:
+            "A **comment**: Python skips everything after `#`. An **iteration** is one pass through the loop.",
+        },
+        {
+          code: "print(f\"{greeting} ({visitor})\")",
+          text:
+            "An **f-string** fills in both values. The first line printed is `Welcome, please have a seat. (Sam)`. The round brackets are plain text.",
+        },
+      ]} />
       <Text>
         <Code>greeting</Code> is identical on every pass through the loop; only{" "}
         <Code>visitor</Code> changes. Whatever stays fixed shapes every output the same way, no
@@ -569,15 +785,36 @@ for visitor in ["Sam", "Robin", "Priya"]:    # varies every iteration
         </ListItem>
       </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`discount = "SAVE10"                      # built once
+      <CodeBlock code={`discount = "SAVE10"                      # built once
 for cart_total in [25, 40, 100]:          # varies every iteration
     print(f"Applying {discount} to \${cart_total}")
 # expected output:
 # Applying SAVE10 to $25
 # Applying SAVE10 to $40
-# Applying SAVE10 to $100`}
-      </Code>
+# Applying SAVE10 to $100`} hints={[
+        {
+          code: "for cart_total in [25, 40, 100]:",
+          block: "for loop",
+          text: "Runs the print 3 times, with `cart_total` set to 25, then 40, then 100.",
+        },
+        {
+          code: "discount = \"SAVE10\"",
+          text: "The fixed part. It is set **once**, before the loop, and stays the same on every pass.",
+        },
+        {
+          code: "# built once",
+          text: "A **comment**: Python skips everything after `#`. It is a note for the reader.",
+        },
+        {
+          code: "{discount}",
+          text: "Filled in with `SAVE10` on every pass.",
+        },
+        {
+          code: "${cart_total}",
+          text:
+            "The `$` is just a plain dollar sign. Only `{cart_total}` is filled in, so the first pass shows `$25`.",
+        },
+      ]} />
       <PracticeCell labId={12} cellId="concept-3" code={`discount = "SAVE10"                      # built once
 for cart_total in [25, 40, 100]:          # varies every iteration
     print(f"Applying {discount} to \${cart_total}")
@@ -651,7 +888,51 @@ replies = [
     ("What about Acme Coffee?", "Acme Coffee is great, but we are better. Thanks!"),
 ]
 for question, reply in replies:
-    print(question, "->", check_rules(reply, ["acme"], closing))`} />
+    print(question, "->", check_rules(reply, ["acme"], closing))`} hints={[
+        {
+          code: "def check_rules(reply, banned, closing):",
+          block: "function",
+          text:
+            "Checks one reply against two rules: no banned words, and it must end with the closing question. Gives back a list of broken rules. `[]` means none were broken.",
+        },
+        {
+          code: "for word in banned:",
+          block: "for loop",
+          text: "Tries each banned word in turn. If the reply contains it, it notes `mentions` plus that word.",
+        },
+        {
+          code: "for question, reply in replies:",
+          block: "for loop",
+          text:
+            "Runs `check_rules` on each pair. The first prints `[]`. The second prints `['mentions acme', 'no closing question']`.",
+        },
+        {
+          code: "broken = []",
+          text: "Starts an empty list. Each broken rule is added to it.",
+        },
+        {
+          code: "reply.lower()",
+          text: "Makes a copy of the reply in small letters, so `Acme` still matches the banned word `acme`.",
+        },
+        {
+          code: "if not reply",
+          text: "`not` flips `True` to `False` and back. So this line runs when the reply does **not** end with the closing question.",
+        },
+        {
+          code: ".strip().lower().endswith(closing)",
+          text:
+            "`.strip()` cuts spaces off both ends. `.lower()` makes all letters small. `.endswith(closing)` is `True` if the text ends with `closing`.",
+        },
+        {
+          code: "replies = [",
+          text:
+            "A list of **tuples**. A tuple is a fixed group of values in round brackets. Each one here is a pair: `(question, reply)`.",
+        },
+        {
+          code: "[\"acme\"]",
+          text: "The list of banned words. It is in small letters because the check lowers the reply first.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>check_rules</Code> loops over the banned words and notes each one it finds. Then it
@@ -748,15 +1029,43 @@ Can I pause my plan? -> []`}
         question, a complaint, and a question about a competitor - sending a fresh two-message list
         each time:
       </Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-{`system_message = build_system_message(persona)   # built once
+      <CodeBlock code={`system_message = build_system_message(persona)   # built once
 for question in QUESTIONS:                       # varies every iteration
     messages = [
         {"role": "system", "content": system_message},
         {"role": "user", "content": question},
     ]
-    reply = call_groq(messages)`}
-      </Code>
+    reply = call_groq(messages)`} hints={[
+        {
+          code: "for question in QUESTIONS:",
+          block: "for loop",
+          text:
+            "Runs once per question, 4 times in the project. Each pass builds a fresh 2-message list and sends it to Groq.",
+        },
+        {
+          code: "build_system_message(persona)",
+          text:
+            "The lab's function from above. It turns the persona dict into the system message text. It runs **once**, before the loop.",
+        },
+        {
+          code: "QUESTIONS",
+          text:
+            "The project's list of 4 user questions. Names in capital letters are a habit for values that never change.",
+        },
+        {
+          code: "{\"role\": \"system\", \"content\": system_message}",
+          text: "The same system message on every pass. It sits first, at position 0.",
+        },
+        {
+          code: "{\"role\": \"user\", \"content\": question}",
+          text: "The part that changes: the current question.",
+        },
+        {
+          code: "call_groq(messages)",
+          text:
+            "Sends the list to Groq and gives back the model's reply as text. You need a Groq API key for this.",
+        },
+      ]} />
       <Text>
         <Code>system_message</Code> never changes across the loop, while <Code>question</Code>{" "}
         changes every time - that's why the model keeps calling itself "Rae," keeps a warm and

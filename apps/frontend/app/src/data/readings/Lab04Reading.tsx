@@ -1,8 +1,111 @@
 import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
+import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
 import { RunnableExample } from "../../components/RunnableExample";
+import { CodeHint } from "../../components/codeHints";
+
+// Shown when the reader hovers the underlined code in the examples below.
+// In the text, `backticks` style code and **double stars** bold a key word.
+const BANK_HINTS: CodeHint[] = [
+  {
+    code: "class BankAccount:",
+    text:
+      "Only describes the template. Nothing is made yet. An **attribute** is a piece of data " +
+      "that belongs to an object, like a name tag. A **method** is a function that belongs to an " +
+      "object.",
+  },
+  {
+    code: 'BankAccount("Vera", 100)',
+    text:
+      "Makes one real account (an **object**). Python runs `__init__` with `owner = \"Vera\"` " +
+      "and `balance = 100`. It stores them as `self.owner` and `self.balance`.",
+  },
+  {
+    code: "account.deposit(50)",
+    text:
+      "Runs the method. Here `self` is `account` and `amount` is 50. `self.balance += 50` is " +
+      "short for \"new balance = old balance + 50\". So 100 + 50 = 150.",
+  },
+  {
+    code: "print(account.balance)",
+    text:
+      "Reads the attribute back: 150. Another account made with `BankAccount(\"Sam\", 10)` " +
+      "would have its own balance. They do not share.",
+  },
+];
+
+const DOT_HINTS: CodeHint[] = [
+  {
+    code: "zip(quantities, prices)",
+    text:
+      "Pairs the lists up: (3, 0.50) and (2, 2.00). The two lists must be the same length. " +
+      "Position 0 goes with position 0, and position 1 goes with position 1.",
+  },
+  {
+    code: "q * p",
+    text: "Multiplies each pair: `3 * 0.50 = 1.50` for the apples, and `2 * 2.00 = 4.00` for the bread.",
+  },
+  {
+    code: "total = sum(",
+    text: "`sum(...)` adds them: `1.50 + 4.00 = 5.50`.",
+  },
+];
+
+const STEP_HINTS: CodeHint[] = [
+  {
+    code: "1 if z >= 0 else -1",
+    text:
+      "A one-line \"if\". It reads: give back 1 if `z` is 0 or more, otherwise give back -1. " +
+      "`>=` means \"greater than or equal to\". `step(0)` is 1, because the test says \"or " +
+      "equal\". Exactly 0 goes to the +1 side. `step(1000)` and `step(0.001)` both give 1. Only " +
+      "the side matters, not the size.",
+  },
+  {
+    code: "step(3)",
+    text: "3 is bigger than 0, so the answer is 1.",
+  },
+  {
+    code: "step(-2)",
+    text: "-2 is less than 0, so the answer is -1.",
+  },
+];
+
+const SCATTER_HINTS: CodeHint[] = [
+  {
+    code: "hours_studied = [1, 2, 3, 4, 5]",
+    text:
+      "Goes on the x axis (the sideways one). It is paired with `exam_score` by position: " +
+      "(1, 50), (2, 55), (3, 65), (4, 70), (5, 90).",
+  },
+  {
+    code: "exam_score = [50, 55, 65, 70, 90]",
+    text: "Goes on the y axis (the up-and-down one).",
+  },
+  {
+    code: "plt.scatter(hours_studied, exam_score)",
+    text:
+      "Draws 5 dots. The dots go up from left to right, so more study hours go with higher " +
+      "scores.",
+  },
+  {
+    code: 'plt.xlabel("hours studied")',
+    text: "Writes the name beside the x axis.",
+  },
+  {
+    code: 'plt.ylabel("exam score")',
+    text: "Writes the name beside the y axis.",
+  },
+  {
+    code: 'plt.savefig("scores.png")',
+    text: "Saves the picture as a file called `scores.png`.",
+  },
+  {
+    code: "plt.show()",
+    text: "Shows the picture on screen.",
+  },
+];
 
 export function Lab04Reading() {
   return (
@@ -40,7 +143,7 @@ export function Lab04Reading() {
       <Text>
         Here's the smallest useful example, nothing to do with machine learning at all:
       </Text>
-      <RunnableExample labId={4} code={`class BankAccount:
+      <RunnableExample hints={BANK_HINTS} labId={4} code={`class BankAccount:
     def __init__(self, owner, balance):
         self.owner = owner      # instance attribute
         self.balance = balance  # instance attribute
@@ -59,33 +162,8 @@ print(account.balance)  # 150`} />
         method's first parameter is <Code>self</Code>, and Python fills it in automatically when
         you call <Code>account.deposit(50)</Code>.
       </Text>
-      <Text>Here is what happens, line by line, with the real numbers:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>class BankAccount:</Code> only describes the template. Nothing is made yet. An{" "}
-          <b>attribute</b> is a piece of data that belongs to an object, like a name tag. A{" "}
-          <b>method</b> is a function that belongs to an object.
-        </ListItem>
-        <ListItem>
-          <Code>BankAccount("Vera", 100)</Code> makes one real account (an <b>object</b>). Python
-          runs <Code>__init__</Code> with <Code>owner = "Vera"</Code> and{" "}
-          <Code>balance = 100</Code>. It stores them as <Code>self.owner</Code> and{" "}
-          <Code>self.balance</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>account.deposit(50)</Code> runs the method. Here <Code>self</Code> is{" "}
-          <Code>account</Code> and <Code>amount</Code> is 50.{" "}
-          <Code>self.balance += 50</Code> is short for "new balance = old balance + 50". So 100 +
-          50 = 150.
-        </ListItem>
-        <ListItem>
-          <Code>print(account.balance)</Code> reads the attribute back: 150. Another account made
-          with <Code>BankAccount("Sam", 10)</Code> would have its own balance. They do not share.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`class Playlist:
+      <CodeBlock code={`class Playlist:
     def __init__(self, name, songs):
         self.name = name    # instance attribute
         self.songs = songs  # instance attribute
@@ -95,8 +173,57 @@ print(account.balance)  # 150`} />
 
 mix = Playlist("Road Trip", ["Song A"])
 mix.add_song("Song B")
-print(mix.songs)  # ['Song A', 'Song B']`}
-      </Code>
+print(mix.songs)  # ['Song A', 'Song B']`} hints={[
+        {
+          code: "class Playlist:",
+          block: "class",
+          text:
+            "A **template** for playlist objects. Each playlist keeps its own `name` and `songs`, " +
+            "and has a method, `add_song`, to add one more song.",
+        },
+        {
+          code: "def __init__(self, name, songs):",
+          block: "function",
+          text:
+            "Runs once, when a playlist is made. It saves the name and the song list on the new " +
+            "object.",
+        },
+        {
+          code: "def add_song(self, song):",
+          block: "function",
+          text:
+            "A **method**: a function that belongs to the object. It adds one song to the end of " +
+            "this playlist's list.",
+        },
+        {
+          code: "self.name = name",
+          text:
+            "Stores the name on the object as an **attribute**: a piece of data that belongs to " +
+            "the object. `self` means \"this playlist\".",
+        },
+        {
+          code: "self.songs.append(song)",
+          text:
+            "`append` adds `song` to the end of the stored list. It changes that list. It does " +
+            "not make a new one.",
+        },
+        {
+          code: 'Playlist("Road Trip", ["Song A"])',
+          text:
+            "Makes one real playlist (an **object**). Python runs `__init__` with " +
+            "`name = \"Road Trip\"` and `songs = [\"Song A\"]`.",
+        },
+        {
+          code: 'mix.add_song("Song B")',
+          text:
+            "Runs the method on `mix`. Python fills in `self` with `mix` for you, and `song` is " +
+            "\"Song B\".",
+        },
+        {
+          code: "print(mix.songs)",
+          text: "Reads the attribute back: `['Song A', 'Song B']`.",
+        },
+      ]} />
       <PracticeCell labId={4} cellId="concept-1" code={`class Playlist:
     def __init__(self, name, songs):
         self.name = name    # instance attribute
@@ -169,7 +296,68 @@ print(mix.songs)  # ['Song A', 'Song B']`} expectedOutput={`['Song A', 'Song B']
 x = [1.0, 0.0]
 models = [("fan", Scorer([1.0, -1.0], 0.5)), ("blank", Scorer([0.0, 0.0], 0.0)), ("critic", Scorer([-1.0, 1.0], -0.5))]
 for name, model in models:
-    print(name, model.score(x), model.decide(x))`} />
+    print(name, model.score(x), model.decide(x))`} hints={[
+        {
+          code: "class Scorer:",
+          block: "class",
+          text:
+            "A template for small models. Every `Scorer` runs the same code, but each one holds " +
+            "its own **weights** and **bias**, so each one can answer differently.",
+        },
+        {
+          code: "def __init__(self, weights, bias):",
+          block: "function",
+          text: "Runs once, when a `Scorer` is made. It saves the weights and the bias on the new object.",
+        },
+        {
+          code: "def score(self, x):",
+          block: "function",
+          text:
+            "Starts at the bias, then adds each weight times its input value. For `fan` and " +
+            "`x = [1.0, 0.0]` that is `0.5 + 1.0 * 1.0 + (-1.0) * 0.0 = 1.5`.",
+        },
+        {
+          code: "for w, value in zip(self.weights, x):",
+          block: "for loop",
+          text:
+            "Takes each weight together with the input value in the same position, and adds " +
+            "weight times value to `total`.",
+        },
+        {
+          code: "def decide(self, x):",
+          block: "function",
+          text: "Turns the score into a decision: 1 if the score is 0 or more, otherwise -1.",
+        },
+        {
+          code: "for name, model in models:",
+          block: "for loop",
+          text:
+            "Gives the same input to all three models and prints each name, score and decision: " +
+            "`fan 1.5 1`, `blank 0.0 1` and `critic -1.5 -1`.",
+        },
+        {
+          code: "total = self.bias",
+          text: "The sum starts at the bias, not at 0. So the bias is always added, whatever the input.",
+        },
+        {
+          code: "zip(self.weights, x)",
+          text:
+            "Pairs each weight with the input value in the same position. For `fan` that gives " +
+            "(1.0, 1.0), then (-1.0, 0.0).",
+        },
+        {
+          code: "1 if self.score(x) >= 0 else -1",
+          text:
+            "A one-line \"if\": give back 1 if the score is 0 or more, otherwise -1. A score of " +
+            "exactly 0 gives 1.",
+        },
+        {
+          code: "Scorer([1.0, -1.0], 0.5)",
+          text:
+            "Makes one model with weights `[1.0, -1.0]` and bias `0.5`. Same class as the others, " +
+            "but its own numbers.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>fan</Code> has weights <Code>[1.0, -1.0]</Code> and bias <Code>0.5</Code>. On <Code>[1.0, 0.0]</Code> the loop gives <Code>0.5 + 1.0 * 1.0 + (-1.0) * 0.0 = 1.5</Code>, so <Code>decide</Code> says +1.
@@ -255,8 +443,7 @@ critic 1.5 1`}
         The <Code>Perceptron</Code> class in this lab is that same pattern. <Code>self.weights</Code> and <Code>self.bias</Code> are its parameters, the perceptron's entire "memory" of what it has learned. <Code>net_input</Code>, <Code>activation</Code> and <Code>predict</Code> are the code that reads them. A new <Code>Perceptron(n_features=2)</Code> starts with weights <Code>[0.0, 0.0]</Code> and bias <Code>0.0</Code>, like <Code>blank</Code> above. Lab 5 will change only those numbers.
       </Text>
       <Text>Here is the lab's real class, in short:</Text>
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`class Perceptron:
+      <CodeBlock code={`class Perceptron:
     def __init__(self, n_features):
         self.weights = np.zeros(n_features)
         self.bias = 0.0
@@ -268,8 +455,67 @@ critic 1.5 1`}
         return 1 if z >= 0 else -1
 
     def predict(self, x):
-        return self.activation(self.net_input(x))`}
-      </Code>
+        return self.activation(self.net_input(x))`} hints={[
+        {
+          code: "class Perceptron:",
+          block: "class",
+          text:
+            "The lab's model. It holds the learned numbers (`weights` and `bias`) and the methods " +
+            "that use them to make a prediction.",
+        },
+        {
+          code: "def __init__(self, n_features):",
+          block: "function",
+          text:
+            "Runs when a perceptron is made. Every weight starts at 0.0 and the bias starts at " +
+            "0.0, so a new perceptron knows nothing yet.",
+        },
+        {
+          code: "def net_input(self, x):",
+          block: "function",
+          text: "Works out the score: each input times its weight, all added up, plus the bias.",
+        },
+        {
+          code: "def activation(self, z):",
+          block: "function",
+          text:
+            "The step function. It turns the score `z` into a decision: 1 if `z` is 0 or more, " +
+            "otherwise -1.",
+        },
+        {
+          code: "def predict(self, x):",
+          block: "function",
+          text:
+            "Does two steps in a row: first the score from `net_input`, then the decision from " +
+            "`activation`. The answer is always 1 or -1.",
+        },
+        {
+          code: "np.zeros(n_features)",
+          text:
+            "Makes a numpy list of zeros, one per input feature. `np.zeros(2)` gives " +
+            "`[0.0, 0.0]`.",
+        },
+        {
+          code: "float(",
+          text: "Turns the result into a plain Python decimal number.",
+        },
+        {
+          code: "np.dot(x, self.weights)",
+          text:
+            "The **dot product**: multiplies each input by the weight in the same position and " +
+            "adds the results. `np` is numpy, a toolbox for lists of numbers.",
+        },
+        {
+          code: "1 if z >= 0 else -1",
+          text: "A one-line \"if\": give back 1 if `z` is 0 or more, otherwise -1.",
+        },
+        {
+          code: "self.activation(self.net_input(x))",
+          text:
+            "The inner call runs first: `self.net_input(x)` gives the score. Then " +
+            "`self.activation` turns that score into 1 or -1.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>Perceptron(n_features=2)</Code> runs <Code>__init__</Code>. <Code>np.zeros(2)</Code>{" "}
@@ -301,7 +547,7 @@ critic 1.5 1`}
         Say you're at a grocery checkout: you bought 3 apples at $0.50 each and 2 loaves of bread
         at $2.00 each. Your total is a dot product of quantities and prices:
       </Text>
-      <RunnableExample labId={4} code={`quantities = [3, 2]
+      <RunnableExample hints={DOT_HINTS} labId={4} code={`quantities = [3, 2]
 prices = [0.50, 2.00]
 total = sum(q * p for q, p in zip(quantities, prices))
 # total = 3*0.50 + 2*2.00 = 5.50`} />
@@ -310,30 +556,32 @@ total = sum(q * p for q, p in zip(quantities, prices))
         each pair, and <Code>sum</Code> adds all the products together - three apples' worth of
         price, plus two breads' worth of price, collapsed into one number.
       </Text>
-      <Text>Here is what each part does with the real numbers:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>zip(quantities, prices)</Code> pairs the lists up: (3, 0.50) and (2, 2.00).
-        </ListItem>
-        <ListItem>
-          <Code>q * p</Code> multiplies each pair: <Code>3 * 0.50 = 1.50</Code> for the apples, and <Code>2 * 2.00</Code> =
-          4.00 for the bread.
-        </ListItem>
-        <ListItem>
-          <Code>sum(...)</Code> adds them: <Code>1.50 + 4.00 = 5.50</Code>.
-        </ListItem>
-        <ListItem>
-          The two lists must be the same length. Position 0 goes with position 0, and position 1
-          goes with position 1.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`scores = [90, 80, 70]
+      <CodeBlock code={`scores = [90, 80, 70]
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
-print(final_grade)  # 83.0`}
-      </Code>
+print(final_grade)  # 83.0`} hints={[
+        {
+          code: "zip(scores, weights)",
+          text: "Pairs the lists by position: (90, 0.5), (80, 0.3) and (70, 0.2).",
+        },
+        {
+          code: "for s, w in",
+          text:
+            "A loop inside the brackets. It takes one pair at a time, as `s` (the score) and `w` " +
+            "(its weight).",
+        },
+        {
+          code: "s * w",
+          text: "Multiplies each mark by its weight: 45.0, 24.0 and 14.0.",
+        },
+        {
+          code: "final_grade = sum(",
+          text:
+            "`sum(...)` adds up all the products: `45.0 + 24.0 + 14.0 = 83.0`. Together this is " +
+            "a **dot product**.",
+        },
+      ]} />
       <PracticeCell labId={4} cellId="concept-2" code={`scores = [90, 80, 70]
 weights = [0.5, 0.3, 0.2]
 final_grade = sum(s * w for s, w in zip(scores, weights))
@@ -395,7 +643,59 @@ def explain(words, x, weights):
 
 words = ["great", "boring", "slow"]
 weights = [2.0, -2.0, -1.0]
-explain(words, [1, 0, 1], weights)`} />
+explain(words, [1, 0, 1], weights)`} hints={[
+        {
+          code: "def dot(x, weights):",
+          block: "function",
+          text:
+            "Multiplies each feature by its weight and adds the results up: a **dot product**. " +
+            "For `[1, 0, 1]` and these weights it gives `1.0`.",
+        },
+        {
+          code: "for a, b in zip(x, weights):",
+          block: "for loop",
+          text:
+            "Takes the feature `a` and the weight `b` in the same position, and adds `a * b` to " +
+            "the total.",
+        },
+        {
+          code: "def explain(words, x, weights):",
+          block: "function",
+          text:
+            "Prints what each word that is present adds, then the total score. Absent words " +
+            "(feature 0) are skipped.",
+        },
+        {
+          code: "for word, a, b in zip(words, x, weights):",
+          block: "for loop",
+          text:
+            "`zip` can pair three lists at once. Each round gets one word, its feature (1 or 0) " +
+            "and its weight.",
+        },
+        {
+          code: "if a == 1:",
+          block: "if block",
+          text:
+            "Prints the word only when the review contains it. `boring` has a 0, so it is not " +
+            "printed.",
+        },
+        {
+          code: "total + a * b",
+          text: "Adds this feature times its weight to the running total.",
+        },
+        {
+          code: "weights = [2.0, -2.0, -1.0]",
+          text:
+            "One weight per word. A positive weight pushes the score up and a negative one " +
+            "pushes it down. `great` counts +2.0.",
+        },
+        {
+          code: "explain(words, [1, 0, 1], weights)",
+          text:
+            "The review `[1, 0, 1]` has `great` and `slow` but not `boring`. It prints " +
+            "`great adds 2.0`, `slow adds -1.0`, then `score 1.0`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           The review <Code>[1, 0, 1]</Code> contains <Code>great</Code> and <Code>slow</Code>, and does not contain <Code>boring</Code>.
@@ -511,7 +811,7 @@ score -0.5`}
         "if your test score is 60 or above, you pass; otherwise, you fail," a hard cutoff with only
         two possible outcomes on either side:
       </Text>
-      <RunnableExample labId={4} code={`def step(z):
+      <RunnableExample hints={STEP_HINTS} labId={4} code={`def step(z):
     return 1 if z >= 0 else -1
 
 print(step(3))    # 1
@@ -521,33 +821,34 @@ print(step(-2))   # -1`} />
         two values - it throws away the magnitude of the number and keeps only which side of zero
         it landed on.
       </Text>
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>1 if z &gt;= 0 else -1</Code> is a one-line "if". It reads: give back 1 if{" "}
-          <Code>z</Code> is 0 or more, otherwise give back -1. <Code>&gt;=</Code> means "greater
-          than or equal to".
-        </ListItem>
-        <ListItem>
-          <Code>step(3)</Code>: 3 is bigger than 0, so the answer is 1.
-        </ListItem>
-        <ListItem>
-          <Code>step(-2)</Code>: -2 is less than 0, so the answer is -1.
-        </ListItem>
-        <ListItem>
-          <Code>step(0)</Code> is 1, because the test says "or equal". Exactly 0 goes to the +1
-          side. <Code>step(1000)</Code> and <Code>step(0.001)</Code> both give 1. Only the side
-          matters, not the size.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`def freeze_alert(temp_c):
+      <CodeBlock code={`def freeze_alert(temp_c):
     return 1 if temp_c <= 0 else -1
 
 print(freeze_alert(-5))  # 1
-print(freeze_alert(10))  # -1`}
-      </Code>
+print(freeze_alert(10))  # -1`} hints={[
+        {
+          code: "def freeze_alert(temp_c):",
+          block: "function",
+          text:
+            "A step function with the test turned around. It gives 1 (alert) at 0 degrees or " +
+            "colder, and -1 (no alert) otherwise.",
+        },
+        {
+          code: "1 if temp_c <= 0 else -1",
+          text:
+            "A one-line \"if\". `<=` means \"less than or equal to\". So exactly 0 degrees also " +
+            "gives 1.",
+        },
+        {
+          code: "freeze_alert(-5)",
+          text: "-5 is below 0, so the answer is 1.",
+        },
+        {
+          code: "freeze_alert(10)",
+          text: "10 is above 0, so the answer is -1.",
+        },
+      ]} />
       <PracticeCell labId={4} cellId="concept-3" code={`def freeze_alert(temp_c):
     return 1 if temp_c <= 0 else -1
 
@@ -604,7 +905,47 @@ def squash(z):
 
 
 for z in [-3, -0.5, 0, 0.5, 3]:
-    print(z, step(z), round(squash(z), 2))`} />
+    print(z, step(z), round(squash(z), 2))`} hints={[
+        {
+          code: "def step(z):",
+          block: "function",
+          text:
+            "The hard cutoff: 1 if `z` is 0 or more, otherwise -1. It keeps only the side of " +
+            "zero, not the size.",
+        },
+        {
+          code: "def squash(z):",
+          block: "function",
+          text:
+            "A smooth version. It turns any score into a number between 0 and 1. A big positive " +
+            "score gives nearly 1, a big negative one nearly 0, and 0 gives exactly 0.5.",
+        },
+        {
+          code: "for z in [-3, -0.5, 0, 0.5, 3]:",
+          block: "for loop",
+          text:
+            "Tries five scores. For each it prints the score, the step answer and the squashed " +
+            "number. For example, `3` prints `3 1 0.95`.",
+        },
+        {
+          code: "import math",
+          text: "Loads Python's `math` toolbox, so you can use `math.exp`.",
+        },
+        {
+          code: "1 if z >= 0 else -1",
+          text: "A one-line \"if\": give back 1 if `z` is 0 or more, otherwise -1.",
+        },
+        {
+          code: "math.exp(-z)",
+          text:
+            "A ready-made math function from the toolbox. You do not need its formula. When `z` " +
+            "is big, this part is tiny, so the result gets close to 1.",
+        },
+        {
+          code: "round(squash(z), 2)",
+          text: "Rounds the squashed number to 2 decimal places, so 0.9526... prints as `0.95`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>step</Code> gives <Code>1</Code> for both <Code>0.5</Code> and <Code>3</Code>. It cannot say that 3 is a much stronger yes.
@@ -716,7 +1057,7 @@ for z in [-4, -1, 0.1, 2, 5]:
       <Text>
         Here's a scatter plot of a few (x, y) points, nothing to do with perceptrons:
       </Text>
-      <RunnableExample labId={4} code={`import matplotlib.pyplot as plt
+      <RunnableExample hints={SCATTER_HINTS} labId={4} code={`import matplotlib.pyplot as plt
 
 hours_studied = [1, 2, 3, 4, 5]
 exam_score = [50, 55, 65, 70, 90]
@@ -731,28 +1072,8 @@ plt.show()`} />
         a file instead of popping up a window - handy when you're running a script rather than a
         notebook.
       </Text>
-      <Text>Here is what each line does with the real numbers:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>hours_studied</Code> goes on the x axis (the sideways one). <Code>exam_score</Code>{" "}
-          goes on the y axis (the up-and-down one). They are paired by position: (1, 50), (2, 55),
-          (3, 65), (4, 70), (5, 90).
-        </ListItem>
-        <ListItem>
-          <Code>plt.scatter</Code> draws 5 dots. The dots go up from left to right, so more study
-          hours go with higher scores.
-        </ListItem>
-        <ListItem>
-          <Code>plt.xlabel</Code> and <Code>plt.ylabel</Code> write the names beside the axes.
-        </ListItem>
-        <ListItem>
-          <Code>plt.savefig("scores.png")</Code> saves the picture as a file called{" "}
-          <Code>scores.png</Code>. <Code>plt.show()</Code> then shows it on screen.
-        </ListItem>
-      </UnorderedList>
 
-      <Code display="block" colorScheme="gray" whiteSpace="pre" overflowX="auto" maxW="100%" p={3} borderRadius="md">
-        {`import matplotlib.pyplot as plt
+      <CodeBlock code={`import matplotlib.pyplot as plt
 
 city_temp = [30, 45, 60, 75, 90]
 ice_cream_sales = [10, 25, 40, 70, 95]
@@ -760,8 +1081,36 @@ plt.scatter(city_temp, ice_cream_sales)
 plt.xlabel("temperature (F)")
 plt.ylabel("ice cream sales")
 plt.savefig("ice_cream.png")
-print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.png`}
-      </Code>
+print("Saved scatter plot to ice_cream.png")  # Saved scatter plot to ice_cream.png`} hints={[
+        {
+          code: "import matplotlib.pyplot as plt",
+          text: "Loads matplotlib's drawing tools under the short name `plt`.",
+        },
+        {
+          code: "city_temp = [30, 45, 60, 75, 90]",
+          text:
+            "The x values: 5 temperatures. Each one is paired with the sales number in the same " +
+            "position.",
+        },
+        {
+          code: "plt.scatter(city_temp, ice_cream_sales)",
+          text:
+            "Draws one dot per pair of numbers, matched by position: (30, 10), (45, 25), and so " +
+            "on. 5 dots in all.",
+        },
+        {
+          code: 'plt.xlabel("temperature (F)")',
+          text: "Writes the name beside the x axis (the sideways one).",
+        },
+        {
+          code: 'plt.ylabel("ice cream sales")',
+          text: "Writes the name beside the y axis (the up-and-down one).",
+        },
+        {
+          code: 'plt.savefig("ice_cream.png")',
+          text: "Saves the picture as a file called `ice_cream.png`.",
+        },
+      ]} />
       <PracticeCell labId={4} cellId="concept-4" code={`import matplotlib.pyplot as plt
 
 city_temp = [30, 45, 60, 75, 90]
@@ -838,7 +1187,61 @@ for sentence in sentences:
     row = vectorize(sentence, vocab)
     rows.append(row)
     print(row, sentence)
-print("all-zero rows:", count_empty(rows), "of", len(rows))`} />
+print("all-zero rows:", count_empty(rows), "of", len(rows))`} hints={[
+        {
+          code: "def vectorize(sentence, vocab):",
+          block: "function",
+          text:
+            "Turns a sentence into a row of 0s and 1s, one per vocabulary word: 1 if the " +
+            "sentence has that word, 0 if not. `\"a great film\"` gives `[1, 0, 0]`.",
+        },
+        {
+          code: "for word in vocab:",
+          block: "for loop",
+          text:
+            "Checks each vocabulary word in order and adds a 1 or a 0 to the row. So the row " +
+            "always has one number per vocabulary word.",
+        },
+        {
+          code: "def count_empty(rows):",
+          block: "function",
+          text:
+            "Counts the rows that are all zeros, meaning the sentence had no vocabulary word. " +
+            "Here it finds 2.",
+        },
+        {
+          code: "for row in rows:",
+          block: "for loop",
+          text: "Looks at each row and adds 1 to `count` when the row adds up to 0.",
+        },
+        {
+          code: "for sentence in sentences:",
+          block: "for loop",
+          text: "Turns each sentence into a row, saves it in `rows` and prints it next to the sentence.",
+        },
+        {
+          code: "sentence.lower().split()",
+          text:
+            "`lower()` makes every letter small, so \"Great\" and \"great\" match. `split()` cuts " +
+            "the text at the spaces into a list of words.",
+        },
+        {
+          code: "1 if word in words else 0",
+          text: "A one-line \"if\": 1 if the word is in the sentence's word list, otherwise 0.",
+        },
+        {
+          code: "sum(row) == 0",
+          text: "Adds up the row. If the sum is 0, every number in it is 0.",
+        },
+        {
+          code: "rows.append(row)",
+          text: "Adds this row to the end of the `rows` list, so `count_empty` can check them all later.",
+        },
+        {
+          code: "len(rows)",
+          text: "How many items are in `rows`: 4.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>a great film</Code> becomes <Code>[1, 0, 0]</Code>. <Code>boring and slow</Code> becomes <Code>[0, 1, 1]</Code>.

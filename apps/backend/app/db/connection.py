@@ -36,6 +36,7 @@ def init_db() -> None:
     _ensure_user_is_admin_column()
     _ensure_cell_results_hints_column()
     _ensure_cell_results_solution_columns()
+    _ensure_bookmark_text_columns()
 
 
 def _ensure_user_is_admin_column() -> None:
@@ -51,6 +52,16 @@ def _ensure_cell_results_hints_column() -> None:
         return
     with engine.begin() as conn:
         conn.execute(text("ALTER TABLE cell_results ADD COLUMN hints_used INTEGER NOT NULL DEFAULT 0"))
+
+def _ensure_bookmark_text_columns() -> None:
+    existing = {c["name"] for c in inspect(engine).get_columns("reading_bookmarks")}
+    with engine.begin() as conn:
+        for name in ("text", "prefix", "suffix"):
+            if name not in existing:
+                conn.execute(text(f"ALTER TABLE reading_bookmarks ADD COLUMN {name} TEXT NOT NULL DEFAULT ''"))
+        if "color" not in existing:
+            conn.execute(text("ALTER TABLE reading_bookmarks ADD COLUMN color VARCHAR(7) NOT NULL DEFAULT ''"))
+
 
 def _ensure_cell_results_solution_columns() -> None:
     existing = {c["name"] for c in inspect(engine).get_columns("cell_results")}

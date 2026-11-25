@@ -128,8 +128,16 @@ export function LabNav({
         <VStack align="stretch" spacing={0}>
           {items.map((item) => {
             const isActive = item.id === activeId;
+            const isMarked = !!bookmark && item.id === bookmark.sectionId;
             return (
-              <Flex key={item.id} align="center" _hover={{ bg: "blackAlpha.50" }} borderRadius="md">
+              <Box key={item.id}>
+              <Flex
+                align="center"
+                _hover={{ bg: "blackAlpha.50" }}
+                borderRadius="md"
+                bg={isMarked ? "yellow.100" : undefined}
+                _dark={{ bg: isMarked ? "yellow.900" : undefined }}
+              >
                 <Box
                   as="button"
                   type="button"
@@ -156,13 +164,13 @@ export function LabNav({
                   <Box
                     as="button"
                     type="button"
-                    aria-label={item.id === bookmark.targetId ? "Remove bookmark" : `Bookmark: ${item.label}`}
-                    title={item.id === bookmark.targetId ? "Remove bookmark" : "Bookmark this spot"}
+                    aria-label={isMarked ? "Remove bookmark" : `Bookmark: ${item.label}`}
+                    title={isMarked ? "Remove bookmark" : "Bookmark this spot"}
                     px={1}
                     fontSize="xs"
-                    opacity={item.id === bookmark.targetId ? 1 : 0.35}
+                    opacity={isMarked ? 1 : 0.35}
                     _hover={{ opacity: 1 }}
-                    onClick={() => (item.id === bookmark.targetId ? bookmark.clear() : bookmark.save(item))}
+                    onClick={() => (isMarked ? bookmark.clear() : bookmark.save(item))}
                   >
                     🔖
                   </Box>
@@ -185,6 +193,21 @@ export function LabNav({
                   </Box>
                 )}
               </Flex>
+              {isMarked && bookmark?.kind === "text" && (
+                <Text
+                  fontSize="xs"
+                  color="yellow.800"
+                  _dark={{ color: "yellow.200" }}
+                  fontStyle="italic"
+                  noOfLines={2}
+                  pl={2 + (item.level + 1) * 3}
+                  pr={2}
+                  pb={1}
+                >
+                  🔖 &ldquo;{bookmark.label}&rdquo;
+                </Text>
+              )}
+              </Box>
             );
           })}
         </VStack>
@@ -196,7 +219,7 @@ export function LabNav({
     <VStack align="stretch" spacing={5}>
       {bookmark && (
         <VStack align="stretch" spacing={1}>
-          {bookmark.targetId && (
+          {bookmark.found && (
             <Button
               size="sm"
               colorScheme="yellow"
@@ -209,7 +232,9 @@ export function LabNav({
                 onNavigate?.();
               }}
             >
-              Resume: {bookmark.label}
+              {bookmark.kind === "text" ? "Resume: “" : "Resume: "}
+              {bookmark.label}
+              {bookmark.kind === "text" ? "”" : ""}
             </Button>
           )}
           {bookmark.label && (

@@ -2,7 +2,21 @@ import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/re
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
+import { CodeHint } from "../../components/codeHints";
 import { RunnableExample } from "../../components/RunnableExample";
+
+const WORD_HINTS: CodeHint[] = [
+  { code: "word[0]", text: "The first character, `r`. Counting starts at 0, not 1." },
+  {
+    code: "word[:5]",
+    text: "The start is empty, so it starts at the beginning. It stops before position 5, so you get the first 5 characters: `retri`.",
+  },
+  {
+    code: "word[-3:]",
+    text: "A negative number counts from the end. This means \"the last 3 characters\": `val`.",
+  },
+  { code: "len(word)", text: "Counts the characters: 9." },
+];
 
 export function Lab16Reading() {
   return (
@@ -39,24 +53,7 @@ export function Lab16Reading() {
 print(word[0])      # r
 print(word[:5])     # retri
 print(word[-3:])    # val
-print(len(word))    # 9`} />
-      <Text>Here is what each line does:</Text>
-      <UnorderedList spacing={1} pl={4}>
-        <ListItem>
-          <Code>word[0]</Code> is the first character, <Code>r</Code>. Counting starts at 0, not 1.
-        </ListItem>
-        <ListItem>
-          <Code>word[:5]</Code> leaves the start empty, so it starts at the beginning. It stops
-          before position 5, so you get the first 5 characters: <Code>retri</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>word[-3:]</Code> uses a negative number, which counts from the end. It means "the
-          last 3 characters": <Code>val</Code>.
-        </ListItem>
-        <ListItem>
-          <Code>len(word)</Code> counts the characters: 9.
-        </ListItem>
-      </UnorderedList>
+print(len(word))    # 9`} hints={WORD_HINTS} />
 
       <PracticeCell labId={16} cellId="concept-1" code={`title = "digital twin"
 print(title[:7])   # expected output: digital
@@ -126,7 +123,70 @@ def fits(text, window):
 
 window = 6
 for text in ["cat sat", "retrieval makes tokenization costly"]:
-    print(text, "->", toy_token_count(text), "tokens, fits:", fits(text, window))`} />
+    print(text, "->", toy_token_count(text), "tokens, fits:", fits(text, window))`} hints={[
+        {
+          code: "def toy_token_count(text):",
+          block: "function",
+          text:
+            "Adds up the token cost of a text. It looks at each word, works out its cost with the toy " +
+            "rule, and gives back the **total**.",
+        },
+        {
+          code: "for word in text.split():",
+          block: "for loop",
+          text:
+            "Runs the indented line once for **each word** in the text. Each time, the cost of that " +
+            "word is added to `total`.",
+        },
+        {
+          code: "def fits(text, window):",
+          block: "function",
+          text:
+            "Answers one question: is the token cost of the text within the window? It gives back " +
+            "`True` or `False`.",
+        },
+        {
+          code: 'for text in ["cat sat", "retrieval makes tokenization costly"]:',
+          block: "for loop",
+          text:
+            "Runs the print once for each of the two texts, so you can compare their cost and see " +
+            "which one fits.",
+        },
+        {
+          code: "total = 0",
+          text: "Starts the count at 0. The loop below adds each word's cost to it.",
+        },
+        {
+          code: "text.split()",
+          text:
+            "`split()` cuts the text at the spaces and gives a **list** of words. " +
+            "`\"cat sat\"` becomes `['cat', 'sat']`.",
+        },
+        {
+          code: "(len(word) + 3) // 4",
+          text:
+            "`//` divides and drops the fraction. Adding 3 first makes it round **up**. So " +
+            "`retrieval` (9 letters) costs (9 + 3) // 4 = 3 tokens.",
+        },
+        {
+          code: "return total",
+          text: "Hands the finished total back to the code that called the function.",
+        },
+        {
+          code: "toy_token_count(text) <= window",
+          text:
+            "`<=` means \"less than or equal to\". The answer is `True` if the cost fits in the " +
+            "window, and `False` if not.",
+        },
+        {
+          code: "window = 6",
+          text: "The size of the pretend model's window: room for only 6 tokens.",
+        },
+        {
+          code: "fits(text, window))",
+          text: "Calls `fits` for this text. It prints `True` for `cat sat` and `False` for the long one.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>toy_token_count</Code> loops over the words. Each word costs its length divided by 4,
@@ -224,7 +284,30 @@ tokenization of weekends matters -> 8 tokens, fits: False`}</Text>
 words = messy.split()
 print(words)            # ['Hello', 'World', 'again']
 print(" ".join(words))  # Hello World again
-print("Hello".lower())  # hello`} />
+print("Hello".lower())  # hello`} hints={[
+        {
+          code: "\\n",
+          text:
+            "A **new line** character, written as a backslash and `n`. It is one character, and it " +
+            "moves the text onto the next line.",
+        },
+        {
+          code: "messy.split()",
+          text:
+            "`split()` with nothing in the brackets cuts the text at every gap: single spaces, runs of " +
+            "spaces and new lines. Empty bits are thrown away, so you get a clean **list** of words.",
+        },
+        {
+          code: '" ".join(words)',
+          text:
+            "The opposite of `split`. It glues the words back into one string and puts the text in the " +
+            "quotes, one space, between each pair. You get `Hello World again`.",
+        },
+        {
+          code: '"Hello".lower()',
+          text: "`.lower()` gives back a copy of the text with every letter made small: `hello`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>messy</Code> has spaces at the start, a run of spaces in the middle and a new line
@@ -309,7 +392,62 @@ def fits(text, window):
 window = 8
 raw = "Ada   writes\\n\\n\\nPython    code   daily"
 for name, text in [("raw", raw), ("clean", clean_text(raw))]:
-    print(name, estimate_tokens(text), "tokens, fits:", fits(text, window))`} />
+    print(name, estimate_tokens(text), "tokens, fits:", fits(text, window))`} hints={[
+        {
+          code: "def clean_text(raw):",
+          block: "function",
+          text:
+            "Cleans messy text. `split()` cuts it into words and drops every extra gap, then `join` " +
+            "glues the words back with exactly one space between each.",
+        },
+        {
+          code: "def estimate_tokens(text):",
+          block: "function",
+          text:
+            "Guesses the token cost of a whole text: its number of characters divided by 4. Spaces " +
+            "and line breaks count as characters too.",
+        },
+        {
+          code: "def fits(text, window):",
+          block: "function",
+          text: "Checks if the guessed cost is within the window. It gives back `True` or `False`.",
+        },
+        {
+          code: 'for name, text in [("raw", raw), ("clean", clean_text(raw))]:',
+          block: "for loop",
+          text:
+            "Runs the same print twice: once for the raw note and once for the cleaned one. That " +
+            "makes the two results easy to compare.",
+        },
+        {
+          code: '" ".join(raw.split())',
+          text:
+            "Cut at every gap, then glue back with single spaces. `Ada   writes` becomes " +
+            "`Ada writes`, and the three new lines become one space.",
+        },
+        {
+          code: "len(text) // 4",
+          text:
+            "`len` counts the characters. `//` divides by 4 and drops the fraction. The raw note has " +
+            "37 characters, so 37 // 4 = 9.",
+        },
+        {
+          code: "window = 8",
+          text: "The pretend model can take only 8 tokens.",
+        },
+        {
+          code: "\\n\\n\\n",
+          text:
+            "Three **new line** characters in a row, like blank lines in text pasted from a file. They " +
+            "add no meaning, but each one still counts as a character.",
+        },
+        {
+          code: "for name, text in",
+          text:
+            "Each item in the list is a pair, like `(\"raw\", raw)`. Writing `name, text` splits the " +
+            "pair: the label goes into `name` and the note goes into `text`.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>raw</Code> is 37 characters, about 9 tokens. That is over the window of 8, so the
@@ -410,7 +548,27 @@ clean 9 tokens, fits: True`}</Text>
       </Text>
       <RunnableExample labId={16} code={`letters = ["a", "b", "c", "d", "e", "f", "g"]
 for start in range(0, len(letters), 3):
-    print(start, letters[start:start + 3])`} />
+    print(start, letters[start:start + 3])`} hints={[
+        {
+          code: "for start in range(0, len(letters), 3):",
+          block: "for loop",
+          text:
+            "Runs the print once for each start: 0, 3 and 6. Each time it takes a piece of up to 3 " +
+            "letters that begins at that start.",
+        },
+        {
+          code: "range(0, len(letters), 3)",
+          text:
+            "Counts from 0, stops before 7 (the length of the list) and jumps by 3. So you get " +
+            "0, 3 and 6.",
+        },
+        {
+          code: "letters[start:start + 3]",
+          text:
+            "A **slice**: from position `start` up to, but not including, `start + 3`. At 6 only " +
+            "`['g']` is left, and Python just gives that.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>len(letters)</Code> is 7, so <Code>start</Code> takes the values 0, 3 and 6.
@@ -504,7 +662,63 @@ words = "Kofi teaches maths on Fridays and codes at night".split()
 fact = "maths on Fridays"
 for jump in (4, 2):  # 4 = no overlap, 2 = overlap of 2
     chunks = make_chunks(words, 4, jump)
-    print("jump", jump, "->", len(chunks), "chunks,", count_with_fact(chunks, fact), "hold the whole fact")`} />
+    print("jump", jump, "->", len(chunks), "chunks,", count_with_fact(chunks, fact), "hold the whole fact")`} hints={[
+        {
+          code: "def make_chunks(words, size, jump):",
+          block: "function",
+          text:
+            "Cuts a list of words into chunks. It starts a new chunk every `jump` words, takes `size` " +
+            "words each time and glues each chunk into one string.",
+        },
+        {
+          code: "for start in range(0, len(words), jump):",
+          block: "for loop",
+          text:
+            "Walks along the words in steps of `jump`. With a jump of 4 the starts are 0, 4 and 8. " +
+            "With a jump of 2 they are 0, 2, 4, 6 and 8.",
+        },
+        {
+          code: "def count_with_fact(chunks, fact):",
+          block: "function",
+          text: "Counts how many chunks hold the **whole** fact, word for word.",
+        },
+        {
+          code: "for chunk in chunks:",
+          block: "for loop",
+          text: "Looks at each chunk in turn. If the fact is inside it, the count goes up by 1.",
+        },
+        {
+          code: "for jump in (4, 2):",
+          block: "for loop",
+          text:
+            "Runs twice: a jump of 4 (no overlap) and a jump of 2 (an overlap of 2). Same text, same " +
+            "chunk size, so only the overlap changes.",
+        },
+        {
+          code: "chunks = []",
+          text: "Starts with an empty list. Each round of the loop adds one chunk to it.",
+        },
+        {
+          code: "chunks.append(",
+          text: "`append` adds one item to the **end** of the list.",
+        },
+        {
+          code: '" ".join(words[start:start + size])',
+          text:
+            "Takes `size` words from position `start` with a slice, then glues them into one string " +
+            "with spaces. For example `maths on Fridays and`.",
+        },
+        {
+          code: "fact in chunk",
+          text:
+            "`in` checks if the fact text appears inside the chunk text. The answer is `True` or " +
+            "`False`.",
+        },
+        {
+          code: "len(chunks)",
+          text: "How many chunks were made: 3 with a jump of 4, and 5 with a jump of 2.",
+        },
+      ]} />
       <UnorderedList spacing={1} pl={4}>
         <ListItem>
           <Code>make_chunks</Code> is a small version of the lab's <Code>chunk_words</Code>. It loops

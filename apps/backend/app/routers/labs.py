@@ -282,6 +282,10 @@ def save_cell_code(
     return CellCodeOut(source=saved.source)
 
 
+def _bookmark_out(b: ReadingBookmark) -> BookmarkOut:
+    return BookmarkOut(anchor_id=b.anchor_id, label=b.label, text=b.text, prefix=b.prefix, suffix=b.suffix, color=b.color)
+
+
 def _find_bookmark(db: Session, user_id: int, lab_id: int) -> ReadingBookmark | None:
     return (
         db.query(ReadingBookmark)
@@ -299,7 +303,7 @@ def get_bookmark(
     saved = _find_bookmark(db, current_user.id, lab_id)
     if saved is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No bookmark for this lab")
-    return BookmarkOut(anchor_id=saved.anchor_id, label=saved.label)
+    return _bookmark_out(saved)
 
 
 @router.put("/{lab_id}/bookmark", response_model=BookmarkOut)
@@ -313,13 +317,17 @@ def save_bookmark(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Lab not found")
     saved = _find_bookmark(db, current_user.id, lab_id)
     if saved is None:
-        saved = ReadingBookmark(user_id=current_user.id, lab_id=lab_id, anchor_id=payload.anchor_id, label=payload.label)
+        saved = ReadingBookmark(user_id=current_user.id, lab_id=lab_id)
         db.add(saved)
-    else:
-        saved.anchor_id = payload.anchor_id
-        saved.label = payload.label
+    # One bookmark per lab: saving a new one (heading or text) replaces the previous.
+    saved.anchor_id = payload.anchor_id
+    saved.label = payload.label
+    saved.text = payload.text
+    saved.prefix = payload.prefix
+    saved.suffix = payload.suffix
+    saved.color = payload.color
     db.commit()
-    return BookmarkOut(anchor_id=saved.anchor_id, label=saved.label)
+    return _bookmark_out(saved)
 
 
 @router.delete("/{lab_id}/bookmark", status_code=status.HTTP_204_NO_CONTENT)
@@ -460,17 +468,19 @@ def judge_cell_code(
 
 
 _HINT_STYLE = {
-    1: "Name the ONE function or step in the student's code that is still wrong or missing, and what it currently does instead of what it should (max 2 sentences). Skip anything they already got right.",
-    2: "Name the exact function and the exact variable or line in the student's code that is wrong, say what it does now versus what it must do, and why that gives the wrong result (max 3 sentences). Describe the fix in words only.",
-    3: "Give numbered steps (max 4) for ONLY what is still wrong or missing. No intro, no praise, no summary. Each step is ONE short line (under 20 words): the exact function and variable, then what to change, in words, e.g. 'In parse_label, test for the word negative instead of positive.' Do not explain why, and do not teach grammar or programming concepts. Do not repeat steps the student has already done.",
+    1: "Name the ONE function or step in the student's code that is still wrong or missing, and what it currently does instead of what it should (max 2 sentences). Say it in plain words a beginner knows, and add a few words on why it matters. Skip anything they already got right.",
+    2: "Name the exact function and the exact variable or line in the student's code that is wrong, say what it does now versus what it must do, and why that gives the wrong result, in plain words a beginner knows (max 3 sentences). Describe the fix in words only.",
+    3: "Give numbered steps (max 4) for ONLY what is still wrong or missing. No intro, no praise, no summary. Each step is one or two short lines (under 30 words): the exact function and variable, then what to change, in words, then a few plain words on why, e.g. 'In parse_label, test for the word negative instead of positive. Right now it never looks for negative reviews.' If a step uses a programming word a beginner may not know, explain it in a few plain words. Do not repeat steps the student has already done.",
 }
 
 _HINT_FOCUS = (
     "HOW TO WRITE THE HINT:\n"
     "- First compare the student's code and output against the reference, piece by piece (each "
     "function, each TODO step). Work out which pieces already match and which do not.\n"
-    "- Be brief. Every sentence must say what to fix; cut definitions, background, analogies and "
-    "explanations of how Python works. Name the problem and the fix, nothing more.\n"
+    "- Write for someone who has never programmed. Use plain everyday words and short sentences. "
+    "The first time you use a programming word (like function, list, loop or variable), explain it "
+    "in a few plain words right there, for example 'a list is a row of items'. Say WHY the problem "
+    "happens, not only what to change. Stay short: no long background and no lectures.\n"
     "- Be specific and go straight to the point: refer to the student's own function and variable "
     "names, and say what is wrong with THEIR code. Never give a generic roadmap or restate the "
     "exercise's TODO steps.\n"
@@ -537,7 +547,8 @@ def _llm_hint(item: exercises.GradedItem, payload: CellHintRequest, level: int) 
     system_prompt = (
         "You are a patient programming tutor giving a hint on a graded exercise. Your student is a "
         "complete beginner who is new to Python: use simple everyday words and very short sentences, "
-        "and avoid jargon. Do not teach concepts or explain terms at length; just say what to fix. "
+        "and avoid jargon. Explain any programming word in a few plain words the first time you use it, "
+        "and keep the whole hint short. "
         "You are shown the "
         "reference solution only so your hint is accurate - the student must never be able to "
         "reconstruct it from what you write. If the student has not written anything yet, help them "
