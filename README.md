@@ -227,7 +227,7 @@ them in the backend `.env`. Everything else below goes in `apps/backend/app/.env
 | `RESET_TOKEN_EXPIRE_MINUTES` | `30` | Password-reset link lifetime |
 | `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` | unset; from `no-reply@llm-foundations.local` | STARTTLS email; nothing is emailed without `SMTP_HOST` |
 | `OWNER_EMAIL`, `OWNER_PASSWORD` | unset | Owner identity; both needed or owner routes 404 |
-| `OWNER_TOKEN_EXPIRE_MINUTES` | `30` | Owner token lifetime |
+| `OWNER_TOKEN_EXPIRE_MINUTES` | `60` | Owner token lifetime; the dashboard renews it while in use, so this is the inactivity limit |
 | `ADMIN_INVITE_EXPIRE_HOURS` | `48` | Invite lifetime |
 | `ADMIN_TOKEN_EXPIRE_MINUTES` | `60` | Admin token lifetime |
 | `GROQ_API_KEY`, `GROQ_MODEL` | unset, `openai/gpt-oss-120b` | Default grader/hint provider |

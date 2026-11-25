@@ -27,7 +27,9 @@ SMTP_FROM = os.getenv("SMTP_FROM", "no-reply@llm-foundations.local")
 # Both must be set, otherwise the owner routes are disabled.
 OWNER_EMAIL = os.getenv("OWNER_EMAIL", "").strip().lower()
 OWNER_PASSWORD = os.getenv("OWNER_PASSWORD", "")
-OWNER_TOKEN_EXPIRE_MINUTES = int(os.getenv("OWNER_TOKEN_EXPIRE_MINUTES", "30"))
+# Also the owner dashboard's inactivity limit: the dashboard renews the token while the owner is
+# active, so the session ends this many minutes after the last activity.
+OWNER_TOKEN_EXPIRE_MINUTES = int(os.getenv("OWNER_TOKEN_EXPIRE_MINUTES", "60"))
 ADMIN_INVITE_EXPIRE_HOURS = int(os.getenv("ADMIN_INVITE_EXPIRE_HOURS", "48"))
 ADMIN_TOKEN_EXPIRE_MINUTES = int(os.getenv("ADMIN_TOKEN_EXPIRE_MINUTES", "60"))
 ADMIN_MIN_PASSWORD_LENGTH = 12

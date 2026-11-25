@@ -1,9 +1,9 @@
 import { Box, Button, HStack, Heading, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ownerUserApi } from "../api/ownerEndpoints";
-import { setOwnerToken } from "../api/ownerClient";
+import { setOwnerToken, startOwnerSessionKeepAlive } from "../api/ownerClient";
 import { AdminsPanel } from "../components/owner/AdminsPanel";
 import { ReviewsPanel } from "../components/owner/ReviewsPanel";
 import { MobileNav, NavList, StickyHeader } from "../components/MobileNav";
@@ -14,6 +14,10 @@ const TABS = ["Users", "Admins & invites", "Reviews"];
 export function OwnerHomePage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState(0);
+  // Bumped by the Refresh button; each panel re-fetches its data from the server when it changes.
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => startOwnerSessionKeepAlive(), []);
 
   function logout() {
     setOwnerToken(null);
@@ -56,9 +60,14 @@ export function OwnerHomePage() {
             </Box>
           </Heading>
         </HStack>
-        <Button size="sm" flexShrink={0} onClick={logout}>
-          Sign out
-        </Button>
+        <HStack spacing={2} flexShrink={0}>
+          <Button size="sm" variant="outline" onClick={() => setRefreshKey((k) => k + 1)}>
+            Refresh
+          </Button>
+          <Button size="sm" onClick={logout}>
+            Sign out
+          </Button>
+        </HStack>
       </StickyHeader>
       <Tabs index={tab} onChange={setTab} isLazy flex={1} minH={0} display="flex" flexDirection="column">
         <TabList display={{ base: "none", md: "flex" }} mb={4}>
@@ -70,13 +79,13 @@ export function OwnerHomePage() {
             focus rings from being clipped at the edges. */}
         <TabPanels flex={1} minH={0} overflowY="auto" px={1} mx={-1}>
           <TabPanel px={0} pt={0} pb={16}>
-            <UsersPanel api={ownerUserApi} stickySearch />
+            <UsersPanel api={ownerUserApi} stickySearch refreshKey={refreshKey} />
           </TabPanel>
           <TabPanel px={0} pt={0} pb={16}>
-            <AdminsPanel />
+            <AdminsPanel refreshKey={refreshKey} />
           </TabPanel>
           <TabPanel px={0} pt={0} pb={16}>
-            <ReviewsPanel />
+            <ReviewsPanel refreshKey={refreshKey} />
           </TabPanel>
         </TabPanels>
       </Tabs>

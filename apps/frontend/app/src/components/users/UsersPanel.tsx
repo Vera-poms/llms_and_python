@@ -66,7 +66,16 @@ function UserCard({ user, number, onOpen }: { user: UserSummary; number: number;
 
 // `stickySearch` pins the search box to the top of the surrounding scroll area, so it stays
 // reachable while the list scrolls underneath it.
-export function UsersPanel({ api, stickySearch = false }: { api: UserApi; stickySearch?: boolean }) {
+// Changing `refreshKey` re-fetches the list (the page's Refresh button), keeping the search text.
+export function UsersPanel({
+  api,
+  stickySearch = false,
+  refreshKey = 0,
+}: {
+  api: UserApi;
+  stickySearch?: boolean;
+  refreshKey?: number;
+}) {
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<UserSummary[] | null>(null);
@@ -94,7 +103,7 @@ export function UsersPanel({ api, stickySearch = false }: { api: UserApi; sticky
     setLoading(true);
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
-  }, [load]);
+  }, [load, refreshKey]);
 
   return (
     <VStack align="stretch" spacing={4}>
@@ -124,10 +133,27 @@ export function UsersPanel({ api, stickySearch = false }: { api: UserApi; sticky
         ))}
       </VStack>
 
-      <TableContainer display={{ base: "none", md: "block" }}>
-        <Table size="sm">
+      {/* A sticky header only works if no box between it and the scroll area clips overflow, so
+          the container's own scrolling is turned off when the header must stick. */}
+      <TableContainer display={{ base: "none", md: "block" }} overflow={stickySearch ? "visible" : undefined}>
+        {/* "separate" borders, because collapsed borders stay behind when a header cell sticks. */}
+        <Table size="sm" sx={stickySearch ? { borderCollapse: "separate", borderSpacing: 0 } : undefined}>
           <Thead>
-            <Tr>
+            <Tr
+              sx={
+                stickySearch
+                  ? {
+                      "& > th": {
+                        position: "sticky",
+                        // Height of the sticky search box above: input (2.5rem) + its bottom padding (0.5rem).
+                        top: "3rem",
+                        zIndex: 1,
+                        bg: "chakra-body-bg",
+                      },
+                    }
+                  : undefined
+              }
+            >
               <Th isNumeric w="1%">
                 #
               </Th>

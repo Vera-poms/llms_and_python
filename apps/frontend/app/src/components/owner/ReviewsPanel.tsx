@@ -1,4 +1,4 @@
-import { Badge, Box, HStack, Select, Stack, Text, VStack, useToast } from "@chakra-ui/react";
+import { Badge, Box, HStack, Select, Spinner, Stack, Text, VStack, useToast } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { errorMessage, listReviews, type Review } from "../../api/ownerEndpoints";
@@ -15,16 +15,20 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-export function ReviewsPanel() {
+// Changing `refreshKey` re-fetches the reviews (the page's Refresh button), keeping the lab filter.
+export function ReviewsPanel({ refreshKey = 0 }: { refreshKey?: number }) {
   const toast = useToast();
   const [reviews, setReviews] = useState<Review[] | null>(null);
   const [labId, setLabId] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    setRefreshing(true);
     listReviews()
       .then(setReviews)
-      .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load reviews.") }));
-  }, [toast]);
+      .catch((e) => toast({ status: "error", title: errorMessage(e, "Could not load reviews.") }))
+      .finally(() => setRefreshing(false));
+  }, [toast, refreshKey]);
 
   const labs = useMemo(() => {
     const seen = new Map<number, string>();
@@ -43,6 +47,7 @@ export function ReviewsPanel() {
         <Text color="gray.600">
           {shown.length} review{shown.length === 1 ? "" : "s"}
           {average && ` · average ${average}/5`}
+          {refreshing && <Spinner size="xs" color="blue.500" ml={2} />}
         </Text>
         <Select size="sm" maxW="xs" value={labId} onChange={(e) => setLabId(e.target.value)} aria-label="Filter by lab">
           <option value="">All labs</option>

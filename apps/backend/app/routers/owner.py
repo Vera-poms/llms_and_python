@@ -74,6 +74,13 @@ def owner_login(payload: OwnerLoginRequest, request: Request) -> TokenResponse:
     return TokenResponse(access_token=create_owner_token())
 
 
+@router.post("/auth/refresh", response_model=TokenResponse, dependencies=[Depends(require_owner)])
+def owner_refresh() -> TokenResponse:
+    """Swaps a still-valid owner token for a fresh one. The dashboard calls this while the owner
+    is active, so the session only ends after OWNER_TOKEN_EXPIRE_MINUTES without activity."""
+    return TokenResponse(access_token=create_owner_token())
+
+
 @router.post(
     "/invites",
     response_model=InviteCreated,

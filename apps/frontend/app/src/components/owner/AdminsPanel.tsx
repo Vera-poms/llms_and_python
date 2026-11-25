@@ -31,7 +31,8 @@ import { LoadingSpinner } from "../LoadingSpinner";
 
 const STATUS_COLOR = { pending: "blue", used: "green", revoked: "gray", expired: "orange" } as const;
 
-export function AdminsPanel() {
+// Changing `refreshKey` re-fetches admins and invites (the page's Refresh button).
+export function AdminsPanel({ refreshKey = 0 }: { refreshKey?: number }) {
   const toast = useToast();
   const [admins, setAdmins] = useState<AdminAccount[]>([]);
   const [invites, setInvites] = useState<Invite[]>([]);
@@ -50,8 +51,9 @@ export function AdminsPanel() {
   }, [toast]);
 
   useEffect(() => {
+    setLoading(true);
     load();
-  }, [load]);
+  }, [load, refreshKey]);
 
   async function run(action: () => Promise<unknown>, success: string) {
     try {
