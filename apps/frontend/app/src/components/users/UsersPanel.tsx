@@ -64,7 +64,9 @@ function UserCard({ user, number, onOpen }: { user: UserSummary; number: number;
   );
 }
 
-export function UsersPanel({ api }: { api: UserApi }) {
+// `stickySearch` pins the search box to the top of the surrounding scroll area, so it stays
+// reachable while the list scrolls underneath it.
+export function UsersPanel({ api, stickySearch = false }: { api: UserApi; stickySearch?: boolean }) {
   const toast = useToast();
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<UserSummary[] | null>(null);
@@ -96,14 +98,23 @@ export function UsersPanel({ api }: { api: UserApi }) {
 
   return (
     <VStack align="stretch" spacing={4}>
-      <InputGroup>
-        <Input placeholder="Search by email" value={search} onChange={(e) => setSearch(e.target.value)} />
-        {loading && users !== null && (
-          <InputRightElement>
-            <Spinner size="sm" color="blue.500" />
-          </InputRightElement>
-        )}
-      </InputGroup>
+      <Box
+        position={stickySearch ? "sticky" : undefined}
+        top={0}
+        zIndex={stickySearch ? 1 : undefined}
+        bg="chakra-body-bg"
+        pb={stickySearch ? 2 : undefined}
+        mb={stickySearch ? -2 : undefined}
+      >
+        <InputGroup>
+          <Input placeholder="Search by email" value={search} onChange={(e) => setSearch(e.target.value)} />
+          {loading && users !== null && (
+            <InputRightElement>
+              <Spinner size="sm" color="blue.500" />
+            </InputRightElement>
+          )}
+        </InputGroup>
+      </Box>
 
       {users === null && loading && <LoadingSpinner label="Loading users…" />}
 

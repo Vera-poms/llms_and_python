@@ -21,7 +21,17 @@ export function OwnerHomePage() {
   }
 
   return (
-    <Box maxW="4xl" mx="auto" mt={{ base: 4, md: 10 }} px={{ base: 3, md: 4 }} pb={16}>
+    // The page fills the viewport and never scrolls itself: the header and tab bar stay put and
+    // only the open tab's content scrolls (see TabPanels below).
+    <Box
+      maxW="4xl"
+      mx="auto"
+      h="100dvh"
+      display="flex"
+      flexDirection="column"
+      pt={{ base: 4, md: 10 }}
+      px={{ base: 3, md: 4 }}
+    >
       <StickyHeader>
         <HStack minW={0} spacing={3}>
           <MobileNav title="Owner sections">
@@ -50,20 +60,22 @@ export function OwnerHomePage() {
           Sign out
         </Button>
       </StickyHeader>
-      <Tabs index={tab} onChange={setTab} isLazy>
-        <TabList display={{ base: "none", md: "flex" }}>
+      <Tabs index={tab} onChange={setTab} isLazy flex={1} minH={0} display="flex" flexDirection="column">
+        <TabList display={{ base: "none", md: "flex" }} mb={4}>
           {TABS.map((label) => (
             <Tab key={label}>{label}</Tab>
           ))}
         </TabList>
-        <TabPanels>
-          <TabPanel px={0}>
-            <UsersPanel api={ownerUserApi} />
+        {/* The scroll area. The 4px side padding (cancelled by the negative margin) keeps input
+            focus rings from being clipped at the edges. */}
+        <TabPanels flex={1} minH={0} overflowY="auto" px={1} mx={-1}>
+          <TabPanel px={0} pt={0} pb={16}>
+            <UsersPanel api={ownerUserApi} stickySearch />
           </TabPanel>
-          <TabPanel px={0}>
+          <TabPanel px={0} pt={0} pb={16}>
             <AdminsPanel />
           </TabPanel>
-          <TabPanel px={0}>
+          <TabPanel px={0} pt={0} pb={16}>
             <ReviewsPanel />
           </TabPanel>
         </TabPanels>
