@@ -1,5 +1,6 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
-import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { Code, ListItem, RevealWords, RunSubmitKeys, Text } from "../../components/prose";
+import { ConceptCard, ConceptPart, ReadingPage, ReadingPager, YourTurn } from "../../components/readingLayout";
 
 import { CodeBlock } from "../../components/CodeBlock";
 import { PracticeCell } from "../../components/PracticeCell";
@@ -88,8 +89,9 @@ const SQRT_HINTS: CodeHint[] = [
 
 export function Lab01Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
-      <Heading as="h2" size="md">Why probability?</Heading>
+    <ReadingPager>
+      <ReadingPage title="Why probability?">
+      <Heading as="h2" size="md"><RevealWords>Why probability?</RevealWords></Heading>
       <Text>
         An LLM never "knows" the next word for certain. At every step it produces a probability
         distribution over its entire vocabulary - a number for every possible next token that all
@@ -97,15 +99,16 @@ export function Lab01Reading() {
         distribution (what "temperature" controls). Everything else in this course sits on top of
         that one idea, so we build the whole pipeline from scratch, on real text, in this lab.
       </Text>
+      </ReadingPage>
 
-      <Heading as="h3" size="sm">Concept 1: Python modules and imports</Heading>
+    <ConceptCard number={1} title="Python modules and imports" accent="blue">
       <Text>
         Every file in this course opens with a handful of <Code>import</Code> lines before any
         real logic starts - worth understanding before anything else, since the rest of this lab
         leans on them immediately.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
+      <ConceptPart kind="plain" title="In plain Python">
       <Text>
         Python ships with a large standard library, and countless more packages are one{" "}
         <Code>pip install</Code> away. <Code>import</Code> pulls one of those in and hands you its
@@ -225,7 +228,8 @@ print(statistics.mean(nums))      # 18 - same answer, from the standard library`
         answers should change together.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Up close: borrowing tested tools</Heading>
+      </ConceptPart>
+      <ConceptPart kind="close" title="Up close: borrowing tested tools">
       <Text>
         LLM code is mostly built from tools other people wrote. Very little of it starts from zero.
       </Text>
@@ -344,6 +348,7 @@ for text in ["the cat saw the dog", "a b a b a"]:
         </ListItem>
       </UnorderedList>
 
+      <YourTurn>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
         press <RunSubmitKeys />:
@@ -381,6 +386,7 @@ for text in ["to be or not to be", "go go go stop"]:
     tokens = text.split()
     print(count_by_hand(tokens) == count_with_library(tokens), count_with_library(tokens))`} expectedOutput={`True {'to': 2, 'be': 2, 'or': 1, 'not': 1}
 True {'go': 3, 'stop': 1}`} />
+      </YourTurn>
       <Text>
         <b>What you should see:</b> exactly these two lines. If yours differ, check the two texts
         and that the print has the comparison first, then the counts.
@@ -407,7 +413,8 @@ True {'go': 3, 'stop': 1}`}
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      </ConceptPart>
+      <ConceptPart kind="applied" title="Applied to this lab">
       <Text>
         This lab's notebook opens with exactly three imports: <Code>import random</Code>,{" "}
         <Code>import re</Code>, and <Code>import matplotlib.pyplot as plt</Code>. <Code>re</Code>{" "}
@@ -430,7 +437,9 @@ True {'go': 3, 'stop': 1}`}
         usually means the cell with the imports was not run yet. Run it first, then try again.
       </Text>
 
-      <Heading as="h3" size="sm">Concept 2: turning text into tokens with regex</Heading>
+      </ConceptPart>
+    </ConceptCard>
+    <ConceptCard number={2} title="turning text into tokens with regex" accent="purple">
       <Text>
         Before you can count words, you have to decide what counts as a "word." The string{" "}
         <Code>"The Movie, was great!"</Code> has capital letters and punctuation glued to it -{" "}
@@ -439,7 +448,7 @@ True {'go': 3, 'stop': 1}`}
         of text so you can pull matching pieces out of a bigger string.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
+      <ConceptPart kind="plain" title="In plain Python">
       <Text>
         Forget language for a second. Say you have a messy string of prices scraped from a
         webpage and you just want the numbers:
@@ -551,7 +560,8 @@ print(hashtags)  # ['#SunsetHike', '#hiking', '#Summer2024']`} expectedOutput={`
         <Code>#</Code> signs and digits are gone.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Up close: tokens, the pieces a model counts</Heading>
+      </ConceptPart>
+      <ConceptPart kind="close" title="Up close: tokens, the pieces a model counts">
       <Text>
         Before a model reads any text, the text is cut into <b>tokens</b>: small pieces, like
         <Code>movie</Code> or <Code>great</Code>. The model only knows a fixed list of tokens,
@@ -683,6 +693,7 @@ for clean in (False, True):
         </ListItem>
       </UnorderedList>
 
+      <YourTurn>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
         press <RunSubmitKeys />:
@@ -726,6 +737,7 @@ texts = ["Good food, good price!", "GOOD price.", "Food was good"]
 for clean in (False, True):
     print("clean =", clean, "->", vocab_size(texts, clean), "different tokens")`} expectedOutput={`clean = False -> 8 different tokens
 clean = True -> 4 different tokens`} />
+      </YourTurn>
       <Text>
         <b>What you should see:</b> exactly these two lines. If yours differ, check the three texts
         and the order of the values in the print.
@@ -754,7 +766,8 @@ clean = True -> 4 different tokens`}
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      </ConceptPart>
+      <ConceptPart kind="applied" title="Applied to this lab">
       <Text>
         The lab's <Code>tokenize</Code> does this cleaning: <Code>re.findall(r"[a-z]+",
         sentence.lower())</Code>. Lowercasing first means <Code>"Movie"</Code> and
@@ -786,13 +799,15 @@ clean = True -> 4 different tokens`}
         because the apostrophe is not a letter. That is fine for this lab.
       </Text>
 
-      <Heading as="h3" size="sm">Concept 3: counting things with a dictionary</Heading>
+      </ConceptPart>
+    </ConceptCard>
+    <ConceptCard number={3} title="counting things with a dictionary" accent="teal">
       <Text>
         A Python <Code>dict</Code> maps keys to values, and it's the natural tool any time you
         need to tally "how many of each thing."
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
+      <ConceptPart kind="plain" title="In plain Python">
       <Text>Imagine counting fruit in a basket:</Text>
       <RunnableExample labId={1} code={`basket = ["apple", "pear", "apple", "apple", "pear", "fig"]
 
@@ -914,7 +929,8 @@ print(letter_counts)  # {'m': 1, 'i': 4, 's': 4, 'p': 2}`} expectedOutput={`{'m'
         <Code>"banana"</Code>, and check the counts by hand.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Up close: counting is where a model's knowledge starts</Heading>
+      </ConceptPart>
+      <ConceptPart kind="close" title="Up close: counting is where a model's knowledge starts">
       <Text>
         A model's first knowledge is a tally of what it has read. Words seen often get a big count.
         Words seen rarely get a small one.
@@ -1023,6 +1039,7 @@ for text in ["the cat and the dog and the bird", "red green blue pink"]:
         </ListItem>
       </UnorderedList>
 
+      <YourTurn>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
         press <RunSubmitKeys />:
@@ -1063,6 +1080,7 @@ for text in ["a a a a b c", "one two three four five six"]:
     tokens = text.split()
     print(len(tokens), "tokens, top share:", round(top_share(tokens), 2))`} expectedOutput={`6 tokens, top share: 0.67
 6 tokens, top share: 0.17`} />
+      </YourTurn>
       <Text>
         <b>What you should see:</b> exactly these two lines. If yours differ, check the two texts
         and the <Code>round(..., 2)</Code>.
@@ -1088,7 +1106,8 @@ for text in ["a a a a b c", "one two three four five six"]:
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      </ConceptPart>
+      <ConceptPart kind="applied" title="Applied to this lab">
       <Text>
         The lab's <Code>word_counts</Code> is this loop with one extra loop around it. It tokenizes
         every sentence and tallies each word into one <Code>dict[str, int]</Code>. In the project,
@@ -1116,13 +1135,15 @@ for text in ["a a a a b c", "one two three four five six"]:
         earlier counts.
       </Text>
 
-      <Heading as="h3" size="sm">Concept 4: from counts to a probability distribution</Heading>
+      </ConceptPart>
+    </ConceptCard>
+    <ConceptCard number={4} title="from counts to a probability distribution" accent="orange">
       <Text>
         A probability distribution is just a set of numbers that (a) are all between 0 and 1 and
         (b) add up to exactly 1.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
+      <ConceptPart kind="plain" title="In plain Python">
       <Text>
         Think of a six-sided die: each face has probability <Code>1/6</Code>, and{" "}
         <Code>1/6 * 6 = 1</Code>. Why must it add up to 1? Because something always happens: one
@@ -1220,7 +1241,8 @@ print(sum(distribution.values()))     # 1.0`} expectedOutput={`0.45
         line is not 1.0, check that you divided by the <b>total</b> and not by one of the counts.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Up close: a model's answer is a list of chances</Heading>
+      </ConceptPart>
+      <ConceptPart kind="close" title="Up close: a model's answer is a list of chances">
       <Text>
         At each step a model does not give one word. It gives a chance for every word it knows, and
         all the chances add up to 1.
@@ -1331,6 +1353,7 @@ for scores in [{"great": 6, "long": 3, "boring": 1}, {"yes": 1, "no": 1}]:
         </ListItem>
       </UnorderedList>
 
+      <YourTurn>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
         press <RunSubmitKeys />:
@@ -1371,6 +1394,7 @@ for scores in [{"sunny": 7, "rainy": 2, "cloudy": 1}, {"a": 2, "b": 2, "c": 4}]:
     chances = normalize(scores)
     print(chances, "sum:", add_up(chances))`} expectedOutput={`{'sunny': 0.7, 'rainy': 0.2, 'cloudy': 0.1} sum: 1.0
 {'a': 0.25, 'b': 0.25, 'c': 0.5} sum: 1.0`} />
+      </YourTurn>
       <Text>
         <b>What you should see:</b> exactly these two lines. If yours differ, check the dict
         contents and the order inside the print.
@@ -1396,7 +1420,8 @@ for scores in [{"sunny": 7, "rainy": 2, "cloudy": 1}, {"a": 2, "b": 2, "c": 4}]:
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      </ConceptPart>
+      <ConceptPart kind="applied" title="Applied to this lab">
       <Text>
         The lab's <Code>word_probabilities</Code> divides every count by the sum of all counts, so
         the counts become chances that add up to 1. In the project,
@@ -1425,13 +1450,15 @@ for scores in [{"sunny": 7, "rainy": 2, "cloudy": 1}, {"a": 2, "b": 2, "c": 4}]:
         with no words the division never runs.
       </Text>
 
-      <Heading as="h3" size="sm">Concept 5: sorting to find the top-k</Heading>
+      </ConceptPart>
+    </ConceptCard>
+    <ConceptCard number={5} title="sorting to find the top-k" accent="pink">
       <Text>
         Once you have a distribution, a common next question is "what are the most likely
         outcomes?"
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
+      <ConceptPart kind="plain" title="In plain Python">
       <Text>
         Python's <Code>sorted()</Code> takes a <Code>key</Code> function that tells it what to
         sort by, and <Code>reverse=True</Code> flips it to descending order:
@@ -1520,7 +1547,8 @@ print(fastest)  # [('level2', 30.5), ('level1', 42.1)]`} expectedOutput={`[('lev
         <Code>reverse=True</Code> and run it again. Now you get the two slowest levels.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Up close: choosing one word from the chances</Heading>
+      </ConceptPart>
+      <ConceptPart kind="close" title="Up close: choosing one word from the chances">
       <Text>
         Once a model has its list of chances, it has to choose one word. There is more than one way
         to choose.
@@ -1631,6 +1659,7 @@ for min_chance in (0.4, 0.1):
         </ListItem>
       </UnorderedList>
 
+      <YourTurn>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
         press <RunSubmitKeys />:
@@ -1678,6 +1707,7 @@ for min_chance in (0.5, 0.2):
     print("min", min_chance, "->", shortlist(dist, min_chance))`} expectedOutput={`greedy: rainy
 min 0.5 -> ['rainy']
 min 0.2 -> ['rainy', 'cloudy']`} />
+      </YourTurn>
       <Text>
         <b>What you should see:</b> exactly these three lines. If yours differ, check the dict
         entries and the two bar values.
@@ -1705,7 +1735,8 @@ min 0.2 -> ['rainy', 'cloudy']`}
         </ListItem>
       </UnorderedList>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      </ConceptPart>
+      <ConceptPart kind="applied" title="Applied to this lab">
       <Text>
         The lab's <Code>top_k(distribution, k)</Code> sorts a <Code>(word, probability)</Code>
         distribution and slices the first <Code>k</Code> entries. In the project, <Code>top15 =
@@ -1737,13 +1768,15 @@ min 0.2 -> ['rainy', 'cloudy']`}
         raise an error.
       </Text>
 
-      <Heading as="h3" size="sm">Concept 6: plotting with matplotlib</Heading>
+      </ConceptPart>
+    </ConceptCard>
+    <ConceptCard number={6} title="plotting with matplotlib" accent="cyan">
       <Text>
         A distribution is easier to feel in a picture than in a list of numbers, and{" "}
         <Code>matplotlib</Code> is Python's standard plotting library.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">In plain Python</Heading>
+      <ConceptPart kind="plain" title="In plain Python">
       <Text>
         Say you surveyed people's favorite color and want to see the results as a bar chart:
       </Text>
@@ -1883,7 +1916,8 @@ print(topics[votes.index(max(votes))])  # dicts`} />
         and the printed name should both change.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Up close: reading a distribution and sampling from it</Heading>
+      </ConceptPart>
+      <ConceptPart kind="close" title="Up close: reading a distribution and sampling from it">
       <Text>
         A distribution looks like a row of bars. A few bars are tall and many are short.
       </Text>
@@ -1956,6 +1990,7 @@ for word, chance in dist.items():
         </ListItem>
       </UnorderedList>
 
+      <YourTurn>
       <Text>
         <b>Your turn.</b> The box below starts empty. Write the code that does these steps, then
         press <RunSubmitKeys />:
@@ -1985,6 +2020,7 @@ film   ##### 0.25
 is     #### 0.2
 long   ### 0.15
 tense  ## 0.1`} />
+      </YourTurn>
       <Text>
         <b>What you should see:</b> exactly these five lines. If yours differ, check the chances in{" "}
         <Code>dist</Code>. The spaces after each word matter too.
@@ -2024,7 +2060,8 @@ tense  ## 0.1`}
         and how "temperature" reshapes that distribution.
       </Text>
 
-      <Heading as="h4" size="xs" color="gray.600">Applied to this lab</Heading>
+      </ConceptPart>
+      <ConceptPart kind="applied" title="Applied to this lab">
       <Text>
         <Code>project.py</Code> draws the real version. It takes the top 15 <Code>(word,
         probability)</Code> pairs from <Code>top_k(dist, 15)</Code> and calls <Code>plt.bar(words,
@@ -2062,6 +2099,8 @@ tense  ## 0.1`}
         short-bar word too.
       </Text>
 
-    </VStack>
+      </ConceptPart>
+    </ConceptCard>
+    </ReadingPager>
   );
 }

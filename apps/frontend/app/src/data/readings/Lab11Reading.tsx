@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -7,7 +8,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab11Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Chain-of-thought: asking the model to think step by step</Heading>
       <Text>
         For tasks that involve any reasoning (arithmetic, logic, multi-step inference), asking a
@@ -795,6 +796,6 @@ right`}
           </Link>
         </ListItem>
       </UnorderedList>
-    </VStack>
+    </FlatReadingPager>
   );
 }

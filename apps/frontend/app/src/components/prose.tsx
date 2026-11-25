@@ -2,12 +2,52 @@ import {
   Code as ChakraCode,
   CodeProps,
   Kbd,
+  Link as ChakraLink,
   ListItem as ChakraListItem,
   ListItemProps,
   Text as ChakraText,
   TextProps,
 } from "@chakra-ui/react";
-import { Children, cloneElement, isValidElement, ReactNode } from "react";
+import { Children, cloneElement, createContext, Fragment, isValidElement, ReactNode, useContext } from "react";
+
+// True while the reader has "Reading mode" on. Only then are words wrapped in <span data-w>, so the
+// reveal animation can show them one by one; otherwise the text renders exactly as before.
+export const ReadingModeContext = createContext(false);
+
+const HOST_WRAPPERS = new Set(["b", "strong", "em", "i", "span", "u", "a"]);
+
+// Splits plain-text children into one <span data-w> per word, recursing into simple inline wrappers.
+// Code spans carry their own data-w (see Code below) and are revealed as a single unit.
+export function wrapWords(children: ReactNode): ReactNode {
+  return Children.map(children, (child, index) => {
+    if (typeof child === "string") {
+      return (
+        <>
+          {child.split(/(\s+)/).map((part, i) =>
+            part === "" || /^\s+$/.test(part) ? (
+              part
+            ) : (
+              <span key={`${index}-${i}`} data-w="">
+                {part}
+              </span>
+            ),
+          )}
+        </>
+      );
+    }
+    if (isValidElement<{ children?: ReactNode }>(child) && child.props.children != null) {
+      const hostTag = typeof child.type === "string" && HOST_WRAPPERS.has(child.type);
+      if (hostTag || child.type === ChakraLink || child.type === Fragment) return cloneElement(child, undefined, wrapWords(child.props.children));
+    }
+    return child;
+  });
+}
+
+// Heading text for the reading-mode reveal; a no-op when the mode is off.
+export function RevealWords({ children }: { children: ReactNode }) {
+  const active = useContext(ReadingModeContext);
+  return <>{active ? wrapWords(children) : children}</>;
+}
 
 // Whole numbers, decimals, thousands separators and percentages; not digits inside words like "x2" or "v1.2",
 // nor numbers that are part of a name like "GPT-2".
@@ -53,17 +93,21 @@ export function emphasizeNumbers(children: ReactNode): ReactNode {
 
 // Drop-in replacements for the Chakra components the lab readings are written with.
 export function Text({ children, ...props }: TextProps) {
-  return <ChakraText {...props}>{emphasizeNumbers(children)}</ChakraText>;
+  const active = useContext(ReadingModeContext);
+  const content = emphasizeNumbers(children);
+  return <ChakraText {...props}>{active ? wrapWords(content) : content}</ChakraText>;
 }
 
 export function ListItem({ children, ...props }: ListItemProps) {
-  return <ChakraListItem {...props}>{emphasizeNumbers(children)}</ChakraListItem>;
+  const active = useContext(ReadingModeContext);
+  const content = emphasizeNumbers(children);
+  return <ChakraListItem {...props}>{active ? wrapWords(content) : content}</ChakraListItem>;
 }
 
 export function Code({ children, ...props }: CodeProps) {
   const numeric = typeof children === "string" && isNumericExpression(children);
   return (
-    <ChakraCode fontWeight={numeric ? "bold" : undefined} {...props}>
+    <ChakraCode data-w="" fontWeight={numeric ? "bold" : undefined} {...props}>
       {children}
     </ChakraCode>
   );

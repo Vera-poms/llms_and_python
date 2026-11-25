@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -68,7 +69,7 @@ const RECTANGLE_HINTS: CodeHint[] = [
 
 export function Lab06Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">What's actually inside a transformer</Heading>
       <Text>
         A decoder-only LLM (GPT-style) is, at a high level, a stack of identical blocks wrapped
@@ -1350,6 +1351,6 @@ F off by 500,000 = 0.83 % good`}
           you see in the printed <Code>diff</Code>.
         </ListItem>
       </UnorderedList>
-    </VStack>
+    </FlatReadingPager>
   );
 }

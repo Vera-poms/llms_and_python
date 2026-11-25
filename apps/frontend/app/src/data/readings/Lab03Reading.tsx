@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -41,7 +42,7 @@ const HEATMAP_HINTS: CodeHint[] = [
 
 export function Lab03Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Conditioning the distribution</Heading>
       <Text>
         Lab 1's distribution was global: one <Code>P(word)</Code> for the whole corpus, ignoring
@@ -1185,6 +1186,6 @@ i     . # . #`}
         means that word is almost always followed by the same word.
       </Text>
 
-    </VStack>
+    </FlatReadingPager>
   );
 }

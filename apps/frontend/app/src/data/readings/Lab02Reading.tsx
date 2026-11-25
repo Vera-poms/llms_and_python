@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -101,7 +102,7 @@ const PLOT_HINTS: CodeHint[] = [
 
 export function Lab02Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Two kinds of "simple prediction"</Heading>
       <Text>
         Lab 1 gave you a probability distribution over discrete outcomes (words). Sometimes what
@@ -1413,6 +1414,6 @@ show_misses(points, 0.1, 4)`} expectedOutput={` 35 real 8 guess 7.5 miss 0.5
         sentences really do have more words, and the regression guess beats the flat one.
       </Text>
 
-    </VStack>
+    </FlatReadingPager>
   );
 }

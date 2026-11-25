@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -14,7 +15,7 @@ const TEXT_SIZE_HINTS: CodeHint[] = [
 
 export function Lab17Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">The context window: three Python ideas behind a twin's working memory</Heading>
       <Text>
         A model can only look at a limited amount of text on each call. That limit is its{" "}
@@ -728,6 +729,6 @@ reply 1200 -> input budget 2800 fits: False`}</Text>
           Lost in the Middle: How Language Models Use Long Contexts
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

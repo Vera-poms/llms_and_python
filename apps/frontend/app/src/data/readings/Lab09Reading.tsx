@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -47,7 +48,7 @@ const JSON_INDEX_HINTS: CodeHint[] = [
 
 export function Lab09Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Zero-shot prompting and your first API call</Heading>
       <Text>
         <b>Zero-shot</b> means asking the model to do a task with no worked examples first - just an
@@ -980,6 +981,6 @@ for text in ["NEGATIVE", "I think it is positive!", "Mixed feelings"]:
           What is zero-shot prompting?
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

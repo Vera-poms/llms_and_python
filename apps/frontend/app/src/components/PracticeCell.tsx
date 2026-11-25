@@ -166,7 +166,7 @@ export function PracticeCell({
   }
 
   return (
-    <Box data-nav="try-it" borderWidth="1px" borderRadius="md" p={3} bg="blue.50" _dark={{ bg: "blue.900" }}>
+    <Box data-nav="try-it" data-reveal-block="" borderWidth="1px" borderRadius="md" p={3} bg="blue.50" _dark={{ bg: "blue.900" }}>
       <VStack align="stretch" spacing={2}>
         <HStack justify="space-between">
           <Badge colorScheme="blue">Try it live</Badge>

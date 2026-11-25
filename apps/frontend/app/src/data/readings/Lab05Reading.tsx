@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -7,7 +8,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab05Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">The perceptron learning rule</Heading>
       <Text>
         Training means adjusting <Code>weights</Code> and <Code>bias</Code> so the perceptron
@@ -1336,6 +1337,6 @@ rule train: 1.0 test: 1.0`}
         the original features.
       </Text>
 
-    </VStack>
+    </FlatReadingPager>
   );
 }

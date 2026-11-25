@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -54,7 +55,7 @@ const ATM_HINTS: CodeHint[] = [
 
 export function Lab14Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">The 5 parts of every API call</Heading>
       <Text>
         Labs 9-13 all made the same shape of HTTP call to Groq. Every REST API call, regardless of
@@ -807,6 +808,6 @@ Not sure -> unknown`}</Text>
         covers this same request/response shape and the design principles (statelessness,
         cacheability, and so on) behind why it's become the near-universal convention.
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

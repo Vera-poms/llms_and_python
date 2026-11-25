@@ -9,6 +9,8 @@ interface NavItem {
   label: string;
   // 0 = topic, 1 = sub-topic, 2 = sub-sub-topic; drives the indentation.
   level: number;
+  // Which lab page (see labPager) the heading is on, or null when the lab is not paged.
+  page: number | null;
 }
 
 interface NavGroups {
@@ -17,6 +19,11 @@ interface NavGroups {
 }
 
 const HEADING_LEVEL: Record<string, number> = { H2: 0, H3: 1, H4: 2 };
+
+function pageOf(el: Element): number | null {
+  const holder = el.closest("[data-page-index]");
+  return holder ? Number(holder.getAttribute("data-page-index")) : null;
+}
 
 function ensureId(el: Element, id: string): string {
   if (!el.id) el.id = id;
@@ -27,16 +34,26 @@ function ensureId(el: Element, id: string): string {
 // The page's own h1 title is left out - it is not a section of the lab.
 function collect(root: HTMLElement | null, prefix: string, withCells: boolean): NavItem[] {
   const items: NavItem[] = [];
-  const selector = withCells ? 'h2, h3, h4, [data-nav="try-it"]' : "h2, h3, h4";
+  const selector = withCells
+    ? 'h2, h3, h4, [data-nav="try-it"]'
+    : 'h1, h2, h3, h4, [data-nav="setup"], [data-nav="exercise"], [data-nav="solution"], [data-nav="project"]';
   let tryItCount = 0;
+  const roleCount: Record<string, number> = {};
   Array.from(root?.querySelectorAll(selector) ?? []).forEach((el, i) => {
+    const role = el.getAttribute("data-nav");
+    if (role && role !== "try-it") {
+      roleCount[role] = (roleCount[role] ?? 0) + 1;
+      const label = `${role[0].toUpperCase()}${role.slice(1)} code (${roleCount[role]})`;
+      items.push({ id: ensureId(el, `${prefix}-${role}-${i}`), label, level: 2, page: pageOf(el) });
+      return;
+    }
     if (el.getAttribute("data-nav") === "try-it") {
       tryItCount += 1;
-      items.push({ id: ensureId(el, `${prefix}-try-it-${i}`), label: `Try it live (${tryItCount})`, level: 2 });
+      items.push({ id: ensureId(el, `${prefix}-try-it-${i}`), label: `Try it live (${tryItCount})`, level: 2, page: pageOf(el) });
       return;
     }
     const text = el.textContent?.replace(/\s+/g, " ").trim() ?? "";
-    if (text) items.push({ id: ensureId(el, `${prefix}-${i}`), label: text, level: HEADING_LEVEL[el.tagName] ?? 0 });
+    if (text) items.push({ id: ensureId(el, `${prefix}-${i}`), label: text, level: HEADING_LEVEL[el.tagName] ?? 0, page: pageOf(el) });
   });
   return items;
 }
@@ -48,13 +65,14 @@ function scan(reading: HTMLElement | null, notebook: HTMLElement | null): NavGro
 }
 
 function sameGroups(a: NavGroups, b: NavGroups): boolean {
-  const flat = (g: NavGroups) => [...g.concepts, ...g.coding].map((i) => `${i.id}|${i.label}|${i.level}`).join("\n");
+  const flat = (g: NavGroups) => [...g.concepts, ...g.coding].map((i) => `${i.id}|${i.label}|${i.level}|${i.page}`).join("\n");
   return flat(a) === flat(b);
 }
 
 export interface LabOutline {
   groups: NavGroups;
   activeId: string | null;
+  currentPage: number;
   jump: (id: string) => void;
 }
 
@@ -62,6 +80,13 @@ export interface LabOutline {
 export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: RefObject<HTMLElement>): LabOutline {
   const [groups, setGroups] = useState<NavGroups>({ concepts: [], coding: [] });
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    const onChange = (e: Event) => setCurrentPage((e as CustomEvent<number>).detail);
+    window.addEventListener("reading-page-changed", onChange);
+    return () => window.removeEventListener("reading-page-changed", onChange);
+  }, []);
 
   // The notebook loads from the server after first paint, so keep rescanning as the page changes.
   useEffect(() => {
@@ -84,7 +109,8 @@ export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: R
       let current: string | null = ids[0] ?? null;
       for (const id of ids) {
         const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= 120) current = id;
+        // Elements on a page that is not showing have no layout; skip them.
+        if (el && el.getClientRects().length > 0 && el.getBoundingClientRect().top <= 120) current = id;
       }
       setActiveId(current);
     };
@@ -94,10 +120,21 @@ export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: R
   }, [groups]);
 
   function jump(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Reading mode (if on) skips the reveal ahead to this section.
+    window.dispatchEvent(new CustomEvent("reading-mode-jump", { detail: id }));
+    // Paged readings: turn to the page that holds the heading first, then scroll to it.
+    const page = el.closest("[data-page-index]");
+    if (page && page.getAttribute("data-active") !== "true") {
+      window.dispatchEvent(new CustomEvent("reading-page", { detail: Number(page.getAttribute("data-page-index")) }));
+      requestAnimationFrame(() => requestAnimationFrame(() => el.scrollIntoView({ behavior: "smooth", block: "start" })));
+      return;
+    }
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  return { groups, activeId, jump };
+  return { groups, activeId, currentPage, jump };
 }
 
 // The outline entries themselves. `onNavigate` lets the mobile drawer close after a jump.
@@ -115,10 +152,15 @@ export function LabNav({
   bookmark?: BookmarkState;
   highlights?: HighlightsState;
 }) {
-  const { groups, activeId, jump } = outline;
+  const { groups, activeId, currentPage, jump } = outline;
   const activeItem = [...groups.concepts, ...groups.coding].find((i) => i.id === activeId);
 
-  function renderGroup(title: string, items: NavItem[]) {
+  function renderGroup(title: string, allItems: NavItem[], topicsAlwaysShown: boolean) {
+    // Collapsed outline: the reading's topics stay listed, but a page's own sub-sections only show while you are
+    // on that page. The coding part (exercise, solution, project) only shows on its own pages.
+    const items = allItems.filter(
+      (i) => i.page === null || i.page === currentPage || (topicsAlwaysShown && i.level <= 1),
+    );
     if (items.length === 0) return null;
     return (
       <Box>
@@ -266,8 +308,8 @@ export function LabNav({
           Review this lab
         </Button>
       )}
-      {renderGroup("Concepts", groups.concepts)}
-      {renderGroup("Coding", groups.coding)}
+      {renderGroup("Concepts", groups.concepts, true)}
+      {renderGroup("Coding", groups.coding, true)}
       {highlights && highlights.items.length > 0 && (
         <Box>
           <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" color="gray.500" px={2} mb={1}>

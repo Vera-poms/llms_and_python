@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -42,7 +43,7 @@ const CHAT_LOG_HINTS: CodeHint[] = [
 
 export function Lab12Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">System messages: one instruction for the whole chat</Heading>
       <Text>
         A system message sits at the front of the messages list and shapes every reply for the
@@ -1113,6 +1114,6 @@ for question in QUESTIONS:                       # varies every iteration
           </Link>
         </ListItem>
       </UnorderedList>
-    </VStack>
+    </FlatReadingPager>
   );
 }

@@ -46,6 +46,7 @@ export function CodeBlock({ code, hints }: { code: string; hints?: CodeHint[] })
   const box = (
     <Box
       ref={containerRef}
+      data-reveal-block=""
       my={hints && hints.length > 0 ? 0 : 3}
       borderWidth="1px"
       borderRadius="md"

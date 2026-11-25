@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -95,7 +96,7 @@ const COUNTER_HINTS: CodeHint[] = [
 
 export function Lab08Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Prompt templates: the two Python ideas behind them</Heading>
       <Text>
         A <b>prompt template</b> is a piece of text with blanks in it. You fill the blanks with
@@ -1078,6 +1079,6 @@ NOT SENT, missing: topic`}
           What is prompt engineering?
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -23,7 +24,7 @@ const SHELF_HINTS: CodeHint[] = [
 
 export function Lab19Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">RAG: three Python ideas behind a twin that remembers your documents</Heading>
       <Text>
         A model only knows what it was trained on. It has never read your CV, your notes or your
@@ -844,6 +845,6 @@ answer is in the context: False
           What is a vector database?
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

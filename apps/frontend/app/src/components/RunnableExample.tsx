@@ -42,7 +42,7 @@ export function RunnableExample({
   }
 
   return (
-    <Box borderWidth="1px" borderRadius="md" p={3} bg="gray.50" _dark={{ bg: "gray.700" }}>
+    <Box data-reveal-block="" borderWidth="1px" borderRadius="md" p={3} bg="gray.50" _dark={{ bg: "gray.700" }}>
       <VStack align="stretch" spacing={2}>
         <HStack justify="space-between">
           <Badge colorScheme="gray">Run it</Badge>

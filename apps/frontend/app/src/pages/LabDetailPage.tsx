@@ -11,6 +11,10 @@ import { HighlightToolbar } from "../components/HighlightToolbar";
 import { useBookmark } from "../hooks/useBookmark";
 import { useHighlights } from "../hooks/useHighlights";
 import { LABS, labWeek } from "../data/labs";
+import { LabPager } from "../components/labPager";
+import { ReadingModeContext } from "../components/prose";
+import { ReadingModeBar, ReadingModeButton } from "../components/ReadingModeBar";
+import { useReadingMode } from "../hooks/useReadingMode";
 import { Lab01Reading } from "../data/readings/Lab01Reading";
 import { Lab02Reading } from "../data/readings/Lab02Reading";
 import { Lab03Reading } from "../data/readings/Lab03Reading";
@@ -53,6 +57,9 @@ const READINGS: Record<number, () => JSX.Element> = {
   19: Lab19Reading,
 };
 
+// Labs whose reading and notebook are shown one page at a time (Previous / Next). The others still scroll.
+const PAGED_LABS = new Set(Object.keys(READINGS).map(Number));
+
 export function LabDetailPage() {
   const { labId } = useParams<{ labId: string }>();
   const navigate = useNavigate();
@@ -65,6 +72,7 @@ export function LabDetailPage() {
   const outline = useLabOutline(readingRef, notebookRef);
   const bookmark = useBookmark(id, outline, readingRef);
   const highlights = useHighlights(id, readingRef);
+  const readingMode = useReadingMode(readingRef);
   const [resumeDismissed, setResumeDismissed] = useState(false);
   const [reviewing, setReviewing] = useState<ReviewTarget | null>(null);
   const [done, setDone] = useState(false);
@@ -103,10 +111,40 @@ export function LabDetailPage() {
     );
   }
 
+  const paged = PAGED_LABS.has(id);
+  const lessonAndNotebook = (
+    <>
+        <Box display="flex" justifyContent="flex-end">
+          <ReadingModeButton mode={readingMode} />
+        </Box>
+        <Box
+          ref={readingRef}
+          sx={{
+            // Reading mode: words (and code boxes) stay invisible until the reveal reaches them.
+            "&[data-reading-mode] [data-w]": { transition: "opacity 0.4s ease" },
+            "&[data-reading-mode] [data-w]:not([data-seen])": { opacity: 0 },
+            "&[data-reading-mode] [data-reveal-block]": { transition: "opacity 0.6s ease" },
+            "&[data-reading-mode] [data-reveal-block]:not([data-seen])": { opacity: 0, pointerEvents: "none" },
+            "@media (prefers-reduced-motion: reduce)": {
+              "&[data-reading-mode] [data-w], &[data-reading-mode] [data-reveal-block]": { transition: "none" },
+            },
+          }}
+        >
+          <ReadingModeContext.Provider value={readingMode.active}>
+            <Reading />
+          </ReadingModeContext.Provider>
+        </Box>
+
+        <Box ref={notebookRef} borderTopWidth={paged ? undefined : "1px"} pt={paged ? 0 : 4}>
+          <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} onProgress={refresh} />
+        </Box>
+    </>
+  );
+
   return (
     <Flex maxW="6xl" mx="auto" mt={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} mb={16} gap={8}>
       <LabSidebar outline={outline} onReview={openReview} bookmark={bookmark} highlights={highlights} />
-      <Box flex="1" minW={0} maxW="4xl">
+      <Box flex="1" minW={0} maxW="5xl">
       <StickyHeader hideFrom="lg">
         <HStack minW={0} spacing={3}>
           <MobileNav title="Lab sections" hideFrom="lg">
@@ -120,7 +158,7 @@ export function LabDetailPage() {
 
       <VStack
         align="stretch"
-        spacing={6}
+        spacing={10}
         sx={{
           // The bookmarked heading (set by useBookmark) is highlighted; graded cells get an outline instead
           // so their own tint stays readable.
@@ -151,13 +189,7 @@ export function LabDetailPage() {
             </Button>
           </Alert>
         )}
-        <Box ref={readingRef}>
-          <Reading />
-        </Box>
-
-        <Box ref={notebookRef} borderTopWidth="1px" pt={4}>
-          <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} onProgress={refresh} />
-        </Box>
+        {paged ? <LabPager>{lessonAndNotebook}</LabPager> : lessonAndNotebook}
 
         <Box borderTopWidth="1px" pt={4}>
           <Stack direction={{ base: "column", sm: "row" }} justify="space-between" spacing={2}>
@@ -179,6 +211,7 @@ export function LabDetailPage() {
         </Box>
       </VStack>
       </Box>
+      <ReadingModeBar mode={readingMode} />
       <HighlightToolbar highlights={highlights} bookmark={bookmark} />
       <ReviewModal target={reviewing} onClose={() => setReviewing(null)} />
     </Flex>

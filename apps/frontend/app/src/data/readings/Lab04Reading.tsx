@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -109,7 +110,7 @@ const SCATTER_HINTS: CodeHint[] = [
 
 export function Lab04Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">From distributions to decisions</Heading>
       <Text>
         Labs 1-3 built distributions over words. A perceptron does something different: given a
@@ -1371,6 +1372,6 @@ all-zero rows: 2 of 4`}
         </ListItem>
       </UnorderedList>
 
-    </VStack>
+    </FlatReadingPager>
   );
 }

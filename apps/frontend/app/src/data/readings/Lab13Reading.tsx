@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -54,7 +55,7 @@ const LETTER_HINTS: CodeHint[] = [
 
 export function Lab13Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">The digital twin: three Python ideas behind a chat that remembers</Heading>
       <Text>
         This lab combines everything from 8-12 into one real thing: a persistent, persona-driven
@@ -1052,6 +1053,6 @@ Do you swim? -> I was not given a fact about that.`}
         is a good next read - it's the product-level version of exactly what the growing{" "}
         <Code>messages</Code> list is doing here.
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

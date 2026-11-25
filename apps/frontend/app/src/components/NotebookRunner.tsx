@@ -20,6 +20,7 @@ import { CodeEditor } from "./CodeEditor";
 import { DraftStatus } from "./DraftStatus";
 import { emphasizeNumbers } from "./prose";
 import { HintButton } from "./HintButton";
+import { useLabPages } from "./labPager";
 import { Markdown } from "./Markdown";
 import { SolutionReveal } from "./SolutionReveal";
 
@@ -300,6 +301,20 @@ function GradedCell({
   );
 }
 
+// Splits the notebook into pages at each top-level heading (intro, exercise, solution, project...).
+function splitIntoPages(cells: NotebookCell[]): { title: string; cells: NotebookCell[] }[] {
+  const groups: { title: string; cells: NotebookCell[] }[] = [];
+  for (const cell of cells) {
+    const firstLine = cell.source.trimStart().split("\n")[0];
+    const heading = cell.cell_type === "markdown" ? /^#{1,2}\s+(.+)$/.exec(firstLine) : null;
+    if (heading || groups.length === 0) {
+      groups.push({ title: heading ? heading[1].trim() : "Notebook", cells: [] });
+    }
+    groups[groups.length - 1].cells.push(cell);
+  }
+  return groups;
+}
+
 export function NotebookRunner({
   labId,
   needsApiKey,
@@ -356,12 +371,19 @@ export function NotebookRunner({
     }
   }
 
+  const groups = splitIntoPages(cells ?? []);
+  const pager = useLabPages(
+    "notebook",
+    groups.map((g) => g.title),
+  );
+
   if (!cells) {
     return <Spinner />;
   }
 
   return (
     <VStack align="stretch" spacing={4}>
+      <VStack align="stretch" spacing={4} display={pager.anyActive ? "flex" : "none"}>
       <Stack direction={{ base: "column", sm: "row" }} justify="space-between" align={{ base: "stretch", sm: "center" }} spacing={2}>
         <Text fontSize="sm" color="gray.500">
           Notebook - edit any cell, then Run it. Cells share state, just like a real notebook.
@@ -393,7 +415,17 @@ export function NotebookRunner({
         </Alert>
       )}
 
-      {cells.map((cell) => {
+      </VStack>
+
+      {groups.map((group, gi) => (
+      <Box
+        key={gi}
+        data-page-index={pager.offset + gi}
+        data-active={pager.isActive(gi) ? "true" : "false"}
+        display={pager.isActive(gi) ? "block" : "none"}
+      >
+      <VStack align="stretch" spacing={4}>
+      {group.cells.map((cell) => {
         if (cell.cell_type === "markdown") {
           return (
             <Box key={cell.index}>
@@ -462,8 +494,15 @@ export function NotebookRunner({
           </Box>
         );
 
-        return <Box key={cell.index}>{cellBody}</Box>;
+        return (
+          <Box key={cell.index} data-nav={cell.role}>
+            {cellBody}
+          </Box>
+        );
       })}
+      </VStack>
+      </Box>
+      ))}
     </VStack>
   );
 }

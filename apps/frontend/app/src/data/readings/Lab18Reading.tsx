@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -16,7 +17,7 @@ const DOT_HINTS: CodeHint[] = [
 
 export function Lab18Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Embeddings: three Python ideas behind "meaning as numbers"</Heading>
       <Text>
         Searching a document for the exact word "cook" misses the sentence "she makes bread". A
@@ -771,6 +772,6 @@ run fast -> shared words: 0 meaning score: 0.99`}</Text>
           The Illustrated Word2vec
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

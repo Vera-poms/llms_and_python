@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { PracticeCell } from "../../components/PracticeCell";
@@ -20,7 +21,7 @@ const WORD_HINTS: CodeHint[] = [
 
 export function Lab16Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">String surgery: the three Python ideas behind reading text</Heading>
       <Text>
         This week your digital twin learns to use text it was never trained on, like your CV or your
@@ -832,6 +833,6 @@ jump 2 -> 4 chunks, 1 hold the whole fact`}</Text>
           Chunking strategies for LLM applications
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }

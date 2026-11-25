@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -7,7 +8,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab15Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">GroqClient: a class that owns the messages list</Heading>
       <Text>
         Every earlier lab hand-rolled its own messages list. This lab wraps that bookkeeping into
@@ -1145,6 +1146,6 @@ history size: 4`}</Text>
           <Code>self.messages</Code> directly for callers to poke at.
         </ListItem>
       </UnorderedList>
-    </VStack>
+    </FlatReadingPager>
   );
 }

@@ -1,4 +1,5 @@
-import { Heading, Link, OrderedList, UnorderedList, VStack } from "@chakra-ui/react";
+import { Heading, Link, OrderedList, UnorderedList } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -7,7 +8,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab10Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">Few-shot prompting: steer the reply with examples</Heading>
       <Text>
         Few-shot prompting adds a handful of worked (input, output) examples to the messages list
@@ -865,6 +866,6 @@ missing city
           </Link>
         </ListItem>
       </UnorderedList>
-    </VStack>
+    </FlatReadingPager>
   );
 }

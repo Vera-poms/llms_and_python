@@ -3,8 +3,9 @@ import {
   Link,
   OrderedList,
   UnorderedList,
-  VStack,
+
 } from "@chakra-ui/react";
+import { FlatReadingPager } from "../../components/readingLayout";
 import { Code, ListItem, RunSubmitKeys, Text } from "../../components/prose";
 
 import { CodeBlock } from "../../components/CodeBlock";
@@ -13,7 +14,7 @@ import { RunnableExample } from "../../components/RunnableExample";
 
 export function Lab07Reading() {
   return (
-    <VStack align="stretch" spacing={4}>
+    <FlatReadingPager>
       <Heading as="h2" size="md">How attention works: scores, softmax, weighted average</Heading>
       <Text>
         Self-attention lets every word in a sequence look at every other word and decide how much
@@ -1709,6 +1710,6 @@ books   .+# looks most at books`}
           What is self-attention?
         </Link>
       </Text>
-    </VStack>
+    </FlatReadingPager>
   );
 }
