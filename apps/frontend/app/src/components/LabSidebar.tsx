@@ -2,7 +2,6 @@ import { Box, Button, Flex, Text, VStack } from "@chakra-ui/react";
 import { type RefObject, useEffect, useState } from "react";
 
 import type { BookmarkState } from "../hooks/useBookmark";
-import type { HighlightsState } from "../hooks/useHighlights";
 
 interface NavItem {
   id: string;
@@ -144,13 +143,11 @@ export function LabNav({
   onNavigate,
   onReview,
   bookmark,
-  highlights,
 }: {
   outline: LabOutline;
   onNavigate?: () => void;
   onReview?: (topic: string) => void;
   bookmark?: BookmarkState;
-  highlights?: HighlightsState;
 }) {
   const { groups, activeId, currentPage, jump } = outline;
   const activeItem = [...groups.concepts, ...groups.coding].find((i) => i.id === activeId);
@@ -310,43 +307,6 @@ export function LabNav({
       )}
       {renderGroup("Concepts", groups.concepts, true)}
       {renderGroup("Coding", groups.coding, true)}
-      {highlights && highlights.items.length > 0 && (
-        <Box>
-          <Text fontSize="xs" fontWeight="bold" textTransform="uppercase" color="gray.500" px={2} mb={1}>
-            My highlights
-          </Text>
-          <VStack align="stretch" spacing={0}>
-            {highlights.items.map((h) => (
-              <Box
-                key={h.id}
-                as="button"
-                type="button"
-                textAlign="left"
-                px={2}
-                py={1}
-                borderRadius="md"
-                _hover={{ bg: "blackAlpha.50" }}
-                onClick={() => {
-                  highlights.jump(h.id);
-                  onNavigate?.();
-                }}
-              >
-                <Flex align="center" gap={2}>
-                  <Box w={3} h={3} borderRadius="full" flexShrink={0} bg={h.color} />
-                  <Text fontSize="xs" noOfLines={1}>
-                    {h.text}
-                  </Text>
-                </Flex>
-                {h.note && (
-                  <Text fontSize="xs" color="gray.500" fontStyle="italic" pl={5} noOfLines={2}>
-                    {h.note}
-                  </Text>
-                )}
-              </Box>
-            ))}
-          </VStack>
-        </Box>
-      )}
     </VStack>
   );
 }
@@ -356,12 +316,10 @@ export function LabSidebar({
   outline,
   onReview,
   bookmark,
-  highlights,
 }: {
   outline: LabOutline;
   onReview?: (topic: string) => void;
   bookmark?: BookmarkState;
-  highlights?: HighlightsState;
 }) {
   return (
     <Box
@@ -376,7 +334,7 @@ export function LabSidebar({
       maxH="calc(100vh - 4rem)"
       overflowY="auto"
     >
-      <LabNav outline={outline} onReview={onReview} bookmark={bookmark} highlights={highlights} />
+      <LabNav outline={outline} onReview={onReview} bookmark={bookmark} />
     </Box>
   );
 }

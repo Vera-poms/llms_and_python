@@ -4,7 +4,7 @@ import { type RefObject, useCallback, useEffect, useMemo, useState } from "react
 import { api } from "../api/client";
 import type { LabOutline } from "../components/LabSidebar";
 import { buildIndex, locate, toRange } from "../lib/textAnchor";
-import type { SelectionInfo } from "./useHighlights";
+import type { SelectionInfo } from "./useTextSelection";
 
 interface SavedBookmark {
   anchor_id: string;

@@ -7,9 +7,9 @@ import { LabNav, LabSidebar, useLabOutline } from "../components/LabSidebar";
 import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { NotebookRunner } from "../components/NotebookRunner";
 import { ReviewModal, type ReviewTarget } from "../components/ReviewModal";
-import { HighlightToolbar } from "../components/HighlightToolbar";
+import { BookmarkToolbar } from "../components/BookmarkToolbar";
 import { useBookmark } from "../hooks/useBookmark";
-import { useHighlights } from "../hooks/useHighlights";
+import { useTextSelection } from "../hooks/useTextSelection";
 import { LABS, labWeek } from "../data/labs";
 import { LabPager } from "../components/labPager";
 import { ReadingModeContext } from "../components/prose";
@@ -71,7 +71,7 @@ export function LabDetailPage() {
   const notebookRef = useRef<HTMLDivElement>(null);
   const outline = useLabOutline(readingRef, notebookRef);
   const bookmark = useBookmark(id, outline, readingRef);
-  const highlights = useHighlights(id, readingRef);
+  const selectionInfo = useTextSelection(readingRef);
   const readingMode = useReadingMode(readingRef);
   const [resumeDismissed, setResumeDismissed] = useState(false);
   const [reviewing, setReviewing] = useState<ReviewTarget | null>(null);
@@ -143,12 +143,12 @@ export function LabDetailPage() {
 
   return (
     <Flex maxW="6xl" mx="auto" mt={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} mb={16} gap={8}>
-      <LabSidebar outline={outline} onReview={openReview} bookmark={bookmark} highlights={highlights} />
+      <LabSidebar outline={outline} onReview={openReview} bookmark={bookmark} />
       <Box flex="1" minW={0} maxW="5xl">
       <StickyHeader hideFrom="lg">
         <HStack minW={0} spacing={3}>
           <MobileNav title="Lab sections" hideFrom="lg">
-            {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} bookmark={bookmark} highlights={highlights} />}
+            {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} bookmark={bookmark} />}
           </MobileNav>
           <Link as={RouterLink} to={labWeek(lab) === 1 ? "/labs" : `/labs?week=${labWeek(lab)}`} color="blue.500">
             &larr; All labs
@@ -212,7 +212,7 @@ export function LabDetailPage() {
       </VStack>
       </Box>
       <ReadingModeBar mode={readingMode} />
-      <HighlightToolbar highlights={highlights} bookmark={bookmark} />
+      <BookmarkToolbar bookmark={bookmark} selectionInfo={selectionInfo} />
       <ReviewModal target={reviewing} onClose={() => setReviewing(null)} />
     </Flex>
   );
