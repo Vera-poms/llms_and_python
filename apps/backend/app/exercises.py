@@ -84,6 +84,30 @@ def project_spec(lab_id: int) -> str:
     return f"# Project\n\nThe written brief for lab {lab_id}'s project has not been added yet."
 
 
+PROJECT_PLACEHOLDER = "# Write your project here, following the brief above.\n"
+
+
+def project_student_brief(lab_id: int) -> str:
+    """The brief shown to students: the full brief without its "## Steps" part.
+
+    The steps live in hover hints on the starter code instead (see project_starter). The judge and hint
+    prompts still use the full brief from project_spec.
+    """
+    spec = project_spec(lab_id)
+    head, found, _ = spec.partition("\n## Steps")
+    if not found:
+        return spec
+    return head.rstrip() + "\n\nHover over the code in the cell below for the steps and examples.\n"
+
+
+def project_starter(lab_id: int) -> str:
+    """The starter code in the student's project cell (course/projects/lab_NN_starter.py, if present)."""
+    path = PROJECTS_DIR / f"lab_{lab_id:02d}_starter.py"
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    return PROJECT_PLACEHOLDER
+
+
 @lru_cache(maxsize=1)
 def _practice_cells() -> dict[tuple[int, str], GradedItem]:
     if not PRACTICE_CELLS_FILE.exists():

@@ -17,6 +17,8 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "../api/client";
 import { useCodeDraft } from "../hooks/useCodeDraft";
 import { CodeEditor } from "./CodeEditor";
+import { editorHintsFor } from "./exerciseHints";
+import { HintLegend } from "./HintLegend";
 import { DraftStatus } from "./DraftStatus";
 import { emphasizeNumbers } from "./prose";
 import { HintButton } from "./HintButton";
@@ -135,6 +137,8 @@ function GradedCell({
 }) {
   const gradedId = cell.graded_cell_id as string;
   const [source, setSource] = useState(cell.source);
+  // Fixed from the starter code: the editor reads its hints once, and they match by text anyway.
+  const [hints] = useState(() => (cell.role === "exercise" || cell.role === "project" ? editorHintsFor(cell.source) : undefined));
   const [result, setResult] = useState<RunResult | null>(null);
   const [running, setRunning] = useState(false);
   const [checking, setChecking] = useState(false);
@@ -258,7 +262,8 @@ function GradedCell({
             Run
           </Button>
         </HStack>
-        <CodeEditor value={source} onChange={edit} onRun={run} onSubmit={submitFromKeyboard} />
+        <HintLegend hints={hints} />
+        <CodeEditor value={source} onChange={edit} onRun={run} onSubmit={submitFromKeyboard} hints={hints} />
         <HStack>
           <Button size="sm" colorScheme="green" onClick={submit} isLoading={checking} isDisabled={running || !result || result.outputs.length === 0}>
             Submit

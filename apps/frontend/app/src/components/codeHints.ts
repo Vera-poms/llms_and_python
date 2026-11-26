@@ -218,13 +218,14 @@ export function codeHints(hints: CodeHint[]) {
     "&light .cm-tooltip.cm-codeHintWrap": { border: "1px solid #e2e8f0", backgroundColor: "#ffffff" },
     "&dark .cm-tooltip.cm-codeHintWrap": { border: "1px solid #4a5568", backgroundColor: "#2d3748" },
     ".cm-codeHintTooltip": {
-      maxWidth: "340px",
+      maxWidth: "440px",
       borderRadius: "10px",
       padding: "8px 12px",
       fontFamily: "system-ui, sans-serif",
       fontSize: "0.85rem",
-      lineHeight: "1.4",
-      whiteSpace: "normal",
+      lineHeight: "1.5",
+      // A line break in hint text stays a line break (steps go one per line).
+      whiteSpace: "pre-line",
     },
     ".cm-codeHintTitle": {
       fontSize: "0.7rem",

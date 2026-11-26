@@ -60,7 +60,7 @@ def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) ->
                         index=-lab_id,
                         cell_type="markdown",
                         role="reading",
-                        source=exercises.project_spec(lab_id),
+                        source=exercises.project_student_brief(lab_id),
                     )
                 )
                 cells.append(
@@ -68,7 +68,7 @@ def get_notebook(lab_id: int, current_user: User = Depends(get_current_user)) ->
                         index=index,
                         cell_type="code",
                         role="project",
-                        source="# Write your project here, following the brief above.\n",
+                        source=exercises.project_starter(lab_id),
                         graded_cell_id=exercises.PROJECT_ID,
                         points=exercises.POINTS["project"],
                     )
