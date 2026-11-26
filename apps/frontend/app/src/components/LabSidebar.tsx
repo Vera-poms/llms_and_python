@@ -72,6 +72,7 @@ export interface LabOutline {
   groups: NavGroups;
   activeId: string | null;
   currentPage: number;
+  codingReached: boolean;
   jump: (id: string) => void;
 }
 
@@ -101,16 +102,43 @@ export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: R
     return () => observer.disconnect();
   }, [readingRef, notebookRef]);
 
+  // The Coding section only appears once the reader has got there (and stays once they have).
+  const [codingReached, setCodingReached] = useState(false);
+  useEffect(() => {
+    if (codingReached) return;
+    const notebook = notebookRef.current;
+    // Paged lab: reached as soon as one of the notebook's pages is the page on screen (e.g. Next past the
+    // reading's last page). Checked against the page that is actually showing, not page numbers.
+    if (notebook?.querySelector('[data-page-index][data-active="true"]')) {
+      setCodingReached(true);
+      return;
+    }
+    if (notebook?.querySelector("[data-page-index]") || readingRef.current?.querySelector("[data-page-index]")) return;
+    if (groups.coding.length === 0) return;
+    // Not paged: reached once the notebook's top scrolls into view.
+    const check = () => {
+      const top = notebookRef.current?.getBoundingClientRect().top;
+      if (top !== undefined && top < window.innerHeight - 80) setCodingReached(true);
+    };
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    return () => window.removeEventListener("scroll", check);
+  }, [codingReached, groups.coding, currentPage, notebookRef, readingRef]);
+
   // Scroll-spy: the active entry is the last one whose top has passed the top of the viewport.
   useEffect(() => {
     const ids = [...groups.concepts, ...groups.coding].map((i) => i.id);
     const onScroll = () => {
-      let current: string | null = ids[0] ?? null;
+      let current: string | null = null;
+      let firstShowing: string | null = null;
       for (const id of ids) {
         const el = document.getElementById(id);
         // Elements on a page that is not showing have no layout; skip them.
-        if (el && el.getClientRects().length > 0 && el.getBoundingClientRect().top <= 120) current = id;
+        if (!el || el.getClientRects().length === 0) continue;
+        firstShowing ??= id;
+        if (el.getBoundingClientRect().top <= 120) current = id;
       }
+      current ??= firstShowing;
       setActiveId(current);
     };
     onScroll();
@@ -133,7 +161,7 @@ export function useLabOutline(readingRef: RefObject<HTMLElement>, notebookRef: R
     el.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  return { groups, activeId, currentPage, jump };
+  return { groups, activeId, currentPage, codingReached, jump };
 }
 
 // The outline entries themselves. `onNavigate` lets the mobile drawer close after a jump.
@@ -151,12 +179,28 @@ export function LabNav({
 }) {
   const { groups, activeId, currentPage, jump } = outline;
   const activeItem = [...groups.concepts, ...groups.coding].find((i) => i.id === activeId);
+  const onCodingPage = outline.codingReached && groups.coding.some((i) => i.page !== null && i.page === currentPage);
 
   function renderGroup(title: string, allItems: NavItem[], topicsAlwaysShown: boolean) {
     // Collapsed outline: the reading's topics stay listed, but a page's own sub-sections only show while you are
     // on that page. The coding part (exercise, solution, project) only shows on its own pages.
+    // A concept can span several pages (In plain Python, Up close, ...), so all of its sub-sections stay listed
+    // while you are on any of its pages. Each sub-section belongs to the nearest topic (level 0/1) above it.
+    const parentIndex = (idx: number) => {
+      let p = idx;
+      while (p > 0 && allItems[p].level > 1) p -= 1;
+      return p;
+    };
+    const openParents = new Set<number>();
+    allItems.forEach((it, idx) => {
+      if (it.page !== null && it.page === currentPage) openParents.add(parentIndex(idx));
+    });
     const items = allItems.filter(
-      (i) => i.page === null || i.page === currentPage || (topicsAlwaysShown && i.level <= 1),
+      (i, idx) =>
+        i.page === null ||
+        i.page === currentPage ||
+        (topicsAlwaysShown && i.level <= 1) ||
+        openParents.has(parentIndex(idx)),
     );
     if (items.length === 0) return null;
     return (
@@ -305,8 +349,9 @@ export function LabNav({
           Review this lab
         </Button>
       )}
-      {renderGroup("Concepts", groups.concepts, true)}
-      {renderGroup("Coding", groups.coding, true)}
+      {/* Once you are on a coding page the concepts are done with: only the coding outline is listed. */}
+      {!onCodingPage && renderGroup("Concepts", groups.concepts, true)}
+      {outline.codingReached && renderGroup("Coding", groups.coding, true)}
     </VStack>
   );
 }

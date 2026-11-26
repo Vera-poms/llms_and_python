@@ -69,23 +69,27 @@ export function MobileNav({
 // is on screen instead and the bar scrolls away with the page as before.
 export function StickyHeader({
   hideFrom = "md",
+  alwaysFixed = false,
   children,
 }: {
   hideFrom?: "md" | "lg";
+  // Keep the bar pinned at every screen width, not only below `hideFrom`.
+  alwaysFixed?: boolean;
   children: ReactNode;
 }) {
+  const fixed = alwaysFixed ? "sticky" : "static";
   return (
     <Flex
       as="header"
       justify="space-between"
       align="center"
       gap={3}
-      position={{ base: "sticky", [hideFrom]: "static" }}
+      position={{ base: "sticky", [hideFrom]: fixed }}
       top={0}
       zIndex="docked"
       bg="chakra-body-bg"
-      py={{ base: 2, [hideFrom]: 0 }}
-      borderBottomWidth={{ base: "1px", [hideFrom]: 0 }}
+      py={alwaysFixed ? 2 : { base: 2, [hideFrom]: 0 }}
+      borderBottomWidth={alwaysFixed ? "1px" : { base: "1px", [hideFrom]: 0 }}
       mb={{ base: 4, [hideFrom]: 6 }}
     >
       {children}

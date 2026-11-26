@@ -60,6 +60,17 @@ const READINGS: Record<number, () => JSX.Element> = {
 // Labs whose reading and notebook are shown one page at a time (Previous / Next). The others still scroll.
 const PAGED_LABS = new Set(Object.keys(READINGS).map(Number));
 
+// Reading mode: words (and code boxes) stay invisible until the reveal reaches them.
+const revealStyles = {
+  "&[data-reading-mode] [data-w]": { transition: "opacity 0.4s ease" },
+  "&[data-reading-mode] [data-w]:not([data-seen])": { opacity: 0 },
+  "&[data-reading-mode] [data-reveal-block]": { transition: "opacity 0.6s ease" },
+  "&[data-reading-mode] [data-reveal-block]:not([data-seen])": { opacity: 0, pointerEvents: "none" },
+  "@media (prefers-reduced-motion: reduce)": {
+    "&[data-reading-mode] [data-w], &[data-reading-mode] [data-reveal-block]": { transition: "none" },
+  },
+};
+
 export function LabDetailPage() {
   const { labId } = useParams<{ labId: string }>();
   const navigate = useNavigate();
@@ -72,7 +83,7 @@ export function LabDetailPage() {
   const outline = useLabOutline(readingRef, notebookRef);
   const bookmark = useBookmark(id, outline, readingRef);
   const selectionInfo = useTextSelection(readingRef);
-  const readingMode = useReadingMode(readingRef);
+  const readingMode = useReadingMode(readingRef, notebookRef);
   const [resumeDismissed, setResumeDismissed] = useState(false);
   const [reviewing, setReviewing] = useState<ReviewTarget | null>(null);
   const [done, setDone] = useState(false);
@@ -117,27 +128,15 @@ export function LabDetailPage() {
         <Box display="flex" justifyContent="flex-end">
           <ReadingModeButton mode={readingMode} />
         </Box>
-        <Box
-          ref={readingRef}
-          sx={{
-            // Reading mode: words (and code boxes) stay invisible until the reveal reaches them.
-            "&[data-reading-mode] [data-w]": { transition: "opacity 0.4s ease" },
-            "&[data-reading-mode] [data-w]:not([data-seen])": { opacity: 0 },
-            "&[data-reading-mode] [data-reveal-block]": { transition: "opacity 0.6s ease" },
-            "&[data-reading-mode] [data-reveal-block]:not([data-seen])": { opacity: 0, pointerEvents: "none" },
-            "@media (prefers-reduced-motion: reduce)": {
-              "&[data-reading-mode] [data-w], &[data-reading-mode] [data-reveal-block]": { transition: "none" },
-            },
-          }}
-        >
-          <ReadingModeContext.Provider value={readingMode.active}>
+        <ReadingModeContext.Provider value={readingMode.active}>
+          <Box ref={readingRef} sx={revealStyles}>
             <Reading />
-          </ReadingModeContext.Provider>
-        </Box>
+          </Box>
 
-        <Box ref={notebookRef} borderTopWidth={paged ? undefined : "1px"} pt={paged ? 0 : 4}>
-          <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} onProgress={refresh} />
-        </Box>
+          <Box ref={notebookRef} borderTopWidth={paged ? undefined : "1px"} pt={paged ? 0 : 4} sx={revealStyles}>
+            <NotebookRunner labId={id} needsApiKey={lab.needsApiKey} onProgress={refresh} />
+          </Box>
+        </ReadingModeContext.Provider>
     </>
   );
 
@@ -145,7 +144,7 @@ export function LabDetailPage() {
     <Flex maxW="6xl" mx="auto" mt={{ base: 6, md: 12 }} px={{ base: 3, md: 4 }} mb={16} gap={8}>
       <LabSidebar outline={outline} onReview={openReview} bookmark={bookmark} />
       <Box flex="1" minW={0} maxW="5xl">
-      <StickyHeader hideFrom="lg">
+      <StickyHeader hideFrom="lg" alwaysFixed>
         <HStack minW={0} spacing={3}>
           <MobileNav title="Lab sections" hideFrom="lg">
             {(close) => <LabNav outline={outline} onNavigate={close} onReview={openReview} bookmark={bookmark} />}
@@ -154,6 +153,9 @@ export function LabDetailPage() {
             &larr; All labs
           </Link>
         </HStack>
+        <Button as={RouterLink} to="/labs" size="sm" variant="outline" flexShrink={0}>
+          Home
+        </Button>
       </StickyHeader>
 
       <VStack

@@ -239,6 +239,7 @@ function GradedCell({
   return (
     <Box
       data-nav={cell.role}
+      data-reveal-block=""
       borderWidth="1px"
       borderRadius="md"
       p={{ base: 2, md: 3 }}
@@ -495,7 +496,7 @@ export function NotebookRunner({
         );
 
         return (
-          <Box key={cell.index} data-nav={cell.role}>
+          <Box key={cell.index} data-nav={cell.role} data-reveal-block="">
             {cellBody}
           </Box>
         );

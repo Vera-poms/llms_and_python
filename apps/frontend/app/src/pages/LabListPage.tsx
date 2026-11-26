@@ -87,7 +87,7 @@ export function LabListPage() {
         onSelectWeek={selectWeek}
       />
       <Box flex="1" minW={0} maxW="2xl">
-      <StickyHeader>
+      <StickyHeader alwaysFixed>
         <HStack minW={0} spacing={3}>
           <MobileNav title="Course navigation">
             {(close) => (

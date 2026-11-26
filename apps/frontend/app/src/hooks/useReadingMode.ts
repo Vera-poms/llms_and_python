@@ -34,7 +34,7 @@ export interface ReadingMode {
 // wrap each word in <span data-w> and every code box / exercise carries data-reveal-block (see
 // prose.tsx). This hook only sets `data-seen` on those elements, one at a time, in page order.
 // Nothing React renders is changed, so the page behaves normally once the mode is switched off.
-export function useReadingMode(readingRef: RefObject<HTMLElement>): ReadingMode {
+export function useReadingMode(readingRef: RefObject<HTMLElement>, notebookRef?: RefObject<HTMLElement>): ReadingMode {
   const [active, setActive] = useState(false);
   const [paused, setPaused] = useState(false);
   const [following, setFollowing] = useState(true);
@@ -68,15 +68,17 @@ export function useReadingMode(readingRef: RefObject<HTMLElement>): ReadingMode 
   };
 
   const collect = useCallback(() => {
-    const root = readingRef.current;
-    if (!root) return [];
+    // The reading comes first, then the notebook (setup, exercise, solution, project).
+    const roots = [readingRef.current, notebookRef?.current ?? null].filter((r): r is HTMLElement => !!r);
     // Words inside a code box or exercise are not split, so only the block itself is an item.
-    return Array.from(root.querySelectorAll<HTMLElement>("[data-w], [data-reveal-block]")).filter(
-      (el) =>
-        !el.closest('[data-active="false"]') &&
-        (el.hasAttribute("data-reveal-block") || !el.closest("[data-reveal-block]")),
+    return roots.flatMap((root) =>
+      Array.from(root.querySelectorAll<HTMLElement>("[data-w], [data-reveal-block]")).filter(
+        (el) =>
+          !el.closest('[data-active="false"]') &&
+          (el.hasAttribute("data-reveal-block") || !el.closest("[data-reveal-block]")),
+      ),
     );
-  }, [readingRef]);
+  }, [readingRef, notebookRef]);
 
   const tick = useCallback(() => {
     timerRef.current = undefined;
@@ -135,7 +137,8 @@ export function useReadingMode(readingRef: RefObject<HTMLElement>): ReadingMode 
   useEffect(() => {
     const root = readingRef.current;
     if (!active || !root) return;
-    root.setAttribute("data-reading-mode", "");
+    const roots = [root, notebookRef?.current ?? null].filter((r): r is HTMLElement => !!r);
+    roots.forEach((r) => r.setAttribute("data-reading-mode", ""));
     itemsRef.current = collect();
     indexRef.current = 0;
     setProgress(0);
@@ -159,10 +162,12 @@ export function useReadingMode(readingRef: RefObject<HTMLElement>): ReadingMode 
       clearTimer();
       window.removeEventListener("wheel", manual);
       window.removeEventListener("touchmove", manual);
-      root.removeAttribute("data-reading-mode");
-      root.querySelectorAll("[data-seen]").forEach((el) => el.removeAttribute("data-seen"));
+      roots.forEach((r) => {
+        r.removeAttribute("data-reading-mode");
+        r.querySelectorAll("[data-seen]").forEach((el) => el.removeAttribute("data-seen"));
+      });
     };
-  }, [active, readingRef, collect, tick, pageTurn]);
+  }, [active, readingRef, notebookRef, collect, tick, pageTurn, applyJump]);
 
   // Clicking a section in the sidebar while reading mode is on skips the reveal to that section.
   useEffect(() => {

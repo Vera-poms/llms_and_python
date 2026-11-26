@@ -16,38 +16,44 @@ import {
   Tr,
   UnorderedList,
 } from "@chakra-ui/react";
-import type { ComponentProps, ReactNode } from "react";
+import { type ComponentProps, type ReactNode, useContext } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { CodeBlock } from "./CodeBlock";
-import { isNumericExpression, NUMBER_PATTERN } from "./prose";
+import { isNumericExpression, NUMBER_PATTERN, ReadingModeContext, wrapWords } from "./prose";
+
+// In reading mode every word is wrapped in <span data-w> so the reveal can show them one by one.
+function Words({ children }: { children?: ReactNode }) {
+  const active = useContext(ReadingModeContext);
+  return <>{active ? wrapWords(children) : children}</>;
+}
 
 // Chakra's CSS reset strips default heading sizes, list bullets and indentation, so raw
 // ReactMarkdown output renders as one flat wall of text. Every element is mapped explicitly here.
 const components: ComponentProps<typeof ReactMarkdown>["components"] = {
   h1: ({ children }) => (
     <Heading as="h1" size="lg" mt={6} mb={3} pb={2} borderBottomWidth="1px" lineHeight="1.3">
-      {children}
+      <Words>{children}</Words>
     </Heading>
   ),
   h2: ({ children }) => (
     <Heading as="h2" size="md" mt={6} mb={2} lineHeight="1.3">
-      {children}
+      <Words>{children}</Words>
     </Heading>
   ),
   h3: ({ children }) => (
     <Heading as="h3" size="sm" mt={5} mb={2} lineHeight="1.3">
-      {children}
+      <Words>{children}</Words>
     </Heading>
   ),
   h4: ({ children }) => (
     <Heading as="h4" size="xs" mt={4} mb={2} textTransform="none">
-      {children}
+      <Words>{children}</Words>
     </Heading>
   ),
   p: ({ children }) => (
     <Text mb={3} lineHeight="tall">
-      {children}
+      <Words>{children}</Words>
     </Text>
   ),
   ul: ({ children }) => (
@@ -60,16 +66,24 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
       {children}
     </OrderedList>
   ),
-  li: ({ children }) => <ListItem lineHeight="tall">{children}</ListItem>,
+  li: ({ children }) => (
+    <ListItem lineHeight="tall">
+      <Words>{children}</Words>
+    </ListItem>
+  ),
   strong: ({ children, className }) => (
     <Text as="strong" fontWeight={className === NUMBER_CLASS ? "bold" : "semibold"}>
-      {children}
+      <Words>{children}</Words>
     </Text>
   ),
-  em: ({ children }) => <Text as="em">{children}</Text>,
+  em: ({ children }) => (
+    <Text as="em">
+      <Words>{children}</Words>
+    </Text>
+  ),
   a: ({ href, children }) => (
     <Link href={href} color="blue.500" isExternal textDecoration="underline">
-      {children}
+      <Words>{children}</Words>
     </Link>
   ),
   blockquote: ({ children }) => (
@@ -88,8 +102,16 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
   thead: ({ children }) => <Thead>{children}</Thead>,
   tbody: ({ children }) => <Tbody>{children}</Tbody>,
   tr: ({ children }) => <Tr>{children}</Tr>,
-  th: ({ children }) => <Th>{children}</Th>,
-  td: ({ children }) => <Td>{children}</Td>,
+  th: ({ children }) => (
+    <Th>
+      <Words>{children}</Words>
+    </Th>
+  ),
+  td: ({ children }) => (
+    <Td>
+      <Words>{children}</Words>
+    </Td>
+  ),
   // react-markdown v9 passes inline code and fenced blocks through the same `code` slot; a fenced
   // block is the one wrapped in <pre>, which arrives with a language-* class or an embedded newline.
   code: ({ className, children }) => {
@@ -103,6 +125,7 @@ const components: ComponentProps<typeof ReactMarkdown>["components"] = {
     const numeric = isNumericExpression(text);
     return (
       <Code
+        data-w=""
         px={1.5}
         py={0.5}
         borderRadius="sm"

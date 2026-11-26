@@ -118,7 +118,7 @@ export function SolutionReveal({
   }
 
   return (
-    <Box>
+    <Box data-reveal-block="">
       <Button size="xs" variant="outline" onClick={toggle}>
         {open ? "Hide solution" : "Show solution"}
       </Button>

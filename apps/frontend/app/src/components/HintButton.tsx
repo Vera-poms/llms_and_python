@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { api } from "../api/client";
 import { Markdown } from "./Markdown";
+import { ReadingModeContext } from "./prose";
 
 interface Props {
   labId: number;
@@ -45,7 +46,10 @@ export function HintButton({ labId, cellId, getSource, getOutput }: Props) {
           <Alert key={i} status="info" borderRadius="md" py={2} alignItems="start">
             <AlertIcon />
             <Box fontSize="sm" minW={0} sx={{ "& > :last-child": { mb: 0 } }}>
-              <Markdown>{hint}</Markdown>
+              {/* Hints appear on demand, so reading mode must not hide their words. */}
+              <ReadingModeContext.Provider value={false}>
+                <Markdown>{hint}</Markdown>
+              </ReadingModeContext.Provider>
             </Box>
           </Alert>
         ))
