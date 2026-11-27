@@ -85,6 +85,7 @@ export function CellOutput({ result }: { result: RunResult }) {
               maxW="100%"
               bg="red.50"
               color="red.700"
+              _dark={{ bg: "red.900", color: "red.100" }}
               p={2}
               borderRadius="md"
             >

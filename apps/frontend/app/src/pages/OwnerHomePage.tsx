@@ -6,6 +6,7 @@ import { ownerUserApi } from "../api/ownerEndpoints";
 import { setOwnerToken, startOwnerSessionKeepAlive } from "../api/ownerClient";
 import { AdminsPanel } from "../components/owner/AdminsPanel";
 import { ReviewsPanel } from "../components/owner/ReviewsPanel";
+import { ColorModeToggle } from "../components/ColorModeToggle";
 import { MobileNav, NavList, StickyHeader } from "../components/MobileNav";
 import { UsersPanel } from "../components/users/UsersPanel";
 
@@ -61,6 +62,7 @@ export function OwnerHomePage() {
           </Heading>
         </HStack>
         <HStack spacing={2} flexShrink={0}>
+          <ColorModeToggle />
           <Button size="sm" variant="outline" onClick={() => setRefreshKey((k) => k + 1)}>
             Refresh
           </Button>

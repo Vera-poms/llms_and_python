@@ -6,12 +6,12 @@ import { tags as t } from "@lezer/highlight";
 // runs as a standalone browser tab, so it can't read your actual installed
 // VS Code theme live; these are the closest static approximation.
 export const DARK_PLUS = {
-  background: "#1e1e1e",
+  background: "#0d0d0d",
   foreground: "#d4d4d4",
-  gutterBackground: "#1e1e1e",
+  gutterBackground: "#0d0d0d",
   gutterForeground: "#858585",
   caret: "#aeafad",
-  selection: "#3a73b0",
+  selection: "#7d0a14",
   activeLine: "#ffffff0d",
 };
 
@@ -19,9 +19,9 @@ export const LIGHT_PLUS = {
   background: "#ffffff",
   foreground: "#000000",
   gutterBackground: "#ffffff",
-  gutterForeground: "#237893",
+  gutterForeground: "#737373",
   caret: "#000000",
-  selection: "#7ab8f5",
+  selection: "#ffbdbd",
   activeLine: "#0000000a",
 };
 

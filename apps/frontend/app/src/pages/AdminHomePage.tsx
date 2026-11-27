@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { adminResourceApi, adminUserApi } from "../api/adminEndpoints";
 import { setAdminToken } from "../api/adminClient";
+import { ColorModeToggle } from "../components/ColorModeToggle";
 import { MobileNav, NavList, StickyHeader } from "../components/MobileNav";
 import { ResourcesPanel } from "../components/resources/ResourcesPanel";
 import { UsersPanel } from "../components/users/UsersPanel";
@@ -45,9 +46,12 @@ export function AdminHomePage() {
             </Box>
           </Heading>
         </HStack>
-        <Button size="sm" flexShrink={0} onClick={logout}>
-          Sign out
-        </Button>
+        <HStack spacing={2} flexShrink={0}>
+          <ColorModeToggle />
+          <Button size="sm" flexShrink={0} onClick={logout}>
+            Sign out
+          </Button>
+        </HStack>
       </StickyHeader>
       <Tabs index={tab} onChange={setTab} isLazy>
         <TabList display={{ base: "none", md: "flex" }}>

@@ -1,5 +1,6 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
+import { ColorModeToggle } from "./components/ColorModeToggle";
 import { getAdminToken } from "./api/adminClient";
 import { getOwnerToken } from "./api/ownerClient";
 import { useAuth } from "./context/AuthContext";
@@ -38,8 +39,13 @@ function RequireAdmin({ children }: { children: JSX.Element }) {
 }
 
 export default function App() {
+  const { pathname } = useLocation();
+  // Pages with their own header carry the toggle inline; the rest get a floating one.
+  const hasHeader = ["/labs", "/owner", "/admin"].includes(pathname.replace(/\/$/, "")) || /^\/labs\/[^/]+/.test(pathname);
   return (
-    <Routes>
+    <>
+      {!hasHeader && <ColorModeToggle floating />}
+      <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -80,6 +86,7 @@ export default function App() {
         }
       />
       <Route path="*" element={<Navigate to="/labs" replace />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }

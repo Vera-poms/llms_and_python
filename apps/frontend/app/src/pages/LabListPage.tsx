@@ -5,6 +5,7 @@ import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-d
 import { api } from "../api/client";
 import type { Resource } from "../api/resourceManagement";
 import { ResourceRenderer } from "../components/resources/ResourceRenderer";
+import { ColorModeToggle } from "../components/ColorModeToggle";
 import { CourseNav, CourseSidebar } from "../components/CourseSidebar";
 import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { useAuth } from "../context/AuthContext";
@@ -105,9 +106,12 @@ export function LabListPage() {
             LLM Foundations Course
           </Heading>
         </HStack>
-        <Button size="sm" variant="outline" flexShrink={0} onClick={handleLogout}>
-          Log out
-        </Button>
+        <HStack spacing={2} flexShrink={0}>
+          <ColorModeToggle />
+          <Button size="sm" variant="outline" flexShrink={0} onClick={handleLogout}>
+            Log out
+          </Button>
+        </HStack>
       </StickyHeader>
 
       {weekLabs.length > 0 && score && (

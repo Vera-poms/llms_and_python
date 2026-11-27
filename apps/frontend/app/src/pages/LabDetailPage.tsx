@@ -4,6 +4,7 @@ import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
 import { api } from "../api/client";
 import { LabNav, LabSidebar, useLabOutline } from "../components/LabSidebar";
+import { ColorModeToggle } from "../components/ColorModeToggle";
 import { MobileNav, StickyHeader } from "../components/MobileNav";
 import { NotebookRunner } from "../components/NotebookRunner";
 import { ReviewModal, type ReviewTarget } from "../components/ReviewModal";
@@ -153,9 +154,7 @@ export function LabDetailPage() {
             &larr; All labs
           </Link>
         </HStack>
-        <Button as={RouterLink} to="/labs" size="sm" variant="outline" flexShrink={0}>
-          Home
-        </Button>
+        <ColorModeToggle />
       </StickyHeader>
 
       <VStack
