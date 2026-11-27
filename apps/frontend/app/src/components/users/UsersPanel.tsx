@@ -1,21 +1,16 @@
 import {
   Badge,
   Box,
+  Grid,
   HStack,
   Input,
   InputGroup,
   InputRightElement,
   SimpleGrid,
   Spinner,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
   VStack,
+  useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -34,6 +29,18 @@ function Stat({ label, value }: { label: string; value: string }) {
     </Box>
   );
 }
+
+// Column widths shared by the heading row and every user row so they line up.
+const COLUMNS = "2rem minmax(0, 2.6fr) 0.9fr 0.8fr 0.6fr 1.7fr";
+// [label, right-aligned?]
+const HEADINGS: [string, boolean][] = [
+  ["#", true],
+  ["Email", false],
+  ["Progress", false],
+  ["Score", true],
+  ["Hints", true],
+  ["Last activity", false],
+];
 
 // Phones get a card per user: the table's five columns don't fit, and hiding them would hide data.
 function UserCard({ user, number, onOpen }: { user: UserSummary; number: number; onOpen: () => void }) {
@@ -77,6 +84,11 @@ export function UsersPanel({
   refreshKey?: number;
 }) {
   const toast = useToast();
+  // Picked in JS: a `_dark` nested inside `_hover` doesn't match in Chakra, which left the hover
+  // light (white) with light text in dark mode.
+  const rowHover = useColorModeValue("gray.100", "gray.800");
+  const headBg = useColorModeValue("gray.100", "gray.800");
+  const headColor = useColorModeValue("gray.600", "gray.300");
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState<UserSummary[] | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
@@ -125,7 +137,7 @@ export function UsersPanel({
         </InputGroup>
       </Box>
 
-      {users === null && loading && <LoadingSpinner label="Loading users…" />}
+      {loading && (users === null || users.length === 0) && <LoadingSpinner label="Loading users…" />}
 
       <VStack align="stretch" spacing={3} display={{ base: "flex", md: "none" }}>
         {users?.map((u, i) => (
@@ -133,57 +145,79 @@ export function UsersPanel({
         ))}
       </VStack>
 
-      {/* A sticky header only works if no box between it and the scroll area clips overflow, so
-          the container's own scrolling is turned off when the header must stick. */}
-      <TableContainer display={{ base: "none", md: "block" }} overflow={stickySearch ? "visible" : undefined}>
-        {/* "separate" borders, because collapsed borders stay behind when a header cell sticks. */}
-        <Table size="sm" sx={stickySearch ? { borderCollapse: "separate", borderSpacing: 0 } : undefined}>
-          <Thead>
-            <Tr
-              sx={
-                stickySearch
-                  ? {
-                      "& > th": {
-                        position: "sticky",
-                        // Height of the sticky search box above: input (2.5rem) + its bottom padding (0.5rem).
-                        top: "3rem",
-                        zIndex: 1,
-                        bg: "chakra-body-bg",
-                      },
-                    }
-                  : undefined
-              }
-            >
-              <Th isNumeric w="1%">
-                #
-              </Th>
-              <Th>Email</Th>
-              <Th>Progress</Th>
-              <Th isNumeric>Score</Th>
-              <Th isNumeric>Hints</Th>
-              <Th>Last activity</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {users?.map((u, i) => (
-              <Tr key={u.id} _hover={{ bg: "gray.50" }} cursor="pointer" onClick={() => setSelected(u.id)}>
-                <Td isNumeric color="gray.500">
-                  {i + 1}
-                </Td>
-                <Td>
-                  {u.email} {u.is_admin && <Badge colorScheme="purple">admin</Badge>}
-                </Td>
-                <Td>
-                  {u.labs_done}/{u.total_labs}
-                </Td>
-                <Td isNumeric>{u.score_percent ?? 0}%</Td>
-                <Td isNumeric>{u.hints_used}</Td>
-                <Td>{u.last_activity ? new Date(u.last_activity).toLocaleString() : "—"}</Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      {/* Desktop list. Built from grid rows rather than a <table>: the heading row lives in its own
+          box, so it can stick to the top of the scroll area as one solid bar and never slide
+          over the rows, while sharing the same column widths keeps everything lined up. */}
+      <Box display={{ base: "none", md: "block" }} role="table" aria-label="Users">
+        <Grid
+          role="row"
+          templateColumns={COLUMNS}
+          gap={3}
+          px={3}
+          py={2}
+          position={stickySearch ? "sticky" : undefined}
+          // Height of the sticky search box above: input (2.5rem) + its bottom padding (0.5rem).
+          top={stickySearch ? "3rem" : undefined}
+          zIndex={stickySearch ? 1 : undefined}
+          bg={headBg}
+          color={headColor}
+          borderRadius="md"
+          borderBottomWidth="2px"
+          borderBottomColor="red.500"
+          fontSize="xs"
+          fontWeight="bold"
+          textTransform="uppercase"
+          letterSpacing="wider"
+        >
+          {HEADINGS.map(([label, numeric]) => (
+            <Text key={label} role="columnheader" textAlign={numeric ? "right" : "left"} noOfLines={1}>
+              {label}
+            </Text>
+          ))}
+        </Grid>
+        {users?.map((u, i) => (
+          <Grid
+            key={u.id}
+            role="row"
+            templateColumns={COLUMNS}
+            gap={3}
+            px={3}
+            py={2.5}
+            alignItems="center"
+            fontSize="sm"
+            borderBottomWidth="1px"
+            cursor="pointer"
+            onClick={() => setSelected(u.id)}
+            _hover={{ bg: rowHover }}
+          >
+            <Text role="cell" textAlign="right" color="gray.500">
+              {i + 1}
+            </Text>
+            <HStack role="cell" spacing={2} minW={0}>
+              <Text noOfLines={1} title={u.email}>
+                {u.email}
+              </Text>
+              {u.is_admin && (
+                <Badge colorScheme="purple" flexShrink={0}>
+                  admin
+                </Badge>
+              )}
+            </HStack>
+            <Text role="cell">
+              {u.labs_done}/{u.total_labs}
+            </Text>
+            <Text role="cell" textAlign="right">
+              {u.score_percent ?? 0}%
+            </Text>
+            <Text role="cell" textAlign="right">
+              {u.hints_used}
+            </Text>
+            <Text role="cell" noOfLines={1}>
+              {u.last_activity ? new Date(u.last_activity).toLocaleString() : "—"}
+            </Text>
+          </Grid>
+        ))}
+      </Box>
       {users?.length === 0 && !loading && <Text color="gray.500">No users found.</Text>}
       <UserDrawer api={api} userId={selected} onClose={() => setSelected(null)} onChanged={load} />
     </VStack>
